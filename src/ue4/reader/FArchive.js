@@ -31,11 +31,23 @@ class FArchive {
     };
 
     /**
-     * - Reads the data
+     * - Reads data
      * @param {Number} numBytes Amount of bytes to read
      * @returns {Buffer}
      */
     read(numBytes) {
+        const out = this.data.slice(this.offset, this.offset + numBytes)
+        this.offset += numBytes;
+        return out;
+    };
+
+    /**
+     * - Reads a buffer
+     * @param {Number} numBytes Amount of bytes to read
+     * @returns {Buffer}
+     */
+    // NOT DONE YET
+    readBuffer(numBytes) {
         const out = this.data.slice(this.offset, this.offset + numBytes)
         this.offset += numBytes;
         return out;
