@@ -36,8 +36,8 @@ class AES {
      * @returns {Buffer} Decrypted buffer
      */
     decrypt(encrypted, key) {
-        if (Buffer.isBuffer(key))
-            throw new Error("Argument 'encrypted' must be a buffer!");
+        if (!Buffer.isBuffer(encrypted) || !Buffer.isBuffer(key))
+            throw new Error("Argument 'encrypted' and 'key' must be a buffer!");
 
         const iv = Buffer.alloc(this.BLOCK_SIZE);
         const algorithm = "aes-256-cbc";
@@ -76,8 +76,8 @@ class AES {
      * @returns {Buffer} Encrypted buffer
      */
     encrypt(decrypted, key) {
-        if (Buffer.isBuffer(key))
-            throw new Error("Argument 'encrypted' must be a buffer!");
+        if (!Buffer.isBuffer(decrypted) || !Buffer.isBuffer(key))
+            throw new Error("Argument 'encrypted' and 'key' must be a buffer!");
 
         const iv = Buffer.alloc(this.BLOCK_SIZE);
         const algorithm = "aes-256-cbc";
