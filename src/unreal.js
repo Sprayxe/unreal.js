@@ -1,5 +1,5 @@
 const fs = require("fs").promises;
-const FArchive = require("./helpers/ue4/reader/FArchive");
+const FArchive = require("./ue4/reader/FArchive");
 
 class UnrealJS {
     constructor (path = "C:\\Program Files\\Epic Games\\Fortnite\\FortniteGame\\Content\\Paks") {
