@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { AesError } = require("../../errors/Exceptions");
 
 class AES {
     constructor() {
@@ -13,11 +14,11 @@ class AES {
     parseKey(key) {
         if (!key) throw new Error("Invalid AES key!");
 
-        const data = Buffer.from(key.startsWith("0x") ? key.substring(2) : key);
+        const data = key.startsWith("0x") ? key.substring(2) : key;
         if (data.size !== 32)
-            throw new Error("Given AES key is not properly formatted, needs to be exactly 32 bytes long");
+            throw new AesError("Given AES key is not properly formatted, needs to be exactly 32 bytes long").m;
 
-        return data;
+        return crypto.scryptSync(data, "salt", 32);
     };
 
     /**
@@ -37,27 +38,17 @@ class AES {
      */
     decrypt(encrypted, key) {
         if (!Buffer.isBuffer(encrypted) || !Buffer.isBuffer(key))
-            throw new Error("Argument 'encrypted' and 'key' must be a buffer!");
+            throw new AesError("Argument 'encrypted' and 'key' must be a buffer!");
 
+        encrypted = Buffer.from(encrypted, "base64").toString("binary");
         const iv = Buffer.alloc(this.BLOCK_SIZE);
         const algorithm = "aes-256-cbc";
-        const secretKey = crypto.scryptSync(key, "salt", 32);
-        const decipher = crypto.createDecipheriv(algorithm, secretKey, iv);
+        const decipher = crypto.createDecipheriv(algorithm, key, iv);
         
-        const decrypted = "";
-        decipher.on("readable", () => {
-            while (null !== (chunk = decipher.read())) {
-                decrypted += chunk.toString("utf8");
-            };
-        });
-        decipher.on("end", () => {
-            console.log("SUCCESSFULLY DECRYPTED!");
-        });
+        let decrypted = decipher.update(encrypted);
+        decrypted += decipher.final();
 
-        decipher.write(encrypted, "binary");
-        decipher.end();
-
-        return Buffer.from(decrypted);
+        return decrypted;
     };
 
     /**
@@ -77,26 +68,18 @@ class AES {
      */
     encrypt(decrypted, key) {
         if (!Buffer.isBuffer(decrypted) || !Buffer.isBuffer(key))
-            throw new Error("Argument 'encrypted' and 'key' must be a buffer!");
+            throw new AesError("Argument 'encrypted' and 'key' must be a buffer!").m;
 
         const iv = Buffer.alloc(this.BLOCK_SIZE);
         const algorithm = "aes-256-cbc";
-        const secretKey = crypto.scryptSync(key, "salt", 32);
-        const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
-        
-        const encrypted = "";
-        cipher.on("readable", () => {
-            while (null !== (chunk = cipher.read())) {
-                cipher += chunk.toString("utf8");
-            };
-        });
-        cipher.on("end", () => {
-            console.log("SUCCESSFULLY DECRYPTED!");
-        });
+        const cipher = crypto.createCipheriv(algorithm, key, iv);
 
-        cipher.write(decrypted, "binary");
-        cipher.end();
+        let encrypted = cipher.update(decrypted);
+        encrypted += cipher.final();
 
+        encrypted = Buffer.from(encrypted, "binary").toString("base64");
         return Buffer.from(encrypted);
     };
-}
+};
+
+module.exports = AES;

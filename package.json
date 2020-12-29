@@ -24,6 +24,6 @@
   },
   "homepage": "https://github.com/Sprayxe/unreal.js#readme",
   "dependencies": {
-    "bytebuffer": "^5.0.1"
+    "colors": "^1.4.0"
   }
 }

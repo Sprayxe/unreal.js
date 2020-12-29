@@ -1,3 +1,5 @@
+const { ParserError } = require("../../errors/Exceptions");
+
 class FArchive {
     /**
      * - Reads a buffer
@@ -138,7 +140,7 @@ class FArchive {
     readBoolean() {
         const int = this.readInt32();
         if (int != 0 && int != 1) 
-            throw new Error(`Invalid boolean value (${int})`);
+            throw new ParserError(`Invalid boolean value (${int})`).m;
         return int != 0;
     };
 
@@ -149,7 +151,7 @@ class FArchive {
     readFlag() {
         const int = this.readUInt8();
         if (int != 0 && int != 1) 
-            throw new Error(`Invalid boolean value (${int})`);
+            throw new ParserError(`Invalid boolean value (${int})`).m;
         return int != 0;
     };
 
@@ -171,13 +173,13 @@ class FArchive {
     readString() {
         const length = this.readInt32();
         if (length < -65536 || length > 65536) 
-            throw new Error(`Invalid String length '${length}'`);
+            throw new ParserError(`Invalid String length '${length}'`).m;
 
         if (length < 0) {
             const utf16length = -length;
             const dat = new Array(utf16length - 1).push(this.readUInt16());
             if (this.readUInt16() != 0) 
-                throw new Error("Serialized FString is not null-terminated");
+                throw new ParserError("Serialized FString is not null-terminated").m;
                 
             return dat.toString().slice(0, utf16length - 1);
         } else {
@@ -185,7 +187,7 @@ class FArchive {
             const string = this.readBuffer(length - 1).toString("utf-8");
 
             if (this.readUInt8() != 0)  
-                throw new Error("Serialized FString is not null-terminated");
+                throw new ParserError("Serialized FString is not null-terminated").m;
             
             return string;
         };

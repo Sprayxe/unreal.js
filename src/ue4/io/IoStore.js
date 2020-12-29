@@ -1,3 +1,4 @@
+const { UtocError } = require("../../errors/Exceptions");
 const FArchive = require("../reader/FArchive");
 
 const IO_CONTAINER_FLAG_COMPRESSED = 0x1;
@@ -20,7 +21,7 @@ class FIoStoreTocHeader {
 
         Ar.read(tocMagic);
         if (!this.checkMagic()) {
-            throw new Error("UTOC Magic is invalid!")
+            throw new UtocError("UTOC Magic is invalid!")
         };
 
         this.tocHeaderSize = Ar.readInt32();
