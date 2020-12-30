@@ -1,11 +1,17 @@
 const PropertyType = require("./PropertyType");
 
+let ind = 0;
+let nam = "";
+let typ = new PropertyType();
+let arr = 1;
+let fie = null;
+
 class PropertyInfo {
-    get index() { return 0 };
-    get name() { return "" };
-    get type() { return  new PropertyType() };
-    get arrayDim() { return 1 };
-    get field() { return null };
+    get index() { ind };
+    get name() { nam };
+    get type() { typ };
+    get arrayDim() { arr };
+    get field() { fie };
 
     /**
      * - Info about properties
@@ -14,9 +20,9 @@ class PropertyInfo {
      * @param {Number} arrayDim 
      */
     constructor(name, type, arrayDim) {
-        this.name = name;
-        this.type = type;
-        this.arrayDim = arrayDim;
+        nam = name;
+        typ = type;
+        arr = arrayDim;
     };
 
     /**
@@ -24,10 +30,10 @@ class PropertyInfo {
      * @param {*} json 
      */
     constructor(json) {
-        this.index = json.index;
-        this.name = json.name;
-        this.type = new PropertyType(json);
-        if (json.arraySize) this.arrayDim = json.arraySize;
+        ind = json.index;
+        nam = json.name;
+        typ = new PropertyType(json);
+        if (json.arraySize) arr = json.arraySize;
     };
 
     /**
@@ -36,22 +42,22 @@ class PropertyInfo {
      * @param {UProperty} ann 
      */
     constructor(field, ann) {
-        this.field = field;
-        this.type = new PropertyType();
+        fie = field;
+        typ = new PropertyType();
 
         let name = null;
         if (ann != null) {
             name = ann.name?.length > 0 ? ann.name : null;
-            this.arrayDim = ann.arrayDim;
-            this.type.isEnumAsByte = ann.isEnumAsByte;
+            arr = ann.arrayDim;
+            typ.isEnumAsByte = ann.isEnumAsByte;
         };
 
-        this.name = name ? name : field.name;
-        this.type.setupWithField(field);
+        nam = name ? name : field.name;
+        typ.setupWithField(field);
     };
 
     toString() {
-        return `${this.index} = ${this.name}`;
+        return `${ind} = ${nam}`;
     };
 };
 
