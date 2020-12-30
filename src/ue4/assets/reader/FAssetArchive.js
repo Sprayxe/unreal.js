@@ -10,7 +10,7 @@ COLL.set(PayloadTypes.UPTNL, new FAssetArchive());
 /** @type {Buffer} */
 let dat;
 
-class FAssetArchive extends new FByteArchive(dat) {
+class FAssetArchive extends FByteArchive {
     /**
      * - Binary reader for UE4 Assets
      * @param {Buffer} data 
@@ -94,7 +94,7 @@ class FAssetArchive extends new FByteArchive(dat) {
         const owner = this.owner;
         const nameIndex = this.readInt32();
         const extraIndex = this.readInt32();
-        if (owner.nameMap[nameIndex]) {
+        if (nameIndex in owner.nameMap?.values()) {
             return new FName(owner.nameMap, nameIndex, extraIndex);
         };
         this.handleBadNameIndex(nameIndex);
@@ -102,7 +102,7 @@ class FAssetArchive extends new FByteArchive(dat) {
     };
 
     readObject() {
-        const out = owner?.findObject()
+        const out = this.owner?.findObject()
     }
 };
 

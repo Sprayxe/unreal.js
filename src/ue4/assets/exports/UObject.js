@@ -1,3 +1,4 @@
+const FAssetArchive = require("../reader/FAssetArchive");
 const UStruct = require("./UStruct");
 
 class UObject {
@@ -24,7 +25,27 @@ class UObject {
         return current;
     };
 
-    deserialize
+    /**
+     * - Deserializes
+     * @param {FAssetArchive} Ar 
+     * @param {Number} validPos 
+     */
+    deserialize(Ar, validPos) {
+        this.properties = [];
+        if (typeof(this) != "UClassReal") {
+            if (Ar.useUnversionedPropertySerialization) {
+
+            } else {
+
+            };
+        };
+
+        if (Ar.pos + 4 <= validPos && Ar.readBoolean() && Ar.pos + 16 <= validPos) {
+            this.objectGuid = FGuid(Ar);
+        };
+
+        
+    };
 };
 
 module.exports = UObject;

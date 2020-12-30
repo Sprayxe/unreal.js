@@ -1,4 +1,5 @@
 const FArchive = require("./FArchive");
+const { Buffer } = require("buffer");
 
 class FByteArchive extends FArchive {
     /**
@@ -22,8 +23,8 @@ class FByteArchive extends FArchive {
     get LE() { return true; };
 
     get pos() {
-        this.data.indexOf("")
-    }
+        return this.data.byteOffset;
+    };
 
     get size() {
         return this.data.length
@@ -39,9 +40,19 @@ class FByteArchive extends FArchive {
         this.pos = pos;
     };
 
-    readBuffer(size) {
-        
-    }
+    /*readBuffer(size) {
+        const buf = Buffer.alloc(this.pos + size);
+        this.data.copy(buf);
+        this.pos += size;
+        return buf;
+    };
+
+    read(b, off, len) {
+        const count = Math.min(this.size - this.pos, len);
+        if (count == 0) return  -1;
+        this.data.copy(b, off, null, len);
+        return count;
+    };*/
 };
 
 module.exports = FByteArchive;

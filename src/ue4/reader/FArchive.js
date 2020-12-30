@@ -1,4 +1,5 @@
 const { ParserError } = require("../../errors/Exceptions");
+const FName = require("../objects/uobject/FName");
 
 class FArchive {
     /**
@@ -7,6 +8,7 @@ class FArchive {
      * @param {Boolean} LE
      */
     constructor(data, LE = true) {
+        this.useUnversionedPropertySerialization = false;
         this.data = data;
         this.LE = LE;
         this.offset = 0;
@@ -19,8 +21,18 @@ class FArchive {
      */
     readBuffer(size) {
         const buffer = Buffer.alloc(size);
-        this.read(buffer.length);
+        this.read(buffer);
         return buffer;
+    };
+
+    /**
+     * - Reads a buffer
+     * @param {Buffer} buffer 
+     */
+    readBuffer(buffer) {
+        const pos = buffer.byteOffset;
+        buffer.set(this.read(buffer.length));
+        buffer.byteOffset = pos;
     };
 
     /**
@@ -192,6 +204,8 @@ class FArchive {
             return string;
         };
     };
+
+    //readFName() { return new FName().NAME_none }
 };
 
 module.exports = FArchive;
