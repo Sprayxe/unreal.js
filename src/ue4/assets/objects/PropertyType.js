@@ -1,6 +1,6 @@
 
 let type = null;
-let structName = null;
+let structType = null;
 let bool = false;
 let enumName = null;
 let isEnumAsByte = true;
@@ -20,12 +20,18 @@ class PropertyType {
     get structClass() { return structClass };
     get enumClass() { return enumClass };
 
-    constructor();
+
+    constructor() {
+        type = typ;
+    };
     /**
      * @param {Object} json 
      */
     constructor(json);
 
+    /**
+     * @param {FPropertyTag} tag 
+     */
     constructor(tag) {
         typ = tag.type;
         strc = tag.structName;

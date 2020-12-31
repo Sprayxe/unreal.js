@@ -105,10 +105,83 @@ const IO_STORE_TOC_ENTRY_META_FLAG_COMPRESSED = 1 << 0;
 const IO_STORE_TOC_ENTRY_META_FLAG_MEMORY_MAPPED = 1 << 1;
 
 /**
+ * - Chunk hash
+ * @class
+ */
+class FIoChunkHash {
+    /**
+     * @param {FArchive} Ar 
+     */
+    constructor(Ar) {
+        this.hash = Ar.read(32);
+    };
+};
+module.exports = FIoChunkHash;
+
+/**
  * - TOC entry meta data
  * @class
  */
 class FIoStoreTocEntryMeta {
-    
-}
+    /**
+     * @param {FArchive} Ar 
+     */
+    constructor(Ar) {
+        this.chunkHash = new FIoChunkHash(Ar);
+        this.flags = Ar.readUInt8();
+    };
+};
+module.exports.FIoStoreTocEntryMeta =FIoStoreTocEntryMeta;
+
+/**
+ * - Compression block entry
+ * @class
+ */
+class FIoStoreTocCompressedBlockEntry  {
+    /**
+     * @param {FArchive} Ar 
+     */
+    constructor(Ar) {
+        this.OffsetBits = 40;
+        this.OffsetMask = (1 << this.OffsetBits) - 1;
+        this.SizeBits = 24;
+        this.SizeMask = (1 << this.SizeBits) - 1;
+        this.SizeShift = 8;
+        /* 5 bytes offset, 3 bytes for size / uncompressed size and 1 byte for compresseion method. */
+        this.data = Ar.read(5 + 3 + 3 + 1);
+    };
+
+    get offset() {
+        const offset = Buffer.from(this.data).byteOffset;
+        return offset;
+    };
+
+    get compressedSize() {
+        const buf = Buffer.from(this.data);
+        buf.byteOffset = 1 * 4 /*+ 1 */;
+        const size = buf.byteOffset;
+        return size >> this.SizeShift;
+    };
+
+    get uncompressedSize() {
+        const buf = Buffer.from(this.data);
+        buf.byteOffset = 2 * 4 /*+ 2*/;
+        const size = buf.byteOffset;
+        return size;
+    };
+
+    get compressionMethodIndex() {
+        const buf = Buffer.from(this.data);
+        buf.byteOffset = 2 * 4 /*+ 2*/;
+        const index = buf.byteOffset;
+        return index >> this.SizeBits;
+    };
+};
+module.exports = FIoStoreTocCompressedBlockEntry;
+
+class FIoStoreToc {
+    constructor() {
+        this.chunkIdToIndex = new Map();
+    };
+};
 

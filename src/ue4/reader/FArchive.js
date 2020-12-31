@@ -1,4 +1,5 @@
 const { ParserError } = require("../../errors/Exceptions");
+const { Buffer } = require("buffer");
 const FName = require("../objects/uobject/FName");
 
 class FArchive {
@@ -21,7 +22,7 @@ class FArchive {
      */
     readBuffer(size) {
         const buffer = Buffer.alloc(size);
-        this.read(buffer);
+        this.read(buffer.length);
         return buffer;
     };
 
