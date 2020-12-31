@@ -15,38 +15,38 @@ class FName {
     get number() { return number };
 
     /**
-     * @param {Array} nameMap 
-     * @param {Number} index 
-     * @param {Number} number 
+     * @param {String | Number | undefined} params 
      */
-    constructor(nameMap, index, number) {
-        nameMap = nameMap;
-        index = index;
-        number = number;
+    constructor(...params) {
+        params.forEach((v, k) => {
+            if (k === 0) {
+                switch (typeof k) {
+                    case "string":
+                        nameMap = new Array(text);
+                        break;
+                    default:
+                        nameMap = v;
+                        break;
+                };
+            } else if (k === 1) {
+                switch (typeof k) {
+                    case "number":
+                        if (!params[2]) {
+                            number = v;
+                        } else {
+                            index = v;
+                        };
+                        break;
+                };
+            } else {
+                switch (typeof k) {
+                    case "number":
+                        number = number;
+                        break;
+                };
+            };
+        });
     };
-
-    /**
-     * @param {String} text 
-     * @param {Number} number 
-     */
-    constructor(text, number) {
-        nameMap = new Array(text);
-        index = 0;
-        number = number;
-    };
-
-    /**
-     * @param {String[]} names 
-     * @param {Number} index 
-     * @param {Number} number 
-     */
-    constructor(names, index, number) {
-        nameMap = names;
-        index = index;
-        number = number;
-    };
-
-    constructor();
 
     /**
      * @returns {String}
@@ -61,7 +61,7 @@ class FName {
 
     equals(other) {
         if (this === other) return true;
-        if (typeof(other) !== "FName") return false;
+        if (typeof (other) !== "FName") return false;
 
         if (this.text !== other.text) return false;
 
@@ -70,7 +70,7 @@ class FName {
 
     hashCode() {
         let result = this.number;
-        result =  31 * result + this.text.toLowerCase().split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+        result = 31 * result + this.text.toLowerCase().split("").reduce(function (a, b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
         return result;
     };
 

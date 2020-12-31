@@ -4,28 +4,29 @@ const FArchiveWriter = require("../../writer/FArchiveWriter");
 class FNameEntry {
     /**
      * - FNameEntry
-     * @param {FArchive} Ar 
+     * @param {FArchive | String | Number} params 
      */
-    constructor(Ar) {
-        this.name = Ar.readString();
-        this.nonCasePreservingHash = Ar.readUInt16();
-        this.casePreservingHash = Ar.readUInt16();
+    constructor(...params) {
+        params.forEach((v, k) => {
+            if (k === 0) {
+                switch (typeof k) {
+                    case "object":
+                        this.name = v.readString();
+                        this.nonCasePreservingHash = v.readUInt16();
+                        this.casePreservingHash = v.readUInt16();
+                        break;
+                    case "string":
+                        break;
+                };
+            } else if (k === 1) {
+                this.nonCasePreservingHash = v;
+            } else {
+                this.casePreservingHash = v;
+            };
+        });
     };    
 
     /**
-     * - FNameEntry
-     * @param {String} name 
-     * @param {Number} nonCasePreservingHash 
-     * @param {Number} casePreservingHash 
-     */
-    constructor(name, nonCasePreservingHash, casePreservingHash) {
-        this.name = name;
-        this.nonCasePreservingHash = nonCasePreservingHash;
-        this.casePreservingHash = casePreservingHash;
-    };
-
-    /**
-     * 
      * @param {FArchiveWriter} Ar 
      */
     serialize(Ar) {

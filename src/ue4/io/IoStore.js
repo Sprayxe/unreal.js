@@ -179,9 +179,64 @@ class FIoStoreTocCompressedBlockEntry  {
 };
 module.exports = FIoStoreTocCompressedBlockEntry;
 
+/**
+ * - Toc store
+ * @class
+ */
 class FIoStoreToc {
     constructor() {
         this.chunkIdToIndex = new Map();
+        this.toc = new FIoStoreTocResource();
+        /** @type {String[]} */
+        this.fileToIndex = [];
+        /** @type {Number[]} */
+        this.fileTocEntryIndices = [];
+        this.tocResource = this.toc;
+    };
+
+    initialize() {
+        this.chunkIdToIndex.clear();
+        this.toc.chunkIds.forEach((v, k) => {
+            this.chunkIdToIndex.set(v, k)
+        });
+    };
+
+    getTocEntryIndex(chunkId) {
+        return this.chunkIdToIndex.get(chunkId);
+    };
+
+    getOffsetAndLength(chunkId) {
+        const entry = this.chunkIdToIndex.get(chunkId);
+        return this.toc.chunkOffsetLengths.get(entry);
     };
 };
+module.exports.FIoStoreToc = FIoStoreToc;
+
+/**
+ * - Helper used to manage creation of I/O store file handles etc
+ * @class
+ */
+class FIoStoreEnvironment {
+    /**
+     * @param {String} path 
+     * @param {Number} order 
+     */
+    constructor(path, order) {
+        this.path = path;
+        this.order = order;
+    };
+};
+module.exports.FIoStoreEnvironment = FIoStoreEnvironment;
+
+/**
+ * - Main
+ * @class
+ */
+class FIoStoreReaderImpl {
+    constructor() {
+        this.toc = new FIoStoreToc();
+        this.decryptionKey = null;
+        this.con
+    }
+}
 

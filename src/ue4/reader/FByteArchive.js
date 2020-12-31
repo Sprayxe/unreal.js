@@ -4,20 +4,18 @@ const { Buffer } = require("buffer");
 class FByteArchive extends FArchive {
     /**
      * - Byte archive
-     * @param {Buffer} data 
+     * @param {Buffer | ArrayBuffer} params 
      */
-    constructor(data) {
+    constructor(...params) {
         super();
-        this.data = data;
-    };
 
-    /**
-     * - Byte archive
-     * @param {ArrayBuffer} data 
-     */
-    constructor(data) {
-        super();
-        this.data = Buffer.from(data);
+        params.forEach((v, k) => {
+            if (typeof k === "object") {
+                this.data = Buffer.from(v);
+            } else {
+                this.data = v;
+            }
+        })
     };
 
     get LE() { return true; };
