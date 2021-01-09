@@ -20,7 +20,7 @@ class FArchive {
      * @param {Number} size Size of the buffer
      * @returns {Buffer}
      */
-    readBuffer(size) {
+    readBufferFromSize(size) {
         const buffer = Buffer.alloc(size);
         this.read(buffer.length);
         return buffer;
@@ -206,7 +206,7 @@ class FArchive {
         };
     };
 
-    //readFName() { return new FName().NAME_none }
+    readFName() { return new FName().NAME_None };
 };
 
 module.exports = FArchive;

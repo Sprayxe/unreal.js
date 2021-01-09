@@ -24,40 +24,26 @@ class AES {
     /**
      * - Decrypts a buffer
      * @param {Buffer} encrypted 
-     * @param {String} key 
-     */
-    decrypt(encrypted, key) {
-        this.decrypt(encrypted, this.parseKey(key));
-    };
-
-    /**
-     * - Decrypts a buffer
-     * @param {Buffer} encrypted 
      * @param {Buffer} key 
      * @returns {Buffer} Decrypted buffer
      */
     decrypt(encrypted, key) {
-        if (!Buffer.isBuffer(encrypted) || !Buffer.isBuffer(key))
+        if (!Buffer.isBuffer(encrypted))
             throw new AesError("Argument 'encrypted' and 'key' must be a buffer!");
+
+        if (typeof key === "string") {
+            key = this.parseKey(key);
+        };
 
         encrypted = Buffer.from(encrypted, "base64").toString("binary");
         const iv = Buffer.alloc(this.BLOCK_SIZE);
         const algorithm = "aes-256-cbc";
         const decipher = crypto.createDecipheriv(algorithm, key, iv);
-        
+
         let decrypted = decipher.update(encrypted);
         decrypted += decipher.final();
 
         return decrypted;
-    };
-
-    /**
-     * - Encrypts a buffer
-     * @param {Buffer} encrypted 
-     * @param {String} key 
-     */
-    encrypt(encrypted, key) {
-        this.encrypt(encrypted, this.parseKey(key));
     };
 
     /**
@@ -67,8 +53,12 @@ class AES {
      * @returns {Buffer} Encrypted buffer
      */
     encrypt(decrypted, key) {
-        if (!Buffer.isBuffer(decrypted) || !Buffer.isBuffer(key))
+        if (!Buffer.isBuffer(decrypted))
             throw new AesError("Argument 'encrypted' and 'key' must be a buffer!").m;
+
+        if (typeof key === "string") {
+            key = this.parseKey(key);
+        };
 
         const iv = Buffer.alloc(this.BLOCK_SIZE);
         const algorithm = "aes-256-cbc";

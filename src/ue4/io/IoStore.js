@@ -1,10 +1,15 @@
 const { UtocError } = require("../../errors/Exceptions");
 const FArchive = require("../reader/FArchive");
+const FFileArchive = require("../pak/reader/FFileArchive");
 
 const IO_CONTAINER_FLAG_COMPRESSED = 0x1;
 const IO_CONTAINER_FLAG_ENCRYPTED = 0x2;
 const IO_CONTAINER_FLAG_SIGNED = 0x3;
 const IO_CONTAINER_FLAG_INDEXED = 0x4;
+
+const TOC_READ_OPTION_READ_DIRECTORY_INDEX = 1 << 0
+const TOC_READ_OPTION_READ_TOC_META = 1 << 1
+const TOC_READ_OPTION_READ_ALL = TOC_READ_OPTION_READ_DIRECTORY_INDEX || TOC_READ_OPTION_READ_TOC_META;
 
 /**
  * - I/O Store TOC header
@@ -221,7 +226,7 @@ class FIoStoreEnvironment {
      * @param {String} path 
      * @param {Number} order 
      */
-    constructor(path, order) {
+    constructor(path, order = 0) {
         this.path = path;
         this.order = order;
     };
@@ -236,7 +241,40 @@ class FIoStoreReaderImpl {
     constructor() {
         this.toc = new FIoStoreToc();
         this.decryptionKey = null;
-        this.con
-    }
+        /** @type {FFileArchive} */
+        this.containerFileHandle = null;
+        /** @type {FIoStoreEnvironment} */
+        this.environment = null;
+        this.concurrent = false;
+        this.directoryIndexReader = null;
+    };
+
+    initialize(...params) {
+        if (params[0] instanceof FArchive) {
+            if (v instanceof FArchive) {
+                this.environment = new FIoStoreEnvironment(params[1].fileName.split(".").pop());
+                this.containerFileHandle = params[1];
+                
+                const tocResource = this.toc.tocResource;
+                tocResource.read(params[1], TOC_READ_OPTION_READ_ALL);
+
+                this.toc.initialize();
+
+                if ((tocResource.header.containerFlags && IO_CONTAINER_FLAG_ENCRYPTED) != 0) {
+                    const decryptionKey = params[2].get(tocResource.header.encryptionKeyGuid);
+                    if (!decryptionKey) throw new Error(`Missing decryption key for IoStore container file '${params[1].fileName}'`);
+                    this.decryptionKey = decryptionKey;
+                };
+
+                if ((tocResource.header.containerFlags && IO_CONTAINER_FLAG_INDEXED) != 0 && tocResource.directoryIndexBuffer != null) {
+                    this.directoryIndexReader = new FIoDirectoryIndexReaderImpl(tocResource.directoryIndexBuffer, this.decryptionKey);
+                };
+            } else {
+                this.environment = v;
+            };
+        } else {
+
+        }
+    };
 }
 
