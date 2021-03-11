@@ -3,9 +3,9 @@ import { StringBuilder } from "./StringBuilder";
 export class DataTypeConverter {
     static parseHexBinary(str: string) {
         const len = str.length
-        if (len % 2 !== 0) {
-            throw new Error(`"hexBinary needs to be even-length: ${str}`)
-        }
+        if (len % 2 !== 0)
+            throw new Error(`hexBinary needs to be even-length: ${str}`)
+        
 
         const out = Buffer.alloc(len / 2)
 
@@ -13,6 +13,10 @@ export class DataTypeConverter {
         while (i < len) {
             const h = this.hexToBin(str[i])
             const l = this.hexToBin(str[i + 1])
+
+            if (h === -1 || l === -1) 
+                throw new Error(`contains illegal character for hexBinary: ${str}`)
+
             out[i / 2] = h * 16 + l
             i += 2
         }
