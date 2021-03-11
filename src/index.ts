@@ -1,5 +1,6 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs/promises"
+import { DataTypeConverter } from "./util/DataTypeConverter";
 
 export class UnrealJS {
     path: string
@@ -20,7 +21,8 @@ export class UnrealJS {
 }
 
 (async () => {
-   const u = new UnrealJS()
+    DataTypeConverter.parseHexBinaryFromString("0xce0d9beff8da86195bc0f95e1612948871ed8daa0e9199d18272f5c80853156a")
+   /*const u = new UnrealJS()
    const d = await u.readGlobalUtoc()
-   console.log(d.toString("binary"))
+   console.log(d.toString("binary"))*/
 })()

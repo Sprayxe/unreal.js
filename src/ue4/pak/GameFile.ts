@@ -17,7 +17,7 @@ export class GameFile {
     ioPackageId?: any = null
 
     constructor(pakEntry: FPakEntry, mountPrefix: string, pakFileName: string) {
-        this.path = pakEntry.name + mountPrefix
+        this.path = Utils.pathAppend(mountPrefix, pakEntry.name)
         this.pos = pakEntry.pos
         this.size = pakEntry.size
         this.uncompressedSize = pakEntry.uncompressedSize
