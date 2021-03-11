@@ -1,9 +1,7 @@
-enum CompressionMethod {
-    None, 
-    ZLib, 
-    Gzip,
-    Oodle,
-    Unknown
-};
-
-export = CompressionMethod;
+export enum CompressionMethod {
+    None = "None",
+    Zlib = "Zlib",
+    Gzip = "Gzip",
+    Oodle = "Oodle",
+    Unknown = "Unknown"
+}

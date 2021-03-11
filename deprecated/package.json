@@ -1,0 +1,29 @@
+{
+  "name": "unreal.js",
+  "version": "1.0.0",
+  "description": ".ucas/.utoc pak reader for fortnite",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sprayxe/unreal.js.git"
+  },
+  "keywords": [
+    "fortnite",
+    "paks",
+    "ucas",
+    "utoc",
+    "nodejs"
+  ],
+  "author": "Sprayxe, Amrsatrio, FunGames",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sprayxe/unreal.js/issues"
+  },
+  "homepage": "https://github.com/Sprayxe/unreal.js#readme",
+  "dependencies": {
+    "colors": "^1.4.0"
+  }
+}
