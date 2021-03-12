@@ -4,6 +4,7 @@ import { FPropertyTag } from "../objects/FPropertyTag";
 import { FGuid } from "../../objects/core/misc/Guid";
 import { FObjectExport } from "../../objects/uobject/ObjectResource";
 import { Package } from "../Package";
+import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 
 export class UObject extends IPropertyHolder {
     name: string = ""
@@ -44,6 +45,7 @@ export class UObject extends IPropertyHolder {
     }
 
     getOrNull<T>(name: string): T {
-        return 
+        const prop = this.properties.find(p => p.name.text === name)
+        return prop as unknown as T
     }
 }

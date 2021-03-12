@@ -167,5 +167,9 @@ export class FArchive {
             return str
         }
     }
+
+    readArray<T>(init: (FArchive) => T) {
+        return init(this)
+    }
 }
 

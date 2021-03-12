@@ -81,4 +81,22 @@ export abstract class FArchiveWriter {
     }
 
     writeFName(name: FName) {}
+
+    writeTMapWithoutSize<K, V>(map: Map<K, V>, write: (K, V) => void) {
+        map.forEach((v, k) => write(k, v))
+    }
+
+    writeTMap<K, V>(map: Map<K, V>, write: (K, V) => void) {
+        this.writeInt32(map.size)
+        this.writeTMapWithoutSize(map, write)
+    }
+
+    writeTArrayWithoutSize<T>(array: T[], write: (T) => void) {
+        array.forEach((v) => write(v))
+    }
+
+    writeTArray<T>(array: T[], write: (T) => void) {
+        this.writeInt32(array.length)
+        this.writeTArrayWithoutSize(array, write)
+    }
 }
