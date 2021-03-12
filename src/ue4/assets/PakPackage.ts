@@ -1,5 +1,6 @@
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { Ue4Version } from "../versions/Game";
+import { FNameEntry } from "../objects/uobject/FNameEntry";
 
 export class PakPackage {
     protected packageMagic = 0x9E2A83C1
@@ -9,4 +10,6 @@ export class PakPackage {
     fileName: string
     provider?: FileProvider = null
     game: number = Ue4Version.GAME_UE4_LATEST
+
+    nameMap: FNameEntry[]
 }

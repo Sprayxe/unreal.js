@@ -6,4 +6,5 @@ export abstract class Package extends IPropertyHolder {
     fileName: string
     provider: FileProvider = null
     game: number = this.provider.game || Ue4Version.GAME_UE4_LATEST
+
 }
