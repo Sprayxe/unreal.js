@@ -43,7 +43,7 @@ export class UObject extends IPropertyHolder {
 
     }
 
-    getOrNull<T>(name: string, clazz?: T)/*: T*/ {
-        //return this.properties[0]
+    getOrNull<T>(name: string): T {
+        return 
     }
 }
