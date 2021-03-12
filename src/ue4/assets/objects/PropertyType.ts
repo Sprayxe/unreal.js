@@ -8,8 +8,6 @@ import {
     FSetProperty,
     FStructProperty
 } from "../exports/UStruct";
-import Long from "long";
-import Collection from "@discordjs/collection";
 
 export class PropertyType {
     type: FName
@@ -20,7 +18,6 @@ export class PropertyType {
     innerType: PropertyType = null
     valueType: PropertyType = null
     structClass: any = null
-    enumClass: any
 
     constructor()
     constructor(JsonObject: any)
@@ -52,82 +49,6 @@ export class PropertyType {
                 this.structName = FName.dummy(this.structClass?.value?.name, 0) || FName.NAME_None
             }
         }
-    }
-
-    setupWithField(field: any) {
-        let fieldType = field.type
-        if (field.type.isArray) {
-            fieldType = fieldType.componentType
-        }
-        let type = this.classToPropertyType(fieldType)
-
-        /*switch (type.text) {
-            case "EnumProperty":
-                this.enumName = FName.dummy(fieldType.simpleName, 0)
-                this.enumClass = fieldType
-                break
-            case "StructProperty":
-                this.structName = FName.dummy(fieldType.simpleName, 0)
-                this.structClass = fieldType
-                break
-            case "ArrayProperty":
-                this.applyInner(fieldType)
-                break
-            case "SetProperty":
-                this.applyInner(fieldType)
-                break
-            case "MapProperty":
-                this.applyInner(fieldType)
-                this.applyInner(fieldType, true)
-                break
-        }*/
-    }
-
-    private applyInner(field: any, applyToValue: boolean = false) {
-
-    }
-
-    private classToPropertyType(c: any) {
-        let param: string
-        if (typeof c === "boolean") {
-            param = "BoolProperty"
-        } else if (typeof c === "string" && c.length === 1) {
-            param = "CharProperty"
-        } else if (typeof c === "number" && `${c}`.includes(".")) {
-            param = "DoubleProperty"
-        } else if (`${c}`.includes("f") && !!parseInt(c)) {
-            param = "FloatProperty"
-        } else if (c) { //Byte
-
-        } else if (c) { // Short
-
-        } else if (typeof c === "number") {
-            param = "IntProperty"
-        } else if (Long.isLong(c) || typeof c === "bigint") {
-            param = "Int64Property"
-        } else if (c) { // UByte
-
-        } else if (c) { // UShort
-
-        }  else if (c) { // UInt
-
-        } else if (c) { // ULong
-
-        } else if (typeof c === "string") {
-            param = "StrProperty"
-        } else if (c instanceof FName) {
-            param = "NameProperty"
-        } else if (c) { // FText
-
-        } else if (c) { // Enum
-
-        } else if (Array.isArray(c)) {
-            param = "ArrayProperty"
-        } else if (c instanceof Collection) {
-            param = "SetProperty"
-        } else if (c instanceof Map) {
-            param = "MapProperty"
-        } // more
     }
 
     toString() {

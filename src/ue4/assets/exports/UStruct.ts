@@ -2,13 +2,16 @@ import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { FName } from "../../objects/uobject/FName";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
+import { UObject } from "./UObject";
 
-export class UStruct {
+export class UStruct extends UObject {
     superStruct: UStruct = null
     children: FPackageIndex[] = []
     childProperties: FField[] = []
     childProperties2: any[] = []
     propertyCount = 0
+
+    deserialize
 }
 
 export class FField {

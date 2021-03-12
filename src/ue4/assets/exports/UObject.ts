@@ -8,7 +8,7 @@ import { Package } from "../Package";
 export class UObject extends IPropertyHolder {
     name: string = ""
     outer: UObject = null
-    clazz: any/*UStruct*/ = null
+    clazz: UStruct = null
     template: UObject = null
     properties: FPropertyTag[] = []
     objectGuid: FGuid = null
@@ -35,7 +35,11 @@ export class UObject extends IPropertyHolder {
         this.properties = properties
     }
 
-    set<T>(name: String, value: T) {
+    set<T>(name: string, value: T) {
+
+    }
+
+    getOrDefault<T>(name: string, dflt: T) {
 
     }
 
