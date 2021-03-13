@@ -3,6 +3,11 @@ import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 import { FArchive } from "../../../reader/FArchive";
 import { FDateTime } from "../misc/DateTime";
 import { EDateTimeStyle } from "../../../assets/enums/EDateTimeStyle";
+import { FName } from "../../uobject/FName";
+import { FAssetArchive } from "../../../assets/reader/FAssetArchive";
+import { ParserException } from "../../../../exceptions/Exceptions";
+import { UStringTable } from "../../../assets/exports/UStringTable";
+import { throws } from "assert";
 
 export enum EFormatArgumentType {
     Int = "Int",
@@ -176,7 +181,7 @@ export class OrderedFormat extends FTextHistory {
         super()
         if (x instanceof FArchive) {
             this.sourceFmt = new FText(x)
-            /*this.args = x. TODO readTArray*/
+            this.args = x.readTArray(() => new FFormatArgumentValue(x))
         } else {
             this.sourceFmt = x
             this.args = y
@@ -186,6 +191,62 @@ export class OrderedFormat extends FTextHistory {
     serialize(Ar: FArchiveWriter) {
         this.sourceFmt.serialize(Ar)
         Ar.writeTArray(this.args, (it) => it.serialize(Ar))
+    }
+}
+
+export class FormatNumber extends FTextHistory {
+    /** The source value to format from */
+    sourceValue: FFormatArgumentValue
+    /** The culture to format using */
+    timeZone: string
+    targetCulture: string
+
+    get text(): string {
+        return this.sourceValue.toString()
+    }
+
+    constructor(Ar: FArchive)
+    constructor(sourceValue: FFormatArgumentValue, timeZone: string, targetCulture: string)
+    constructor(x?: any, y?: any, z?:any) {
+        super()
+        if (x instanceof FArchive) {
+            this.sourceValue = new FFormatArgumentValue(x)
+            this.timeZone = x.readString()
+            this.targetCulture = x.readString()
+        } else {
+            this.sourceValue = x
+            this.timeZone = y
+            this.targetCulture = z
+        }
+    }
+}
+
+export class StringTableEntry extends FTextHistory {
+    tableId: FName
+    key: string
+
+    text: string
+
+    constructor(Ar: FArchive)
+    constructor(tableId: FName, key: string, text: string)
+    constructor(x?: any, y?: any, z?: any) {
+        super()
+        if (x instanceof FArchive) {
+            if (x instanceof FAssetArchive) {
+                this.tableId = x.readFName()
+                this.key = x.readString()
+
+                const table = x.provider?.loadObject<UStringTable>(this.tableId.text)
+                if (!table)
+                    throw ParserException(`Failed to load string table '${this.tableId}'`)
+
+                this.text = table.entries.get(this.key)
+                if (!this.text)
+                    throw ParserException("Didn't find needed in key in string table")
+            } else {
+                throw ParserException("Tried to load a string table entry with wrong archive type")
+            }
+        }
     }
 }
 
@@ -213,10 +274,29 @@ export class FFormatArgumentValue {
     serialize(Ar: FArchiveWriter) {
         Ar.writeInt8(ordinal(this.type))
         switch (this.type) {
+            case EFormatArgumentType.Int:
+                Ar.writeInt64(this.value as number)
+                break
+            case EFormatArgumentType.UInt:
+                Ar.writeUInt64(this.value as number)
+                break
+            case EFormatArgumentType.Float:
+                Ar.writeFloat32(this.value as number)
+                break
+            case EFormatArgumentType.Double:
+                Ar.writeDouble(this.value as number)
+                break
             case EFormatArgumentType.Text:
                 (this.value as FText).serialize(Ar)
                 break
+            case EFormatArgumentType.Gender:
+                throw new Error("Gender Argument not supported yet")
+                break
         }
+    }
+
+    toString() {
+        return `[Object FFormatArgumentValue]`
     }
 }
 

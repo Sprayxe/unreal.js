@@ -32,18 +32,18 @@ export abstract class FileProvider {
      * @param file the game file to load
      * @returns the parsed package or null if the file was not an ue4 package (.uasset)
      */
-    abstract loadGameFile(file: GameFile): Promise<any>
+    abstract loadGameFile(file: GameFile): any
 
     /**
      * Loads a UE4 package from I/O Store by package ID.
      * @param packageId the package ID to load.
      * @returns the parsed package
      */
-    abstract loadGameFile(packageId: any): Promise<any>
+    abstract loadGameFile(packageId: any): any
 
-    async loadObject<T>(objectPath: string): Promise<T>
-    async loadObject<T>(softObjectPath: any): Promise<T>
-    async loadObject(objectPath?: string): Promise<any> {
+    loadObject<T>(objectPath: string): T
+    loadObject<T>(softObjectPath: any): T
+    loadObject(objectPath?: string): any {
         if (objectPath == null || objectPath === "None") return null;
         let packagePath = objectPath
         //let objectName: string
@@ -54,7 +54,7 @@ export abstract class FileProvider {
            // objectName = packagePath.substring(dotIndex + 1)
             packagePath = packagePath.substring(0, dotIndex)
         }
-        return await this.loadGameFile(packagePath)
+        return this.loadGameFile(packagePath)
     }
 
     /**

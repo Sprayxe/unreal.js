@@ -1,6 +1,7 @@
 import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
 import Long from "long"
 import { ParserException } from "../../exceptions/Exceptions";
+import Collection from "@discordjs/collection";
 
 export class FArchive {
     data: Buffer
@@ -171,5 +172,22 @@ export class FArchive {
     readArray<T>(init: (FArchive) => T) {
         return init(this)
     }
+
+    readTArray<T>(init: (number) => T) {
+        return new Array(init(this.readInt32()))
+    }
+
+    readTMap<K, V>(length: number = this.readInt32(), init: (FArchive) => any): Collection<K, V> {
+        const res = new Collection<K, V>()
+        let i = 0
+        while (i < length) {
+            const [key, value] = init(this)
+            res.set(key, value)
+            ++i
+        }
+        return res
+    }
+
+
 }
 
