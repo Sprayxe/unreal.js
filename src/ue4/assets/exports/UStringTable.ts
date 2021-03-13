@@ -24,14 +24,23 @@ export class UStringTable extends UObject {
             return map
         })
         this.keysToMetadata = Ar.readTMap(null, () => {
-            let x = 0
-            const y = Ar.readInt32()
-            const map = new Collection<FName, string>()
-            while (x < y) {
-                map.set(Ar.readFName(), Ar.readString())
-                ++x
+            let x1 = 0
+            const y1 = Ar.readInt32()
+            const map1 = new Collection<string, Collection<FName, string>>()
+            while (x1 < y1) {
+                const str = Ar.readString()
+                Ar.readTMap(null, () => {
+                    let x2 = 0
+                    const y2 = Ar.readInt32()
+                    const map2 = new Collection<FName, string>()
+                    while (x2 < y2) {
+                        map2.set(Ar.readFName(), Ar.readString())
+                        ++x2
+                    }
+                    map1.set(str, map2)
+                })
             }
-            return map
+            return map1
         })
     }
 

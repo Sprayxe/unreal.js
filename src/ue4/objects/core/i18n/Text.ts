@@ -7,7 +7,7 @@ import { FName } from "../../uobject/FName";
 import { FAssetArchive } from "../../../assets/reader/FAssetArchive";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { UStringTable } from "../../../assets/exports/UStringTable";
-import { throws } from "assert";
+import { FAssetArchiveWriter } from "../../../assets/writer/FAssetArchiveWriter";
 
 export enum EFormatArgumentType {
     Int = "Int",
@@ -35,10 +35,32 @@ export class FText {
             this.flags = x.readUInt32()
             this.historyType = new ETextHistoryType(0).valueOfByte(x.readInt8())
             this.textHistory = this.historyType === ETextHistoryType.None ? new FTextHistoryNone(x) :
-            this.historyType === ETextHistoryType.Base ? new FTextHistoryBase(x) :
-            this.historyType === ETextHistoryType.OrderedFormat ? new OrderedFormat(x) :
-            // TODO more types
-            null
+                this.historyType === ETextHistoryType.Base ? new FTextHistoryBase(x) :
+                this.historyType === ETextHistoryType.OrderedFormat ? new OrderedFormat(x) :
+                this.historyType === ETextHistoryType.AsCurrency ? new FormatNumber(x) :
+                this.historyType === ETextHistoryType.StringTableEntry ? new StringTableEntry(x) :
+                null;
+            this.text = this.textHistory.text
+        } else if (typeof x === "string" && params.length === 1) {
+            this.flags = 0
+            this.historyType = ETextHistoryType.Base
+            this.textHistory = new FTextHistoryBase("", "", x)
+            this.text = this.textHistory.text
+        } else if (typeof x === "string" && params.length === 3) {
+            this.flags = 0
+            this.historyType = ETextHistoryType.Base
+            this.textHistory = new FTextHistoryBase(x, params[1], params[2])
+            this.text = this.textHistory.text
+        } else if (typeof x === "number") {
+            this.flags = x
+            this.historyType = params[1]
+            this.textHistory = params[2]
+            this.text = this.textHistory.text
+        } else {
+            this.flags = params[3]
+            this.historyType = params[4]
+            this.textHistory = new FTextHistoryBase(x, params[1], params[2])
+            this.text = this.textHistory.text
         }
     }
 
@@ -219,6 +241,12 @@ export class FormatNumber extends FTextHistory {
             this.targetCulture = z
         }
     }
+
+    serialize(Ar: FArchiveWriter) {
+        this.sourceValue.serialize(Ar)
+        Ar.writeString(this.timeZone)
+        Ar.writeString(this.targetCulture)
+    }
 }
 
 export class StringTableEntry extends FTextHistory {
@@ -246,6 +274,15 @@ export class StringTableEntry extends FTextHistory {
             } else {
                 throw ParserException("Tried to load a string table entry with wrong archive type")
             }
+        }
+    }
+
+    serialize(Ar: FArchiveWriter) {
+        if (Ar instanceof FAssetArchiveWriter) {
+            Ar.writeFName(this.tableId)
+            Ar.writeString(this.key)
+        } else {
+            throw ParserException("Tried to save a string table entry with wrong archive type")
         }
     }
 }
