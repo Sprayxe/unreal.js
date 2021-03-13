@@ -1,11 +1,12 @@
 import { FnLanguage } from "./FnLanguage";
 import { FByteArchive } from "../reader/FByteArchive";
+import { FTextLocalizationResource } from "../objects/core/i18n/FTextLocalizationResource";
 
 export class Locres {
     locres: Buffer
     fileName: string
     language: string
-    texts: any
+    texts: FTextLocalizationResource
 
     constructor(file: Buffer, fileName: string = "UNKNOWN-LOCRES-FILE") {
         this.locres = file
@@ -13,6 +14,12 @@ export class Locres {
         this.language = FnLanguage.UNKNOWN
 
         const locresAr = new FByteArchive(this.locres)
-        this.texts
+        this.texts = new FTextLocalizationResource(locresAr)
+    }
+
+    mergeInto(target: Locres) {
+        this.texts.stringData.forEach((namespace, content) => {
+            const targetNamespace = target.texts
+        })
     }
 }

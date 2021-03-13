@@ -64,6 +64,10 @@ export class FArchive {
         }
     }
 
+    seek(v: number) {
+        return this.offset = v
+    }
+
     isAtStopper() {
         return this.pos() === this.size()
     }
