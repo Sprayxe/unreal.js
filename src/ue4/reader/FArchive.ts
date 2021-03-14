@@ -2,6 +2,7 @@ import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../
 import Long from "long"
 import { ParserException } from "../../exceptions/Exceptions";
 import Collection from "@discordjs/collection";
+import { FName } from "../objects/uobject/FName";
 
 export class FArchive {
     data: Buffer
@@ -51,16 +52,25 @@ export class FArchive {
         return this.offset
     }
 
+    read()
     read(buffer: Buffer)
     read(size: number): Buffer
-    read(param: any): Buffer {
-        if (Buffer.isBuffer(param)) {
-            this.read(param)
-            return param
+    read(param?: any): Buffer | number {
+        if (param) {
+            if (Buffer.isBuffer(param)) {
+                this.read(param)
+                return param
+            } else {
+                const out = this.data.slice(this.offset, this.offset + param)
+                this.offset += param
+                return out
+            }
         } else {
-            const out = this.data.slice(this.offset, this.offset + param)
-            this.offset += param
-            return out
+            if (this.offset === this.data.length) {
+                return -1
+            } else {
+                return this.data[this.offset] & 0xFF
+            }
         }
     }
 
@@ -192,6 +202,8 @@ export class FArchive {
         return res
     }
 
-
+    readFName() {
+        return FName.NAME_None
+    }
 }
 

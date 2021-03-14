@@ -113,7 +113,7 @@ export class FGuid {
 
     equals(other: any) {
         if (this === other) return true
-        if (other !instanceof FGuid) return false
+        if (!(other instanceof FGuid)) return false
 
         other as FGuid
 

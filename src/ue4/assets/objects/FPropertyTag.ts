@@ -3,12 +3,15 @@ import { INDEX_NONE } from "../../../util/Const";
 import Long from "long"
 import { FGuid } from "../../objects/core/misc/Guid";
 import {
-    VER_UE4_ARRAY_PROPERTY_INNER_TAGS, VER_UE4_PROPERTY_GUID_IN_PROPERTY_TAG,
+    VER_UE4_ARRAY_PROPERTY_INNER_TAGS,
+    VER_UE4_PROPERTY_GUID_IN_PROPERTY_TAG,
     VER_UE4_PROPERTY_TAG_SET_MAP_SUPPORT,
     VER_UE4_STRUCT_GUID_IN_PROPERTY_TAG
 } from "../../versions/Versions";
 import { FAssetArchive } from "../reader/FAssetArchive";
-import { FProperty } from "./FProperty";
+import { FProperty, ReadType } from "./FProperty";
+import { PropertyType } from "./PropertyType";
+import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 
 export class FPropertyTag {
     prop: FProperty = null
@@ -37,10 +40,12 @@ export class FPropertyTag {
     hasPropertyGuid: boolean = false
     propertyGuid?: FGuid = null
 
+    typeData: PropertyType = null
+
     constructor(name: FName)
     constructor(Ar: FAssetArchive, readData: boolean)
     constructor(x: any, y?: any) {
-        if (x instanceof FName) {
+        if (!(x instanceof FAssetArchive)) {
             this.name = x
         } else {
             this.name = x.readFName()
@@ -79,8 +84,50 @@ export class FPropertyTag {
                         this.propertyGuid = new FGuid(x)
                 }
 
+                this.typeData = new PropertyType(this)
 
+                if (y) {
+                    const pos = x.pos()
+                    const finalPos = pos + this.size
+                    try {
+                        this.prop =
+                            FProperty.readPropertyValue(
+                                x, this.typeData,
+                                ReadType.NORMAL
+                            )
+                        if (finalPos !== x.pos()) {
+                            console.warn(`FPropertyTagType $name (${this.type}) was not read properly, pos ${x.pos()}, calculated pos ${finalPos}`)
+                        }
+                        // Even if the property wasn't read properly
+                        // we don't need to crash here because we know the expected size
+                        x.seek(finalPos)
+                    } catch (e) {
+                        if (finalPos !== x.pos()) {
+                            console.warn(`Failed to read FPropertyTagType $name (${this.type}), skipping it, please report`)
+                        }
+                        // Also no need to crash here, just seek to the desired offset
+                        x.seek(finalPos)
+                    }
+                }
             }
+        }
+    }
+
+    getTagTypeValue() {
+        const tag = this.prop?.getTagTypeValue()
+        if (!tag)
+            throw new Error("This tag was read without data")
+        return tag
+    }
+
+    setTagTypeValue(value: any) {
+        return this.prop?.setTagTypeValue(value)
+    }
+
+    serialize(Ar: FAssetArchiveWriter, writeData: boolean) {
+        Ar.writeFName(this.name)
+        if (this.name.text !== "None") {
+
         }
     }
 }

@@ -18,6 +18,7 @@ export class PropertyType {
     innerType: PropertyType = null
     valueType: PropertyType = null
     structClass: any = null
+    enumClass: any = null
 
     constructor()
     constructor(JsonObject: any)

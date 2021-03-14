@@ -1,5 +1,6 @@
 import { FGuid } from "../core/misc/Guid";
 import { FArchive } from "../../reader/FArchive";
+import { FArchiveWriter } from "../../writer/FArchiveWriter";
 
 export class FUniqueObjectGuid {
     guid: FGuid
@@ -12,5 +13,9 @@ export class FUniqueObjectGuid {
         } else {
             this.guid = x
         }
+    }
+
+    serialize(Ar: FArchiveWriter) {
+        this.guid.serialize(Ar)
     }
 }

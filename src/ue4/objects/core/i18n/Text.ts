@@ -8,6 +8,7 @@ import { FAssetArchive } from "../../../assets/reader/FAssetArchive";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { UStringTable } from "../../../assets/exports/UStringTable";
 import { FAssetArchiveWriter } from "../../../assets/writer/FAssetArchiveWriter";
+import { Locres } from "../../../locres/Locres";
 
 export enum EFormatArgumentType {
     Int = "Int",
@@ -66,6 +67,13 @@ export class FText {
 
     copy() {
         return new FText(this.flags, this.historyType, this.textHistory)
+    }
+
+    textForLocres(locres?: Locres): string {
+        const history = this.textHistory
+        return history instanceof FTextHistoryBase ?
+            locres?.texts?.stringData?.get(history.namespace)?.get(history.key) || this.text :
+            this.text
     }
 
     serialize(Ar: FArchiveWriter) {

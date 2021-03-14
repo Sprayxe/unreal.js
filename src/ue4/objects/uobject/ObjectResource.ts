@@ -11,6 +11,7 @@ import {
     VER_UE4_LOAD_FOR_EDITOR_GAME, VER_UE4_NON_OUTER_PACKAGE_IMPORT, VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS,
     VER_UE4_TemplateIndex_IN_COOKED_EXPORTS
 } from "../../versions/Versions";
+import { FArchiveWriter } from "../../writer/FArchiveWriter";
 
 export class FPackageIndex {
     index: number
@@ -67,7 +68,7 @@ export class FPackageIndex {
 
     equals(other: any): boolean {
         if (this === other) return true
-        if (other !instanceof FPackageIndex) return false
+        if (!(other instanceof FPackageIndex)) return false
 
         other as FPackageIndex
 
@@ -76,7 +77,7 @@ export class FPackageIndex {
 
     }
 
-    serialize(Ar: any) {
+    serialize(Ar: FArchiveWriter) {
         Ar.writeInt32(this.index)
     }
 

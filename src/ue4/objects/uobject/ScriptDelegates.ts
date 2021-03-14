@@ -24,3 +24,22 @@ export class FScriptDelegate {
         Ar.writeFName(this.functionName)
     }
 }
+
+export class FMulticastScriptDelegate {
+    invocationList: FScriptDelegate[]
+
+    constructor(Ar: FAssetArchive)
+    constructor(invocationList: FScriptDelegate[])
+    constructor(x?: any) {
+        if (x instanceof FAssetArchive) {
+            this.invocationList = x.readTArray(() => new FScriptDelegate(x))
+        } else {
+            this.invocationList = x
+        }
+    }
+
+    serialize(Ar: FAssetArchiveWriter) {
+        Ar.writeInt32(this.invocationList.length)
+        this.invocationList.forEach((it) => it.serialize(Ar))
+    }
+}

@@ -1,6 +1,7 @@
 import { FnLanguage } from "./FnLanguage";
 import { FByteArchive } from "../reader/FByteArchive";
 import { FTextLocalizationResource } from "../objects/core/i18n/FTextLocalizationResource";
+import Collection from "@discordjs/collection";
 
 export class Locres {
     locres: Buffer
@@ -18,8 +19,17 @@ export class Locres {
     }
 
     mergeInto(target: Locres) {
-        this.texts.stringData.forEach((namespace, content) => {
-            const targetNamespace = target.texts
+        this.texts.stringData.forEach((content, namespace) => {
+            let targetNamespace = target.texts.stringData.get(namespace)
+            if (targetNamespace) {
+                const newNameSpace = new Collection<string, string>()
+                target.texts.stringData.set(namespace, newNameSpace)
+                targetNamespace = newNameSpace
+            }
+            content.forEach((v, k) => {
+                if (!targetNamespace.has(k))
+                    targetNamespace.set(k, v)
+            })
         })
     }
 }

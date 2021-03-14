@@ -26,7 +26,7 @@ export class FName {
 
     equals(other: any): boolean {
         if (this === other) return true;
-        if (other !instanceof FName) return false;
+        if (!(other instanceof FName)) return false;
         return this.text === other.text
     }
 
