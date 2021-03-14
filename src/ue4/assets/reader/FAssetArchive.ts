@@ -5,6 +5,8 @@ import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { PakPackage } from "../PakPackage";
 import { FName } from "../../objects/uobject/FName";
+import { FPackageIndex } from "../../objects/uobject/ObjectResource";
+import { Package } from "../Package";
 
 export class FAssetArchive extends FByteArchive {
     data: Buffer
@@ -18,7 +20,7 @@ export class FAssetArchive extends FByteArchive {
         this.pkgName = pkgName
     }
 
-    owner: any
+    owner: Package
     protected payloads: Collection<PayloadType, FAssetArchive> = new Collection<PayloadType, FAssetArchive>()
     uassetSize = 0
     uexpSize = 0
@@ -64,11 +66,11 @@ export class FAssetArchive extends FByteArchive {
     }
 
     handleBadNameIndex(nameIndex: number) {
-        throw ParserException(`FName could not be read, requested index ${nameIndex}, name map size ${(this.owner as PakPackage).nameMap.length}`)
+        throw ParserException(`FName could not be read, requested index ${nameIndex}, name map size ${(this.owner as unknown as PakPackage).nameMap.length}`)
     }
 
     readFName(): FName {
-        const owner = this.owner as PakPackage
+        const owner = this.owner as unknown as PakPackage
         const nameIndex = this.readInt32()
         const extraIndex = this.readInt32()
         if (nameIndex in owner.nameMap) {
@@ -82,7 +84,12 @@ export class FAssetArchive extends FByteArchive {
         return console.log(`FAssetArchive Info: pos ${this.pos()}, stopper ${this.size()}, package ${this.pkgName}`)
     }
 
-    readObject<T>() {
-        //const ind = new FPa
+    readObject<T>(): T {
+        const it = new FPackageIndex(this)
+        const out = this.owner.findObject<T>(it)
+        if (!it.isNull() && !out) {
+            console.warn(`${this.pkgName}: ${it} not found`)
+        }
+        return out
     }
 }

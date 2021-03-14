@@ -10,8 +10,6 @@ export class UStruct extends UObject {
     childProperties: FField[] = []
     childProperties2: any[] = []
     propertyCount = 0
-
-    deserialize
 }
 
 export class FField {

@@ -12,6 +12,7 @@ import { FAssetArchive } from "../reader/FAssetArchive";
 import { FProperty, ReadType } from "./FProperty";
 import { PropertyType } from "./PropertyType";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
+import { ParserException } from "../../../exceptions/Exceptions";
 
 export class FPropertyTag {
     prop: FProperty = null
@@ -127,7 +128,44 @@ export class FPropertyTag {
     serialize(Ar: FAssetArchiveWriter, writeData: boolean) {
         Ar.writeFName(this.name)
         if (this.name.text !== "None") {
+            Ar.writeFName(this.type)
+            let tagTypeData: Buffer | false = null
+            if (writeData) {
+                const tempAr = Ar.setupByteArrayWriter()
+                try {
+                    if (!this.prop)
+                        throw ParserException("FPropertyTagType is needed when trying to write it")
+                    FProperty.writePropertyValue(
+                        tempAr,
+                        this.prop,
+                        ReadType.NORMAL
+                    )
+                    Ar.writeInt32(tempAr.pos() - Ar.pos())
+                    tagTypeData = tempAr.toByteArray()
+                } catch (e) {
+                    console.error(e)
+                    throw ParserException(`^^^\nError occurred while writing the FPropertyTagType ${this.name} (${this.type})`)
+                }
+            } else {
+                Ar.writeInt32(this.size)
+            }
 
+            Ar.writeInt32(this.arrayIndex)
+            // TODO tagData?.serialize(Ar)
+
+            Ar.writeFlag(this.hasPropertyGuid)
+            if (this.hasPropertyGuid)
+                this.propertyGuid.serialize(Ar)
+
+            if (writeData) {
+                if (tagTypeData) {
+                    Ar.write(tagTypeData)
+                }
+            }
         }
+    }
+
+    toString() {
+        return `${this.name.text}   -->   ${this.prop ? this.getTagTypeValue() : "Failed to parse"}`
     }
 }

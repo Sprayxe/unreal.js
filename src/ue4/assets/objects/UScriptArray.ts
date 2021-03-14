@@ -36,7 +36,7 @@ export class UScriptArray {
 
     serialize(Ar: FAssetArchiveWriter) {
         Ar.writeInt32(this.contents.length)
-        // TODO this.innerTag?.serialize(Ar, false)
+        this.innerTag?.serialize(Ar, false)
         this.contents.forEach((it) => {
             FProperty.writePropertyValue(Ar, it, ReadType.ARRAY)
         })

@@ -5,13 +5,14 @@ import Collection from "@discordjs/collection";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FName } from "../../objects/uobject/FName";
+import { WritableStreamBuffer } from "stream-buffers"
 
 export class FAssetArchiveWriter extends FArchiveWriter {
     littleEndian = true
-    outputStream: WritableStream
+    outputStream: WritableStreamBuffer
     pos1 = 0
 
-    constructor(outputStream: WritableStream) {
+    constructor(outputStream: WritableStreamBuffer) {
         super()
         this.outputStream = outputStream
     }
@@ -20,7 +21,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
         return this.pos1
     }
 
-    //Asset Specific Fields
+    // Asset Specific Fields
     nameMap: FNameEntry[]
     importMap: FObjectImport[]
     exportMap: FObjectExport[]
@@ -71,7 +72,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
         if (typeof b === "number") {
             this.write(Buffer.from([b]))
         } else {
-            this.outputStream.getWriter().write(b)
+            this.outputStream.write(b)
             this.pos1 += b.length
         }
     }
@@ -80,7 +81,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
         return `FAssetArchiveWriter Info: pos ${this.pos()}`
     }
 
-    private setupByteArrayWriter(): FByteArchiveWriter {
+    setupByteArrayWriter(): FByteArchiveWriter {
         const ar = new FByteArchiveWriter()
         ar.uassetSize = this.uassetSize
         ar.uexpSize = this.uexpSize
@@ -94,7 +95,15 @@ export class FAssetArchiveWriter extends FArchiveWriter {
 }
 
 class FByteArchiveWriter extends FAssetArchiveWriter {
+    bos: WritableStreamBuffer
+
     constructor() {
-        super(new WritableStream<any>())
+        const bos = new WritableStreamBuffer()
+        super(bos)
+        this.bos = bos
+    }
+
+    toByteArray() {
+        return this.bos.getContents()
     }
 }

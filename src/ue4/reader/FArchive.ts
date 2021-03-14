@@ -191,11 +191,11 @@ export class FArchive {
         return new Array(init(this.readInt32()))
     }
 
-    readTMap<K, V>(length: number = this.readInt32(), init: (FArchive) => any): Collection<K, V> {
+    readTMap<K, V>(length: number = this.readInt32(), init: (FArchive) => Pair<K, V>): Collection<K, V> {
         const res = new Collection<K, V>()
         let i = 0
         while (i < length) {
-            const [key, value] = init(this)
+            const { key, value } = init(this)
             res.set(key, value)
             ++i
         }
@@ -205,5 +205,10 @@ export class FArchive {
     readFName() {
         return FName.NAME_None
     }
+}
+
+interface Pair<K, V> {
+    key: K
+    value: V
 }
 
