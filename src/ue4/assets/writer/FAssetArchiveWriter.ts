@@ -94,7 +94,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
     }
 }
 
-class FByteArchiveWriter extends FAssetArchiveWriter {
+export class FByteArchiveWriter extends FAssetArchiveWriter {
     bos: WritableStreamBuffer
 
     constructor() {

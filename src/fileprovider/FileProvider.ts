@@ -1,6 +1,7 @@
 import Collection from "@discordjs/collection";
 import { Ue4Version } from "../ue4/versions/Game";
 import { GameFile } from "../ue4/pak/GameFile";
+import { Package } from "../ue4/assets/Package";
 
 export abstract class FileProvider {
     abstract game: number
@@ -32,14 +33,14 @@ export abstract class FileProvider {
      * @param file the game file to load
      * @returns the parsed package or null if the file was not an ue4 package (.uasset)
      */
-    abstract loadGameFile(file: GameFile): any
+    abstract loadGameFile(file: GameFile): Package
 
     /**
      * Loads a UE4 package from I/O Store by package ID.
      * @param packageId the package ID to load.
      * @returns the parsed package
      */
-    abstract loadGameFile(packageId: any): any
+    abstract loadGameFile(packageId: any): Package
 
     loadObject<T>(objectPath: string): T
     loadObject<T>(softObjectPath: any): T

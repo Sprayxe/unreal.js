@@ -7,7 +7,7 @@ import { UScriptStruct } from "./exports/UScriptStruct";
 
 export abstract class Package extends UObject {
     fileName: string
-    provider: FileProvider = null
+    provider?: FileProvider = null
     game: number = this.provider.game || Ue4Version.GAME_UE4_LATEST
 
     protected constructor(fileName: string, provider: FileProvider, game: number) {
@@ -61,9 +61,10 @@ export abstract class Package extends UObject {
         return this.exports.filter(e => e instanceof UObject)
     }
 
-    abstract findObject<T>(index: FPackageIndex): T
-    loadObject<T>(index: FPackageIndex) {
-        return this.findObject<T>(index)
+    abstract findObject(index: FPackageIndex)
+    loadObject(index: FPackageIndex) {
+        return this.findObject(index)
     }
+
     abstract findObjectByName(objectName: string, className?: string): UObject
 }

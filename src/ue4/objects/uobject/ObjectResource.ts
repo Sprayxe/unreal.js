@@ -12,6 +12,7 @@ import {
     VER_UE4_TemplateIndex_IN_COOKED_EXPORTS
 } from "../../versions/Versions";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
+import { FAssetArchiveWriter } from "../../assets/writer/FAssetArchiveWriter";
 
 export class FPackageIndex {
     index: number
@@ -217,6 +218,39 @@ export class FObjectExport extends FObjectResource {
 
     toString() {
         return this.objectName.text
+    }
+
+    serialize(Ar: FAssetArchiveWriter) {
+        this.classIndex.serialize(Ar)
+        this.superIndex.serialize(Ar)
+        if (Ar.ver >= VER_UE4_TemplateIndex_IN_COOKED_EXPORTS) this.templateIndex.serialize(Ar)
+        this.outerIndex.serialize(Ar)
+        Ar.writeFName(this.objectName)
+        Ar.writeUInt32(this.objectFlags)
+
+        if (Ar.ver < VER_UE4_64BIT_EXPORTMAP_SERIALSIZES) {
+            Ar.writeInt32(this.serialSize.toInt())
+            Ar.writeInt32(this.serialOffset.toInt())
+        } else {
+            Ar.writeInt64(this.serialSize.toInt())
+            Ar.writeInt64(this.serialOffset.toInt())
+        }
+
+        Ar.writeBoolean(this.forcedExport)
+        Ar.writeBoolean(this.notForClient)
+        Ar.writeBoolean(this.notForServer)
+        this.packageGuid.serialize(Ar)
+        Ar.writeUInt32(this.packageFlags)
+        if (Ar.ver >= VER_UE4_LOAD_FOR_EDITOR_GAME) Ar.writeBoolean(this.notAlwaysLoadedForEditorGame)
+        if (Ar.ver >= VER_UE4_COOKED_ASSETS_IN_EDITOR_SUPPORT) Ar.writeBoolean(this.isAsset)
+
+        if (Ar.ver >= VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS) {
+            Ar.writeInt32(this.firstExportDependency)
+            Ar.writeInt32(this.serializationBeforeSerializationDependencies)
+            Ar.writeInt32(this.createBeforeSerializationDependencies)
+            Ar.writeInt32(this.serializationBeforeCreateDependencies)
+            Ar.writeInt32(this.createBeforeCreateDependencies)
+        }
     }
 }
 

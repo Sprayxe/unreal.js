@@ -65,6 +65,10 @@ export class FAssetArchive extends FByteArchive {
         return normalPos + this.uassetSize + this.uexpSize
     }
 
+    toNormalPos(relativePos: number) {
+        return relativePos - this.uassetSize - this.uexpSize
+    }
+
     handleBadNameIndex(nameIndex: number) {
         throw ParserException(`FName could not be read, requested index ${nameIndex}, name map size ${(this.owner as unknown as PakPackage).nameMap.length}`)
     }

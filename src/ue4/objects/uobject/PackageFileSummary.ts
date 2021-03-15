@@ -5,7 +5,11 @@ import { FEngineVersion } from "../core/misc/EngineVersion";
 import { FCompressedChunk } from "../../assets/objects/FCompressedChunk";
 import { FCustomVersion } from "../core/serialization/CustomVersion";
 import { EPackageFlags } from "./EPackageFlags";
-import { VER_UE4_ADDED_PACKAGE_OWNER, VER_UE4_ADDED_PACKAGE_SUMMARY_LOCALIZATION_ID } from "../../versions/Versions";
+import {
+    VER_UE4_ADDED_PACKAGE_OWNER,
+    VER_UE4_ADDED_PACKAGE_SUMMARY_LOCALIZATION_ID,
+    VER_UE4_NON_OUTER_PACKAGE_IMPORT
+} from "../../versions/Versions";
 
 export class FGenerationInfo {
     /**
@@ -154,7 +158,7 @@ export class FPackageFileSummary {
                 if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_OWNER) {
                     const persistentGuid = new FGuid(Ar)
                 }
-                if (this.fileVersionUE4 in VER_UE4_ADDED_PACKAGE_OWNER until VER_UE4_NON_OUTER_PACKAGE_IMPORT) {
+                if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_OWNER && VER_UE4_ADDED_PACKAGE_OWNER < VER_UE4_NON_OUTER_PACKAGE_IMPORT) {
                     const ownerPersistentGuid = new FGuid(Ar)
                 }
             }
@@ -172,7 +176,81 @@ export class FPackageFileSummary {
             this.preloadDependencyCount = Ar.readInt32()
             this.preloadDependencyOffset = Ar.readInt32()
         } else {
-
+            this.tag = params[0]
+            this.legacyFileVersion = params[1]
+            this.legacyUE3Version = params[2]
+            this.fileVersionUE4 = params[3]
+            this.fileVersionLicenseUE4 = params[4]
+            this.customVersionContainer = params[5]
+            this.totalHeaderSize = params[6]
+            this.folderName = params[7]
+            this.packageFlags = params[8]
+            this.nameCount = params[9]
+            this.nameOffset = params[10]
+            this.gatherableTextDataCount = params[11]
+            this.gatherableTextDataOffset = params[12]
+            this.exportCount = params[13]
+            this.exportOffset = params[14]
+            this.importCount = params[15]
+            this.importOffset = params[16]
+            this.dependsOffset = params[17]
+            this.softPackageReferencesCount = params[18]
+            this.softPackageReferencesOffset = params[19]
+            this.searchableNamesOffset = params[20]
+            this.thumbnailTableOffset = params[21]
+            this.guid = params[22]
+            this.generations = params[23]
+            this.savedByEngineVersion = params[24]
+            this.compatibleWithEngineVersion = params[25]
+            this.compressionFlags = params[26]
+            this.compressedChunks = params[27]
+            this.packageSource = params[28]
+            this.additionalPackagesToCook = params[29]
+            this.assetRegistryDataOffset = params[30]
+            this.bulkDataStartOffset = params[31]
+            this.worldTileInfoDataOffset = params[32]
+            this.chunkIds = params[33]
+            this.preloadDependencyCount = params[34]
+            this.preloadDependencyOffset = params[25]
         }
+    }
+
+    serialize(Ar: FArchiveWriter) {
+        Ar.writeUInt32(this.tag)
+        Ar.writeInt32(this.legacyFileVersion)
+        Ar.writeInt32(this.legacyUE3Version)
+        Ar.writeInt32(this.fileVersionUE4)
+        Ar.writeInt32(this.fileVersionLicenseUE4)
+        Ar.writeTArray(this.customVersionContainer, (it) => it.serialize(Ar))
+        Ar.writeInt32(this.totalHeaderSize)
+        Ar.writeString(this.folderName)
+        Ar.writeUInt32(this.packageFlags)
+        Ar.writeInt32(this.nameCount)
+        Ar.writeInt32(this.nameOffset)
+        Ar.writeInt32(this.gatherableTextDataCount)
+        Ar.writeInt32(this.gatherableTextDataOffset)
+        Ar.writeInt32(this.exportCount)
+        Ar.writeInt32(this.exportOffset)
+        Ar.writeInt32(this.importCount)
+        Ar.writeInt32(this.importOffset)
+        Ar.writeInt32(this.dependsOffset)
+        Ar.writeInt32(this.softPackageReferencesCount)
+        Ar.writeInt32(this.softPackageReferencesOffset)
+        Ar.writeInt32(this.searchableNamesOffset)
+        Ar.writeInt32(this.thumbnailTableOffset)
+        this.guid.serialize(Ar)
+        Ar.writeTArray(this.generations, (it) => it.serialize(Ar))
+        this.savedByEngineVersion.serialize(Ar)
+        this.compatibleWithEngineVersion.serialize(Ar)
+        Ar.writeUInt32(this.compressionFlags)
+        Ar.writeTArray(this.compressedChunks, (it) => it.serialize(Ar))
+        Ar.writeUInt32(this.packageSource)
+        Ar.writeTArray(this.additionalPackagesToCook, (it) => Ar.writeString(it))
+        Ar.writeInt32(this.assetRegistryDataOffset)
+        Ar.writeInt32(this.bulkDataStartOffset)
+        Ar.writeInt32(this.worldTileInfoDataOffset)
+        Ar.writeTArray(this.chunkIds, (it) => Ar.writeInt32(it))
+        Ar.writeInt32(this.preloadDependencyCount)
+        Ar.writeInt32(this.preloadDependencyOffset)
     }
 }
