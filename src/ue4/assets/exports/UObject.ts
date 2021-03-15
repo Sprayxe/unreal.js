@@ -7,6 +7,11 @@ import { Package } from "../Package";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { UClassReal } from "./UClassReal";
+import { FName } from "../../objects/uobject/FName";
+import { ParserException } from "../../../exceptions/Exceptions";
+import { deserializeUnversionedProperties } from "../../objects/uobject/UnversionedPropertySerialization";
+import { Locres } from "../../locres/Locres";
+import { StringBuilder } from "../../../util/StringBuilder";
 
 export class UObject extends IPropertyHolder {
     name: string = ""
@@ -62,9 +67,103 @@ export class UObject extends IPropertyHolder {
         this.properties = []
         if (!(this instanceof UClassReal)) {
             if (Ar.useUnversionedPropertySerialization) {
+                deserializeUnversionedProperties(this.properties, this.clazz, Ar)
+            } else {
+                deserializeVersionedTaggedProperties(this.properties, Ar)
+            }
+        }
+        if (Ar.pos() + 4 <= validPos && Ar.readBoolean() && Ar.pos() + 16 <= validPos)
+            this.objectGuid = new FGuid(Ar)
 
+    }
+
+    serialize(Ar: FAssetArchiveWriter) {
+        serializeProperties(Ar, this.properties)
+        Ar.writeBoolean(!!this.objectGuid)
+        this.objectGuid?.serialize(Ar)
+    }
+
+    toJson(context: any, locres: Locres = null) {
+        const ob = {}
+        this.properties.forEach((pTag) => {
+            const tagValue = pTag.prop
+            if (!tagValue)
+                return
+            ob[pTag.name.text] = tagValue
+        })
+        return ob
+    }
+
+    clearFlags(newFlags: number) {
+        this.flags = this.flags & newFlags
+    }
+
+    hasAnyFlags(flagsToCheck: number) {
+        return (this.flags & flagsToCheck) !== 0
+    }
+
+    getFullName(stopOuter: UObject, includeClassPackage: boolean)
+    getFullName(stopOuter: UObject, resultString: StringBuilder, includeClassPackage: boolean)
+    getFullName(x?: any, y?: any, z?: any) {
+        if (typeof y === "boolean") {
+            const result = new StringBuilder(128)
+            this.getFullName(x, result, y)
+            return result.toString()
+        } else {
+            if (x) {
+                y.append(this.clazz?.getPathName())
+            } else {
+                y.append(this.clazz?.name)
+            }
+            y.append(" ")
+            this.getPathName(x, y)
+        }
+    }
+
+    getPathName(stopouter?: UObject)
+    getPathName(stopouter: UObject, resultString: StringBuilder)
+    getPathName(x?: any, y?: any) {
+        if (!y) {
+            const result = new StringBuilder()
+            this.getPathName(x, result)
+            return result.toString()
+        } else {
+            if (this !== x) {
+                const objOuter = this.outer
+                if (objOuter && objOuter !== x) {
+                    objOuter.getPathName(x, y)
+                    if (objOuter.outer instanceof Package) {
+                        y.append(":")
+                    } else {
+                        y.append(".")
+                    }
+                }
+                y.append(this.name)
+            } else {
+                y.append("None")
             }
         }
     }
+
+    toString() {
+        return this.name
+    }
+}
+
+function deserializeVersionedTaggedProperties(properties: FPropertyTag[], Ar: FAssetArchive) {
+    while (true) {
+        const tag = new FPropertyTag(Ar, true)
+        if (tag.name.isNone())
+            break
+        properties.push(tag)
+    }
+}
+
+function serializeProperties(Ar: FAssetArchiveWriter, properties: FPropertyTag[]) {
+    properties.forEach((it) => it.serialize(Ar, true))
+    const nameMap = FName.getByNameMap("None", Ar.nameMap)
+    if (!nameMap)
+        throw ParserException("NameMap must contain \"None\"")
+    Ar.writeFName(nameMap)
 }
 

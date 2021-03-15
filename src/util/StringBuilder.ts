@@ -2,7 +2,11 @@ export class StringBuilder {
 	value: any[] = []
 
 	constructor(value: string | number = "") {
-		this.value.push(value)
+		if (typeof value === "number") {
+			this.value = new Array(value)
+		} else {
+			this.value.push(value)
+		}
 	}
 
 	append(value: string, offset?: number, length?: number): this {

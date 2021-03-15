@@ -3,13 +3,42 @@ import { FName } from "../../objects/uobject/FName";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { UObject } from "./UObject";
+import { PropertyInfo } from "../objects/PropertyInfo";
+import Long from "long"
 
 export class UStruct extends UObject {
     superStruct: UStruct = null
     children: FPackageIndex[] = []
     childProperties: FField[] = []
-    childProperties2: any[] = []
+    childProperties2: PropertyInfo[] = []
     propertyCount = 0
+
+    deserialize(Ar: FAssetArchive, validPos: number) {
+        super.deserialize(Ar, validPos)
+        this.superStruct = Ar.readObject()
+        this.children = Ar.readTArray(() => new FPackageIndex(Ar))
+        this.serializeProperties(Ar)
+        // region FStructScriptLoader::FStructScriptLoader
+        const bytecodeBufferSize = Ar.readInt32()
+        const serializedScriptSize = Ar.readInt32()
+        Ar.skip(new Long(serializedScriptSize))
+        if (serializedScriptSize > 0)
+            console.info(`Skipped ${serializedScriptSize} bytes of bytecode data`)
+        // endregion
+    }
+
+    protected serializeProperties(Ar: FAssetArchive) {
+        this.childProperties = Ar.readTArray((it: number) => {
+            const propertyTypeName = Ar.readFName()
+            const prop = FField.construct(propertyTypeName)
+            if (!prop)
+                throw ParserException(`Unsupported serialized property type ${propertyTypeName}`)
+            prop.deserialize(Ar)
+            if (GDebugProperties)
+                console.info(`${it} = ${propertyTypeName} ${prop.name}`)
+            return prop
+        })
+    }
 }
 
 export class FField {
