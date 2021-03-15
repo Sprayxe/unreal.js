@@ -20,6 +20,7 @@
     "@types/stream-buffers": "^3.0.3",
     "bitset": "^5.1.1",
     "crypto": "^1.0.1",
+    "farmhash": "^3.2.0",
     "long": "^4.0.0",
     "sprintf-js": "^1.1.2",
     "stream-buffers": "^3.0.2",

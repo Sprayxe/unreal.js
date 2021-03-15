@@ -6,6 +6,7 @@ import { TypeMappingsProvider } from "../ue4/assets/mappings/TypeMappingsProvide
 import { ReflectionTypeMappingsProvider } from "../ue4/assets/mappings/ReflectionTypeMappingsProvider";
 import { Locres } from "../ue4/locres/Locres";
 import { FnLanguage } from "../ue4/locres/FnLanguage";
+import { FPackageId } from "../ue4/objects/uobject/FPackageId";
 
 export abstract class FileProvider {
     abstract game: number
@@ -44,7 +45,14 @@ export abstract class FileProvider {
      * @param packageId the package ID to load.
      * @returns the parsed package
      */
-    abstract loadGameFile(packageId: any): Package
+    abstract loadGameFile(packageId: FPackageId): any
+
+    /**
+     * Searches for the game file and then load its contained package
+     * @param filePath the path to search for
+     * @returns the parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
+     */
+    abstract loadGameFile(filePath: String): Package
 
     loadObject<T>(objectPath: string): T
     loadObject<T>(softObjectPath: any): T
@@ -67,18 +75,14 @@ export abstract class FileProvider {
      * @param filePath the path to search for
      * @returns the parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
      */
-    loadLocres(filePath: string): Locres
+    abstract loadLocres(filePath: string): Locres
 
     /**
      * Loads a UE4 Locres file
      * @param file the game file to load
      * @returns the parsed locres or null if the file was not an ue4 locres (.locres)
      */
-    loadLocres(file: GameFile): Locres
-
-    loadLocres(ln: any): any {
-
-    }
+    abstract loadLocres(file: GameFile): Locres
 
     getLocresLanguageByPath(filePath: string) {
         return FnLanguage.valueOfLanguageCode(filePath.split(new RegExp("Localization/(.*?)/"))[1])

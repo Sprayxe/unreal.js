@@ -9,10 +9,10 @@ export class Locres {
     language: string
     texts: FTextLocalizationResource
 
-    constructor(file: Buffer, fileName: string = "UNKNOWN-LOCRES-FILE") {
+    constructor(file: Buffer, fileName: string = "UNKNOWN-LOCRES-FILE", language: string = FnLanguage.UNKNOWN) {
         this.locres = file
         this.fileName = fileName
-        this.language = FnLanguage.UNKNOWN
+        this.language = language
 
         const locresAr = new FByteArchive(this.locres)
         this.texts = new FTextLocalizationResource(locresAr)
