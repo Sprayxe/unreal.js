@@ -53,7 +53,7 @@ export class FnLanguage {
     UNKNOWN = "unknown"
     static UNKNOWN = "unknown"
 
-    valueOfLanguageCode(lang: string) {
+    static valueOfLanguageCode(lang: string) {
         const keys = Object.keys(this)
         const value = this[keys.find(k => this[k] === lang)]
         return value || this.UNKNOWN

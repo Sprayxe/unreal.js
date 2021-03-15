@@ -70,7 +70,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
     write(buffer: Buffer)
     write(b: any) {
         if (typeof b === "number") {
-            this.write(Buffer.from([b]))
+            this.write(Buffer.from(new Array(b)))
         } else {
             this.outputStream.write(b)
             this.pos1 += b.length

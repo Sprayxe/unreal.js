@@ -2,14 +2,18 @@ import Collection from "@discordjs/collection";
 import { Ue4Version } from "../ue4/versions/Game";
 import { GameFile } from "../ue4/pak/GameFile";
 import { Package } from "../ue4/assets/Package";
+import { TypeMappingsProvider } from "../ue4/assets/mappings/TypeMappingsProvider";
+import { ReflectionTypeMappingsProvider } from "../ue4/assets/mappings/ReflectionTypeMappingsProvider";
+import { Locres } from "../ue4/locres/Locres";
+import { FnLanguage } from "../ue4/locres/FnLanguage";
 
 export abstract class FileProvider {
     abstract game: number
-    mappingsProvider: any
-    protected abstract files: Collection<string, GameFile>
+    mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()
+    protected abstract _files: Collection<string, GameFile>
 
-    getFiles() {
-        return this.files
+    get files() {
+        return this._files
     }
 
     /**
@@ -63,14 +67,22 @@ export abstract class FileProvider {
      * @param filePath the path to search for
      * @returns the parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
      */
-    //loadLocres(filePath: string): any
+    loadLocres(filePath: string): Locres
 
     /**
      * Loads a UE4 Locres file
      * @param file the game file to load
      * @returns the parsed locres or null if the file was not an ue4 locres (.locres)
      */
-    //loadLocres(file: any): any
+    loadLocres(file: GameFile): Locres
+
+    loadLocres(ln: any): any {
+
+    }
+
+    getLocresLanguageByPath(filePath: string) {
+        return FnLanguage.valueOfLanguageCode(filePath.split(new RegExp("Localization/(.*?)/"))[1])
+    }
 
 
     /**
@@ -79,6 +91,7 @@ export abstract class FileProvider {
      * @return the parsed asset registry
      */
     abstract loadAssetRegistry(filePath: string): any
+    // TODO Create "AssetRegistry" class
 
     /**
      * Loads a UE4 AssetRegistry file
@@ -86,14 +99,7 @@ export abstract class FileProvider {
      * @returns the parsed asset registry
      */
     abstract loadAssetRegistry(file: any): any
-
-    getLocresLanguageByPath(filePath: string) {
-        return ""
-    }
-
-    loadLocres(ln: any): any {
-
-    }
+    // TODO Create "AssetRegistry" class
 
     /**
      * Searches for the game file and then saves all parts of this package
@@ -114,14 +120,14 @@ export abstract class FileProvider {
      * @param filePath the game file to save
      * @returns the files data
      */
-    abstract saveGameFile(filePath: string): Promise<Buffer>
+    abstract saveGameFile(filePath: string): Buffer
 
     /**
      * Saves the game file
      * @param file the game file to save
      * @returns the files data
      */
-    abstract saveGameFile(file: any): Promise<Buffer>
+    abstract saveGameFile(file: GameFile): Buffer
 
     /**
      * Saves a I/O Store chunk by its ID
@@ -129,6 +135,7 @@ export abstract class FileProvider {
      * @returns the chunk data
      */
     abstract saveChunk(chunkId: any): Buffer
+    // TODO Create "FIoChunkId" class
 
     /**
      * @param filePath the file path to be fixed

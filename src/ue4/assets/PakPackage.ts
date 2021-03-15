@@ -12,7 +12,9 @@ import { PayloadType } from "./util/PayloadType";
 import { UScriptStruct } from "./exports/UScriptStruct";
 import { ObjectTypeRegistry } from "./ObjectTypeRegistry";
 import { Locres } from "../locres/Locres";
-import { FByteArchiveWriter } from "./writer/FAssetArchiveWriter";
+import { FAssetArchiveWriter, FByteArchiveWriter } from "./writer/FAssetArchiveWriter";
+import { WritableStreamBuffer } from "stream-buffers";
+import Long from "long"
 
 export class PakPackage extends Package {
     protected packageMagic = 0x9E2A83C1
@@ -240,4 +242,60 @@ export class PakPackage extends Package {
         this.info.importOffset = importMapOffset
         this.info.exportOffset = exportMapOffset
     }
+    
+    write(uassetOutputStream: WritableStreamBuffer, uexpOutputStream: WritableStreamBuffer, ubulkOutputStream?: WritableStreamBuffer) {
+        this.updateHeader()
+
+        const uexpWriter = this.writer(uexpOutputStream)
+        uexpWriter.game = this.game
+        uexpWriter.ver = this.version
+        uexpWriter.uassetSize = this.info.totalHeaderSize
+        this.exports.forEach((it) => {
+            const beginPos = uexpWriter.relativePos()
+            it.serialize(uexpWriter)
+            const finalPos = uexpWriter.relativePos()
+            if (it.export) {
+                it.export.serialOffset = new Long(beginPos)
+                it.export.serialSize = new Long(finalPos - beginPos)
+            }
+        })
+
+        uexpWriter.writeUInt32(this.packageMagic)
+        const uassetWriter = this.writer(uassetOutputStream)
+        uassetWriter.game = this.game
+        uassetWriter.ver = this.version
+        this.info.serialize(uassetWriter)
+
+        const nameMapPadding = this.info.nameOffset - uassetWriter.pos()
+        if (nameMapPadding > 0)
+            uassetWriter.write(nameMapPadding)
+        if (this.info.nameCount !== this.nameMap.length)
+            throw ParserException(`Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`)
+        this.nameMap.forEach((it) => it.serialize(uassetWriter))
+
+        const importMapPadding = this.info.importOffset - uassetWriter.pos()
+        if (importMapPadding > 0)
+            uassetWriter.write(importMapPadding)
+        if (this.info.importCount !== this.nameMap.length)
+            throw ParserException(`Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`)
+        this.importMap.forEach((it) => it.serialize(uassetWriter))
+
+        const exportMapPadding = this.info.exportOffset - uassetWriter.pos()
+        if (exportMapPadding > 0)
+            uassetWriter.write(exportMapPadding)
+        if (this.info.exportCount !== this.exportMap.length)
+            throw ParserException(`Invalid export count, summary says ${this.info.exportCount} exports but export map is ${this.exportMap.length} entries long`)
+        this.exportMap.forEach((it) => it.serialize(uassetWriter))
+
+        ubulkOutputStream?.destroy()
+    }
+
+    writer(outputStream: WritableStreamBuffer) {
+        const obj = new FAssetArchiveWriter(outputStream)
+        obj.nameMap = this.nameMap
+        obj.importMap = this.importMap
+        obj.exportMap = this.exportMap
+        return obj
+    }
+
 }
