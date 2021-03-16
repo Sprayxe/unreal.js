@@ -26,4 +26,18 @@ export class Utils {
         }
         return data.toString()
     }
+
+    static isAligned(value: number, alignment: number) {
+        return (value & (alignment - 1)) <= 0
+    }
+
+    static getArray(max: number, values: (i: number) => any[], clazz: any = null) {
+        let n = 0
+        const array = new Array(max)
+        while (n < max) {
+            array[n] = clazz ? new clazz(...values(n)) : values(n)[0]
+            ++n
+        }
+        return array
+    }
 }

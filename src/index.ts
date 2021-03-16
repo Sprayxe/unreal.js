@@ -20,7 +20,6 @@ export class UnrealJS {
 }
 
 (async () => {
-    DataTypeConverter.parseHexBinary("0xce0d9beff8da86195bc0f95e1612948871ed8daa0e9199d18272f5c80853156a")
     const u = new UnrealJS()
     const d = u.readGlobalUtoc()
     console.log(d)

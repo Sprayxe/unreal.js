@@ -221,23 +221,23 @@ export class PakPackage extends Package {
         uassetWriter.exportMap = this.exportMap
         this.info.serialize(uassetWriter)
 
-        const nameMapOffset = uassetWriter.pos
+        const nameMapOffset = uassetWriter.pos()
         if (this.info.nameCount !== this.nameMap.length) {
             throw ParserException(`Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`)
         }
 
         this.nameMap.forEach((it) => it.serialize(uassetWriter))
-        const importMapOffset = uassetWriter.pos
+        const importMapOffset = uassetWriter.pos()
         if (this.info.importCount !== this.importMap.length)
             throw ParserException(`Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`)
         this.importMap.forEach((it) => it.serialize(uassetWriter))
 
-        const exportMapOffset = uassetWriter.pos
+        const exportMapOffset = uassetWriter.pos()
         if (this.info.exportCount !== this.exportMap.length)
             throw ParserException("Invalid export count, summary says ${info.exportCount} exports but export map is ${exportMap.size} entries long")
         this.exportMap.forEach((it) => it.serialize(uassetWriter))
 
-        this.info.totalHeaderSize = uassetWriter.pos
+        this.info.totalHeaderSize = uassetWriter.pos()
         this.info.nameOffset = nameMapOffset
         this.info.importOffset = importMapOffset
         this.info.exportOffset = exportMapOffset
@@ -266,21 +266,21 @@ export class PakPackage extends Package {
         uassetWriter.ver = this.version
         this.info.serialize(uassetWriter)
 
-        const nameMapPadding = this.info.nameOffset - uassetWriter.pos
+        const nameMapPadding = this.info.nameOffset - uassetWriter.pos()
         if (nameMapPadding > 0)
             uassetWriter.write(nameMapPadding)
         if (this.info.nameCount !== this.nameMap.length)
             throw ParserException(`Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`)
         this.nameMap.forEach((it) => it.serialize(uassetWriter))
 
-        const importMapPadding = this.info.importOffset - uassetWriter.pos
+        const importMapPadding = this.info.importOffset - uassetWriter.pos()
         if (importMapPadding > 0)
             uassetWriter.write(importMapPadding)
         if (this.info.importCount !== this.nameMap.length)
             throw ParserException(`Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`)
         this.importMap.forEach((it) => it.serialize(uassetWriter))
 
-        const exportMapPadding = this.info.exportOffset - uassetWriter.pos
+        const exportMapPadding = this.info.exportOffset - uassetWriter.pos()
         if (exportMapPadding > 0)
             uassetWriter.write(exportMapPadding)
         if (this.info.exportCount !== this.exportMap.length)
