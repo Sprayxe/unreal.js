@@ -72,7 +72,7 @@ export class UObject extends IPropertyHolder {
                 deserializeVersionedTaggedProperties(this.properties, Ar)
             }
         }
-        if (Ar.pos() + 4 <= validPos && Ar.readBoolean() && Ar.pos() + 16 <= validPos)
+        if (Ar.pos + 4 <= validPos && Ar.readBoolean() && Ar.pos + 16 <= validPos)
             this.objectGuid = new FGuid(Ar)
 
     }

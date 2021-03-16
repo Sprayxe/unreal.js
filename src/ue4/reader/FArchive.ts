@@ -1,11 +1,11 @@
 import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
-import Long from "long"
 import { ParserException } from "../../exceptions/Exceptions";
 import Collection from "@discordjs/collection";
 import { FName } from "../objects/uobject/FName";
 
 export class FArchive {
-    data: Buffer
+    data: Buffer // TODO please keep this in FByteArchive
+
     constructor(param?: Buffer) {
         this.data = param || Buffer.alloc(0)
     }
@@ -13,139 +13,106 @@ export class FArchive {
     game = GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)
     ver = GAME_UE4_GET_AR_VER(this.game)
 
-    offset = 0
+    protected position = 0
     useUnversionedPropertySerialization = false
-    isFilterEditorOnly= true
-    littleEndianAccessor: boolean
-
-    get littleEndian() {
-        return this.littleEndianAccessor
-    }
+    isFilterEditorOnly = true
+    littleEndian = true
 
     clone(): FArchive {
-        return new FArchive(this.data)
+        let clone = new FArchive(this.data);
+        clone.position = this.position
+        clone.littleEndian = this.littleEndian
+        return clone
     }
 
-    size(): number {
-        return this.data.length
-    }
+    get pos() { return this.position }
 
-    pos(): number {
-        return this.offset
-    }
+    set pos(v: number) { this.position = v }
 
-    readBuffer(size: number)
-    readBuffer(buffer: Buffer)
-    readBuffer(param: any): Buffer {
-        if (Buffer.isBuffer(param)) {
-            param.set(this.read(param.length - param.byteOffset))
-            return param
-        } else {
-            const buffer = Buffer.alloc(param)
-            this.read(buffer)
-            return buffer
-        }
-    }
+    get size() { return this.data.length }
 
-    skip(n: Long): number {
-        this.offset += n.toInt()
-        return this.offset
-    }
+    isAtStopper() { return this.pos >= this.size }
 
     read()
     read(buffer: Buffer)
     read(size: number): Buffer
     read(param?: any): Buffer | number {
         if (param) {
-            if (Buffer.isBuffer(param)) {
-                this.read(param)
-                return param
-            } else {
-                const out = this.data.slice(this.offset, this.offset + param)
-                this.offset += param
-                return out
+            if (Buffer.isBuffer(param)) { // read(Buffer)
+                this.data.copy(param, 0, this.position, this.position += param.length)
+                return param.length
+            } else { // read(number)
+                return this.data.slice(this.position, this.position += param)
             }
-        } else {
-            if (this.offset === this.data.length) {
-                return -1
-            } else {
-                return this.data[this.offset] & 0xFF
-            }
+        } else { // read()
+            return this.isAtStopper() ? -1 : this.data[this.position++] & 0xFF;
         }
     }
 
-    seek(v: number) {
-        return this.offset = v
-    }
-
-    isAtStopper() {
-        return this.pos() === this.size()
-    }
-
     readInt8() {
-        const localOffset = this.offset
-        this.offset += 1
-        return this.data.readInt8(localOffset)
+        const localPos = this.position
+        this.position += 1
+        return this.data.readInt8(localPos)
     }
 
     readUInt8() {
-        const localOffset = this.offset
-        this.offset += 1
-        return this.data.readUInt8(localOffset)
+        const localPos = this.position
+        this.position += 1
+        return this.data.readUInt8(localPos)
     }
 
     readInt16() {
-        const localOffset = this.offset
-        this.offset += 2
-        return this.littleEndian ? this.data.readInt16LE(localOffset) : this.data.readInt16BE(localOffset)
+        const localPos = this.position
+        this.position += 2
+        return this.littleEndian ? this.data.readInt16LE(localPos) : this.data.readInt16BE(localPos)
     }
 
     readUInt16() {
-        const localOffset = this.offset
-        this.offset += 2
-        return this.littleEndian ? this.data.readUInt16LE(localOffset) : this.data.readUInt16BE(localOffset)
+        const localPos = this.position
+        this.position += 2
+        return this.littleEndian ? this.data.readUInt16LE(localPos) : this.data.readUInt16BE(localPos)
     }
 
     readInt32() {
-        const localOffset = this.offset
-        this.offset += 4
-        return this.littleEndian ? this.data.readInt32LE(localOffset) : this.data.readInt32BE(localOffset)
+        const localPos = this.position
+        this.position += 4
+        return this.littleEndian ? this.data.readInt32LE(localPos) : this.data.readInt32BE(localPos)
     }
 
     readUInt32() {
-        const localOffset = this.offset
-        this.offset += 4
-        return this.littleEndian ? this.data.readUInt32LE(localOffset) : this.data.readUInt32BE(localOffset)
+        const localPos = this.position
+        this.position += 4
+        return this.littleEndian ? this.data.readUInt32LE(localPos) : this.data.readUInt32BE(localPos)
     }
 
     readInt64() {
-        const localOffset = this.offset
-        this.offset += 8
-        return this.littleEndian ? this.data.readBigInt64LE(localOffset) : this.data.readBigInt64BE(localOffset)
+        const localPos = this.position
+        this.position += 8
+        return this.littleEndian ? this.data.readBigInt64LE(localPos) : this.data.readBigInt64BE(localPos)
     }
 
     readUInt64() {
-        const localOffset = this.offset
-        this.offset += 8
-        return this.littleEndian ? this.data.readBigUInt64LE(localOffset) : this.data.readBigUInt64BE(localOffset)
+        const localPos = this.position
+        this.position += 8
+        return this.littleEndian ? this.data.readBigUInt64LE(localPos) : this.data.readBigUInt64BE(localPos)
     }
 
     readFloat16() {
-        const localOffset = this.offset
-        this.offset += 2
-        return this.littleEndian ? this.data.readFloatLE(localOffset) : this.data.readFloatBE(localOffset)
+        const localPos = this.position
+        this.position += 2
+        return this.littleEndian ? this.data.readFloatLE(localPos) : this.data.readFloatBE(localPos)
     }
 
     readFloat32() {
-        const localOffset = this.offset
-        this.offset += 4
-        return this.littleEndian ? this.data.readFloatLE(localOffset) : this.data.readFloatBE(localOffset)
+        const localPos = this.position
+        this.position += 4
+        return this.littleEndian ? this.data.readFloatLE(localPos) : this.data.readFloatBE(localPos)
     }
 
     readDouble() {
-        const localOffset = this.offset
-        this.offset += 8
-        return this.littleEndian ? this.data.readDoubleLE(localOffset) : this.data.readDoubleBE(localOffset)
+        const localPos = this.position
+        this.position += 8
+        return this.littleEndian ? this.data.readDoubleLE(localPos) : this.data.readDoubleBE(localPos)
     }
 
     readBoolean() {
@@ -176,30 +143,31 @@ export class FArchive {
             return dat.toString().slice(0, utf16length - 1)
         } else {
             if (length === 0) return ""
-            const str = this.readBuffer(length - 1).toString("utf-8")
+            const str = this.read(length - 1).toString("utf-8")
             if (this.readUInt8() !== 0)
                 throw ParserException("Serialized FString is not null-terminated")
             return str
         }
     }
 
-    readArray<T>(init: (FArchive) => T) {
-        return init(this)
-    }
-
-    readTArray<T>(init: (number) => T) {
-        return new Array(init(this.readInt32()))
+    readArray<T>(init: (index) => T): T[] {
+        const num = this.readInt32();
+        const array = new Array(num);
+        for (let i = 0; i < num; i++) {
+            array[i] = init(i);
+        }
+        return array;
     }
 
     readTMap<K, V>(length: number = this.readInt32(), init: (FArchive) => Pair<K, V>): Collection<K, V> {
-        const res = new Collection<K, V>()
+        const map = new Collection<K, V>()
         let i = 0
         while (i < length) {
             const { key, value } = init(this)
-            res.set(key, value)
+            map.set(key, value)
             ++i
         }
-        return res
+        return map
     }
 
     readFName() {

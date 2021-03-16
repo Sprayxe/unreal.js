@@ -234,9 +234,9 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
                         properties.push(element)
                         if (GDebugProperties) console.info(element.toString())
                     } else {
-                        const start = Ar.pos()
+                        const start = Ar.pos
                         properties.push(serializer.deserialize(Ar, ReadType.ZERO))
-                        if (Ar.pos() !== start)
+                        if (Ar.pos !== start)
                             throw ParserException(`Zero property #${it.schemaIt} should not advance the archive's position`)
                     }
                 } else {

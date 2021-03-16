@@ -43,8 +43,8 @@ export class FAssetArchive extends FByteArchive {
         c.ver = this.ver
         c.useUnversionedPropertySerialization = this.useUnversionedPropertySerialization
         c.isFilterEditorOnly = this.isFilterEditorOnly
-        c.littleEndianAccessor = this.littleEndianAccessor
-        c.pos(this.pos())
+        c.littleEndian = this.littleEndian
+        c.position = this.position
         c.owner = this.owner
         this.payloads.forEach((v, k) => c.addPayload(k, v))
         c.uassetSize = this.uassetSize
@@ -54,11 +54,11 @@ export class FAssetArchive extends FByteArchive {
     }
 
     seekRelative(pos: number) {
-        this.seek(pos - this.uassetSize - this.uexpSize)
+        this.pos = pos - this.uassetSize - this.uexpSize
     }
 
     relativePos() {
-        return this.uassetSize + this.uexpSize + this.pos()
+        return this.uassetSize + this.uexpSize + this.pos
     }
 
     toRelativePos(normalPos: number) {
@@ -85,12 +85,12 @@ export class FAssetArchive extends FByteArchive {
     }
 
     printError() {
-        return console.log(`FAssetArchive Info: pos ${this.pos()}, stopper ${this.size()}, package ${this.pkgName}`)
+        return console.log(`FAssetArchive Info: pos ${this.pos}, stopper ${this.size}, package ${this.pkgName}`)
     }
 
     readObject<T>(): T {
         const it = new FPackageIndex(this)
-        const out = this.owner.findObject<T>(it)
+        const out = this.owner.findObject(it)
         if (!it.isNull() && !out) {
             console.warn(`${this.pkgName}: ${it} not found`)
         }

@@ -25,7 +25,7 @@ export class UScriptArray {
                 if (content)
                     this.contents.push(content)
                 else
-                    console.warn(`Failed to read array content of type ${innerType} at ${x.pos()}, index ${i}`)
+                    console.warn(`Failed to read array content of type ${innerType} at ${x.pos}, index ${i}`)
                 ++i
             }
         } else {

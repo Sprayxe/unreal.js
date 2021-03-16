@@ -3,6 +3,9 @@
   "extends": ["tslint:recommended"],
   "jsRules": {},
   "rules": {
+    "comment-format": false,
+    "max-classes-per-file": false,
+    "no-bitwise": false,
     "no-console": false
   },
   "rulesDirectory": []

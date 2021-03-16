@@ -211,7 +211,7 @@ export class OrderedFormat extends FTextHistory {
         super()
         if (x instanceof FArchive) {
             this.sourceFmt = new FText(x)
-            this.args = x.readTArray(() => new FFormatArgumentValue(x))
+            this.args = x.readArray(() => new FFormatArgumentValue(x))
         } else {
             this.sourceFmt = x
             this.args = y

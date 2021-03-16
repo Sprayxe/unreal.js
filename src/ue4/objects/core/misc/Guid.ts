@@ -1,11 +1,13 @@
 import { FArchive } from "../../../reader/FArchive";
-import EGuidFormats from "../../../../../deprecated/src/ue4/objects/core/misc/typings/EGuidFormats";
 import { sprintf } from "sprintf-js";
 import { Utils } from "../../../../util/Utils";
 
 // tslint:disable:no-bitwise
 
-export enum Guid {
+/**
+ * Enumerates known GUID formats.
+ */
+export enum EGuidFormats {
     /**
      * 32 digits.
      *

@@ -11,11 +11,12 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.14.35"
+  },
   "dependencies": {
     "@discordjs/collection": "^0.1.6",
     "@types/long": "^4.0.1",
-    "@types/node": "^14.14.33",
     "@types/sprintf-js": "^1.1.2",
     "@types/stream-buffers": "^3.0.3",
     "bitset": "^5.1.1",

@@ -32,7 +32,7 @@ export class FMulticastScriptDelegate {
     constructor(invocationList: FScriptDelegate[])
     constructor(x?: any) {
         if (x instanceof FAssetArchive) {
-            this.invocationList = x.readTArray(() => new FScriptDelegate(x))
+            this.invocationList = x.readArray(() => new FScriptDelegate(x))
         } else {
             this.invocationList = x
         }

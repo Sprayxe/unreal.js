@@ -22,11 +22,11 @@ export class FTextLocalizationResource {
             throw ParserException("No offset found")
 
         // Only works for version 'optimized'
-        const cOffset = Ar.pos()
+        const cOffset = Ar.pos
 
-        Ar.seek(this.strArrayOffset)
-        const localizedStrings = Ar.readTArray(() => new FTextLocalizationResourceString(Ar))
-        Ar.seek(cOffset)
+        Ar.pos = this.strArrayOffset
+        const localizedStrings = Ar.readArray(() => new FTextLocalizationResourceString(Ar))
+        Ar.pos = cOffset
 
         Ar.readUInt32() // entryCount
         const nameSpaceCount = Ar.readUInt32()

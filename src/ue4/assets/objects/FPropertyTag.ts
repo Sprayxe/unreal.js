@@ -88,7 +88,7 @@ export class FPropertyTag {
                 this.typeData = new PropertyType(this)
 
                 if (y) {
-                    const pos = x.pos()
+                    const pos = x.pos
                     const finalPos = pos + this.size
                     try {
                         this.prop =
@@ -96,18 +96,18 @@ export class FPropertyTag {
                                 x, this.typeData,
                                 ReadType.NORMAL
                             )
-                        if (finalPos !== x.pos()) {
-                            console.warn(`FPropertyTagType $name (${this.type}) was not read properly, pos ${x.pos()}, calculated pos ${finalPos}`)
+                        if (finalPos !== x.pos) {
+                            console.warn(`FPropertyTagType $name (${this.type}) was not read properly, pos ${x.pos}, calculated pos ${finalPos}`)
                         }
                         // Even if the property wasn't read properly
                         // we don't need to crash here because we know the expected size
-                        x.seek(finalPos)
+                        x.pos = finalPos
                     } catch (e) {
-                        if (finalPos !== x.pos()) {
+                        if (finalPos !== x.pos) {
                             console.warn(`Failed to read FPropertyTagType $name (${this.type}), skipping it, please report`)
                         }
                         // Also no need to crash here, just seek to the desired offset
-                        x.seek(finalPos)
+                        x.pos = finalPos
                     }
                 }
             }

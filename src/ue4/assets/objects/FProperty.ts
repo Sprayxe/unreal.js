@@ -367,7 +367,7 @@ export class FProperty {
                 )
             )
         } else {
-            console.warn(`Couldn't read property type ${propertyType} at ${Ar.pos()}`)
+            console.warn(`Couldn't read property type ${propertyType} at ${Ar.pos}`)
             return null
         }
     }

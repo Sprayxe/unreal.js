@@ -79,21 +79,21 @@ export class PakPackage extends Package {
         }
         this.packageFlags = this.info.packageFlags
 
-        uassetAr.seek(this.info.nameOffset)
+        uassetAr.pos = this.info.nameOffset
         let i = 0
         while (i < this.info.nameCount) {
             this.nameMap.push(new FNameEntry(uassetAr))
             ++i
         }
 
-        uassetAr.seek(this.info.importOffset)
+        uassetAr.pos = this.info.importOffset
         let x = 0
         while (x < this.info.importCount) {
             this.importMap.push(new FObjectImport(uassetAr))
             ++x
         }
 
-        uassetAr.seek(this.info.exportOffset)
+        uassetAr.pos = this.info.exportOffset
         let y = 0
         while (y < this.info.exportCount) {
             this.exportMap.push(new FObjectExport(uassetAr))
@@ -118,15 +118,15 @@ export class PakPackage extends Package {
             const parse = () => {
                 const uexpAr2 = uexpAr.clone()
                 uexpAr2.seekRelative(e.serialOffset.toInt())
-                const validPos = (uexpAr2.pos() + e.serialSize.toInt())
+                const validPos = (uexpAr2.pos + e.serialSize.toInt())
                 const obj = this.constructExport(e.classIndex.load())
                 obj.export = e
                 obj.name = e.objectName.text
                 obj.outer = e.outerIndex.load() || this
                 // obj.template = this.findObject(export.templateIndex)
                 obj.deserialize(uexpAr2, validPos)
-                if (validPos !== uexpAr2.pos()) {
-                    console.warn(`Did not read ${obj.exportType} correctly, ${validPos - uexpAr.pos()} bytes remaining`)
+                if (validPos !== uexpAr2.pos) {
+                    console.warn(`Did not read ${obj.exportType} correctly, ${validPos - uexpAr.pos} bytes remaining`)
                 } else {
                     console.debug(`Successfully read ${obj.exportType} at ${uexpAr2.toNormalPos(e.serialOffset.toInt())} with size ${e.serialSize}`)
                 }
@@ -139,14 +139,14 @@ export class PakPackage extends Package {
     findObject(index?: FPackageIndex) {
         return index === null || index.isNull() ? null :
             index.isImport() ? this.findImport(this.importMap[index.toImport()]) :
-            index.isExport() ? this.exportMap[index.toExport()]?.exportObject :
-            null
+                index.isExport() ? this.exportMap[index.toExport()]?.exportObject :
+                    null
     }
 
     loadImport(imp?: FObjectImport) {
-       if (!imp) return null
-       const loaded = this.findImport(imp) || null
-       return loaded
+        if (!imp) return null
+        const loaded = this.findImport(imp) || null
+        return loaded
     }
 
     findImport(imp?: FObjectImport): UObject {
@@ -174,7 +174,7 @@ export class PakPackage extends Package {
         return null
     }
 
-    findObjectByName(objectName:string, className?:string): UObject {
+    findObjectByName(objectName: string, className?: string): UObject {
         const exp = this.exportMap.find(it => {
             return it.objectName.text === objectName && (className == null || (this.getImportObject(it.classIndex))?.objectName?.text === className)
         })
@@ -221,28 +221,28 @@ export class PakPackage extends Package {
         uassetWriter.exportMap = this.exportMap
         this.info.serialize(uassetWriter)
 
-        const nameMapOffset = uassetWriter.pos()
+        const nameMapOffset = uassetWriter.pos
         if (this.info.nameCount !== this.nameMap.length) {
             throw ParserException(`Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`)
         }
 
         this.nameMap.forEach((it) => it.serialize(uassetWriter))
-        const importMapOffset = uassetWriter.pos()
+        const importMapOffset = uassetWriter.pos
         if (this.info.importCount !== this.importMap.length)
             throw ParserException(`Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`)
         this.importMap.forEach((it) => it.serialize(uassetWriter))
 
-        const exportMapOffset = uassetWriter.pos()
+        const exportMapOffset = uassetWriter.pos
         if (this.info.exportCount !== this.exportMap.length)
             throw ParserException("Invalid export count, summary says ${info.exportCount} exports but export map is ${exportMap.size} entries long")
         this.exportMap.forEach((it) => it.serialize(uassetWriter))
 
-        this.info.totalHeaderSize = uassetWriter.pos()
+        this.info.totalHeaderSize = uassetWriter.pos
         this.info.nameOffset = nameMapOffset
         this.info.importOffset = importMapOffset
         this.info.exportOffset = exportMapOffset
     }
-    
+
     write(uassetOutputStream: WritableStreamBuffer, uexpOutputStream: WritableStreamBuffer, ubulkOutputStream?: WritableStreamBuffer) {
         this.updateHeader()
 
@@ -266,21 +266,21 @@ export class PakPackage extends Package {
         uassetWriter.ver = this.version
         this.info.serialize(uassetWriter)
 
-        const nameMapPadding = this.info.nameOffset - uassetWriter.pos()
+        const nameMapPadding = this.info.nameOffset - uassetWriter.pos
         if (nameMapPadding > 0)
             uassetWriter.write(nameMapPadding)
         if (this.info.nameCount !== this.nameMap.length)
             throw ParserException(`Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`)
         this.nameMap.forEach((it) => it.serialize(uassetWriter))
 
-        const importMapPadding = this.info.importOffset - uassetWriter.pos()
+        const importMapPadding = this.info.importOffset - uassetWriter.pos
         if (importMapPadding > 0)
             uassetWriter.write(importMapPadding)
         if (this.info.importCount !== this.nameMap.length)
             throw ParserException(`Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`)
         this.importMap.forEach((it) => it.serialize(uassetWriter))
 
-        const exportMapPadding = this.info.exportOffset - uassetWriter.pos()
+        const exportMapPadding = this.info.exportOffset - uassetWriter.pos
         if (exportMapPadding > 0)
             uassetWriter.write(exportMapPadding)
         if (this.info.exportCount !== this.exportMap.length)

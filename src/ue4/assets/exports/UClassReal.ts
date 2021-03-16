@@ -54,7 +54,7 @@ export class UClassReal extends UStruct {
         this.classGeneratedBy = new FPackageIndex(Ar)
 
         // Load serialized interface classes
-        this.interfaces = Ar.readTArray(() => new FImplementedInterface(Ar))
+        this.interfaces = Ar.readArray(() => new FImplementedInterface(Ar))
 
         const bDeprecatedScriptOrder = Ar.readBoolean()
         const dummy = Ar.readFName()
