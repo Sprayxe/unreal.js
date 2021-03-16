@@ -1,7 +1,7 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
 import { DataTypeConverter } from "./util/DataTypeConverter";
-import { FIoStoreTocHeader } from "./ue4/io/IoStore";
+import { EIoStoreTocReadOptions, FIoStoreTocResource } from "./ue4/io/IoStore";
 
 export class UnrealJS {
     path: string
@@ -13,8 +13,9 @@ export class UnrealJS {
     readGlobalUtoc() {
         const utoc = fs.readFileSync(`${this.path}/global.utoc`)
         const Ar = new FArchive(utoc)
-        const header = new FIoStoreTocHeader(Ar)
-        return header
+        const toc = new FIoStoreTocResource()
+        toc.read(Ar, EIoStoreTocReadOptions.ReadAll)
+        return toc
     }
 }
 

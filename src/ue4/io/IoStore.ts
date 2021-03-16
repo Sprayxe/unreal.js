@@ -2,29 +2,20 @@ import { FGuid } from "../objects/core/misc/Guid"
 import { FArchive } from "../reader/FArchive"
 import { FIoContainerId } from "./IoContainerId"
 import * as fs from "fs";
-import { FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from "./IoDispatcher";
+import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from "./IoDispatcher";
 import { FByteArchive } from "../reader/FByteArchive";
 import { int32, uint16, uint32, uint64, uint8 } from "../../Types";
 
 /**
  * I/O store container format version
  */
-enum EIoStoreTocVersion {
+export enum EIoStoreTocVersion {
     Invalid = 0,
     Initial,
     DirectoryIndex,
     PartitionSize,
     LatestPlusOne,
     Latest = LatestPlusOne - 1
-}
-
-// actually in IoDispatcher.h
-enum EIoContainerFlags {
-    None,
-    Compressed = (1 << 0),
-    Encrypted = (1 << 1),
-    Signed = (1 << 2),
-    Indexed = (1 << 3),
 }
 
 /**
@@ -59,25 +50,25 @@ export class FIoStoreTocHeader {
         Ar.read(this.tocMagic)
         if (!this.checkMagic())
             throw new Error("TOC header magic mismatch")
-        console.log(`read version at ${Ar.pos}`); this.version = Ar.read()
-        console.log(`read reserved0 at ${Ar.pos}`); this.reserved0 = Ar.readUInt8()
-        console.log(`read reserved1 at ${Ar.pos}`); this.reserved1 = Ar.readUInt16()
-        console.log(`read tocHeaderSize at ${Ar.pos}`); this.tocHeaderSize = Ar.readUInt32()
-        console.log(`read tocEntryCount at ${Ar.pos}`); this.tocEntryCount = Ar.readUInt32()
-        console.log(`read tocCompressedBlockEntryCount at ${Ar.pos}`); this.tocCompressedBlockEntryCount = Ar.readUInt32()
-        console.log(`read tocCompressedBlockEntrySize at ${Ar.pos}`); this.tocCompressedBlockEntrySize = Ar.readUInt32()
-        console.log(`read compressionMethodNameCount at ${Ar.pos}`); this.compressionMethodNameCount = Ar.readUInt32()
-        console.log(`read compressionMethodNameLength at ${Ar.pos}`); this.compressionMethodNameLength = Ar.readUInt32()
-        console.log(`read compressionBlockSize at ${Ar.pos}`); this.compressionBlockSize = Ar.readUInt32()
-        console.log(`read directoryIndexSize at ${Ar.pos}`); this.directoryIndexSize = Ar.readUInt32()
-        console.log(`read partitionCount at ${Ar.pos}`); this.partitionCount = Ar.readUInt32()
-        console.log(`read containerId at ${Ar.pos}`); this.containerId = new FIoContainerId(Ar)
-        console.log(`read encryptionKeyGuid at ${Ar.pos}`); this.encryptionKeyGuid = new FGuid(Ar)
-        console.log(`read containerFlags at ${Ar.pos}`); this.containerFlags = Ar.read()
-        console.log(`read reserved3 at ${Ar.pos}`); this.reserved3 = Ar.readUInt8()
-        console.log(`read reserved4 at ${Ar.pos}`); this.reserved4 = Ar.readUInt16()
-        console.log(`read reserved5 at ${Ar.pos}`); this.reserved5 = Ar.readUInt32()
-        console.log(`read partitionSize at ${Ar.pos}`); this.partitionSize = Ar.readUInt64()
+        this.version = Ar.read()
+        this.reserved0 = Ar.readUInt8()
+        this.reserved1 = Ar.readUInt16()
+        this.tocHeaderSize = Ar.readUInt32()
+        this.tocEntryCount = Ar.readUInt32()
+        this.tocCompressedBlockEntryCount = Ar.readUInt32()
+        this.tocCompressedBlockEntrySize = Ar.readUInt32()
+        this.compressionMethodNameCount = Ar.readUInt32()
+        this.compressionMethodNameLength = Ar.readUInt32()
+        this.compressionBlockSize = Ar.readUInt32()
+        this.directoryIndexSize = Ar.readUInt32()
+        this.partitionCount = Ar.readUInt32()
+        this.containerId = new FIoContainerId(Ar)
+        this.encryptionKeyGuid = new FGuid(Ar)
+        this.containerFlags = Ar.read()
+        this.reserved3 = Ar.readUInt8()
+        this.reserved4 = Ar.readUInt16()
+        this.reserved5 = Ar.readUInt32()
+        this.partitionSize = Ar.readUInt64()
         for (let i = 0; i < this.reserved6.length; i++) {
             this.reserved6[i] = Ar.readUInt64()
         }
@@ -122,7 +113,7 @@ export class FIoOffsetAndLength {
     }
 }
 
-enum FIoStoreTocEntryMetaFlags {
+export enum FIoStoreTocEntryMetaFlags {
     None,
     Compressed = (1 << 0),
     MemoryMapped = (1 << 1)
@@ -182,7 +173,7 @@ export class FIoStoreTocCompressedBlockEntry {
 /**
  * TOC resource read options.
  */
-enum EIoStoreTocReadOptions {
+export enum EIoStoreTocReadOptions {
     Default,
     ReadDirectoryIndex = (1 << 0),
     ReadTocMeta = (1 << 1),
@@ -192,7 +183,7 @@ enum EIoStoreTocReadOptions {
 /**
  * Container TOC data.
  */
-class FIoStoreTocResource {
+export class FIoStoreTocResource {
     static CompressionMethodNameLen = 32
 
     header: FIoStoreTocHeader
@@ -245,14 +236,14 @@ class FIoStoreTocResource {
 
         // Compression methods
         this.compressionMethods = new Array(this.header.compressionMethodNameCount + 1)
-        this.compressionMethods.push("None")
+        this.compressionMethods[0] = "None"
         for (let i = 0; i < this.header.compressionMethodNameCount; i++) {
             const compressionMethodName = tocBuffer.read(this.header.compressionMethodNameLength)
             let length = 0
             while (compressionMethodName[length] !== 0) {
                 ++length
             }
-            this.compressionMethods.push(compressionMethodName.toString("utf-8", 0, length))
+            this.compressionMethods[1 + i] = (compressionMethodName.toString("utf-8", 0, length))
         }
 
         // Chunk block signatures
