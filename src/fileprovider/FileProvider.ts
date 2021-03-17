@@ -7,6 +7,7 @@ import { ReflectionTypeMappingsProvider } from "../ue4/assets/mappings/Reflectio
 import { Locres } from "../ue4/locres/Locres";
 import { FnLanguage } from "../ue4/locres/FnLanguage";
 import { FPackageId } from "../ue4/objects/uobject/FPackageId";
+import { AssetRegistry } from "../ue4/registry/AssetRegistry";
 
 export abstract class FileProvider {
     abstract game: number
@@ -94,16 +95,14 @@ export abstract class FileProvider {
      * @param filePath the path to search for
      * @return the parsed asset registry
      */
-    abstract loadAssetRegistry(filePath: string): any
-    // TODO Create "AssetRegistry" class
+    abstract loadAssetRegistry(filePath: string): AssetRegistry
 
     /**
      * Loads a UE4 AssetRegistry file
      * @param file the game file to load
      * @returns the parsed asset registry
      */
-    abstract loadAssetRegistry(file: any): any
-    // TODO Create "AssetRegistry" class
+    abstract loadAssetRegistry(file: any): AssetRegistry
 
     /**
      * Searches for the game file and then saves all parts of this package

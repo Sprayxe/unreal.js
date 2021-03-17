@@ -17,7 +17,7 @@ export class FTextLocalizationResource {
         if (magic !== this.locResMagic)
             throw ParserException("Wrong locres guid")
         this.version = Ar.readUInt8()
-        this.strArrayOffset = Number(Ar.readInt64())
+        this.strArrayOffset = Ar.readInt64() as unknown as number
         if (this.strArrayOffset === this.indexNone)
             throw ParserException("No offset found")
 

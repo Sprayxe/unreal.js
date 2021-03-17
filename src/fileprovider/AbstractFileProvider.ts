@@ -5,6 +5,8 @@ import { Package } from "../ue4/assets/Package";
 import { FPackageId } from "../ue4/objects/uobject/FPackageId";
 import { FName } from "../ue4/objects/uobject/FName";
 import { Locres } from "../ue4/locres/Locres";
+import { AssetRegistry } from "../ue4/registry/AssetRegistry";
+import Collection from "@discordjs/collection";
 
 export abstract class AbstractFileProvider extends FileProvider {
     protected globalDataLoaded = false
@@ -53,7 +55,7 @@ export abstract class AbstractFileProvider extends FileProvider {
                 return new PakPackage(uasset, uexp, ubulk, path, this, this.game)
             }
         } catch (e) {
-            console.error(`Failed to load package ${x.path}`)
+            console.error(`Failed to load package ${typeof x === "string" ? x : x.path}`)
             console.error(e)
         }
     }
@@ -85,10 +87,87 @@ export abstract class AbstractFileProvider extends FileProvider {
                 return new Locres(locres, path, this.getLocresLanguageByPath(x))
             }
         } catch (e) {
-            console.error(`Failed to load locres ${x.path}`)
+            console.error(`Failed to load locres ${x instanceof GameFile ? x.path : x}`)
             console.error(e)
         }
     }
 
-    
+    loadAssetRegistry(file: GameFile)
+    loadAssetRegistry(filePath: string)
+    loadAssetRegistry(x?: any): AssetRegistry {
+        try {
+            if (x instanceof GameFile) {
+                if (!x.isAssetRegistry())
+                    return null
+                const locres = this.saveGameFile(x)
+                return new AssetRegistry(locres, x.path)
+            } else {
+                const path = this.fixPath(x)
+                const gameFile = this.findGameFile(x)
+                if (gameFile)
+                    return this.loadAssetRegistry(gameFile)
+                if (!path.endsWith(".bin"))
+                    return null
+                const locres = this.saveGameFile(path)
+                return locres ? new AssetRegistry(locres, path) : null
+            }
+        } catch (e) {
+            console.error(`Failed to load asset registry ${x instanceof GameFile ? x.path : x}`)
+        }
+    }
+
+    savePackage(filePath: string): Collection<string, Buffer>
+    savePackage(file: GameFile): Collection<string, Buffer>
+    savePackage(x?: any): Collection<string, Buffer> {
+        if (x instanceof GameFile) {
+            const map = new Collection<string, Buffer>()
+            try {
+                if (!x.isUE4Package() || !x.hasUexp()) {
+                    const data = this.saveGameFile(x)
+                    map.set(x.path, data)
+                } else {
+                    const uasset = this.saveGameFile(x)
+                    map.set(x.path, uasset)
+                    const uexp = this.saveGameFile(x.uexp)
+                    map.set(x.uexp.path, uasset)
+                    const ubulk = x.hasUbulk() ? this.saveGameFile(x.ubulk) : null
+                    if (ubulk)
+                        map.set(x.ubulk.path, ubulk)
+                }
+            } catch (e) {
+                console.error(e)
+            }
+            return map
+        } else {
+            const path = this.fixPath(x)
+            const gameFile = this.findGameFile(path)
+            if (gameFile)
+                return this.savePackage(gameFile)
+            const map = new Collection<string, Buffer>()
+            try {
+                if (path.endsWith(".uasset") || path.endsWith(".umap")) {
+                    const uasset = this.saveGameFile(path)
+                    if (!uasset)
+                        return map
+                    map.set(path, uasset)
+                    const uexpPath = path.substring(0, path.lastIndexOf(".")) + ".uexp"
+                    const uexp = this.saveGameFile(uexpPath)
+                    if (!uexp)
+                        return null
+                    map.set(uexpPath, uexp)
+                    const ubulkPath = path.substring(0, path.lastIndexOf(".")) + ".ubulk"
+                    const ubulk = this.saveGameFile(ubulkPath)
+                    map.set(ubulkPath, ubulk)
+                } else {
+                    const data = this.saveGameFile(path)
+                    if (!data)
+                        return map
+                    map.set(path, data)
+                }
+            } catch (e) {
+                console.error(e)
+            }
+            return map
+        }
+    }
 }

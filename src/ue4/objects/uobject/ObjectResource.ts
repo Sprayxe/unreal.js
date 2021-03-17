@@ -167,8 +167,8 @@ export class FObjectExport extends FObjectResource {
                 this.serialSize = new Long(Ar.readInt32())
                 this.serialOffset = new Long(Ar.readInt32())
             } else {
-                this.serialSize = new Long(Number(Ar.readInt64()))
-                this.serialOffset = new Long(Number(Ar.readInt64()))
+                this.serialSize = new Long(Ar.readInt64() as unknown as number)
+                this.serialOffset = new Long(Ar.readInt64() as unknown as number)
             }
 
             this.forcedExport = Ar.readBoolean()

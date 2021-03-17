@@ -1,6 +1,5 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
-import { DataTypeConverter } from "./util/DataTypeConverter";
 import { EIoStoreTocReadOptions, FIoStoreTocResource } from "./ue4/io/IoStore";
 
 export class UnrealJS {

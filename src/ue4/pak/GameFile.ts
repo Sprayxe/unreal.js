@@ -3,6 +3,7 @@ import * as Long from "long"
 import { FPakEntry } from "./objects/FPakEntry";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { Utils } from "../../util/Utils"
+import { FPackageId } from "../objects/uobject/FPackageId";
 
 export class GameFile {
     path: string = ""
@@ -14,7 +15,7 @@ export class GameFile {
     compressionBlockSize: number = 0
     isEncrypted: boolean = false
     pakFileName: string
-    ioPackageId?: any = null
+    ioPackageId?: FPackageId = null
 
     constructor(pakEntry: FPakEntry, mountPrefix: string, pakFileName: string) {
         this.path = Utils.pathAppend(mountPrefix, pakEntry.name)
@@ -43,15 +44,17 @@ export class GameFile {
     isLocres() {
         return this.getExtension() === "locres"
     }
-
+    isAssetRegistry() {
+        const name = this.getName()
+        return name.startsWith("AssetRegistry") && name.endsWith(".bin")
+    }
 
     hasUexp() {
-        return (this.uexp as any).isInitialized || false
+        return !!this.uexp
     }
     hasUbulk() {
         return !!this.ubulk
     }
-
 
     isCompressed() {
         return this.uncompressedSize !== this.size || this.compressionMethod !== CompressionMethod.None

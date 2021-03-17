@@ -105,12 +105,11 @@ export class FUnversionedHeader {
     }
 
     protected loadZeroMaskData(Ar: FArchive, numBits: number) {
-        return BitSet.fromHexString(
-            Ar.read(
+        return new BitSet(Ar.read(
             numBits <= 8 ? 1 :
                 numBits <= 16 ? 2 :
                 numBits / 32 * 4
-            ).toString("hex")
+            )
         )
     }
 }

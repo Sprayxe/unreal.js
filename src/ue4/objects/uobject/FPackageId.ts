@@ -7,7 +7,7 @@ export class FPackageId {
     static fromName(name: FName) {
         const nameStr = name.toString().toLowerCase()
         const nameBuf = Buffer.from(nameStr, "utf16le")
-        const hash = Number(CityHash.hash64(nameBuf))
+        const hash = parseInt(CityHash.hash64(nameBuf))
         if (hash === INVALID_ID)
             throw new Error(`Package name hash collision \"${nameStr}\" and InvalidId`)
         return new FPackageId(hash)
@@ -20,7 +20,7 @@ export class FPackageId {
     constructor(Ar: FArchive)
     constructor(x?: any) {
         if (x instanceof FArchive) {
-            this.id = Number(x.readUInt64())
+            this.id = x.readUInt64() as unknown as number
         } else {
             this.id = x
         }
