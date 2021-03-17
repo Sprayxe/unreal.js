@@ -1,5 +1,5 @@
 import { AbstractFileProvider } from "./AbstractFileProvider";
 
-/*export class PakFileProvider extends AbstractFileProvider {
-
-}*/
+export abstract class PakFileProvider extends AbstractFileProvider {
+    protected abstract unloadedP
+}
