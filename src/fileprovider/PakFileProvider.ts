@@ -9,6 +9,7 @@ import { FPackageStore } from "../ue4/asyncloading2/FPackageStore";
 import { FIoDispatcherMountedContainer } from "../ue4/io/IoDispatcher";
 import { DataTypeConverter } from "../util/DataTypeConverter";
 import { Aes } from "../encryption/aes/Aes";
+import { InvalidAesKeyException } from "../exceptions/Exceptions";
 
 export abstract class PakFileProvider extends AbstractFileProvider {
     protected abstract _unloadedPaks: PakFileReader[]
@@ -56,7 +57,7 @@ export abstract class PakFileProvider extends AbstractFileProvider {
     }
 
     unloadedPaksByGuid(guid: FGuid) {
-        // TODO return this.unloadedPaks().filter(it => it.pakInfo.encryptionKeyGuid === guid)
+        return this.unloadedPaks().filter(it => it.pakInfo.encryptionKeyGuid === guid)
     }
 
     /**
@@ -64,6 +65,28 @@ export abstract class PakFileProvider extends AbstractFileProvider {
      * @param newKeys Keys to submit
      */
     async submitKeysAsync(newKeys: Collection<FGuid, Buffer>) {
+        for (const [guid, key] of newKeys) {
+            if (!this.requiredKeys().find(k => k === guid))
+                continue
+            for (const reader of this.unloadedPaksByGuid(guid)) {
+                try {
+                    reader.aesKey = key
+                    this._keys.set(guid, key)
+                    this.mount(reader)
+                    this._unloadedPaks = this._unloadedPaks.filter(v => v !== reader)
+                    this._requiredKeys = this._requiredKeys.filter(v => v !== guid)
+                } catch (e) {
+                    if (e instanceof InvalidAesKeyException) {
+                        this._keys.delete(guid)
+                    } else {
+                        console.warn(`Uncaught exception while loading pak file ${reader.fileName.substring(reader.fileName.lastIndexOf("/") + 1)}`)
+                    }
+                }
+            }
+        }
+    }
+
+    mount(reader: PakFileReader) {
 
     }
 }

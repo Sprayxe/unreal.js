@@ -13,8 +13,6 @@ export abstract class FPakArchive extends FArchive {
 
     public abstract clone(): FPakArchive
 
-    abstract seek(pos: number)
-
     abstract pakSize(): number
     get size() {
         return this.pakSize()
@@ -22,6 +20,9 @@ export abstract class FPakArchive extends FArchive {
 
     get pos(): number {
         return this.position
+    }
+    set pos(v: number) {
+        this.position = v
     }
 
     printError() {
