@@ -8,6 +8,7 @@ import { Locres } from "../ue4/locres/Locres";
 import { FnLanguage } from "../ue4/locres/FnLanguage";
 import { FPackageId } from "../ue4/objects/uobject/FPackageId";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
+import { FIoChunkId } from "../ue4/io/IoDispatcher";
 
 export abstract class FileProvider {
     abstract game: number
@@ -137,8 +138,7 @@ export abstract class FileProvider {
      * @param chunkId the chunk ID
      * @returns the chunk data
      */
-    abstract saveChunk(chunkId: any): Buffer
-    // TODO Create "FIoChunkId" class
+    abstract saveChunk(chunkId: FIoChunkId): Buffer
 
     /**
      * @param filePath the file path to be fixed

@@ -40,4 +40,24 @@ export class Utils {
         }
         return array
     }
+
+    static ordinal(entry: any, enm: any): number {
+        let pos: number = 0
+        const val = Object.values(enm)
+        val.find((v, k) => {
+            const h = v === entry
+            if (h)
+                pos = k
+            return h
+        })
+        return pos
+    }
+
+    static repeat(times: number, action: (n: number) => void) {
+        let x = 0
+        while (x < times) {
+            action(x)
+            ++x
+        }
+    }
 }

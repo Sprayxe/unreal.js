@@ -11,4 +11,12 @@ export class FIoContainerId {
     constructor(Ar: FArchive) {
         this.id = Ar.readUInt64()
     }
+
+    value() {
+        return this.id
+    }
+
+    isValid() {
+        return this.id !== FIoContainerId.InvalidId
+    }
 }

@@ -1,5 +1,7 @@
 import { FArchive } from "../reader/FArchive";
 import { int32, uint16, uint64 } from "../../Types";
+import { Utils } from "../../util/Utils";
+import { FIoContainerId } from "./IoContainerId";
 
 /**
  * Helper used to manage creation of I/O store file handles etc
@@ -31,8 +33,16 @@ export class FIoChunkHash {
 export class FIoChunkId {
     id = Buffer.alloc(12)
 
-    constructor(Ar?: FArchive) {
-        if (Ar) Ar.read(this.id)
+    constructor(chunkId: number, chunkIndex: number, ioChunkType: EIoChunkType)
+    constructor(Ar?: FArchive)
+    constructor(x?: any, y?: any, z?: any) {
+        if (x && x instanceof FArchive) {
+            x.read(this.id)
+        } else if (x) {
+            this.id.set([x])
+            this.id.set([y])
+            this.id.set([Utils.ordinal(z, EIoChunkType)], 11)
+        }
     }
 }
 
@@ -72,4 +82,20 @@ export enum EIoContainerFlags {
     Encrypted = (1 << 1),
     Signed = (1 << 2),
     Indexed = (1 << 3)
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+export class FIoDispatcherMountedContainer {
+    environment: FIoStoreEnvironment
+    containerId: FIoContainerId
+
+    constructor(environment: FIoStoreEnvironment, containerId: FIoContainerId) {
+        this.environment = environment
+        this.containerId = containerId
+    }
+}
+
+export abstract class FOnContainerMountedListener {
+    abstract onContainerMounted(container: FIoDispatcherMountedContainer)
 }

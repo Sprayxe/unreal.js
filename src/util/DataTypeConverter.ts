@@ -35,6 +35,10 @@ export class DataTypeConverter {
         return r.toString()
     }
 
+    static printAesKey(buf: Buffer) {
+        return `0x${this.printHexBinary(buf)}`
+    }
+
     private static hexToBin(hex: string) {
         return parseInt(parseInt(hex, 16).toString(2))
     }

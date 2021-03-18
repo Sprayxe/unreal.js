@@ -9,6 +9,7 @@ import { ParserException } from "../../../../exceptions/Exceptions";
 import { UStringTable } from "../../../assets/exports/UStringTable";
 import { FAssetArchiveWriter } from "../../../assets/writer/FAssetArchiveWriter";
 import { Locres } from "../../../locres/Locres";
+import { Utils } from "../../../../util/Utils";
 
 export enum EFormatArgumentType {
     Int = "Int",
@@ -190,8 +191,8 @@ export class FTextHistoryDateTime extends FTextHistory {
 
     serialize(Ar: FArchiveWriter) {
         this.sourceDateTime.serialize(Ar)
-        Ar.writeInt8(ordinal(this.dateStyle))
-        Ar.writeInt8(ordinal(this.timeStyle))
+        Ar.writeInt8(Utils.ordinal(this.dateStyle, EDateTimeStyle))
+        Ar.writeInt8(Utils.ordinal(this.timeStyle, EDateTimeStyle))
         Ar.writeString(this.timeZone)
         Ar.writeString(this.targetCulture)
     }
@@ -317,7 +318,7 @@ export class FFormatArgumentValue {
     }
 
     serialize(Ar: FArchiveWriter) {
-        Ar.writeInt8(ordinal(this.type))
+        Ar.writeInt8(Utils.ordinal(this.value, this.type))
         switch (this.type) {
             case EFormatArgumentType.Int:
                 Ar.writeInt64(this.value as number)
@@ -343,18 +344,4 @@ export class FFormatArgumentValue {
     toString() {
         return `[Object FFormatArgumentValue]`
     }
-}
-
-function ordinal(entry: any) {
-    let pos: number
-    const val = Object.values(entry)
-
-    val.find((v, k) => {
-        const h = v === entry
-        if (h)
-            pos = k
-        return h
-    })
-
-    return pos
 }

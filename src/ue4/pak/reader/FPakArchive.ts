@@ -3,6 +3,7 @@ import { FArchive } from "../../reader/FArchive";
 export abstract class FPakArchive extends FArchive {
     fileName: string
     hasPakInfo: boolean
+    protected position = 0
     pakInfo: any
 
     constructor(fileName: string) {
@@ -12,18 +13,19 @@ export abstract class FPakArchive extends FArchive {
 
     public abstract clone(): FPakArchive
 
+    abstract seek(pos: number)
+
     abstract pakSize(): number
     get size() {
         return this.pakSize()
     }
 
-    abstract pakPos(): number
     get pos(): number {
-        return this.pakPos()
+        return this.position
     }
 
     printError() {
-        return `FPakArchive Info: pos ${this.pakPos()}, stopper ${this.pakSize()}`
+        return `FPakArchive Info: pos ${this.position}, stopper ${this.pakSize()}`
     }
 
     readAndCreateReader(size: number) {
