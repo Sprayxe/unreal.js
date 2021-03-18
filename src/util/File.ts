@@ -6,4 +6,8 @@ export class File {
         this.name = name
         this.content = content
     }
+
+    toString() {
+        return this.name
+    }
 }

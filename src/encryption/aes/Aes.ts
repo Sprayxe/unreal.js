@@ -11,17 +11,17 @@ export class Aes {
         return Buffer.from(data)
     }
 
-    static decrypt(data: string, key: string) {
+    static decrypt(data: Buffer, key: Buffer) {
         const iv = Buffer.alloc(BLOCK_SIZE)
         const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv)
 
-        let decrypted: any = decipher.update(data, "base64", "utf8")
+        let decrypted: any = decipher.update(data, null, "base64")
         decrypted += decipher.final()
 
         return decrypted
     }
 
-    static encrypt(data: string, key: string) {
+    static encrypt(data: Buffer, key: Buffer) {
         const iv = Buffer.alloc(BLOCK_SIZE)
         const cipher = crypto.createDecipheriv("aes-256-gcm", key, iv)
 

@@ -159,7 +159,7 @@ export class FArchive {
         return array;
     }
 
-    readTMap<K, V>(length: number = this.readInt32(), init: (FArchive) => Pair<K, V>): Collection<K, V> {
+    readTMap<K, V>(length: number = this.readInt32(), init: (it: FArchive) => Pair<K, V>): Collection<K, V> {
         const map = new Collection<K, V>()
         let i = 0
         while (i < length) {
