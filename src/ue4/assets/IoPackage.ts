@@ -202,7 +202,7 @@ export class IoPackage extends Package {
     toJson(context: any, locres: Locres) {
         context["import_map"] = this.importMap
         context["export_map"] = this.exportMap
-        context["export_properties"] = this.exports.map(it => it.toJson())
+        context["export_properties"] = this.exports.map(it => it.toJson(context, locres))
         return context
     }
 

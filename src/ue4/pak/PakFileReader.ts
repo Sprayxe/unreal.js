@@ -14,6 +14,7 @@ import { FPakFileArchive } from "./reader/FPakFileArchive";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { Utils } from "../../util/Utils";
 import { PakVersion_PathHashIndex, PakVersion_RelativeChunkOffsets } from "./enums/PakVersion";
+import Memory = WebAssembly.Memory;
 
 type FPathHashIndex = Collection<number, number>
 type FPakDirectory = Collection<string, number>
@@ -67,7 +68,51 @@ export class PakFileReader {
     }
 
     extractBuffer(gameFile: GameFile) {
+        if (gameFile.pakFileName !== this.fileName)
+            throw new Error(`Wrong pak file reader, required ${gameFile.pakFileName}, this is ${this.fileName}`)
+        console.debug(`Extracting ${gameFile.getName()} from $fileName at ${gameFile.pos} with size ${gameFile.size}`)
+        // If this reader is used as a concurrent reader create a clone of the main reader to
+        // provide thread safety
+        const exAr = this.concurrent ? this.Ar.clone() : this.Ar
+        exAr.seek(gameFile.pos)
+        // Pak Entry is written before the file data,
+        // but its the same as the one from the index, just without a name
+        const tempEntry = new FPakEntry(exAr, false)
+        tempEntry.compressionBlocks.forEach((it) => {
+            it.compressedStart += gameFile.pos
+            it.compressedEnd += gameFile.pos
+        })
+        if (gameFile.isCompressed()) {
+            console.debug(`${gameFile.getName()} is compressed with ${gameFile.compressionMethod}`)
+            const uncompressedBuffer = Buffer.alloc(gameFile.uncompressedSize)
+            let uncompressedBufferOff = 0
+            tempEntry.compressionBlocks.forEach((block) => {
+                exAr.seek(block.compressedStart)
+                let srcSize = (block.compressedEnd - block.compressedStart)
+                // Read the compressed block
+                let compressedBuffer: Buffer
+                if (gameFile.isEncrypted) {
+                    // The compressed block is encrypted, align it and then decrypt
+                    const key = this.aesKey
+                    if (!key)
+                        throw ParserException("Decrypting a encrypted file requires an encryption key to be set")
+                    srcSize = Utils.align(srcSize, BLOCK_SIZE)
+                    compressedBuffer = Aes.decrypt(exAr.read(srcSize), key)
+                } else {
+                    // Read the block data
+                    compressedBuffer = exAr.read(srcSize)
+                }
+                // Calculate the uncompressed size,
+                // its either just the compression block size
+                // or if its the last block its the remaining data size
+                const uncompressedSize = Math.min(gameFile.compressionBlockSize, gameFile.uncompressedSize - uncompressedBufferOff)
 
+                uncompressedBufferOff += gameFile.compressionBlockSize
+            })
+            return uncompressedBuffer
+        } else if (gameFile.isEncrypted) {
+
+        }
     }
 
     private readIndexUpdated() {

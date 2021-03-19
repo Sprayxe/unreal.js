@@ -1,8 +1,6 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
 import { EIoStoreTocReadOptions, FIoStoreTocResource } from "./ue4/io/IoStore";
-import { Aes } from "./encryption/aes/Aes";
-import { utils } from "aes-js";
 
 export class UnrealJS {
     path: string

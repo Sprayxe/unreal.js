@@ -7,14 +7,15 @@ import { FName } from "../ue4/objects/uobject/FName";
 import { Locres } from "../ue4/locres/Locres";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
 import Collection from "@discordjs/collection";
+import { IoPackage } from "../ue4/assets/IoPackage";
 
 export abstract class AbstractFileProvider extends FileProvider {
     protected globalDataLoaded = false
 
-    loadGameFile(filePath: string)
-    loadGameFile(file: GameFile)
-    loadGameFile(packageId: FPackageId)
-    loadGameFile(x: any): Package {
+    loadGameFile(filePath: string): Package
+    loadGameFile(file: GameFile): Package
+    loadGameFile(packageId: FPackageId): IoPackage
+    loadGameFile(x: any) {
         try {
             if (x instanceof GameFile) {
                 if (x.ioPackageId != null)

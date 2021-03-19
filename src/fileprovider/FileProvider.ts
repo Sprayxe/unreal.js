@@ -9,6 +9,7 @@ import { FnLanguage } from "../ue4/locres/FnLanguage";
 import { FPackageId } from "../ue4/objects/uobject/FPackageId";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
 import { FIoChunkId } from "../ue4/io/IoDispatcher";
+import { IoPackage } from "../ue4/assets/IoPackage";
 
 export abstract class FileProvider {
     abstract game: number
@@ -47,7 +48,7 @@ export abstract class FileProvider {
      * @param packageId the package ID to load.
      * @returns the parsed package
      */
-    abstract loadGameFile(packageId: FPackageId): any
+    abstract loadGameFile(packageId: FPackageId): IoPackage
 
     /**
      * Searches for the game file and then load its contained package

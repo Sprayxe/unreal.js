@@ -6,11 +6,16 @@ import { FIoStoreReader } from "../ue4/io/IoStore";
 import { FileProvider } from "./FileProvider";
 import { FNameMap } from "../ue4/asyncloading2/FNameMap";
 import { FPackageStore } from "../ue4/asyncloading2/FPackageStore";
-import { FIoDispatcherMountedContainer, FIoStoreEnvironment } from "../ue4/io/IoDispatcher";
+import { EIoChunkType, FIoChunkId, FIoDispatcherMountedContainer, FIoStoreEnvironment } from "../ue4/io/IoDispatcher";
 import { DataTypeConverter } from "../util/DataTypeConverter";
 import { Aes } from "../encryption/aes/Aes";
 import { InvalidAesKeyException } from "../exceptions/Exceptions";
 import { FPakFileArchive } from "../ue4/pak/reader/FPakFileArchive";
+import { FPackageId } from "../ue4/objects/uobject/FPackageId";
+import { IoPackage } from "../ue4/assets/IoPackage";
+import { GameFile } from "../ue4/pak/GameFile";
+import { Package } from "../ue4/assets/Package";
+import { File } from "../util/File";
 
 export abstract class PakFileProvider extends AbstractFileProvider {
     protected abstract _unloadedPaks: PakFileReader[]
@@ -18,7 +23,7 @@ export abstract class PakFileProvider extends AbstractFileProvider {
     protected abstract _mountedIoStoreReaders: FIoStoreReader[]
     protected abstract _requiredKeys: FGuid[]
     protected abstract _keys: Collection<FGuid, Buffer>
-    protected mountListeners: PakMountListeners[] = []
+    protected mountListeners: PakMountListener[] = []
     globalPackageStore = _globalPackageStore(this)
 
     keys(): Collection<FGuid, Buffer> {
@@ -109,6 +114,80 @@ export abstract class PakFileProvider extends AbstractFileProvider {
 
         this.mountListeners.forEach((it) => it.onMount(reader))
     }
+
+    loadGameFile(file: GameFile): Package
+    loadGameFile(packageId: FPackageId): IoPackage
+    loadGameFile(filePath: string): Package
+    loadGameFile(x?: any) {
+        if (x instanceof FPackageId) {
+            try {
+                const storeEntry = this.globalPackageStore.findStoreEntry(x)
+                if (!storeEntry)
+                    return null
+                const ioBuffer = this.saveChunk(new FIoChunkId(x.value(), 0, EIoChunkType.ExportBundleData))
+                return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore, this, this.game)
+            } catch (e) {
+                console.error("Failed to load package with id 0x%016X", x.value())
+            }
+        } else if (x instanceof GameFile) {
+            if (x.ioPackageId)
+                return this.loadGameFile(x.ioPackageId)
+            return super.loadGameFile(x)
+        } else {
+            return super.loadGameFile(x)
+        }
+    }
+
+    saveGameFile(file: GameFile): Buffer
+    saveGameFile(filePath: string): Buffer
+    saveGameFile(x?: any) {
+        if (x instanceof GameFile) {
+            if (x.ioPackageId)
+                return this.saveChunk(new FIoChunkId(x.ioPackageId.value(), 0, EIoChunkType.ExportBundleData))
+            const reader = this._mountedPaks.find(it => it.fileName === x.pakFileName)
+            if (!reader)
+                throw new Error("Couldn't find any possible pak file readers")
+            return reader.extract(x)
+        } else {
+            const path = this.fixPath(x)
+            const gameFile = this.findGameFile(path)
+            return gameFile ? this.saveGameFile(gameFile) : null
+        }
+    }
+
+    saveChunk(chunkId: FIoChunkId) {
+        for (const reader of this._mountedIoStoreReaders) {
+            try {
+                return null // TODO reader.read(chunkId)
+            } catch (e) {
+                /* TODO if (e.status.errorCode != EIoErrorCode.NotFound) {
+                    throw e
+                    }
+                }*/
+            }
+        }
+        throw new Error("Couldn't find any possible I/O store readers")
+    }
+
+    protected loadGlobalData(globalTocFile: File) {
+        this.globalDataLoaded = true
+        try {
+            const ioStoreReader = new FIoStoreReader()
+            ioStoreReader.initialize(new FIoStoreEnvironment(globalTocFile.path.substring(0, globalTocFile.path.lastIndexOf("."))), this._keys)
+            this._mountedIoStoreReaders.push(ioStoreReader)
+            console.info("Initialized I/O store")
+        } catch (e) {
+            console.error("Failed to mount I/O store global environment: '{}'", e.message || e)
+        }
+    }
+
+    addOnMountListener(listener: PakMountListener) {
+        this.mountListeners.push(listener)
+    }
+
+    removeOnMountListener(listener: PakMountListener) {
+        this.mountListeners = this.mountListeners.filter(it => it !== listener)
+    }
 }
 
 function _globalPackageStore(provider: FileProvider) {
@@ -121,6 +200,6 @@ function _globalPackageStore(provider: FileProvider) {
     return globalPackageStore
 }
 
-export abstract class PakMountListeners {
+export abstract class PakMountListener {
     abstract onMount(reader: PakFileReader)
 }

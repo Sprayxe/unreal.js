@@ -31,6 +31,10 @@ export class Utils {
         return (value & (alignment - 1)) <= 0
     }
 
+    static align(value: number, alignment: number) {
+        return value + alignment & (alignment - 1)
+    }
+
     static getArray(max: number, values: (i: number) => any[], clazz: any = null) {
         let n = 0
         const array = new Array(max)
