@@ -35,11 +35,7 @@ export class UnrealMap<K, V> extends Collection<K, V> {
     }
 
     has(key) {
-        const hash = typeof key === "object" ? objectHash(key) : Utils.hash(`${key}`).toString()
-        const ent = this._map.get(hash)
-        if (!ent)
-            return false
-        return !!ent.find(e => e.key.equals ? e.key.equals(key) : e.key === key)?.value
+       return !!this.get(key)
     }
 
     
