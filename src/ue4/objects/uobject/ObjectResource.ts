@@ -3,7 +3,6 @@ import { FName } from "./FName";
 import { PakPackage } from "../../assets/PakPackage";
 import { FAssetArchive } from "../../assets/reader/FAssetArchive";
 import { Utils } from "../../../util/Utils";
-import Long from "long"
 import { FGuid } from "../core/misc/Guid";
 import { UObject } from "../../assets/exports/UObject";
 import {
@@ -113,8 +112,8 @@ export class FObjectExport extends FObjectResource {
     superIndex: FPackageIndex
     templateIndex: FPackageIndex
     objectFlags: number
-    serialSize: Long
-    serialOffset: Long
+    serialSize: number
+    serialOffset: number
     forcedExport: boolean
     notForClient: boolean
     notForServer: boolean
@@ -137,8 +136,8 @@ export class FObjectExport extends FObjectResource {
         outerIndex: FPackageIndex,
         objectName: FName,
         objectFlags: number,
-        serialSize: Long,
-        serialOffset: Long,
+        serialSize: number,
+        serialOffset: number,
         forcedExport: boolean,
         notForClient: boolean,
         notForServer: boolean,
@@ -164,11 +163,11 @@ export class FObjectExport extends FObjectResource {
             this.objectFlags = Ar.readUInt32()
 
             if (Ar.ver < VER_UE4_64BIT_EXPORTMAP_SERIALSIZES) {
-                this.serialSize = new Long(Ar.readInt32())
-                this.serialOffset = new Long(Ar.readInt32())
+                this.serialSize = Ar.readInt32()
+                this.serialOffset = Ar.readInt32()
             } else {
-                this.serialSize = new Long(Ar.readInt64() as unknown as number)
-                this.serialOffset = new Long(Ar.readInt64() as unknown as number)
+                this.serialSize = Ar.readInt64() as unknown as number
+                this.serialOffset = Ar.readInt64() as unknown as number
             }
 
             this.forcedExport = Ar.readBoolean()
@@ -229,11 +228,11 @@ export class FObjectExport extends FObjectResource {
         Ar.writeUInt32(this.objectFlags)
 
         if (Ar.ver < VER_UE4_64BIT_EXPORTMAP_SERIALSIZES) {
-            Ar.writeInt32(this.serialSize.toInt())
-            Ar.writeInt32(this.serialOffset.toInt())
+            Ar.writeInt32(this.serialSize)
+            Ar.writeInt32(this.serialOffset)
         } else {
-            Ar.writeInt64(this.serialSize.toInt())
-            Ar.writeInt64(this.serialOffset.toInt())
+            Ar.writeInt64(this.serialSize)
+            Ar.writeInt64(this.serialOffset)
         }
 
         Ar.writeBoolean(this.forcedExport)

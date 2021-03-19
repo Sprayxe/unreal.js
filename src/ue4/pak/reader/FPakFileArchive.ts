@@ -4,11 +4,22 @@ import { File } from "../../../util/File";
 export class FPakFileArchive extends FPakArchive {
     rafile: Buffer
     file: File
+    protected position = 0
 
     constructor(rafile: Buffer, file: File) {
         super(file.name)
         this.rafile = rafile
         this.file = file
+    }
+
+    skip(n: number): number {
+        this.position += n
+        return this.position
+    }
+
+    seek(n: number) {
+        this.position = n
+        return n
     }
 
     clone(): FPakFileArchive {
@@ -26,7 +37,7 @@ export class FPakFileArchive extends FPakArchive {
     }
 
     pakPos() {
-        return this.rafile.byteOffset
+        return this.position
     }
     get pos(): number {
         return this.pakPos()

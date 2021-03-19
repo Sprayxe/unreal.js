@@ -1,4 +1,4 @@
-import { EType, FMappedName } from "./AsyncLoading2";
+import { FMappedName_EType, FMappedName } from "./AsyncLoading2";
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { FArchive } from "../reader/FArchive";
 import { loadNameBatch } from "../objects/uobject/NameBatchSerialization";
@@ -9,7 +9,7 @@ import { FMinimalName, FNameEntryId } from "../objects/uobject/NameTypes";
 
 export class FNameMap {
     nameEntries: string[] = []
-    nameMapType = EType.Global
+    nameMapType = FMappedName_EType.Global
 
     loadGlobal(provider: FileProvider ) {
         if (!this.nameEntries.length)
@@ -21,16 +21,16 @@ export class FNameMap {
         const nameBuffer = provider.saveChunk(namesId)
         const hashBuffer = provider.saveChunk(hashesId)
 
-        this.load(nameBuffer, hashBuffer, EType.Global)
+        this.load(nameBuffer, hashBuffer, FMappedName_EType.Global)
     }
 
     size() {
         return this.nameEntries.length
     }
 
-    load(nameBuffer: Buffer, hashBuffer: Buffer, nameMapType: EType)
-    load(nameBuffer: FArchive, hashBuffer: FArchive, nameMapType: EType)
-    load(nameBuffer: any, hashBuffer: any, nameMapType: EType) {
+    load(nameBuffer: Buffer, hashBuffer: Buffer, nameMapType: FMappedName_EType)
+    load(nameBuffer: FArchive, hashBuffer: FArchive, nameMapType: FMappedName_EType)
+    load(nameBuffer: any, hashBuffer: any, nameMapType: FMappedName_EType) {
         if (nameBuffer instanceof FArchive) {
             this.nameEntries = loadNameBatch(nameBuffer, hashBuffer)
             this.nameMapType = nameMapType

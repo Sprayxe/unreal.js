@@ -19,7 +19,6 @@ import {
 import osLocale from "os-locale";
 import { FByteArchive } from "../reader/FByteArchive";
 import { Utils } from "../../util/Utils";
-import { synchronized } from "synchronized-ts";
 
 export class FPackageStore extends FOnContainerMountedListener {
     provider: FileProvider

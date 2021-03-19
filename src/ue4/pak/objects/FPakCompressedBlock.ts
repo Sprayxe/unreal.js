@@ -1,8 +1,6 @@
-import * as Long from "long"
-
 export class FPakCompressedBlock {
-    compressedStart = Long.ZERO
-    compressedEnd = Long.ZERO
+    compressedStart = 0
+    compressedEnd = 0
 
     serialize(Ar: any) {
         Ar.writeInt64(this.compressedStart)

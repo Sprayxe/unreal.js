@@ -1,33 +1,27 @@
-import * as crypto from "crypto"
 import { InvalidAesKeyException } from "../../exceptions/Exceptions";
+import { ModeOfOperation } from "aes-js";
+import ecb = ModeOfOperation.ecb;
+import { DataTypeConverter } from "../../util/DataTypeConverter";
 
-const BLOCK_SIZE: number = 16
+export const BLOCK_SIZE: number = 16
 export class Aes {
+    static iv = Buffer.alloc(BLOCK_SIZE)
+
     static parseKey(key: string): Buffer {
         const data = key.startsWith("0x") ? key.substring(2) : key
         if (data.length !== 32)
             throw InvalidAesKeyException("Given AES key is not properly formatted, needs to be exactly 32 bytes long")
 
-        return Buffer.from(data)
+        return DataTypeConverter.parseHexBinary(data)
     }
 
     static decrypt(data: Buffer, key: Buffer) {
-        const iv = Buffer.alloc(BLOCK_SIZE)
-        const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv)
-
-        let decrypted: any = decipher.update(data, null, "base64")
-        decrypted += decipher.final()
-
-        return decrypted
+        const aesEcb = new ecb(key)
+        return Buffer.from(aesEcb.decrypt(data))
     }
 
     static encrypt(data: Buffer, key: Buffer) {
-        const iv = Buffer.alloc(BLOCK_SIZE)
-        const cipher = crypto.createDecipheriv("aes-256-gcm", key, iv)
-
-        let encrypted = cipher.update(data, null, "base64")
-        encrypted += cipher.final()
-
-        return encrypted
+        const aesEcb = new ecb(key)
+        return Buffer.from(aesEcb.encrypt(data))
     }
 }

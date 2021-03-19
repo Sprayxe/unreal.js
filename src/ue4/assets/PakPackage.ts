@@ -14,7 +14,6 @@ import { ObjectTypeRegistry } from "./ObjectTypeRegistry";
 import { Locres } from "../locres/Locres";
 import { FAssetArchiveWriter, FByteArchiveWriter } from "./writer/FAssetArchiveWriter";
 import { WritableStreamBuffer } from "stream-buffers";
-import Long from "long"
 
 export class PakPackage extends Package {
     protected packageMagic = 0x9E2A83C1
@@ -110,15 +109,15 @@ export class PakPackage extends Package {
         // If attached also setup the ubulk reader
         if (ubulkAr != null) {
             ubulkAr.uassetSize = this.info.totalHeaderSize
-            ubulkAr.uexpSize = eval(this.exportMap.map(it => it.serialSize.toInt()).join("+"))
+            ubulkAr.uexpSize = eval(this.exportMap.map(it => it.serialSize).join("+"))
             uexpAr.addPayload(PayloadType.UBULK, ubulkAr)
         }
 
         this.exportMap.forEach((e) => {
             const parse = () => {
                 const uexpAr2 = uexpAr.clone()
-                uexpAr2.seekRelative(e.serialOffset.toInt())
-                const validPos = (uexpAr2.pos + e.serialSize.toInt())
+                uexpAr2.seekRelative(e.serialOffset)
+                const validPos = (uexpAr2.pos + e.serialSize)
                 const obj = this.constructExport(e.classIndex.load())
                 obj.export = e
                 obj.name = e.objectName.text
@@ -128,7 +127,7 @@ export class PakPackage extends Package {
                 if (validPos !== uexpAr2.pos) {
                     console.warn(`Did not read ${obj.exportType} correctly, ${validPos - uexpAr.pos} bytes remaining`)
                 } else {
-                    console.debug(`Successfully read ${obj.exportType} at ${uexpAr2.toNormalPos(e.serialOffset.toInt())} with size ${e.serialSize}`)
+                    console.debug(`Successfully read ${obj.exportType} at ${uexpAr2.toNormalPos(e.serialOffset)} with size ${e.serialSize}`)
                 }
                 return obj
             }
@@ -255,8 +254,8 @@ export class PakPackage extends Package {
             it.serialize(uexpWriter)
             const finalPos = uexpWriter.relativePos()
             if (it.export) {
-                it.export.serialOffset = new Long(beginPos)
-                it.export.serialSize = new Long(finalPos - beginPos)
+                it.export.serialOffset = beginPos
+                it.export.serialSize = finalPos - beginPos
             }
         })
 

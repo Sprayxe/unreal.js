@@ -1,6 +1,5 @@
 import { FName } from "../../objects/uobject/FName";
 import { INDEX_NONE } from "../../../util/Const";
-import Long from "long"
 import { FGuid } from "../../objects/core/misc/Guid";
 import {
     VER_UE4_ARRAY_PROPERTY_INNER_TAGS,
@@ -36,7 +35,7 @@ export class FPropertyTag {
     /** Index if an array; else 0. */
     arrayIndex = INDEX_NONE
     /** Location in stream of tag size member */
-    sizeOffset = new Long(-1)
+    sizeOffset = -1
     structGuid?: FGuid = null
     hasPropertyGuid: boolean = false
     propertyGuid?: FGuid = null

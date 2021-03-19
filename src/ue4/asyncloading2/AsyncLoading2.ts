@@ -255,3 +255,91 @@ export class FContainerHeader {
         this.packageRedirects = Ar.readArray(() => new Pair(new FPackageId(Ar), new FPackageId(Ar)))
     }
 }
+
+export class FPackageSummary {
+    name: FMappedName
+    sourceName: FMappedName
+    packageFlags: number
+    cookedHeaderSize: number
+    nameMapNamesOffset: number
+    nameMapNamesSize: number
+    nameMapHashesOffset: number
+    nameMapHashesSize: number
+    importMapOffset: number
+    exportMapOffset: number
+    exportBundlesOffset: number
+    graphDataOffset: number
+    graphDataSize: number
+    pad: number /*= 0*/
+
+    constructor(Ar: FArchive) {
+        this.name = new FMappedName(Ar)
+        this.sourceName = new FMappedName(Ar)
+        this.packageFlags = Ar.readUInt32()
+        this.cookedHeaderSize = Ar.readUInt32()
+        this.nameMapNamesOffset = Ar.readInt32()
+        this.nameMapNamesSize = Ar.readInt32()
+        this.nameMapHashesOffset = Ar.readInt32()
+        this.nameMapHashesSize = Ar.readInt32()
+        this.importMapOffset = Ar.readInt32()
+        this.exportMapOffset = Ar.readInt32()
+        this.exportBundlesOffset = Ar.readInt32()
+        this.graphDataOffset = Ar.readInt32()
+        this.graphDataSize = Ar.readInt32()
+        this.pad = Ar.readInt32()
+    }
+}
+
+export class FExportMapEntry {
+    cookedSerialOffset = 0
+    cookedSerialSize = 0
+    objectName: FMappedName
+    outerIndex: FPackageObjectIndex
+    classIndex: FPackageObjectIndex
+    superIndex: FPackageObjectIndex
+    templateIndex: FPackageObjectIndex
+    globalImportIndex: FPackageObjectIndex
+    objectFlags: number
+    filterFlags: number
+    //uint8 Pad[3] = {};
+
+    constructor(Ar: FArchive) {
+        this.cookedSerialOffset = Ar.readUInt64() as unknown as number
+        this.cookedSerialSize = Ar.readUInt64() as unknown as number
+        this.objectName = new FMappedName(Ar)
+        this.outerIndex = new FPackageObjectIndex(Ar)
+        this.classIndex = new FPackageObjectIndex(Ar)
+        this.superIndex = new FPackageObjectIndex(Ar)
+        this.templateIndex = new FPackageObjectIndex(Ar)
+        this.globalImportIndex = new FPackageObjectIndex(Ar)
+        this.objectFlags = Ar.readUInt32()
+        this.filterFlags = Ar.readUInt8()
+        Ar.pos += 3
+    }
+}
+
+export class FExportBundleHeader {
+    firstEntryIndex: number
+    entryCount: number
+
+    constructor(Ar: FArchive) {
+        this.firstEntryIndex = Ar.readUInt32()
+        this.entryCount = Ar.readUInt32()
+    }
+}
+
+export class FExportBundleEntry {
+    localExportIndex: number
+    commandType: EExportCommandType
+
+    constructor(Ar: FArchive) {
+        this.localExportIndex = Ar.readInt32()
+        this.commandType = Object.values(EExportCommandType)[Ar.readInt32()]
+    }
+}
+
+export enum EExportCommandType {
+    ExportCommandType_Create = "ExportCommandType_Create",
+    ExportCommandType_Serialize = "ExportCommandType_Serialize",
+    ExportCommandType_Count = "ExportCommandType_Count"
+}

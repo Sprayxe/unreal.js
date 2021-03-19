@@ -6,10 +6,11 @@ import { FIoStoreReader } from "../ue4/io/IoStore";
 import { FileProvider } from "./FileProvider";
 import { FNameMap } from "../ue4/asyncloading2/FNameMap";
 import { FPackageStore } from "../ue4/asyncloading2/FPackageStore";
-import { FIoDispatcherMountedContainer } from "../ue4/io/IoDispatcher";
+import { FIoDispatcherMountedContainer, FIoStoreEnvironment } from "../ue4/io/IoDispatcher";
 import { DataTypeConverter } from "../util/DataTypeConverter";
 import { Aes } from "../encryption/aes/Aes";
 import { InvalidAesKeyException } from "../exceptions/Exceptions";
+import { FPakFileArchive } from "../ue4/pak/reader/FPakFileArchive";
 
 export abstract class PakFileProvider extends AbstractFileProvider {
     protected abstract _unloadedPaks: PakFileReader[]
@@ -86,8 +87,27 @@ export abstract class PakFileProvider extends AbstractFileProvider {
         }
     }
 
-    mount(reader: PakFileReader) {
+    protected mount(reader: PakFileReader) {
+        reader.readIndex()
+        reader.files.forEach((it) => this._files.set(it.path.toLowerCase(), it))
+        this._mountedPaks.push(reader)
 
+        if (this.globalDataLoaded && reader.Ar instanceof FPakFileArchive) {
+            const ioStoreEnvironment = new FIoStoreEnvironment(reader.Ar.file.path.substring(0, reader.Ar.file.path.lastIndexOf(".")))
+            try {
+                const ioStoreReader = new FIoStoreReader()
+                ioStoreReader.concurrent = reader.concurrent
+                ioStoreReader.initialize(ioStoreEnvironment, this.keys())
+                // TODO ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
+                this._mountedIoStoreReaders.push(ioStoreReader)
+                this.globalPackageStore.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
+                console.info("Mounted IoStore environment \"{}\"", ioStoreEnvironment.path)
+            } catch (e) {
+                console.warn("Failed to mount IoStore environment \"{}\" [{}]", ioStoreEnvironment.path, e.message)
+            }
+        }
+
+        this.mountListeners.forEach((it) => it.onMount(reader))
     }
 }
 

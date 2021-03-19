@@ -1,13 +1,15 @@
 export class File {
+    path: string
     name: string
     content: Buffer
 
-    constructor(name: string, content: Buffer) {
-        this.name = name
+    constructor(path: string, content: Buffer) {
+        this.name = path.split("/").pop()
         this.content = content
+        this.path = path
     }
 
     toString() {
-        return this.name
+        return this.path
     }
 }

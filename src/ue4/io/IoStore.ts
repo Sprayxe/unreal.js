@@ -316,6 +316,8 @@ export class FIoStoreReader {
     }*/
     environment: FIoStoreEnvironment
 
+    concurrent = false
+
     initialize(environment: FIoStoreEnvironment, decryptionKeys: Map<FGuid, Buffer>) {
         this.environment = environment
         const tocFilePath = this.environment.path + ".utoc";

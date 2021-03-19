@@ -7,9 +7,9 @@ import { FPackageId } from "../objects/uobject/FPackageId";
 
 export class GameFile {
     path: string = ""
-    pos: Long = null
-    size: Long = null
-    uncompressedSize: Long = null
+    pos: number = null
+    size: number = null
+    uncompressedSize: number = null
     compressionMethod: CompressionMethod = CompressionMethod.None
     compressedBlocks: FPakCompressedBlock[] = []
     compressionBlockSize: number = 0
