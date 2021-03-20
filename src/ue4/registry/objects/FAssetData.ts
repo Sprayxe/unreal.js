@@ -1,7 +1,7 @@
 import { FName } from "../../objects/uobject/FName";
-import Collection from "@discordjs/collection";
 import { FAssetBundleData } from "./AssetBundleData";
 import { FAssetRegistryArchive } from "../reader/AssetRegistryArchive";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class FAssetData {
     objectPath: FName
@@ -9,7 +9,7 @@ export class FAssetData {
     assetClass: FName
     packageName: FName
     assetName: FName
-    tagsAndValues = new Collection<FName, string>()
+    tagsAndValues = new UnrealMap<FName, string>()
     taggedAssetBundles: FAssetBundleData
     chunkIds: number[]
     packageFlags: number

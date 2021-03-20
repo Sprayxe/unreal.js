@@ -14,9 +14,9 @@ import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { UScriptMap } from "../../objects/uobject/UScriptMap";
 import { FMulticastScriptDelegate, FScriptDelegate } from "../../objects/uobject/ScriptDelegates";
 import { FSoftClassPath, FSoftObjectPath } from "../../objects/uobject/SoftObjectPath";
-import Collection from "@discordjs/collection";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FExportArchive } from "../reader/FExportArchive";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class FProperty {
     getTagTypeValue() {
@@ -249,7 +249,7 @@ export class FProperty {
             return new MapProperty(
                 this.valueOr(
                     () => new UScriptMap(Ar, typeData),
-                    () => new UScriptMap(0, new Collection()),
+                    () => new UScriptMap(0, new UnrealMap()),
                     type
                 )
             )

@@ -1,8 +1,8 @@
 import { FGuid } from "../misc/Guid";
-import Collection from "@discordjs/collection";
 import { FArchive } from "../../../reader/FArchive";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
+import { UnrealMap } from "../../../../util/UnrealMap";
 
 export class FTextLocalizationResource {
     locResMagic = new FGuid(0x7574140E, 0xFC034A67, 0x9D90154A, 0x1B7F37C3)
@@ -10,7 +10,7 @@ export class FTextLocalizationResource {
 
     version: number
     strArrayOffset: number
-    stringData: Collection<string, Collection<string, string>>
+    stringData: UnrealMap<string, UnrealMap<string, string>>
 
     constructor(Ar: FArchive) {
         const magic = new FGuid(Ar)
@@ -30,14 +30,14 @@ export class FTextLocalizationResource {
 
         Ar.readUInt32() // entryCount
         const nameSpaceCount = Ar.readUInt32()
-        this.stringData = new Collection()
+        this.stringData = new UnrealMap()
 
         let i = 0
         while (i < nameSpaceCount) {
             const nameSpace = new FTextKey(Ar)
             const keyCount = Ar.readUInt32()
 
-            const strings = new Collection<string, string>()
+            const strings = new UnrealMap<string, string>()
             let x = 0
             while (x < keyCount) {
                 const textKey = new FTextKey(Ar)

@@ -1,7 +1,7 @@
-import Collection from "@discordjs/collection";
+import { UnrealMap } from "../../../util/UnrealMap";
 import { UScriptStruct } from "../exports/UScriptStruct";
 
 export class TypeMappings {
-    types: Collection<string, UScriptStruct> = new Collection()
-    enums: Collection<string, string[]> = new Collection()
+    types: UnrealMap<string, UScriptStruct> = new UnrealMap()
+    enums: UnrealMap<string, string[]> = new UnrealMap()
 }

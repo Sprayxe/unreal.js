@@ -1,4 +1,3 @@
-import Collection from "@discordjs/collection";
 import { Ue4Version } from "../ue4/versions/Game";
 import { GameFile } from "../ue4/pak/GameFile";
 import { Package } from "../ue4/assets/Package";
@@ -10,11 +9,12 @@ import { FPackageId } from "../ue4/objects/uobject/FPackageId";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
 import { FIoChunkId } from "../ue4/io/IoDispatcher";
 import { IoPackage } from "../ue4/assets/IoPackage";
+import { UnrealMap } from "../util/UnrealMap";
 
 export abstract class FileProvider {
     abstract game: number
     mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()
-    protected abstract _files: Collection<string, GameFile>
+    protected abstract _files: UnrealMap<string, GameFile>
 
     get files() {
         return this._files
@@ -24,9 +24,9 @@ export abstract class FileProvider {
      * - the name of the game that is loaded by the provider
      */
     get gameName(): string {
-        const first = this.files.keys()[0]
+        const first = this.files.keyArray()[0]
         const subStr = first ? first.substring(0, first.indexOf("/")) : ""
-        return subStr.endsWith("game") ? subStr.substring("game", first.indexOf(0)) : ""
+        return subStr.endsWith("game") ? subStr.substring(0, first.indexOf("game")) : ""
     }
 
     /**
@@ -111,14 +111,14 @@ export abstract class FileProvider {
      * @param filePath the path to search for
      * @returns a map with the files name as key and data as value
      */
-    abstract savePackage(filePath: string): Collection<string, Buffer>
+    abstract savePackage(filePath: string): UnrealMap<string, Buffer>
 
     /**
      * Saves all parts of this package
      * @param file the game file to save
      * @returns a map with the files name as key and data as value
      */
-    abstract savePackage(file: any): Map<string, Buffer>
+    abstract savePackage(file: any): UnrealMap<string, Buffer>
 
     /**
      * Searches for the game file and then saves the it

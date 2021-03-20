@@ -3,11 +3,11 @@ import { FArchive } from "../reader/FArchive";
 import { FMinimalName } from "../objects/uobject/NameTypes";
 import { FPackageId } from "../objects/uobject/FPackageId";
 import { FIoContainerId } from "../io/IoContainerId";
-import Collection from "@discordjs/collection";
 import { Pair } from "../../util/Pair";
+import { UnrealMap } from "../../util/UnrealMap";
 
 export type FSourceToLocalizedPackageIdMap = Pair<FPackageId, FPackageId>[]
-export type FCulturePackageMap = Collection<string, FSourceToLocalizedPackageIdMap>
+export type FCulturePackageMap = UnrealMap<string, FSourceToLocalizedPackageIdMap>
 
 export const INVALID_INDEX = 0
 export const INDEX_BITS = 30

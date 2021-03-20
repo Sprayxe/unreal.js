@@ -1,8 +1,6 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
 import { EIoStoreTocReadOptions, FIoStoreTocResource } from "./ue4/io/IoStore";
-import Collection from "@discordjs/collection";
-import { UnrealMap } from "./util/UnrealMap";
 
 export class UnrealJS {
     path: string

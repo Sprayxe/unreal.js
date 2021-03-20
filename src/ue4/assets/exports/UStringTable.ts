@@ -1,14 +1,14 @@
 import { UObject } from "./UObject";
-import Collection from "@discordjs/collection";
 import { FName } from "../../objects/uobject/FName";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 
 export class UStringTable extends UObject {
     tableNamespace: string
-    entries: Collection<string, string>
-    keysToMetadata: Collection<string, Collection<FName, string>>
+    entries: UnrealMap<string, string>
+    keysToMetadata: UnrealMap<string, UnrealMap<FName, string>>
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         // TODO super.deserialize(Ar, validPos)
@@ -20,7 +20,7 @@ export class UStringTable extends UObject {
             }
         })
         this.keysToMetadata = Ar.readTMap(null, () => {
-            const map = new Collection<FName, string>()
+            const map = new UnrealMap<FName, string>()
             map.set(Ar.readFName(), Ar.readString())
             return {
                 key: Ar.readString(),

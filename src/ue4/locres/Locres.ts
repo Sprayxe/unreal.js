@@ -1,7 +1,7 @@
 import { FnLanguage } from "./FnLanguage";
 import { FByteArchive } from "../reader/FByteArchive";
 import { FTextLocalizationResource } from "../objects/core/i18n/FTextLocalizationResource";
-import Collection from "@discordjs/collection";
+import { UnrealMap } from "../../util/UnrealMap";
 
 export class Locres {
     locres: Buffer
@@ -22,7 +22,7 @@ export class Locres {
         this.texts.stringData.forEach((content, namespace) => {
             let targetNamespace = target.texts.stringData.get(namespace)
             if (targetNamespace) {
-                const newNameSpace = new Collection<string, string>()
+                const newNameSpace = new UnrealMap<string, string>()
                 target.texts.stringData.set(namespace, newNameSpace)
                 targetNamespace = newNameSpace
             }

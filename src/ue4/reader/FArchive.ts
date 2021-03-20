@@ -1,7 +1,7 @@
 import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
 import { ParserException } from "../../exceptions/Exceptions";
-import Collection from "@discordjs/collection";
 import { FName } from "../objects/uobject/FName";
+import { UnrealMap } from "../../util/UnrealMap";
 
 export class FArchive {
     data: Buffer // TODO please keep this in FByteArchive
@@ -159,8 +159,8 @@ export class FArchive {
         return array;
     }
 
-    readTMap<K, V>(length: number = this.readInt32(), init: (it: FArchive) => Pair<K, V>): Collection<K, V> {
-        const map = new Collection<K, V>()
+    readTMap<K, V>(length: number = this.readInt32(), init: (it: FArchive) => Pair<K, V>): UnrealMap<K, V> {
+        const map = new UnrealMap<K, V>()
         let i = 0
         while (i < length) {
             const { key, value } = init(this)

@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from "./IoDispatcher";
 import { FByteArchive } from "../reader/FByteArchive";
 import { int32, uint16, uint32, uint64, uint8 } from "../../Types";
+import { UnrealMap } from "../../util/UnrealMap";
 
 /**
  * I/O store container format version
@@ -281,7 +282,7 @@ export class FIoStoreTocResource {
 }
 
 export class FIoStoreToc {
-    chunkIdToIndex = new Map<FIoChunkId, int32>();
+    chunkIdToIndex = new UnrealMap<FIoChunkId, int32>();
     toc: FIoStoreTocResource
     filesToIndex = new Array<string>()
     fileTocEntryIndices = new Array<uint32>()
@@ -318,7 +319,7 @@ export class FIoStoreReader {
 
     concurrent = false
 
-    initialize(environment: FIoStoreEnvironment, decryptionKeys: Map<FGuid, Buffer>) {
+    initialize(environment: FIoStoreEnvironment, decryptionKeys: UnrealMap<FGuid, Buffer>) {
         this.environment = environment
         const tocFilePath = this.environment.path + ".utoc";
         const tocResource = this.toc.tocResource

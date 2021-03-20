@@ -6,7 +6,6 @@ import {
 } from "../io/IoDispatcher";
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { FNameMap } from "./FNameMap";
-import Collection from "@discordjs/collection";
 import { FIoContainerId } from "../io/IoContainerId";
 import { FPackageId } from "../objects/uobject/FPackageId";
 import {
@@ -19,6 +18,7 @@ import {
 import osLocale from "os-locale";
 import { FByteArchive } from "../reader/FByteArchive";
 import { Utils } from "../../util/Utils";
+import { UnrealMap } from "../../util/UnrealMap";
 
 export class FPackageStore extends FOnContainerMountedListener {
     provider: FileProvider
@@ -30,15 +30,15 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.globalNameMap = globalNameMap
     }
 
-    loadedContainers = new Collection<FIoContainerId, FLoadedContainer>()
+    loadedContainers = new UnrealMap<FIoContainerId, FLoadedContainer>()
 
     currentCultureNames: string[] = []
 
-    storeEntriesMap = new Collection<FPackageId, FPackageStoreEntry>()
-    redirectsPackageMap = new Collection<FPackageId, FPackageId>()
+    storeEntriesMap = new UnrealMap<FPackageId, FPackageStoreEntry>()
+    redirectsPackageMap = new UnrealMap<FPackageId, FPackageId>()
 
     scriptObjectEntries: FScriptObjectEntry[] = []
-    scriptObjectEntriesMap = new Collection<FPackageObjectIndex, FScriptObjectEntry>()
+    scriptObjectEntriesMap = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
 
     setupCulture() {
         this.currentCultureNames = []
@@ -127,7 +127,7 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.loadContainers([container])
     }
 
-    applyRedirects(redirects: Collection<FPackageId, FPackageId>) {
+    applyRedirects(redirects: UnrealMap<FPackageId, FPackageId>) {
         if (!redirects.size)
             return
 

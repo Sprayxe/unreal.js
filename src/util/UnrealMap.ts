@@ -1,9 +1,18 @@
 import Collection from "@discordjs/collection";
-import { UnrealMapHashEntry } from "../Types";
 import objectHash from "object-hash";
 import { Utils } from "./Utils";
 
 export class UnrealMap<K, V> {
+    [Symbol.iterator]<T>() {
+        const coll = new Map<K, V>()
+        new Array()
+            .concat(...this.mapToArray().map(m => m.map(_ => { return { key: _.key, value: _.value } })))
+            .forEach(v => coll.set(v.key, v.value))
+        return coll.entries()
+    }
+
+    private _keyArray: K[] = []
+    private _array: V[] = []
     private _map = new Collection<string, UnrealMapHashEntry[]>()
 
     /**
@@ -15,21 +24,27 @@ export class UnrealMap<K, V> {
      */
     public set(key: K, value: V): UnrealMap<K, V> {
         const hash = this.hash(key)
+        // get all entries that are stored under this hash
         let list = this._map.get(hash)
         if (!list) {
             list = []
             this._map.set(hash, list)
         }
+        // loop thru list and check if the elements already exists
         for (let i = 0; i < list.length; i++) {
             if (list[i].key.equals ? list[i].key.equals(key) : list[i].key === key) {
                 list[i].value = value
                 return this
             }
         }
+        // push entry into array
         list.push({
             key,
             value
         })
+        // refresh cache and return this collection
+        this.mapToKeyArray(true)
+        this.mapToValueArray(true)
         return this
     }
 
@@ -90,6 +105,9 @@ export class UnrealMap<K, V> {
             this._map.set(hash, list)
         else
             this._map.delete(hash)
+        // refresh cache
+        this.mapToKeyArray(true)
+        this.mapToValueArray(true)
         return true
     }
 
@@ -100,6 +118,17 @@ export class UnrealMap<K, V> {
      */
     public clear(): void {
         return this._map.clear()
+    }
+
+    /**
+     * Creates an ordered array of the values of this collection. The array will only be
+     * reconstructed if an item is added to or removed from the collection, or if you change the length of the array
+     * itself. If you don't want this caching behavior, use `[...collection.values()]` or
+     * `Array.from(collection.values())` instead.
+     * @returns {Array}
+     */
+    public values(): V[] {
+        return this.mapToValueArray()
     }
 
     /**
@@ -431,11 +460,22 @@ export class UnrealMap<K, V> {
         return this._map.array()
     }
 
-    private mapToValueArray(): V[] {
-        return [].concat(...this.mapToArray().map(m => m.map(_m => _m.value)))
+    private mapToValueArray(r?: boolean): V[] {
+        if (r || (this._array.length < 1 && this._map.size > 0)) {
+            this._array = [].concat(...this.mapToArray().map(m => m.map(_m => _m.value)))
+        }
+        return this._array
     }
 
-    private mapToKeyArray(): K[] {
-        return [].concat(...this.mapToArray().map(m => m.map(_m => _m.key)))
+    private mapToKeyArray(r?: boolean): K[] {
+        if (r || (this._keyArray.length < 1 && this._map.size > 0)) {
+            this._keyArray = [].concat(...this.mapToArray().map(m => m.map(_m => _m.key)))
+        }
+        return this._keyArray
     }
+}
+
+interface UnrealMapHashEntry {
+    key: any
+    value: any
 }

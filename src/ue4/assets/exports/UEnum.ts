@@ -2,7 +2,6 @@ import { UObject } from "./UObject";
 import { Pair } from "../../../util/Pair";
 import { FName } from "../../objects/uobject/FName";
 import { FAssetArchive } from "../reader/FAssetArchive";
-import Collection from "@discordjs/collection";
 
 export class UEnum extends UObject {
     /** List of pairs of all enum names and values. */

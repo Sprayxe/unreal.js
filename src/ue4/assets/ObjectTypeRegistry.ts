@@ -1,8 +1,8 @@
-import Collection from "@discordjs/collection";
+import { UnrealMap } from "../../util/UnrealMap"
 
 export class ObjectTypeRegistry {
-    static classes: Collection<string, any> = new Collection()
-    static structs: Collection<string, any> = new Collection()
+    static classes: UnrealMap<string, any> = new UnrealMap()
+    static structs: UnrealMap<string, any> = new UnrealMap()
 
     static init() {
         this.registerEngine()

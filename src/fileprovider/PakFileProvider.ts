@@ -1,7 +1,6 @@
 import { AbstractFileProvider } from "./AbstractFileProvider";
 import { PakFileReader } from "../ue4/pak/PakFileReader";
 import { FGuid } from "../ue4/objects/core/misc/Guid";
-import Collection from "@discordjs/collection";
 import { FIoStoreReader } from "../ue4/io/IoStore";
 import { FileProvider } from "./FileProvider";
 import { FNameMap } from "../ue4/asyncloading2/FNameMap";
@@ -16,21 +15,22 @@ import { IoPackage } from "../ue4/assets/IoPackage";
 import { GameFile } from "../ue4/pak/GameFile";
 import { Package } from "../ue4/assets/Package";
 import { File } from "../util/File";
+import { UnrealMap } from "../util/UnrealMap";
 
 export abstract class PakFileProvider extends AbstractFileProvider {
     protected abstract _unloadedPaks: PakFileReader[]
     protected abstract _mountedPaks: PakFileReader[]
     protected abstract _mountedIoStoreReaders: FIoStoreReader[]
     protected abstract _requiredKeys: FGuid[]
-    protected abstract _keys: Collection<FGuid, Buffer>
+    protected abstract _keys: UnrealMap<FGuid, Buffer>
     protected mountListeners: PakMountListener[] = []
     globalPackageStore = _globalPackageStore(this)
 
-    keys(): Collection<FGuid, Buffer> {
+    keys(): UnrealMap<FGuid, Buffer> {
         return this._keys
     }
 
-    keysStr(): Collection<FGuid, string> {
+    keysStr(): UnrealMap<FGuid, string> {
         return this.keys().mapValues(it => DataTypeConverter.printAesKey(it))
     }
 
@@ -54,11 +54,11 @@ export abstract class PakFileProvider extends AbstractFileProvider {
 
     }
 
-    submitKeysStr(keys: Collection<FGuid, string>) {
+    submitKeysStr(keys: UnrealMap<FGuid, string>) {
         return this.submitKeys(keys.mapValues(it => Aes.parseKey(it)))
     }
 
-    async submitKeys(keys: Collection<FGuid, Buffer>) {
+    async submitKeys(keys: UnrealMap<FGuid, Buffer>) {
         return await this.submitKeysAsync(keys)
     }
 
@@ -70,7 +70,7 @@ export abstract class PakFileProvider extends AbstractFileProvider {
      * - Submits keys asynchronously
      * @param newKeys Keys to submit
      */
-    async submitKeysAsync(newKeys: Collection<FGuid, Buffer>) {
+    async submitKeysAsync(newKeys: UnrealMap<FGuid, Buffer>) {
         for (const [guid, key] of newKeys) {
             if (!this.requiredKeys().find(k => k === guid))
                 continue

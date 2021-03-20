@@ -1,11 +1,11 @@
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
 import { FNameEntry } from "../../objects/uobject/FNameEntry";
 import { FObjectExport, FObjectImport } from "../../objects/uobject/ObjectResource";
-import Collection from "@discordjs/collection";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FName } from "../../objects/uobject/FName";
 import { WritableStreamBuffer } from "stream-buffers"
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class FAssetArchiveWriter extends FArchiveWriter {
     littleEndian = true
@@ -26,7 +26,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
     importMap: FObjectImport[]
     exportMap: FObjectExport[]
 
-    private payloads = new Collection<PayloadType, FAssetArchiveWriter>()
+    private payloads = new UnrealMap<PayloadType, FAssetArchiveWriter>()
 
     getPayload(type: PayloadType) {
         const p = this.payloads.get(type)

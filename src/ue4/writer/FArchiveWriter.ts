@@ -1,6 +1,7 @@
 import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
 import { ParserException } from "../../exceptions/Exceptions";
 import { FName } from "../objects/uobject/FName";
+import { UnrealMap } from "../../util/UnrealMap";
 
 export abstract class FArchiveWriter {
     game = GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)
@@ -82,11 +83,11 @@ export abstract class FArchiveWriter {
 
     writeFName(name: FName) {}
 
-    writeTMapWithoutSize<K, V>(map: Map<K, V>, write: (K, V) => void) {
+    writeTMapWithoutSize<K, V>(map: UnrealMap<K, V>, write: (K, V) => void) {
         map.forEach((v, k) => write(k, v))
     }
 
-    writeTMap<K, V>(map: Map<K, V>, write: (K, V) => void) {
+    writeTMap<K, V>(map: UnrealMap<K, V>, write: (K, V) => void) {
         this.writeInt32(map.size)
         this.writeTMapWithoutSize(map, write)
     }

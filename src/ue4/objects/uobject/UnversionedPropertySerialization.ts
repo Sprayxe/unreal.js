@@ -6,11 +6,11 @@ import { FExportArchive } from "../../assets/reader/FExportArchive";
 import { FName } from "./FName";
 import { UStruct } from "../../assets/exports/UStruct";
 import { UScriptStruct } from "../../assets/exports/UScriptStruct";
-import Collection from "@discordjs/collection";
 import BitSet from "bitset";
 import { FArchive } from "../../reader/FArchive";
 import { INDEX_NONE } from "../../../util/Const";
 import { ParserException, UnknownPropertyException } from "../../../exceptions/Exceptions";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo
@@ -54,7 +54,7 @@ export class FUnversionedStructSchema {
     }
 }
 
-export const schemaCache = new Collection<any, FUnversionedStructSchema>()
+export const schemaCache = new UnrealMap<any, FUnversionedStructSchema>()
 export function getOrCreateUnversionedSchema(struct: UStruct): FUnversionedStructSchema {
     if (struct instanceof UScriptStruct && struct.useClassProperties && struct.structClass) {
         const entry = schemaCache.get(struct.structClass)

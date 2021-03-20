@@ -6,8 +6,8 @@ import { FPackageId } from "../ue4/objects/uobject/FPackageId";
 import { FName } from "../ue4/objects/uobject/FName";
 import { Locres } from "../ue4/locres/Locres";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
-import Collection from "@discordjs/collection";
 import { IoPackage } from "../ue4/assets/IoPackage";
+import { UnrealMap } from "../util/UnrealMap";
 
 export abstract class AbstractFileProvider extends FileProvider {
     protected globalDataLoaded = false
@@ -117,11 +117,11 @@ export abstract class AbstractFileProvider extends FileProvider {
         }
     }
 
-    savePackage(filePath: string): Collection<string, Buffer>
-    savePackage(file: GameFile): Collection<string, Buffer>
-    savePackage(x?: any): Collection<string, Buffer> {
+    savePackage(filePath: string): UnrealMap<string, Buffer>
+    savePackage(file: GameFile): UnrealMap<string, Buffer>
+    savePackage(x?: any): UnrealMap<string, Buffer> {
         if (x instanceof GameFile) {
-            const map = new Collection<string, Buffer>()
+            const map = new UnrealMap<string, Buffer>()
             try {
                 if (!x.isUE4Package() || !x.hasUexp()) {
                     const data = this.saveGameFile(x)
@@ -144,7 +144,7 @@ export abstract class AbstractFileProvider extends FileProvider {
             const gameFile = this.findGameFile(path)
             if (gameFile)
                 return this.savePackage(gameFile)
-            const map = new Collection<string, Buffer>()
+            const map = new UnrealMap<string, Buffer>()
             try {
                 if (path.endsWith(".uasset") || path.endsWith(".umap")) {
                     const uasset = this.saveGameFile(path)

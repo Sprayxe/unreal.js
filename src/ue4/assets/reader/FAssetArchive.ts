@@ -1,12 +1,12 @@
 import { FByteArchive } from "../../reader/FByteArchive";
 import { FileProvider } from "../../../fileprovider/FileProvider";
-import Collection from "@discordjs/collection";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { PakPackage } from "../PakPackage";
 import { FName } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { Package } from "../Package";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class FAssetArchive extends FByteArchive {
     data: Buffer
@@ -21,7 +21,7 @@ export class FAssetArchive extends FByteArchive {
     }
 
     owner: Package
-    protected payloads: Collection<PayloadType, FAssetArchive> = new Collection<PayloadType, FAssetArchive>()
+    protected payloads: UnrealMap<PayloadType, FAssetArchive> = new UnrealMap<PayloadType, FAssetArchive>()
     uassetSize = 0
     uexpSize = 0
     bulkDataStartOffset = 0

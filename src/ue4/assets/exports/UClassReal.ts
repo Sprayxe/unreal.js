@@ -1,9 +1,9 @@
 import { UStruct } from "./UStruct";
-import Collection from "@discordjs/collection";
 import { UFunction } from "./UFunction";
 import { FName } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { FAssetArchive } from "../reader/FAssetArchive";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class UClassReal extends UStruct {
     /** Used to check if the class was cooked or not */
@@ -25,7 +25,7 @@ export class UClassReal extends UStruct {
     classDefaultObject: FPackageIndex
 
     /** Map of all functions by name contained in this class */
-    private funcMap: Collection<FName, UFunction>
+    private funcMap: UnrealMap<FName, UFunction>
 
     /**
      * The list of interfaces which this class implements, along with the pointer property that is located at the offset of the interface's vtable.

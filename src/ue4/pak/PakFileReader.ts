@@ -1,6 +1,5 @@
 import { FPakArchive } from "./reader/FPakArchive";
 import { GAME_UE4, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
-import Collection from "@discordjs/collection";
 import * as fs from "fs";
 import { FPakInfo } from "./objects/FPakInfo";
 import { DataTypeConverter } from "../../util/DataTypeConverter";
@@ -14,11 +13,11 @@ import { FPakFileArchive } from "./reader/FPakFileArchive";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { Utils } from "../../util/Utils";
 import { PakVersion_PathHashIndex, PakVersion_RelativeChunkOffsets } from "./enums/PakVersion";
-import Memory = WebAssembly.Memory;
+import { UnrealMap } from "../../util/UnrealMap";
 
-type FPathHashIndex = Collection<number, number>
-type FPakDirectory = Collection<string, number>
-type FDirectoryIndex = Collection<string, FPakDirectory>
+type FPathHashIndex = UnrealMap<number, number>
+type FPakDirectory = UnrealMap<string, number>
+type FDirectoryIndex = UnrealMap<string, FPakDirectory>
 
 export class PakFileReader {
     Ar: FPakArchive
@@ -185,7 +184,7 @@ export class PakFileReader {
         const encodedPakEntriesAr = new FByteArchive(encodedPakEntries)
         const begin = encodedPakEntriesAr.pos
 
-        const tempMap = new Collection<string, GameFile>()
+        const tempMap = new UnrealMap<string, GameFile>()
         let finalFileCount = 0
         for (const [dirName, dirContent] of directoryIndex) {
             for (const [fileName, offset] of dirContent) {
@@ -379,7 +378,7 @@ export class PakFileReader {
         this.fileCount = indexAr.readInt32()
         this.encryptedFileCount = 0
 
-        const tempMap = new Collection<string, GameFile>()
+        const tempMap = new UnrealMap<string, GameFile>()
         let i = 0
         while (i < this.fileCount) {
             const entry = new FPakEntry(indexAr, true)

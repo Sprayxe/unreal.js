@@ -1,16 +1,16 @@
-import Collection from "@discordjs/collection";
 import { FProperty, ReadType } from "../../assets/objects/FProperty";
 import { FAssetArchive } from "../../assets/reader/FAssetArchive";
 import { PropertyType } from "../../assets/objects/PropertyType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FAssetArchiveWriter } from "../../assets/writer/FAssetArchiveWriter";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class UScriptMap {
     numKeysToRemove: number
-    mapData: Collection<FProperty, FProperty>
+    mapData: UnrealMap<FProperty, FProperty>
 
     constructor(Ar: FAssetArchive, typeData: PropertyType)
-    constructor(numKeyToRemove: number, mapData: Collection<FProperty, FProperty>)
+    constructor(numKeyToRemove: number, mapData: UnrealMap<FProperty, FProperty>)
     constructor(x?: any, y?: any) {
         if (x instanceof FAssetArchive) {
             this.numKeysToRemove = x.readInt32()
@@ -22,7 +22,7 @@ export class UScriptMap {
                 }
             }
             const length = x.readInt32()
-            this.mapData = new Collection<FProperty, FProperty>()
+            this.mapData = new UnrealMap<FProperty, FProperty>()
             let i = 0
             while (i < length) {
                 let isReadingValue = false

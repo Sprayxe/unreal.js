@@ -6,8 +6,8 @@ import { loadNameBatch } from "../../objects/uobject/NameBatchSerialization";
 import { FName } from "../../objects/uobject/FName";
 import { NAME_NO_NUMBER_INTERNAL } from "../../objects/uobject/NameTypes";
 import { ParserException } from "../../../exceptions/Exceptions";
-import Collection from "@discordjs/collection";
 import { FAssetBundleData } from "../objects/AssetBundleData";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export abstract class FAssetRegistryArchive extends FArchiveProxy {
     constructor(wrappedAr: FArchive) {
@@ -56,9 +56,9 @@ export class FAssetRegistryReader extends FAssetRegistryArchive {
         out.taggedAssetBundles = new FAssetBundleData(this)
     }
 
-    private loadTags(): Collection<FName, string> {
+    private loadTags(): UnrealMap<FName, string> {
         const mapHandle = this.readUInt64()
-        const out = new Collection<FName, string>()
+        const out = new UnrealMap<FName, string>()
         new FPartialMapHandle(mapHandle as unknown as number).makeFullHandle(this.tags).forEachPair((it) => {
             out[it.key] = new FValueHandle(this.tags, it.value).asString()
         })
