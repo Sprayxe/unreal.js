@@ -117,6 +117,8 @@ export class UnrealMap<K, V> {
      * @returns {undefined}
      */
     public clear(): void {
+        this._array = []
+        this._keyArray = []
         return this._map.clear()
     }
 
