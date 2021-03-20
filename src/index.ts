@@ -1,6 +1,7 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
 import { EIoStoreTocReadOptions, FIoStoreTocResource } from "./ue4/io/IoStore";
+import { Oodle } from "./oodle/Oodle";
 
 export class UnrealJS {
     path: string
@@ -19,7 +20,10 @@ export class UnrealJS {
 }
 
 (async () => {
-    const u = new UnrealJS()
+    const src = Buffer.from("compressed")
+    const dst = Oodle.compress(src, 1, 1)
+    console.log(dst)
+    /*const u = new UnrealJS()
     const d = u.readGlobalUtoc()
-    console.log(d)
+    console.log(d)*/
 })()
