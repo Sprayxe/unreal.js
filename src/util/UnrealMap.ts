@@ -3,40 +3,439 @@ import { UnrealMapHashEntry } from "../Types";
 import objectHash from "object-hash";
 import { Utils } from "./Utils";
 
-export class UnrealMap<K, V> extends Collection<K, V> {
+export class UnrealMap<K, V> {
     private _map = new Collection<string, UnrealMapHashEntry[]>()
 
-    set(key, value): this {
-        const hash = typeof key === "object" ? objectHash(key) : Utils.hash(`${key}`).toString()
+    /**
+     * Identical to [Map.set()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/set).
+     * Sets a new element in the collection with the specified key and value.
+     * @param {*} key - The key of the element to add
+     * @param {*} value - The value of the element to add
+     * @returns {Collection}
+     */
+    public set(key: K, value: V): UnrealMap<K, V> {
+        const hash = this.hash(key)
         let list = this._map.get(hash)
         if (!list) {
             list = []
             this._map.set(hash, list)
         }
-        let i: number
-        for (i = 0; i < list.length; i++) {
+        for (let i = 0; i < list.length; i++) {
             if (list[i].key.equals ? list[i].key.equals(key) : list[i].key === key) {
                 list[i].value = value
-                return
+                return this
             }
         }
         list.push({
-            key: key,
-            value: value
+            key,
+            value
         })
+        return this
     }
 
-    get(key) {
-        const hash = typeof key === "object" ? objectHash(key) : Utils.hash(`${key}`).toString()
-        const ent = this._map.get(hash)
-        if (!ent)
-            return undefined
-        return ent.find(e => e.key.equals ? e.key.equals(key) : e.key === key)?.value
+    /**
+     * Identical to [Map.get()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/get).
+     * Gets an element with the specified key, and returns its value, or `undefined` if the element does not exist.
+     * @param {*} key - The key to get from this collection
+     * @returns {* | undefined}
+     */
+    public get(key: K): V | undefined {
+        const ent = this.getEntryByKey(key)
+        return ent?.find(e => e.key.equals ? e.key.equals(key) : e.key === key)?.value
     }
 
-    has(key) {
+    /**
+     * Identical to [Map.get()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/get).
+     * Gets an element with the specified hash key, and returns its value, or `undefined` if the element does not exist.
+     * @param {*} key - The key to get from this collection
+     * @returns {* | undefined}
+     */
+    public getByHash(key: string): UnrealMapHashEntry[]  {
+        return this._map.get(key)
+    }
+
+    /**
+     * Identical to [Map.has()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/has).
+     * Checks if an element exists in the collection.
+     * @param {*} key - The key of the element to check for
+     * @returns {boolean} `true` if the element exists, `false` if it does not exist.
+     */
+    public has(key: K): boolean {
        return !!this.get(key)
     }
 
-    
+    /**
+     * Identical to [Map.has()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/has).
+     * Checks if a hash element exists in the collection.
+     * @param {*} key - The key of the element to check for
+     * @returns {boolean} `true` if the element exists, `false` if it does not exist.
+     */
+    public hasHash(key: string): boolean {
+        return !!this.getByHash(key)
+    }
+
+    /**
+     * Identical to [Map.delete()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/delete).
+     * Deletes an element from the collection.
+     * @param {*} key - The key to delete from the collection
+     * @returns {boolean} `true` if the element was removed, `false` if the element does not exist.
+     */
+    public delete(key: K): boolean {
+        const hash = this.hash(key)
+        const ent1 = this.getEntryByKey(key)
+        if (!ent1)
+            return false
+        const list = ent1.filter(e => e.key.equals ? !e.key.equals(key) : e.key !== key)
+        if (list.length)
+            this._map.set(hash, list)
+        else
+            this._map.delete(hash)
+        return true
+    }
+
+    /**
+     * Identical to [Map.clear()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/clear).
+     * Removes all elements from the collection.
+     * @returns {undefined}
+     */
+    public clear(): void {
+        return this._map.clear()
+    }
+
+    /**
+     * Creates an ordered array of the values of this collection, and caches it internally. The array will only be
+     * reconstructed if an item is added to or removed from the collection, or if you change the length of the array
+     * itself. If you don't want this caching behavior, use `[...collection.values()]` or
+     * `Array.from(collection.values())` instead.
+     * @returns {Array}
+     */
+    public array(): V[] {
+        return this.mapToValueArray()
+    }
+
+    /**
+     * Creates an ordered array of the keys of this collection, and caches it internally. The array will only be
+     * reconstructed if an item is added to or removed from the collection, or if you change the length of the array
+     * itself. If you don't want this caching behavior, use `[...collection.keys()]` or
+     * `Array.from(collection.keys())` instead.
+     * @returns {Array}
+     */
+    public keyArray(): K[] {
+        return this.mapToKeyArray()
+    }
+
+    /**
+     * Obtains the first value(s) in this collection.
+     * @param {number} [amount] Amount of values to obtain from the beginning
+     * @returns {*|Array<*>} A single value if no amount is provided or an array of values, starting from the end if
+     * amount is negative
+     */
+    public first(): V | undefined;
+    public first(amount: number): V[];
+    public first(amount?: number): V | V[] | undefined {
+        if (!this.size) return undefined
+        if (typeof amount === "undefined") return this._map.values().next().value[0]?.value
+        if (amount < 0) return this.last(amount * -1)
+        amount = Math.min(this.size, amount)
+        const iter = this._map.values()
+        return Array.from({ length: amount }, (v, k) => iter.next().value[k]?.value)
+    }
+
+    /**
+     * Obtains the first key(s) in this collection.
+     * @param {number} [amount] Amount of keys to obtain from the beginning
+     * @returns {*|Array<*>} A single key if no amount is provided or an array of keys, starting from the end if
+     * amount is negative
+     */
+    public firstKey(): K | undefined;
+    public firstKey(amount: number): K[];
+    public firstKey(amount?: number): K | K[] | undefined {
+        if (!this.size) return undefined
+        if (typeof amount === "undefined") return this._map.values().next().value[0]?.key
+        if (amount < 0) return this.lastKey(amount * -1)
+        amount = Math.min(this.size, amount)
+        const iter = this._map.values()
+        return Array.from({ length: amount }, (v, k) => iter.next().value[k]?.key)
+    }
+
+    /**
+     * Obtains the first hash key(s) in this collection.
+     * @param {number} [amount] Amount of keys to obtain from the beginning
+     * @returns {*|Array<*>} A single key if no amount is provided or an array of keys, starting from the end if
+     * amount is negative
+     */
+    public firstHashKey(): UnrealMapHashEntry | undefined;
+    public firstHashKey(amount: number): UnrealMapHashEntry[];
+    public firstHashKey(amount?: number): UnrealMapHashEntry | UnrealMapHashEntry[] | undefined {
+        if (!this.size) return undefined
+        if (typeof amount === "undefined") return this._map.keys().next().value
+        if (amount < 0) return this.lastHashKey(amount * -1)
+        amount = Math.min(this.size, amount)
+        const iter = this._map.keys()
+        return Array.from({ length: amount }, (v, k) => iter.next().value)
+    }
+
+    /**
+     * Obtains the last value(s) in this collection. This relies on {@link Collection#array}, and thus the caching
+     * mechanism applies here as well.
+     * @param {number} [amount] Amount of values to obtain from the end
+     * @returns {*|Array<*>} A single value if no amount is provided or an array of values, starting from the start if
+     * amount is negative
+     */
+    public last(): V | undefined;
+    public last(amount: number): V[];
+    public last(amount?: number): V | V[] | undefined {
+        const arr = this.mapToValueArray()
+        if (typeof amount === "undefined") return [].concat(...arr).pop()
+        if (amount < 0) return this.first(amount * -1)
+        if (!amount) return []
+        return arr.slice(-1)
+    }
+
+    /**
+     * Obtains the last key(s) in this collection. This relies on {@link Collection#keyArray}, and thus the caching
+     * mechanism applies here as well.
+     * @param {number} [amount] Amount of keys to obtain from the end
+     * @returns {*|Array<*>} A single key if no amount is provided or an array of keys, starting from the start if
+     * amount is negative
+     */
+    public lastKey(): K | undefined;
+    public lastKey(amount: number): K[];
+    public lastKey(amount?: number): K | K[] | undefined {
+        const arr = this.mapToKeyArray()
+        if (typeof amount === "undefined") return [].concat(...arr).pop()
+        if (amount < 0) return this.firstKey(amount * -1)
+        if (!amount) return []
+        return arr.slice(-1)
+    }
+
+    /**
+     * Obtains the last hash key(s) in this collection. This relies on {@link Collection#keyArray}, and thus the caching
+     * mechanism applies here as well.
+     * @param {number} [amount] Amount of keys to obtain from the end
+     * @returns {*|Array<*>} A single key if no amount is provided or an array of keys, starting from the start if
+     * amount is negative
+     */
+    public lastHashKey(): UnrealMapHashEntry | undefined;
+    public lastHashKey(amount: number): UnrealMapHashEntry[];
+    public lastHashKey(amount?: number): UnrealMapHashEntry | UnrealMapHashEntry[] | undefined {
+        const arr = [].concat(...this._map.keys())
+        if (typeof amount === "undefined") return [].concat(...arr).pop()
+        if (amount < 0) return this.firstHashKey(amount * -1)
+        if (!amount) return []
+        return arr.slice(-1)
+    }
+
+    /**
+     * Obtains unique random value(s) from this collection. This relies on {@link Collection#array}, and thus the caching
+     * mechanism applies here as well.
+     * @param {number} [amount] Amount of values to obtain randomly
+     * @returns {*|Array<*>} A single value if no amount is provided or an array of values
+     */
+    public random(): V;
+    public random(amount: number): V[];
+    public random(amount?: number): V | V[] {
+        let arr = this.mapToValueArray()
+        if (typeof amount === "undefined") return arr[Math.floor(Math.random() * arr.length)]
+        if (!arr.length || !amount) return []
+        arr = arr.slice()
+        return Array.from(
+            { length: arr.length },
+            () => arr.splice(Math.floor(Math.random() * arr.length), 1)[0]
+        )
+    }
+
+    /**
+     * Obtains unique random value(s) from this collection. This relies on {@link Collection#array}, and thus the caching
+     * mechanism applies here as well.
+     * @param {number} [amount] Amount of values to obtain randomly
+     * @returns {*|Array<*>} A single value if no amount is provided or an array of values
+     */
+    public randomKey(): K;
+    public randomKey(amount: number): K[];
+    public randomKey(amount?: number): K | K[] {
+        let arr = this.mapToKeyArray()
+        if (typeof amount === "undefined") return arr[Math.floor(Math.random() * arr.length)]
+        if (!arr.length || !amount) return []
+        arr = arr.slice()
+        return Array.from(
+            { length: arr.length },
+            () => arr.splice(Math.floor(Math.random() * arr.length), 1)[0]
+        )
+    }
+
+    /**
+     * Obtains unique random key(s) from this collection. This relies on {@link Collection#keyArray}, and thus the caching
+     * mechanism applies here as well.
+     * @param {number} [amount] Amount of keys to obtain randomly
+     * @returns {*|Array<*>} A single key if no amount is provided or an array
+     */
+    public randomHashKey(): string;
+    public randomHashKey(amount: number): string[];
+    public randomHashKey(amount?: number): string | string[] {
+        let arr = this._map.keyArray()
+        if (typeof amount === 'undefined') return arr[Math.floor(Math.random() * arr.length)]
+        if (!arr.length || !amount) return []
+        arr = arr.slice()
+        return Array.from(
+            { length: Math.min(amount, arr.length) },
+            () => arr.splice(Math.floor(Math.random() * arr.length), 1)[0],
+        )
+    }
+
+    /**
+     * Searches for a single item where the given function returns a truthy value. This behaves like
+     * [Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find).
+     * <warn>All collections used in Discord.js are mapped using their `id` property, and if you want to find by id you
+     * should use the `get` method. See
+     * [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/get) for details.</warn>
+     * @param {Function} fn The function to test with (should return boolean)
+     * @param {*} [thisArg] Value to use as `this` when executing function
+     * @returns {*}
+     */
+    public find(fn: (value: V, key: K, collection: this) => boolean): V | undefined;
+    public find<T>(fn: (this: T, value: V, key: K, collection: this) => boolean, thisArg: T): V | undefined;
+    public find(fn: (value: V, key: K, collection: this) => boolean, thisArg?: unknown): V | undefined {
+        if (typeof thisArg !== 'undefined') fn = fn.bind(thisArg);
+        for (const { key, value } of [].concat(...this.mapToArray())) {
+            if (fn(value, key, this)) return value
+        }
+        return undefined
+    }
+
+    /**
+     * Searches for a single item where the given function returns a truthy value. This behaves like
+     * [Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find).
+     * <warn>All collections used in Discord.js are mapped using their `id` property, and if you want to find by id you
+     * should use the `get` method. See
+     * [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/get) for details.</warn>
+     * @param {Function} fn The function to test with (should return boolean)
+     * @param {*} [thisArg] Value to use as `this` when executing function
+     * @returns {*}
+     */
+    public findKey(fn: (value: V, key: K, collection: this) => boolean): V | undefined;
+    public findKey<T>(fn: (this: T, value: V, key: K, collection: this) => boolean, thisArg: T): V | undefined;
+    public findKey(fn: (value: V, key: K, collection: this) => boolean, thisArg?: unknown): V | undefined {
+        if (typeof thisArg !== 'undefined') fn = fn.bind(thisArg);
+        for (const { key, value } of [].concat(...this.mapToArray())) {
+            if (fn(value, key, this)) return key
+        }
+        return undefined
+    }
+
+    /**
+     * Identical to
+     * [Array.filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter),
+     * but returns a Collection instead of an Array.
+     * @param {Function} fn The function to test with (should return boolean)
+     * @param {*} [thisArg] Value to use as `this` when executing function
+     * @returns {UnrealMap}
+     */
+    public filter(fn: (value: V, key: K, collection: this) => boolean): UnrealMap<K, V>;
+    public filter<T>(fn: (this: T, value: V, key: K, collection: this) => boolean, thisArg: T): UnrealMap<K, V>;
+    public filter(fn: (value: V, key: K, collection: this) => boolean, thisArg?: unknown): UnrealMap<K, V> {
+        if (typeof thisArg !== 'undefined') fn = fn.bind(thisArg)
+        const results = new UnrealMap<K, V>() as this
+        for (const { key, value } of [].concat(...this.mapToArray())) {
+            if (fn(value, key, this)) results.set(key, value)
+        }
+        return results
+    }
+
+    /**
+     * Maps each item to another value into an array. Identical in behavior to
+     * [Array.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
+     * @param {Function} fn Function that produces an element of the new array, taking three arguments
+     * @param {*} [thisArg] Value to use as `this` when executing function
+     * @returns {Array}
+     */
+    public map<T>(fn: (value: V, key: K, collection: this) => T): T[];
+    public map<This, T>(fn: (this: This, value: V, key: K, collection: this) => T, thisArg: This): T[];
+    public map<T>(fn: (value: V, key: K, collection: this) => T, thisArg?: unknown): T[] {
+        if (typeof thisArg !== 'undefined') fn = fn.bind(thisArg)
+        const iter = this._map.entries()
+        return Array.from(
+            { length: this.size },
+            (): T => {
+                const { key, value } = iter.next().value[1][0]
+                return fn(value, key, this);
+            }
+        )
+    }
+
+    /**
+     * Maps each item to another value into a collection. Identical in behavior to
+     * [Array.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
+     * @param {Function} fn Function that produces an element of the new collection, taking three arguments
+     * @param {*} [thisArg] Value to use as `this` when executing function
+     * @returns {UnrealMap}
+     */
+    public mapValues<T>(fn: (value: V, key: K, collection: this) => T): UnrealMap<K, T>;
+    public mapValues<This, T>(fn: (this: This, value: V, key: K, collection: this) => T, thisArg: This): UnrealMap<K, T>;
+    public mapValues<T>(fn: (value: V, key: K, collection: this) => T, thisArg?: unknown): UnrealMap<K, T> {
+        if (typeof thisArg !== 'undefined') fn = fn.bind(thisArg);
+        const coll = new UnrealMap<K, T>()
+        for (const { key, value } of [].concat(...this.mapToArray())) coll.set(key, fn(value, key, this))
+        return coll
+    }
+
+    /**
+     * Identical to
+     * [Map.forEach()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/forEach),
+     * @param {Function} fn Function to execute for each element
+     * @param {*} [thisArg] Value to use as `this` when executing function
+     * @returns {void}
+     */
+    public forEach(fn: (value: V, key: K, collection: this) => void)
+    public forEach<T>(fn: (this: T, value: V, key: K, collection: this) => void, thisArg: T)
+    public forEach(fn: (value: V, key: K, collection: this) => void, thisArg?: unknown) {
+        const coll = new Map<K, V>()
+        const src = this.mapToArray().map(m => m.map(_ => { return { key: _.key, value: _.value } }))
+        const map = [].concat(...src).forEach((v) => coll.set(v.key, v.value))
+        coll.forEach(fn as unknown as (value: V, key: K, map: Map<K, V>) => void, thisArg);
+    }
+
+    /**
+     * Checks if this collection shares identical items with another.
+     * This is different to checking for equality using equal-signs, because
+     * the collections may be different objects, but contain the same data.
+     * @param {UnrealMap} collection Collection to compare with
+     * @returns {boolean} Whether the collections have identical contents
+     */
+    public equals(collection: UnrealMap<unknown, unknown>): boolean {
+        if (!collection) return false // runtime check
+        if (this === collection) return true
+        if (this.size !== collection.size) return false
+        for (const [key, value] of this._map) {
+            if (!collection.hasHash(key) || !value.find(v => v.value === collection.get(v.key))) {
+                return false
+            }
+        }
+        return true
+    }
+
+    get size() {
+        return this.array().length
+    }
+
+    private getEntryByKey(key: K) {
+        const hash = this.hash(key)
+        return this._map.get(hash)
+    }
+
+    private hash(value: any) {
+        return typeof value === "object" ? objectHash(value) : Utils.hash(`${value}`).toString()
+    }
+
+    private mapToArray() {
+        return this._map.array()
+    }
+
+    private mapToValueArray(): V[] {
+        return [].concat(...this.mapToArray().map(m => m.map(_m => _m.value)))
+    }
+
+    private mapToKeyArray(): K[] {
+        return [].concat(...this.mapToArray().map(m => m.map(_m => _m.key)))
+    }
 }
