@@ -1,6 +1,7 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
 import { EIoStoreTocReadOptions, FIoStoreTocResource } from "./ue4/io/IoStore";
+import { Oodle } from "./oodle/Oodle";
 
 export class UnrealJS {
     path: string
