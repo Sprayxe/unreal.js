@@ -14,6 +14,7 @@ import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { Utils } from "../../util/Utils";
 import { PakVersion_PathHashIndex, PakVersion_RelativeChunkOffsets } from "./enums/PakVersion";
 import { UnrealMap } from "../../util/UnrealMap";
+import { Compression } from "../../compression/Compression";
 
 type FPathHashIndex = UnrealMap<number, number>
 type FPakDirectory = UnrealMap<string, number>
@@ -105,12 +106,23 @@ export class PakFileReader {
                 // its either just the compression block size
                 // or if its the last block its the remaining data size
                 const uncompressedSize = Math.min(gameFile.compressionBlockSize, gameFile.uncompressedSize - uncompressedBufferOff)
-
+                Compression.uncompressMemory(gameFile.compressionMethod, uncompressedBuffer, compressedBuffer, uncompressedBufferOff, uncompressedSize, 0, srcSize)
                 uncompressedBufferOff += gameFile.compressionBlockSize
             })
             return uncompressedBuffer
         } else if (gameFile.isEncrypted) {
-
+            console.debug(`${gameFile.getName()} is encrypted, decrypting`)
+            const key = this.aesKey
+            if (!key)
+                throw ParserException("Decrypting a encrypted file requires an encryption key to be set")
+            // AES is block encryption, all encrypted blocks need to be 16 bytes long,
+            // fix the game file length by growing it to the next multiple of 16 bytes
+            const newLength = Utils.align(gameFile.size, BLOCK_SIZE)
+            let buffer = exAr.read(newLength)
+            buffer = Aes.decrypt(buffer, key)
+            return buffer.subarray(0, gameFile.size)
+        } else {
+            return Buffer.alloc(exAr.read(Buffer.alloc(gameFile.size)))
         }
     }
 

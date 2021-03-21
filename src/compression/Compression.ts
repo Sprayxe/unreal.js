@@ -4,9 +4,9 @@ import * as _Zlib from "zlib"
 import * as OodleLib from "../oodle/Oodle"
 
 export class Compression {
-    handlers = new Collection<string, CompressionHandler>()
+    static handlers = new Collection<string, CompressionHandler>()
 
-    private init() {
+    private static init() {
         // Compression: NONE
         class None implements CompressionHandler {
             static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number) {
@@ -41,7 +41,30 @@ export class Compression {
         this.handlers.set("Oodle", Oodle)
     }
 
-
+    static uncompressMemory(formatName: string, compressedBuffer: Buffer, uncompressedSize: number)
+    static uncompressMemory(formatName: string, compressedBuffer: Buffer, uncompressedBuffer: Buffer)
+    static uncompressMemory(
+        formatName: string,
+        uncompressedBuffer: Buffer,
+        compressedBuffer: Buffer,
+        uncompressedSize: number,
+        uncompressedBufferOff: number,
+        compressedBufferOff: number,
+        compressedSize: number
+    )
+    static uncompressMemory(...p) {
+        if (!this.handlers.size) this.init()
+        if (typeof p[2] === "number" && !p[3]) {
+            return this.uncompressMemory(p[0], p[1], Buffer.alloc(p[2]))
+        } else if (Buffer.isBuffer(p[2]) && !p[3]) {
+            return this.uncompressMemory(p[0], p[1], p[2], p[2].length, 0, 0, p[1].length)
+        } else {
+            const handler = this.handlers.get(p[0])
+            if (!handler)
+                throw new Error(`Unknown compression method ${p[0]}`)
+            handler.decompress(p[2], p[3], p[1], p[4], p[5], p[6])
+        }
+    }
 }
 
 export interface CompressionHandler {
