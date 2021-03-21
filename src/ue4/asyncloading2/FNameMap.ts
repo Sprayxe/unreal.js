@@ -12,8 +12,8 @@ export class FNameMap {
     nameMapType = FMappedName_EType.Global
 
     loadGlobal(provider: FileProvider ) {
-        if (!this.nameEntries.length)
-            throw new Error("Nameentries must not be empty")
+        if (this.nameEntries.length)
+            throw new Error("Nameentries must be empty")
 
         const namesId = new FIoChunkId(0, 0, EIoChunkType.LoaderGlobalNames)
         const hashesId = new FIoChunkId(0, 0, EIoChunkType.LoaderGlobalNameHashes)

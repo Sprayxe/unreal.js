@@ -11,6 +11,7 @@ import { FArchive } from "../../reader/FArchive";
 import { INDEX_NONE } from "../../../util/Const";
 import { ParserException, UnknownPropertyException } from "../../../exceptions/Exceptions";
 import { UnrealMap } from "../../../util/UnrealMap";
+import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../Globals";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo

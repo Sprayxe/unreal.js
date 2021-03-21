@@ -28,6 +28,7 @@ import { UStruct } from "./exports/UStruct";
 import { FExportArchive } from "./reader/FExportArchive";
 import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { Locres } from "../locres/Locres";
+import { GSuppressMissingSchemaErrors } from "../../Globals";
 
 export class IoPackage extends Package {
     packageId: FPackageId

@@ -16,6 +16,7 @@ import { PakVersion_PathHashIndex, PakVersion_RelativeChunkOffsets } from "./enu
 import { UnrealMap } from "../../util/UnrealMap";
 import { Compression } from "../../compression/Compression";
 import { File } from "../../util/File";
+import { FBytePakArchive } from "./reader/FBytePakArchive";
 
 type FPathHashIndex = UnrealMap<number, number>
 type FPakDirectory = UnrealMap<string, number>
@@ -146,7 +147,7 @@ export class PakFileReader {
             primaryIndex = Aes.decrypt(primaryIndex, key)
         }
 
-        const primaryIndexAr = this.Ar.createReader(primaryIndex, this.pakInfo.indexOffset)
+        const primaryIndexAr = this.Ar.createReader(primaryIndex, this.pakInfo.indexOffset, FBytePakArchive)
         primaryIndexAr.pakInfo = this.Ar.pakInfo
 
         try {
@@ -189,7 +190,7 @@ export class PakFileReader {
             directoryIndexData = Aes.decrypt(directoryIndexData, key)
         }
 
-        const directoryIndexAr = this.Ar.createReader(directoryIndexData, directoryIndexOffset)
+        const directoryIndexAr = this.Ar.createReader(directoryIndexData, directoryIndexOffset, FBytePakArchive)
         const directoryIndex = directoryIndexAr.readTMap(null, (it) => {
             return {
                 key: it.readString(),
@@ -373,7 +374,7 @@ export class PakFileReader {
             index = Aes.decrypt(index, key)
         }
 
-        const indexAr = this.Ar.createReader(index, this.pakInfo.indexOffset)
+        const indexAr = this.Ar.createReader(index, this.pakInfo.indexOffset, FBytePakArchive)
         indexAr.pakInfo = this.Ar.pakInfo
 
         // Read the index

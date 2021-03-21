@@ -1,12 +1,10 @@
 import { IPropertyHolder } from "../objects/IPropertyHolder";
-import { UStruct } from "./UStruct";
 import { FPropertyTag } from "../objects/FPropertyTag";
 import { FGuid } from "../../objects/core/misc/Guid";
 import { FObjectExport } from "../../objects/uobject/ObjectResource";
 import { Package } from "../Package";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { FAssetArchive } from "../reader/FAssetArchive";
-import { UClassReal } from "./UClassReal";
 import { FName } from "../../objects/uobject/FName";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { deserializeUnversionedProperties } from "../../objects/uobject/UnversionedPropertySerialization";
@@ -16,7 +14,7 @@ import { StringBuilder } from "../../../util/StringBuilder";
 export class UObject extends IPropertyHolder {
     name: string = ""
     outer: UObject = null
-    clazz: UStruct = null
+    clazz: any = null
     template: UObject = null
     properties: FPropertyTag[] = []
     objectGuid: FGuid = null
@@ -65,7 +63,7 @@ export class UObject extends IPropertyHolder {
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         this.properties = []
-        if (!(this instanceof UClassReal)) {
+        if (typeof (this as any).interfaces === "undefined") {
             if (Ar.useUnversionedPropertySerialization) {
                 deserializeUnversionedProperties(this.properties, this.clazz, Ar)
             } else {

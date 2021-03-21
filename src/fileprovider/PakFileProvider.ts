@@ -21,7 +21,7 @@ export abstract class PakFileProvider extends AbstractFileProvider {
     protected abstract _unloadedPaks: PakFileReader[]
     protected abstract _mountedPaks: PakFileReader[]
     protected abstract _mountedIoStoreReaders: FIoStoreReader[]
-    protected abstract _requiredKeys: FGuid[]
+    protected abstract _requiredKeys: FGuid[] = []
     protected abstract _keys: UnrealMap<FGuid, Buffer>
     protected mountListeners: PakMountListener[] = []
     globalPackageStore = _globalPackageStore(this)
@@ -158,7 +158,8 @@ export abstract class PakFileProvider extends AbstractFileProvider {
     }
 
     saveChunk(chunkId: FIoChunkId) {
-        for (const reader of this._mountedIoStoreReaders) {
+        for (const readerStack in this._mountedIoStoreReaders) {
+            const reader = this._mountedIoStoreReaders[readerStack]
             try {
                 return null // TODO reader.read(chunkId)
             } catch (e) {

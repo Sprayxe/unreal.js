@@ -13,15 +13,15 @@ import { File } from "../util/File";
 import { ParserException } from "../exceptions/Exceptions";
 
 export class DefaultFileProvider extends PakFileProvider {
-    protected folder: string
+    folder: string
     game: number
-    protected localFiles = new UnrealMap<string, Buffer>()
-    protected _files = new UnrealMap<string, GameFile>()
-    protected _unloadedPaks: PakFileReader[] = []
-    protected _requiredKeys: FGuid[] = []
-    protected _keys = new UnrealMap<FGuid, Buffer>()
-    protected _mountedPaks: PakFileReader[] = []
-    protected _mountedIoStoreReaders: FIoStoreReader[] = []
+    localFiles = new UnrealMap<string, Buffer>()
+    _files = new UnrealMap<string, GameFile>()
+    _unloadedPaks: PakFileReader[] = []
+    _requiredKeys: FGuid[] = []
+    _keys = new UnrealMap<FGuid, Buffer>()
+    _mountedPaks: PakFileReader[] = []
+    _mountedIoStoreReaders: FIoStoreReader[] = []
 
     constructor(folder: string, game: number = Ue4Version.GAME_UE4_LATEST, mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()) {
         super()
@@ -63,6 +63,7 @@ export class DefaultFileProvider extends PakFileProvider {
         folder = folder.endsWith("/") ? folder : folder + "/"
         if (!fs.existsSync(folder))
             throw ParserException(`Path '${folder}' does not exist!`)
+
         if (this.game >= GAME_UE4(26) && !this.globalDataLoaded && folder.endsWith("Paks/")) {
             const file = folder + "global.utoc"
             if (fs.existsSync(file)) {

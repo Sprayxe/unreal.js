@@ -2,6 +2,7 @@ import { FAssetArchive } from "./FAssetArchive";
 import { UObject } from "../exports/UObject";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
+import { GExportArchiveCheckDummyName } from "../../../Globals";
 
 export class FExportArchive extends FAssetArchive {
     data: Buffer

@@ -1,5 +1,4 @@
 import { FArchive } from "../../reader/FArchive";
-import { FBytePakArchive } from "./FBytePakArchive";
 import { GAME_UE4_GET_AR_VER } from "../../versions/Game";
 
 export abstract class FPakArchive extends FArchive {
@@ -30,15 +29,13 @@ export abstract class FPakArchive extends FArchive {
         return `FPakArchive Info: pos ${this.position}, stopper ${this.pakSize()}`
     }
 
-    readAndCreateReader(size: number) {
-        if (this instanceof FBytePakArchive)
-            throw new Error("This is already a temp reader")
+    readAndCreateReader(size: number, clazz: any) {
         const readerPos = this.pakPos()
-        return new FBytePakArchive(this.read(size), this.fileName, readerPos, this.pakSize())
+        return new clazz(this.read(size), this.fileName, readerPos, this.pakSize())
     }
 
-    createReader(data: Buffer, offset: number) {
-        const r = new FBytePakArchive(data, this.fileName, offset, this.pakSize())
+    createReader(data: Buffer, offset: number, clazz: any) {
+        const r = new clazz(data, this.fileName, offset, this.pakSize())
         r.game = this.game
         r.ver = GAME_UE4_GET_AR_VER(this.game)
         return r

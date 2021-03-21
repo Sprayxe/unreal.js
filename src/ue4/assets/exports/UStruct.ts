@@ -4,6 +4,7 @@ import { FAssetArchive } from "../reader/FAssetArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { UObject } from "./UObject";
 import { PropertyInfo } from "../objects/PropertyInfo";
+import { GDebugProperties } from "../../../Globals";
 
 export class UStruct extends UObject {
     superStruct: UStruct = null
