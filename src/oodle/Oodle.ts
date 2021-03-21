@@ -38,7 +38,7 @@ export class Oodle {
      * @return the decompressed data
      * @throws {DecompressException} when the decompression fails
      */
-    static decompress(src: Buffer, dstLen: number): void
+    static decompress(src: Buffer, dstLen: number): Buffer
 
     /**
      * Decompresses an Oodle compressed array
@@ -47,7 +47,7 @@ export class Oodle {
      * @throws DecompressException when the decompression fails
      * @throws {Error} when the library could not be loaded
      */
-    static decompress(src: Buffer, dst: Buffer): void
+    static decompress(src: Buffer, dst: Buffer): Buffer
 
     /**
      * Decompresses an Oodle compressed array
@@ -60,22 +60,21 @@ export class Oodle {
      * @throws {DecompressException} when the decompression fails
      * @throws {SyntaxError} when the library could not be loaded
      */
-    static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): void
+    static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): Buffer
 
-    static decompress(src: Buffer, dstLen?: Buffer | number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): void {
+    static decompress(src: Buffer, dstLen?: Buffer | number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): Buffer {
         this.ensureLib()
         if (typeof dstLen === "number" && !dst) {
-            return this.decompress(src, dstLen as number, Buffer.alloc(dstLen as number), 0, 0, src.length)
+            return this.decompress(src, Buffer.alloc(dstLen))
         } else if (Buffer.isBuffer(dstLen)) {
-            return this.decompress(src, (dstLen as Buffer).length, dstLen as Buffer, 0, 0, src.length)
+            return this.decompress(src, dstLen.length, dstLen, 0, 0, src.length)
         } else {
             const start = Date.now()
-            const sourcePointer = Buffer.alloc(srcLen)
-            ref.writePointer(src, srcOff, sourcePointer)
-            const dstPointer = Buffer.alloc(dstLen as number)
+            const sourcePointer = src.subarray(srcOff, srcOff + srcLen)
+            const dstPointer = dst.subarray(dstOff, dstOff + dstLen)
             const resultCode = this.oodleLib.OodleLZ_Decompress(
                 sourcePointer, srcLen,
-                dstPointer, dstLen as number,
+                dstPointer, dstLen,
                 0, 0, 2147483647,
                 ref.NULL, 0,
                 ref.NULL, ref.NULL, ref.NULL,
@@ -83,10 +82,10 @@ export class Oodle {
             )
             if (resultCode <= 0)
                 throw DecompressException(`Oodle decompression failed with code ${resultCode}`)
-            sourcePointer.readPointer(dst, dstOff, dstLen)
             const stop = Date.now()
             const seconds = (stop - start) / 1000
             console.info(`Oodle decompress: ${srcLen} => ${dstLen} (${seconds} seconds)`)
+            return dstPointer
         }
     }
 
@@ -102,10 +101,9 @@ export class Oodle {
     static compress(uncompressed: Buffer, compressor: number, compressionLevel: number) {
         this.ensureLib()
         const start = Date.now()
-        const srcLength = uncompressed.byteLength
+        const srcLength = uncompressed.length
         const dstLength = srcLength + 65536
-        const sourcePointer = Buffer.alloc(srcLength)
-        sourcePointer.write(uncompressed.toString(), 0, srcLength)
+        const sourcePointer = uncompressed.subarray(0, srcLength)
         const dstPointer = Buffer.alloc(dstLength)
         const resultCode = this.oodleLib.OodleLZ_Compress(
             compressor,
@@ -118,7 +116,7 @@ export class Oodle {
         const dst = dstPointer.subarray(0, resultCode)
         const stop = Date.now()
         const seconds = (stop - start) / 1000
-        console.info(`Oodle compress: ${srcLength} => ${dst.byteLength} (${seconds} seconds)`)
+        console.info(`Oodle compress: ${srcLength} => ${dst.length} (${seconds} seconds)`)
         return dst
     }
 
