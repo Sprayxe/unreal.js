@@ -1,7 +1,7 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
 import { EIoStoreTocReadOptions, FIoStoreTocResource } from "./ue4/io/IoStore";
-import { Oodle } from "./oodle/Oodle";
+import { COMPRESSION_LEVEL_OPTIMAL5, COMPRESSOR_HYDRA, COMPRESSOR_LEVIATHAN, Oodle } from "./oodle/Oodle";
 
 export class UnrealJS {
     path: string
@@ -21,8 +21,12 @@ export class UnrealJS {
 
 (async () => {
     const src = Buffer.from("compressed")
-    const dst = Oodle.compress(src, 1, 1)
+    console.log(src)
+    const dst = Oodle.compress(src, COMPRESSOR_HYDRA, COMPRESSION_LEVEL_OPTIMAL5)
     console.log(dst)
+    const _dst = Buffer.alloc(dst.length)
+    Oodle.decompress(dst, _dst)
+    console.log(_dst)
     /*const u = new UnrealJS()
     const d = u.readGlobalUtoc()
     console.log(d)*/

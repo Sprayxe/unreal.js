@@ -1,6 +1,32 @@
 import * as ffi from "ffi-napi"
-import ref from "ref-napi"
 import { CompressException, DecompressException, OodleException } from "./Exceptions";
+import ref from "ref-napi";
+
+export const COMPRESSOR_LZH = 0
+export const COMPRESSOR_LZHLW = 1
+export const COMPRESSOR_LZNIB = 2
+export const COMPRESSOR_NONE = 3
+export const COMPRESSOR_LZB16 = 4
+export const COMPRESSOR_LZBLW = 5
+export const COMPRESSOR_LZA = 6
+export const COMPRESSOR_LZNA = 7
+export const COMPRESSOR_KRAKEN = 8
+export const COMPRESSOR_MERMAID = 9
+export const COMPRESSOR_BITKNIT = 10
+export const COMPRESSOR_SELKIE = 11
+export const COMPRESSOR_HYDRA = 12
+export const COMPRESSOR_LEVIATHAN = 13
+
+export const COMPRESSION_LEVEL_NONE = 0
+export const COMPRESSION_LEVEL_SUPER_FAST = 1
+export const COMPRESSION_LEVEL_VERY_FAST = 2
+export const COMPRESSION_LEVEL_FAST = 3
+export const COMPRESSION_LEVEL_NORMAL = 4
+export const COMPRESSION_LEVEL_OPTIMAL1 = 5
+export const COMPRESSION_LEVEL_OPTIMAL2 = 6
+export const COMPRESSION_LEVEL_OPTIMAL3 = 7
+export const COMPRESSION_LEVEL_OPTIMAL4 = 8
+export const COMPRESSION_LEVEL_OPTIMAL5 = 9
 
 export class Oodle {
     static oodleLib: OodleLibrary = null
@@ -12,7 +38,7 @@ export class Oodle {
      * @return the decompressed data
      * @throws {DecompressException} when the decompression fails
      */
-    static decompress(src: Buffer, dstLen: number)
+    static decompress(src: Buffer, dstLen: number): void
 
     /**
      * Decompresses an Oodle compressed array
@@ -21,7 +47,7 @@ export class Oodle {
      * @throws DecompressException when the decompression fails
      * @throws {Error} when the library could not be loaded
      */
-    static decompress(src: Buffer, dst: Buffer)
+    static decompress(src: Buffer, dst: Buffer): void
 
     /**
      * Decompresses an Oodle compressed array
@@ -34,9 +60,9 @@ export class Oodle {
      * @throws {DecompressException} when the decompression fails
      * @throws {SyntaxError} when the library could not be loaded
      */
-    static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number)
+    static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): void
 
-    static decompress(src: Buffer, dstLen?: Buffer | number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number) {
+    static decompress(src: Buffer, dstLen?: Buffer | number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): void {
         this.ensureLib()
         if (typeof dstLen === "number" && !dst) {
             return this.decompress(src, dstLen as number, Buffer.alloc(dstLen as number), 0, 0, src.length)
@@ -50,14 +76,14 @@ export class Oodle {
             const resultCode = this.oodleLib.OodleLZ_Decompress(
                 sourcePointer, srcLen,
                 dstPointer, dstLen as number,
-                0, 0, Number.MAX_VALUE,
+                0, 0, 2147483647,
                 ref.NULL, 0,
                 ref.NULL, ref.NULL, ref.NULL,
                 0, 0
             )
-            if (resultCode < 0)
+            if (resultCode <= 0)
                 throw DecompressException(`Oodle decompression failed with code ${resultCode}`)
-            ref.readPointer(sourcePointer, dstOff, dstLen as number).copy(dst)
+            sourcePointer.readPointer(dst, dstOff, dstLen)
             const stop = Date.now()
             const seconds = (stop - start) / 1000
             console.info(`Oodle decompress: ${srcLen} => ${dstLen} (${seconds} seconds)`)
@@ -76,10 +102,10 @@ export class Oodle {
     static compress(uncompressed: Buffer, compressor: number, compressionLevel: number) {
         this.ensureLib()
         const start = Date.now()
-        const srcLength = uncompressed.length
+        const srcLength = uncompressed.byteLength
         const dstLength = srcLength + 65536
         const sourcePointer = Buffer.alloc(srcLength)
-        ref.writePointer(uncompressed, 0, sourcePointer)
+        sourcePointer.write(uncompressed.toString(), 0, srcLength)
         const dstPointer = Buffer.alloc(dstLength)
         const resultCode = this.oodleLib.OodleLZ_Compress(
             compressor,
@@ -92,7 +118,7 @@ export class Oodle {
         const dst = dstPointer.subarray(0, resultCode)
         const stop = Date.now()
         const seconds = (stop - start) / 1000
-        console.info(`Oodle compress: ${srcLength} => ${dst.length} (${seconds} seconds)`)
+        console.info(`Oodle compress: ${srcLength} => ${dst.byteLength} (${seconds} seconds)`)
         return dst
     }
 
@@ -100,7 +126,7 @@ export class Oodle {
         try {
             if (!this.oodleLib) {
                 this.oodleLib = ffi.Library("oo2core_8_win64.dll", {
-                    OodleLZ_Decompress: [ref.types.int, ["uint8*", "int", "uint8*", "size_t", "int", "int", "int", "uint8*", "size_t", "void*", "void*", "void*", "size_t", "int"]],
+                    OodleLZ_Decompress: ["int", ["uint8*", "int", "uint8*", "size_t", "int", "int", "int", "uint8*", "size_t", "void*", "void*", "void*", "size_t", "int"]],
                     OodleLZ_Compress: ["int", ["int", "uint8*", "size_t", "uint8*", "int", "void*", "size_t", "size_t", "void*", "size_t"]]
                 })
             }
