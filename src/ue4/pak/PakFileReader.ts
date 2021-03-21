@@ -1,5 +1,5 @@
 import { FPakArchive } from "./reader/FPakArchive";
-import { GAME_UE4, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
+import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
 import * as fs from "fs";
 import { FPakInfo } from "./objects/FPakInfo";
 import { DataTypeConverter } from "../../util/DataTypeConverter";
@@ -15,6 +15,7 @@ import { Utils } from "../../util/Utils";
 import { PakVersion_PathHashIndex, PakVersion_RelativeChunkOffsets } from "./enums/PakVersion";
 import { UnrealMap } from "../../util/UnrealMap";
 import { Compression } from "../../compression/Compression";
+import { File } from "../../util/File";
 
 type FPathHashIndex = UnrealMap<number, number>
 type FPakDirectory = UnrealMap<string, number>
@@ -26,11 +27,19 @@ export class PakFileReader {
     file: Buffer
     game: number
 
-    constructor(Ar: FPakArchive, keepIndexData: boolean = false, file: string | Buffer, game: number = GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)) {
-        this.Ar = Ar
-        this.keepIndexData = keepIndexData
-        this.file = file instanceof Buffer ? file : fs.readFileSync(file)
-        this.game = game
+    constructor(file: string | Buffer, game?: number)
+    constructor(Ar: FPakArchive, keepIndexData?: boolean)
+    constructor(x?: any, y?: any) {
+        if (x instanceof FPakArchive) {
+            this.Ar = x
+            this.keepIndexData = y || false
+        } else {
+            this.file = x instanceof Buffer ? x : fs.readFileSync(x)
+            this.Ar = new FPakFileArchive(this.file, new File("", this.file))
+            this.game = y || GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)
+            this.Ar.game = this.game
+            this.Ar.ver = GAME_UE4_GET_AR_VER(this.game)
+        }
     }
 
     concurrent = false

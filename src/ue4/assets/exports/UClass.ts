@@ -5,7 +5,11 @@ import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
 
-export class UClassReal extends UStruct {
+export class UClass extends UStruct {
+    constructor() {
+        super()
+    }
+
     /** Used to check if the class was cooked or not */
     bCooked = false
 

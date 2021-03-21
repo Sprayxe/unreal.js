@@ -51,7 +51,9 @@ export abstract class PakFileProvider extends AbstractFileProvider {
     }
 
     submitKey(guid: FGuid, key: Buffer | string) {
-
+        return Buffer.isBuffer(key) ?
+            this.submitKeys(new UnrealMap<FGuid, Buffer>().set(guid, key)) :
+            this.submitKeysStr(new UnrealMap<FGuid, string>().set(guid, key))
     }
 
     submitKeysStr(keys: UnrealMap<FGuid, string>) {
