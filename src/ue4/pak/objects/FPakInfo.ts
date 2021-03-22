@@ -62,8 +62,8 @@ export class FPakInfo {
 
     constructor(Ar: FArchive, maxNumCompressionMethods: number = 4) {
         // New FPakInfo fields
-        this.encryptionKeyGuid = new FGuid(Ar)
         this.encryptedIndex = Ar.readFlag()
+        this.encryptionKeyGuid = new FGuid(Ar)
 
         // Old FPakInfoFields
         const magic = Ar.readUInt32()
