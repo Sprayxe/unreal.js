@@ -286,7 +286,7 @@ export class FIoStoreTocResource {
 
 export class FIoStoreToc {
     chunkIdToIndex = new UnrealMap<FIoChunkId, int32>();
-    toc: FIoStoreTocResource
+    toc = new FIoStoreTocResource()
     filesToIndex = new Array<string>()
     fileTocEntryIndices = new Array<uint32>()
 

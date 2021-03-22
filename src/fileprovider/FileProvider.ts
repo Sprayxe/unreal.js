@@ -7,7 +7,13 @@ import { Locres } from "../ue4/locres/Locres";
 import { FnLanguage } from "../ue4/locres/FnLanguage";
 import { FPackageId } from "../ue4/objects/uobject/FPackageId";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
-import { EIoChunkType, FIoChunkId, FIoDispatcherMountedContainer, FIoStoreEnvironment } from "../ue4/io/IoDispatcher";
+import {
+    createIoChunkId,
+    EIoChunkType,
+    FIoChunkId,
+    FIoDispatcherMountedContainer,
+    FIoStoreEnvironment
+} from "../ue4/io/IoDispatcher";
 import { IoPackage } from "../ue4/assets/IoPackage";
 import { UnrealMap } from "../util/UnrealMap";
 import { PakPackage } from "../ue4/assets/PakPackage";
@@ -380,7 +386,7 @@ export class FileProvider {
     saveGameFile(x: any) {
         if (x instanceof GameFile) {
             if (x.ioPackageId)
-                return this.saveChunk(new FIoChunkId(x.ioPackageId.value(), 0, EIoChunkType.ExportBundleData))
+                return this.saveChunk(createIoChunkId(BigInt(x.ioPackageId.value()), 0, EIoChunkType.ExportBundleData))
             const reader = this._mountedPaks.find(it => it.fileName === x.pakFileName)
             if (!reader)
                 throw new Error("Couldn't find any possible pak file readers")
@@ -401,12 +407,9 @@ export class FileProvider {
         for (const readerStack in this._mountedIoStoreReaders) {
             const reader = this._mountedIoStoreReaders[readerStack]
             try {
-                return null // TODO reader.read(chunkId)
+                return reader.read(chunkId)
             } catch (e) {
-                /* TODO if (e.status.errorCode != EIoErrorCode.NotFound) {
-                    throw e
-                    }
-                }*/
+                console.error(e)
             }
         }
         throw new Error("Couldn't find any possible I/O store readers")

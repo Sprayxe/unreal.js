@@ -3,7 +3,7 @@ import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../
 import * as fs from "fs";
 import { FPakInfo } from "./objects/FPakInfo";
 import { DataTypeConverter } from "../../util/DataTypeConverter";
-import { Aes, BLOCK_SIZE } from "../../encryption/aes/Aes";
+import { Aes } from "../../encryption/aes/Aes";
 import { GameFile } from "./GameFile";
 import { InvalidAesKeyException, ParserException } from "../../exceptions/Exceptions";
 import { FByteArchive } from "../reader/FByteArchive";
@@ -110,7 +110,7 @@ export class PakFileReader {
                     const key = this.aesKey
                     if (!key)
                         throw ParserException("Decrypting a encrypted file requires an encryption key to be set")
-                    srcSize = Utils.align(srcSize, BLOCK_SIZE)
+                    srcSize = Utils.align(srcSize, Aes.BLOCK_SIZE)
                     compressedBuffer = Aes.decrypt(exAr.read(srcSize), key)
                 } else {
                     // Read the block data
@@ -120,7 +120,7 @@ export class PakFileReader {
                 // its either just the compression block size
                 // or if its the last block its the remaining data size
                 const uncompressedSize = Math.min(gameFile.compressionBlockSize, gameFile.uncompressedSize - uncompressedBufferOff)
-                Compression.uncompressMemory(gameFile.compressionMethod, uncompressedBuffer, compressedBuffer, uncompressedBufferOff, uncompressedSize, 0, srcSize)
+                Compression.uncompress(gameFile.compressionMethod, uncompressedBuffer, uncompressedBufferOff, uncompressedSize, compressedBuffer, 0, srcSize)
                 uncompressedBufferOff += gameFile.compressionBlockSize
             })
             return uncompressedBuffer
@@ -131,7 +131,7 @@ export class PakFileReader {
                 throw ParserException("Decrypting a encrypted file requires an encryption key to be set")
             // AES is block encryption, all encrypted blocks need to be 16 bytes long,
             // fix the game file length by growing it to the next multiple of 16 bytes
-            const newLength = Utils.align(gameFile.size, BLOCK_SIZE)
+            const newLength = Utils.align(gameFile.size, Aes.BLOCK_SIZE)
             let buffer = exAr.read(newLength)
             buffer = Aes.decrypt(buffer, key)
             return buffer.subarray(0, gameFile.size)
@@ -340,7 +340,7 @@ export class PakFileReader {
             // Get the right pointer to start copying the CompressionBlocks information from.
 
             // Alignment of the compressed blocks
-            const compressedBlockAlignment = encrypted ? BLOCK_SIZE : 1
+            const compressedBlockAlignment = encrypted ? Aes.BLOCK_SIZE : 1
 
             // CompressedBlockOffset is the starting offset. Everything else can be derived from there.
             let compressedBlockOffset = baseOffset + FPakEntry.getSerializedSize(this.pakInfo.version, compressionMethodIndex, compressionBlocksCount)

@@ -1,4 +1,5 @@
 import {
+    createIoChunkId,
     EIoChunkType,
     FIoChunkId,
     FIoDispatcherMountedContainer,
@@ -46,7 +47,7 @@ export class FPackageStore extends FOnContainerMountedListener {
     }
 
     setupInitialLoadData() {
-        const initialLoadIoBuffer = this.provider.saveChunk(new FIoChunkId(0, 0, EIoChunkType.LoaderInitialLoadMeta))
+        const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(BigInt(0), 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
         const numScriptObjects = initialLoadArchive.readInt32()
         Utils.repeat(numScriptObjects, () => {
@@ -82,7 +83,7 @@ export class FPackageStore extends FOnContainerMountedListener {
             loadedContainer.bValid = true
             loadedContainer.order = container.environment.order
 
-            const headerChunkId = new FIoChunkId(containerId.value() as unknown as number, 0, EIoChunkType.ContainerHeader)
+            const headerChunkId = createIoChunkId(containerId.value(), 0, EIoChunkType.ContainerHeader)
             const ioBuffer = this.provider.saveChunk(headerChunkId)
 
             const containerHeader = new FContainerHeader(new FByteArchive(ioBuffer))

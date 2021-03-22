@@ -3,7 +3,7 @@ import { FileProvider } from "../../fileprovider/FileProvider";
 import { FArchive } from "../reader/FArchive";
 import { loadNameBatch } from "../objects/uobject/NameBatchSerialization";
 import { FByteArchive } from "../reader/FByteArchive";
-import { EIoChunkType, FIoChunkId } from "../io/IoDispatcher";
+import { createIoChunkId, EIoChunkType, FIoChunkId } from "../io/IoDispatcher";
 import { FName } from "../objects/uobject/FName";
 import { FMinimalName, FNameEntryId } from "../objects/uobject/NameTypes";
 
@@ -15,8 +15,8 @@ export class FNameMap {
         if (this.nameEntries.length)
             throw new Error("Nameentries must be empty")
 
-        const namesId = new FIoChunkId(0, 0, EIoChunkType.LoaderGlobalNames)
-        const hashesId = new FIoChunkId(0, 0, EIoChunkType.LoaderGlobalNameHashes)
+        const namesId = createIoChunkId(BigInt(0), 0, EIoChunkType.LoaderGlobalNames)
+        const hashesId = createIoChunkId(BigInt(0), 0, EIoChunkType.LoaderGlobalNameHashes)
 
         const nameBuffer = provider.saveChunk(namesId)
         const hashBuffer = provider.saveChunk(hashesId)
