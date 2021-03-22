@@ -464,7 +464,8 @@ export class FileProvider {
                             this.mount(reader)
                         } else {
                             this._unloadedPaks.push(reader)
-                            if (!this._requiredKeys.find(r => r.equals(reader.pakInfo.encryptionKeyGuid))) this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
+                            if (!this._requiredKeys.find(r => r.equals(reader.pakInfo.encryptionKeyGuid)))
+                                this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
                         }
                     } catch (e) {
                         console.error(e)

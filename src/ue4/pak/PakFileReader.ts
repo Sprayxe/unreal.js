@@ -244,7 +244,7 @@ export class PakFileReader {
         this.files = files
 
         let stats = sprintf("Pak %s: %d files", this.Ar instanceof FPakFileArchive ? this.Ar.file : this.fileName, fileCount)
-        if (this.encryptedFileCount != 0)
+        if (this.encryptedFileCount !== 0)
             stats += sprintf(" (%d encrypted)", this.encryptedFileCount)
         if (this.mountPrefix.includes('/'))
             stats += sprintf(", mount point: \"%s\"", this.mountPrefix)

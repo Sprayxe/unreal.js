@@ -30,7 +30,7 @@ export class UStringTable extends UObject {
     }
 
     serialize(Ar: FAssetArchiveWriter) {
-        // TODO super.serialize(Ar)
+        super.serialize(Ar)
         Ar.writeString(this.tableNamespace)
         Ar.writeTMap(this.entries, (key, value) => {
             Ar.writeString(key)

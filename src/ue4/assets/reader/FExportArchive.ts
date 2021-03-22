@@ -1,13 +1,12 @@
 import { FAssetArchive } from "./FAssetArchive";
 import { UObject } from "../exports/UObject";
-import { PayloadType } from "../util/PayloadType";
-import { ParserException } from "../../../exceptions/Exceptions";
 import { GExportArchiveCheckDummyName } from "../../../Globals";
+import { IoPackage } from "../IoPackage";
 
 export class FExportArchive extends FAssetArchive {
     data: Buffer
     obj: UObject
-    pkg: any // TODO IoPackage
+    pkg: IoPackage
 
     constructor(data: Buffer, obj: UObject, pkg: any) {
         super(data, pkg.provider, pkg.fileName)
