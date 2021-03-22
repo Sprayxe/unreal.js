@@ -1,11 +1,10 @@
 import { InvalidAesKeyException } from "../../exceptions/Exceptions";
 import { ModeOfOperation } from "aes-js";
-import ecb = ModeOfOperation.ecb;
 import { DataTypeConverter } from "../../util/DataTypeConverter";
+import ecb = ModeOfOperation.ecb;
 
-export const BLOCK_SIZE: number = 16
 export class Aes {
-    static iv = Buffer.alloc(BLOCK_SIZE)
+    static BLOCK_SIZE = 16
 
     static parseKey(key: string): Buffer {
         const data = key.startsWith("0x") ? key.substring(2) : key

@@ -6,6 +6,9 @@ import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from
 import { FByteArchive } from "../reader/FByteArchive";
 import { int32, uint16, uint32, uint64, uint8 } from "../../Types";
 import { UnrealMap } from "../../util/UnrealMap";
+import { Aes } from "../../encryption/aes/Aes";
+import { Compression } from "../../compression/Compression";
+import { Utils } from "../../util/Utils";
 
 /**
  * I/O store container format version
@@ -283,9 +286,7 @@ export class FIoStoreTocResource {
 
 export class FIoStoreToc {
     chunkIdToIndex = new UnrealMap<FIoChunkId, int32>();
-    toc: FIoStoreTocResource
-    filesToIndex = new Array<string>()
-    fileTocEntryIndices = new Array<uint32>()
+    toc = new FIoStoreTocResource()
 
     initialize() {
         this.chunkIdToIndex.clear()
@@ -326,7 +327,7 @@ export class FIoStoreReader {
         tocResource.read(new FByteArchive(fs.readFileSync(tocFilePath)), EIoStoreTocReadOptions.ReadAll)
         this.toc.initialize()
 
-        this.containerFileHandles = []
+        this.containerFileHandles = new Array(tocResource.header.partitionCount)
         for (let partitionIndex = 0; partitionIndex < tocResource.header.partitionCount; ++partitionIndex) {
             let containerFilePath = ""
             containerFilePath += this.environment.path
@@ -335,7 +336,7 @@ export class FIoStoreReader {
             }
             containerFilePath += ".ucas"
             try {
-                this.containerFileHandles.push(fs.openSync(containerFilePath, "rs"))
+                this.containerFileHandles[partitionIndex] = fs.openSync(containerFilePath, "rs")
             } catch (err) {
                 throw new Error(`Failed to open IoStore container file '${containerFilePath}'`)
             }
@@ -359,4 +360,64 @@ export class FIoStoreReader {
     get containerFlags() { return this.toc.tocResource.header.containerFlags }
 
     get encryptionKeyGuid() { return this.toc.tocResource.header.encryptionKeyGuid }
+
+    read(chunkId: FIoChunkId/*, options: FIoReadOptions = FIoReadOptions()*/): Buffer {
+        const offsetAndLength = this.toc.getOffsetAndLength(chunkId)
+        if (!offsetAndLength) {
+            throw new Error("Unknown chunk ID")
+        }
+
+        const offset = Number(offsetAndLength.offset);
+        const length = Number(offsetAndLength.length);
+        const threadBuffers = new FThreadBuffers();
+        const tocResource = this.toc.tocResource
+        const compressionBlockSize = tocResource.header.compressionBlockSize
+        const firstBlockIndex = Math.floor(offset / compressionBlockSize)
+        const lastBlockIndex = Math.floor((Utils.align(offset + length, compressionBlockSize) - 1) / compressionBlockSize)
+        let offsetInBlock = offset % compressionBlockSize
+        const dst = Buffer.allocUnsafe(length)
+        let dstOff = 0
+        let remainingSize = length
+        for (let blockIndex = firstBlockIndex; blockIndex <= lastBlockIndex; ++blockIndex) {
+            const compressionBlock = tocResource.compressionBlocks[blockIndex]
+            const rawSize = Utils.align(compressionBlock.compressedSize, Aes.BLOCK_SIZE)
+            if (threadBuffers.compressedBuffer == null || threadBuffers.compressedBuffer.length < rawSize) {
+                threadBuffers.compressedBuffer = Buffer.allocUnsafe(rawSize)
+            }
+            const uncompressedSize = compressionBlock.uncompressedSize
+            if (threadBuffers.uncompressedBuffer == null || threadBuffers.uncompressedBuffer.length < uncompressedSize) {
+                threadBuffers.uncompressedBuffer = Buffer.allocUnsafe(uncompressedSize)
+            }
+            const partitionIndex = 0//Math.floor(compressionBlock.offset / tocResource.header.partitionSize)
+            const partitionOffset = Number(compressionBlock.offset % tocResource.header.partitionSize)
+            const fileHandle = this.containerFileHandles[partitionIndex]
+            fs.readSync(fileHandle, threadBuffers.compressedBuffer, 0, rawSize, partitionOffset)
+            if (tocResource.header.containerFlags & EIoContainerFlags.Encrypted) {
+                Aes.decrypt(threadBuffers.compressedBuffer.subarray(0, rawSize), this.decryptionKey)
+            }
+            let src: Buffer
+            if (compressionBlock.compressionMethodIndex === 0) {
+                src = threadBuffers.compressedBuffer
+            } else {
+                const compressionMethod = tocResource.compressionMethods[compressionBlock.compressionMethodIndex]
+                try {
+                    Compression.uncompress(compressionMethod, threadBuffers.uncompressedBuffer, 0, uncompressedSize, threadBuffers.compressedBuffer, 0, compressionBlock.compressedSize)
+                    src = threadBuffers.uncompressedBuffer
+                } catch (e) {
+                    throw new Error("Failed uncompressing block")
+                }
+            }
+            const sizeInBlock = Math.min(compressionBlockSize - offsetInBlock, remainingSize)
+            src.copy(dst, dstOff, offsetInBlock, offsetInBlock + sizeInBlock)
+            offsetInBlock = 0
+            remainingSize -= sizeInBlock
+            dstOff += sizeInBlock
+        }
+        return dst
+    }
+}
+
+class FThreadBuffers {
+    uncompressedBuffer: Buffer
+    compressedBuffer: Buffer
 }
