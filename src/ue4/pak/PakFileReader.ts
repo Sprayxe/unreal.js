@@ -84,7 +84,7 @@ export class PakFileReader {
     extractBuffer(gameFile: GameFile) {
         if (gameFile.pakFileName !== this.fileName)
             throw new Error(`Wrong pak file reader, required ${gameFile.pakFileName}, this is ${this.fileName}`)
-        console.debug(`Extracting ${gameFile.getName()} from $fileName at ${gameFile.pos} with size ${gameFile.size}`)
+        console.debug(`Extracting ${gameFile.getName()} from ${this.fileName} at ${gameFile.pos} with size ${gameFile.size}`)
         // If this reader is used as a concurrent reader create a clone of the main reader to
         // provide thread safety
         const exAr = this.concurrent ? this.Ar.clone() : this.Ar

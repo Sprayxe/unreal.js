@@ -9,11 +9,7 @@ export class FNameEntryId {
     constructor(value: number)
     constructor(Ar: FArchive)
     constructor(x?: any) {
-        if (x instanceof FArchive) {
-            this.value = x.readUInt8()
-        } else {
-            this.value = x
-        }
+        this.value = x instanceof FArchive ? x.readUInt8() : x
     }
 }
 

@@ -9,10 +9,10 @@ import { UnrealMap } from "../../util/UnrealMap";
 export type FSourceToLocalizedPackageIdMap = Pair<FPackageId, FPackageId>[]
 export type FCulturePackageMap = UnrealMap<string, FSourceToLocalizedPackageIdMap>
 
-export const INVALID_INDEX = 0
+export const INVALID_INDEX = ~0
 export const INDEX_BITS = 30
 export const INDEX_MASK = (1 << INDEX_BITS) - 1
-export const TYPE_MASK = INDEX_MASK
+export const TYPE_MASK = ~INDEX_MASK
 export const TYPE_SHIFT = INDEX_BITS
 
 export class FMappedName {
@@ -37,8 +37,8 @@ export class FMappedName {
         return mappedName.isValid()
     }
 
-    private index: number
-    num: number
+    private index: number = INVALID_INDEX
+    num: number = INVALID_INDEX
 
     constructor(Ar?: FArchive) {
         if (Ar) {
@@ -56,6 +56,7 @@ export class FMappedName {
     }
 
     isGlobal() {
+        console.log(((this.index & TYPE_MASK) >> TYPE_SHIFT) !== 0)
         return ((this.index & TYPE_MASK) >> TYPE_SHIFT) !== 0
     }
 

@@ -108,11 +108,13 @@ export class FileProvider {
                 continue
             for (const reader of this.unloadedPaksByGuid(guid)) {
                 try {
+                    console.log("Mounted IoStore environment \"%s\"", reader.fileName)
                     reader.aesKey = key
                     this._keys.set(guid, key)
                     this.mount(reader)
                     this._unloadedPaks = this._unloadedPaks.filter(v => v !== reader)
-                    this._requiredKeys = this._requiredKeys.filter(v => v !== guid)
+                    this._requiredKeys = this._requiredKeys.filter(v => !v.equals(guid))
+                    console.log("Mounted IoStore environment \"%s\"", reader.fileName)
                 } catch (e) {
                     if (e instanceof InvalidAesKeyException) {
                         this._keys.delete(guid)
@@ -454,16 +456,17 @@ export class FileProvider {
             const file = await fsAsync.readFile(path)
             if (path.endsWith("pak")) {
                 try {
-                    console.log("Found IoStore environment \"%s\"!", path)
+                    const absolutePath = path.split("/").pop()
+                    console.log("Mounting IoStore environment \"%s\"...", absolutePath)
                     const reader = new PakFileReader(new File(path, file), this.game)
                     if (!reader.isEncrypted()) {
-                        console.log("Mounting IoStore environment \"%s\"...", path)
                         this.mount(reader)
-                        console.log("Mounted IoStore environment \"%s\"", path)
+                        console.log("Mounted IoStore environment \"%s\"", absolutePath)
                     } else {
                         this._unloadedPaks.push(reader)
                         if (!this._requiredKeys.find(r => r.equals(reader.pakInfo.encryptionKeyGuid)))
                             this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
+                        console.log("Could not mount IoStore environment \"%s\": Missing aes key", absolutePath)
                     }
                 } catch (e) {
                     console.error(e)
