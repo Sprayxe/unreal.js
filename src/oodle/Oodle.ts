@@ -75,7 +75,7 @@ export class Oodle {
             const resultCode = this.oodleLib.OodleLZ_Decompress(
                 sourcePointer, srcLen,
                 dstPointer, dstLen,
-                0, 0, 2147483647,
+                0, 0, 0,
                 ref.NULL, 0,
                 ref.NULL, ref.NULL, ref.NULL,
                 0, 0

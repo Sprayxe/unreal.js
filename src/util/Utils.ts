@@ -32,7 +32,7 @@ export class Utils {
     }
 
     static align(value: number, alignment: number) {
-        return value + alignment & (alignment - 1)
+        return value + alignment & ~(alignment - 1)
     }
 
     static getArray(max: number, values: (i: number) => any[], clazz: any = null) {

@@ -1,6 +1,5 @@
 import { FArchive } from "../reader/FArchive";
 import { int32, uint16, uint64 } from "../../Types";
-import { Utils } from "../../util/Utils";
 import { FIoContainerId } from "./IoContainerId";
 
 /**
@@ -33,16 +32,12 @@ export class FIoChunkHash {
 export class FIoChunkId {
     id = Buffer.alloc(12)
 
-    constructor(chunkId: number, chunkIndex: number, ioChunkType: EIoChunkType)
-    constructor(Ar?: FArchive)
-    constructor(x?: any, y?: any, z?: any) {
-        if (x && x instanceof FArchive) {
-            x.read(this.id)
-        } else if (x) {
-            this.id.set([x])
-            this.id.set([y])
-            this.id.set([Utils.ordinal(z, EIoChunkType)], 11)
-        }
+    constructor(Ar?: FArchive) {
+        if (Ar) Ar.read(this.id)
+    }
+
+    equals(other: FIoChunkId): boolean {
+        return this.id.equals(other.id)
     }
 }
 

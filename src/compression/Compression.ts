@@ -9,7 +9,7 @@ export class Compression {
     private static init() {
         // Compression: NONE
         class None implements CompressionHandler {
-            static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number) {
+            static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
                 assert(srcLen === dstLen)
                 src.copy(dst, dstOff, srcOff, srcOff + srcLen)
             }
@@ -17,7 +17,7 @@ export class Compression {
         this.handlers.set("None", None)
         // Compression: Zlib
         class Zlib implements CompressionHandler {
-            static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number) {
+            static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
                 const content = _Zlib.inflateSync(src)
                 content.copy(dst, dstOff, srcOff, srcOff + srcLen)
             }
@@ -25,7 +25,7 @@ export class Compression {
         this.handlers.set("Zlib", Zlib)
         // Compression: Gzip
         class Gzip implements CompressionHandler {
-            static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number) {
+            static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
                 const content = _Zlib.gunzipSync(src)
                 content.copy(dst, dstOff, srcOff, srcOff + srcLen)
             }
@@ -33,7 +33,7 @@ export class Compression {
         this.handlers.set("Gzip", Gzip)
         // Compression: Oodle
         class Oodle implements CompressionHandler {
-            static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number) {
+            static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
                 const decomp = OodleLib.Oodle.decompress(src, dstLen, dst, dstOff, srcOff, srcLen)
                 decomp.copy(dst, dstOff, srcOff, srcOff + srcLen)
             }
@@ -41,32 +41,26 @@ export class Compression {
         this.handlers.set("Oodle", Oodle)
     }
 
-    static uncompressMemory(formatName: string, compressedBuffer: Buffer, uncompressedSize: number)
-    static uncompressMemory(formatName: string, compressedBuffer: Buffer, uncompressedBuffer: Buffer)
-    static uncompressMemory(
-        formatName: string,
-        uncompressedBuffer: Buffer,
-        compressedBuffer: Buffer,
-        uncompressedSize: number,
-        uncompressedBufferOff: number,
-        compressedBufferOff: number,
-        compressedSize: number
-    )
-    static uncompressMemory(...p) {
-        if (!this.handlers.size) this.init()
-        if (typeof p[2] === "number" && !p[3]) {
-            return this.uncompressMemory(p[0], p[1], Buffer.alloc(p[2]))
-        } else if (Buffer.isBuffer(p[2]) && !p[3]) {
-            return this.uncompressMemory(p[0], p[1], p[2], p[2].length, 0, 0, p[1].length)
-        } else {
-            const handler = this.handlers.get(p[0])
-            if (!handler)
-                throw new Error(`Unknown compression method ${p[0]}`)
-            handler.decompress(p[2], p[3], p[1], p[4], p[5], p[6])
-        }
+    static uncompress0(formatName: string, compressedBuffer: Buffer, uncompressedSize: number): Buffer {
+        const buffer = Buffer.allocUnsafe(uncompressedSize)
+        this.uncompress1(formatName, buffer, compressedBuffer)
+        return buffer
+    }
+
+    static uncompress1(formatName: string, compressedBuffer: Buffer, uncompressedBuffer: Buffer) {
+        this.uncompress(formatName, uncompressedBuffer, 0, uncompressedBuffer.length, compressedBuffer, 0, compressedBuffer.length)
+    }
+
+    static uncompress(formatName: string,
+                      uncompressedBuffer: Buffer, uncompressedBufferOff: number, uncompressedSize: number,
+                      compressedBuffer: Buffer, compressedBufferOff: number, compressedSize: number) {
+        const handler = this.handlers.get(formatName)
+        if (!handler)
+            throw new Error(`Unknown compression method ${formatName}`)
+        handler.decompress(uncompressedBuffer, uncompressedBufferOff, uncompressedSize, compressedBuffer, compressedBufferOff, compressedSize)
     }
 }
 
 export interface CompressionHandler {
-    decompress?(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number)
+    decompress?(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number)
 }
