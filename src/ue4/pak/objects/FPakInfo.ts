@@ -44,7 +44,9 @@ export class FPakInfo {
             try {
                 return new FPakInfo(tempAr, maxNumCompressionMethods[x], Ar.fileName)
             } catch (e) {
-                console.log(e)
+                if (!e.message.includes("boolean") && !e.message.includes("magic")) {
+                    console.error(e)
+                }
             }
             ++x
         }
@@ -62,8 +64,8 @@ export class FPakInfo {
 
     constructor(Ar: FArchive, maxNumCompressionMethods: number = 4, fileName?: string) {
         // New FPakInfo fields
-        this.encryptedIndex = Ar.readFlag()
         this.encryptionKeyGuid = new FGuid(Ar)
+        this.encryptedIndex = Ar.readFlag()
 
         // Old FPakInfoFields
         const magic = Ar.readUInt32()
@@ -90,7 +92,7 @@ export class FPakInfo {
                 const d = Ar.read(32)
                 const str = Buffer.from(d.filter(it => it !== 0)).toString("utf8")
                 if (/\s/g.test(str))
-                    break
+                    return
                 this.compressionMethods.push(str)
             }
         }

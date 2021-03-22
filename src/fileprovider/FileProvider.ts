@@ -423,15 +423,16 @@ export class FileProvider {
         if (this.globalDataLoaded && reader.Ar instanceof FPakFileArchive) {
             const ioStoreEnvironment = new FIoStoreEnvironment(reader.Ar.file.path.substring(0, reader.Ar.file.path.lastIndexOf(".")))
             try {
+                console.log("Mounting IoStore environment \"%s\"...", ioStoreEnvironment.path)
                 const ioStoreReader = new FIoStoreReader()
                 ioStoreReader.concurrent = reader.concurrent
                 ioStoreReader.initialize(ioStoreEnvironment, this.keys())
                 // TODO ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
                 this._mountedIoStoreReaders.push(ioStoreReader)
                 this.globalPackageStore.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
-                console.info("Mounted IoStore environment \"{}\"", ioStoreEnvironment.path)
+                console.log("Mounted IoStore environment \"%s\"", ioStoreEnvironment.path)
             } catch (e) {
-                console.warn("Failed to mount IoStore environment \"{}\" [{}]", ioStoreEnvironment.path, e.message)
+                console.warn("Failed to mount IoStore environment \"%s\" [%s]", ioStoreEnvironment.path, e.message)
             }
         }
 
@@ -449,35 +450,31 @@ export class FileProvider {
                 this.loadGlobalData(new File(file, fs.readFileSync(file)))
             }
         }
+
         const dir = fs.readdirSync(folder)
         for (const dirEntry of dir) {
             const path = folder + dirEntry
-            const ent = fs.lstatSync(path)
-            if (ent.isDirectory()) {
-                return this.scanFiles(path)
-            } else if (ent.isFile()) {
-                const file = fs.readFileSync(path)
-                if (path.endsWith("pak")) {
-                    try {
-                        const reader = new PakFileReader(new File(path, file), this.game)
-                        if (!reader.isEncrypted()) {
-                            this.mount(reader)
-                        } else {
-                            this._unloadedPaks.push(reader)
-                            if (!this._requiredKeys.find(r => r.equals(reader.pakInfo.encryptionKeyGuid)))
-                                this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
-                        }
-                    } catch (e) {
-                        console.error(e)
+            const file = fs.readFileSync(path)
+            if (path.endsWith("pak")) {
+                try {
+                    const reader = new PakFileReader(new File(path, file), this.game)
+                    if (!reader.isEncrypted()) {
+                        this.mount(reader)
+                    } else {
+                        this._unloadedPaks.push(reader)
+                        if (!this._requiredKeys.find(r => r.equals(reader.pakInfo.encryptionKeyGuid)))
+                            this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
                     }
-                } else {
-                    let gamePath = path.substring(folder.length)
-                    if (gamePath.startsWith("\\") || gamePath.startsWith("/")) {
-                        gamePath = gamePath.substring(1)
-                    }
-                    gamePath = gamePath.replace("\\", "/")
-                    this.localFiles.set(gamePath.toLowerCase(), file)
+                } catch (e) {
+                    console.error(e)
                 }
+            } else {
+                let gamePath = path.substring(folder.length)
+                if (gamePath.startsWith("\\") || gamePath.startsWith("/")) {
+                    gamePath = gamePath.substring(1)
+                }
+                gamePath = gamePath.replace("\\", "/")
+                this.localFiles.set(gamePath.toLowerCase(), file)
             }
         }
     }
@@ -488,9 +485,9 @@ export class FileProvider {
             const ioStoreReader = new FIoStoreReader()
             ioStoreReader.initialize(new FIoStoreEnvironment(globalTocFile.path.substring(0, globalTocFile.path.lastIndexOf("."))), this._keys)
             this._mountedIoStoreReaders.push(ioStoreReader)
-            console.info("Initialized I/O store")
+            console.log("Initialized I/O store")
         } catch (e) {
-            console.error("Failed to mount I/O store global environment: '{}'", e.message || e)
+            console.error("Failed to mount I/O store global environment: '%s'", e.message || e)
         }
     }
 
@@ -556,7 +553,7 @@ export class FileProvider {
 
 function _globalPackageStore(provider: FileProvider) {
     const globalNameMap = new FNameMap()
-    const globalPackageStore = new FPackageStore(this, globalNameMap)
+    const globalPackageStore = new FPackageStore(provider, globalNameMap)
     globalNameMap.loadGlobal(provider)
     globalPackageStore.setupInitialLoadData()
     globalPackageStore.setupCulture()

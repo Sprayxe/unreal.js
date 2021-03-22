@@ -75,11 +75,11 @@ export class FPackageStore extends FOnContainerMountedListener {
             }
 
             if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
-                console.debug(`Skipping loading mounted container ID '${containerId.value()}', already loaded with higher order`)
+                console.log(`Skipping loading mounted container ID '${containerId.value()}', already loaded with higher order`)
                 continue
             }
 
-            console.debug(`Loading mounted container ID '${containerId.value()}'`)
+            console.log(`Loading mounted container ID '${containerId.value()}'`)
             loadedContainer.bValid = true
             loadedContainer.order = container.environment.order
 
