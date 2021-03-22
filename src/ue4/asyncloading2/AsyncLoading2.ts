@@ -95,7 +95,7 @@ export class FPackageStoreEntry {
     importedPackages: FPackageId[]
 
     constructor(Ar: FArchive) {
-        this.exportBundlesSize = Ar.readUInt64() as unknown as number
+        this.exportBundlesSize = Ar.readUInt64()
         this.exportCount = Ar.readInt32()
         this.exportBundleCount = Ar.readInt32()
         this.loadOrder = Ar.readUInt32()
@@ -133,7 +133,7 @@ export class FPackageObjectIndex {
     constructor(x?: any, y?: any) {
         if (x) {
             if (x instanceof FArchive) {
-                this.typeAndId = x.readUInt64() as unknown as number
+                this.typeAndId = x.readUInt64()
             } else {
                 this.typeAndId = (Utils.ordinal(x, FPackageObjectIndex_EType) << _TYPE_SHIFT) | y
             }
@@ -304,8 +304,8 @@ export class FExportMapEntry {
     //uint8 Pad[3] = {};
 
     constructor(Ar: FArchive) {
-        this.cookedSerialOffset = Ar.readUInt64() as unknown as number
-        this.cookedSerialSize = Ar.readUInt64() as unknown as number
+        this.cookedSerialOffset = Ar.readUInt64()
+        this.cookedSerialSize = Ar.readUInt64()
         this.objectName = new FMappedName(Ar)
         this.outerIndex = new FPackageObjectIndex(Ar)
         this.classIndex = new FPackageObjectIndex(Ar)

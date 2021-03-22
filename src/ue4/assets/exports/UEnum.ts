@@ -15,7 +15,7 @@ export class UEnum extends UObject {
         this.names = Ar.readArray(() => {
             return {
                 key: Ar.readFName() ,
-                value: Ar.readInt64() as unknown as number
+                value: Ar.readInt64()
             }
         })
         this.cppForm = Object.values(ECppForm)[Ar.read()]

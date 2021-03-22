@@ -2,6 +2,7 @@
 
 import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
+import { UnrealMap } from "./util/UnrealMap";
 
 (async () => {
     const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")

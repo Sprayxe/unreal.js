@@ -68,11 +68,11 @@ export class FPakInfo {
         // Old FPakInfoFields
         const magic = Ar.readUInt32()
         if (magic !== PAK_MAGIC)
-            throw ParserException("Invalid pak file magic")
+            throw ParserException(`Invalid pak file magic '${magic}'`)
 
         this.version = Ar.readInt32()
-        this.indexOffset = Ar.readInt64() as unknown as number
-        this.indexSize = Ar.readInt64() as unknown as number
+        this.indexOffset = Ar.readInt64()
+        this.indexSize = Ar.readInt64()
         this.indexHash = Ar.read(20)
 
         if (this.version >= PakVersion_FrozenIndex && this.version < PakVersion_PathHashIndex) {

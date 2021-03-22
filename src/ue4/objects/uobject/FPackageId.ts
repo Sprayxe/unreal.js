@@ -20,7 +20,7 @@ export class FPackageId {
     constructor(Ar: FArchive)
     constructor(x?: any) {
         if (x instanceof FArchive) {
-            this.id = x.readUInt64() as unknown as number
+            this.id = x.readUInt64()
         } else {
             this.id = x
         }

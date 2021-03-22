@@ -69,9 +69,9 @@ export class FIoStoreTocHeader {
         this.reserved3 = Ar.readUInt8()
         this.reserved4 = Ar.readUInt16()
         this.reserved5 = Ar.readUInt32()
-        this.partitionSize = Ar.readUInt64()
+        this.partitionSize = BigInt(Ar.readUInt64())
         for (let i = 0; i < this.reserved6.length; i++) {
-            this.reserved6[i] = Ar.readUInt64()
+            this.reserved6[i] = BigInt(Ar.readUInt64())
         }
     }
 
@@ -283,7 +283,7 @@ export class FIoStoreTocResource {
 
 export class FIoStoreToc {
     chunkIdToIndex = new UnrealMap<FIoChunkId, int32>();
-    toc: FIoStoreTocResource
+    toc = new FIoStoreTocResource()
     filesToIndex = new Array<string>()
     fileTocEntryIndices = new Array<uint32>()
 

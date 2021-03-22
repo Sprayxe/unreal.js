@@ -305,8 +305,8 @@ export class FFormatArgumentValue {
     constructor(x?: any, y?: any) {
         if (x instanceof FArchive) {
             this.type = EDateTimeStyle[Object.keys(EDateTimeStyle)[x.readInt8()]]
-            this.value = this.type === EFormatArgumentType.Int ? x.readInt64() as unknown as number :
-                this.type === EFormatArgumentType.UInt ? x.readUInt64() as unknown as number :
+            this.value = this.type === EFormatArgumentType.Int ? x.readInt64() :
+                this.type === EFormatArgumentType.UInt ? x.readUInt64() :
                 this.type === EFormatArgumentType.Float ? x.readFloat32() :
                 this.type === EFormatArgumentType.Double ? x.readDouble() :
                 this.type === EFormatArgumentType.Text ? new FText(x) :
