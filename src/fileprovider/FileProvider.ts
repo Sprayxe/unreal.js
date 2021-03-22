@@ -24,6 +24,7 @@ import { FGuid } from "../ue4/objects/core/misc/Guid";
 import { FNameMap } from "../ue4/asyncloading2/FNameMap";
 import { FPackageStore } from "../ue4/asyncloading2/FPackageStore";
 import fs from "fs";
+import * as fsAsync from "fs/promises"
 import { InvalidAesKeyException, ParserException } from "../exceptions/Exceptions";
 import { File } from "../util/File";
 import { FPakFileArchive } from "../ue4/pak/reader/FPakFileArchive";
@@ -49,8 +50,6 @@ export class FileProvider {
         this.folder = folder
         this.game = game
         this.mappingsProvider = mappingsProvider
-        this.scanFiles(folder)
-        this.globalPackageStore = _globalPackageStore(this)
     }
 
     get files() {
@@ -218,9 +217,9 @@ export class FileProvider {
         //let objectName: string
         const dotIndex = packagePath.indexOf(".")
         if (dotIndex === -1) {
-          //  objectName = packagePath.substring(packagePath.lastIndexOf("/") + 1)
+            //  objectName = packagePath.substring(packagePath.lastIndexOf("/") + 1)
         } else {
-           // objectName = packagePath.substring(dotIndex + 1)
+            // objectName = packagePath.substring(dotIndex + 1)
             packagePath = packagePath.substring(0, dotIndex)
         }
         return this.loadGameFile(packagePath)
@@ -423,14 +422,12 @@ export class FileProvider {
         if (this.globalDataLoaded && reader.Ar instanceof FPakFileArchive) {
             const ioStoreEnvironment = new FIoStoreEnvironment(reader.Ar.file.path.substring(0, reader.Ar.file.path.lastIndexOf(".")))
             try {
-                console.log("Mounting IoStore environment \"%s\"...", ioStoreEnvironment.path)
                 const ioStoreReader = new FIoStoreReader()
                 ioStoreReader.concurrent = reader.concurrent
                 ioStoreReader.initialize(ioStoreEnvironment, this.keys())
                 // TODO ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
                 this._mountedIoStoreReaders.push(ioStoreReader)
                 this.globalPackageStore.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
-                console.log("Mounted IoStore environment \"%s\"", ioStoreEnvironment.path)
             } catch (e) {
                 console.warn("Failed to mount IoStore environment \"%s\" [%s]", ioStoreEnvironment.path, e.message)
             }
@@ -439,7 +436,7 @@ export class FileProvider {
         this.mountListeners.forEach((it) => it.onMount(reader))
     }
 
-    private scanFiles(folder: string) {
+    async findAndLoadFiles(folder: string = this.folder) {
         folder = folder.endsWith("/") ? folder : folder + "/"
         if (!fs.existsSync(folder))
             throw ParserException(`Path '${folder}' does not exist!`)
@@ -447,19 +444,22 @@ export class FileProvider {
         if (this.game >= GAME_UE4(26) && !this.globalDataLoaded && folder.endsWith("Paks/")) {
             const file = folder + "global.utoc"
             if (fs.existsSync(file)) {
-                this.loadGlobalData(new File(file, fs.readFileSync(file)))
+                this.loadGlobalData(new File(file, await fsAsync.readFile(file)))
             }
         }
 
-        const dir = fs.readdirSync(folder)
+        const dir = await fsAsync.readdir(folder)
         for (const dirEntry of dir) {
             const path = folder + dirEntry
-            const file = fs.readFileSync(path)
+            const file = await fsAsync.readFile(path)
             if (path.endsWith("pak")) {
                 try {
+                    console.log("Found IoStore environment \"%s\"!", path)
                     const reader = new PakFileReader(new File(path, file), this.game)
                     if (!reader.isEncrypted()) {
+                        console.log("Mounting IoStore environment \"%s\"...", path)
                         this.mount(reader)
+                        console.log("Mounted IoStore environment \"%s\"", path)
                     } else {
                         this._unloadedPaks.push(reader)
                         if (!this._requiredKeys.find(r => r.equals(reader.pakInfo.encryptionKeyGuid)))
@@ -477,6 +477,8 @@ export class FileProvider {
                 this.localFiles.set(gamePath.toLowerCase(), file)
             }
         }
+
+        this.globalPackageStore = _globalPackageStore(this)
     }
 
     protected loadGlobalData(globalTocFile: File) {
@@ -517,16 +519,16 @@ export class FileProvider {
             const gameName = this.gameName
             path =
                 path.startsWith("game/content/") ? path.replace("game/content/", gameName + "game/content/") :
-                path.startsWith("game/config/") ? path.replace("game/config/", gameName + "game/config/") :
-                path.startsWith("game/plugins/") ? path.replace("game/plugins/", gameName + "game/plugins/") :
-                (path.includes("assetregistry") || path.endsWith(".uproject")) ? path.replace("game/", `${gameName}game/`) :
-                path.replace("game/", gameName + "game/content/")
+                    path.startsWith("game/config/") ? path.replace("game/config/", gameName + "game/config/") :
+                        path.startsWith("game/plugins/") ? path.replace("game/plugins/", gameName + "game/plugins/") :
+                            (path.includes("assetregistry") || path.endsWith(".uproject")) ? path.replace("game/", `${gameName}game/`) :
+                                path.replace("game/", gameName + "game/content/")
         } else if (path.startsWith("engine/")) {
             path =
                 path.startsWith("engine/content/") ? path :
-                path.startsWith("engine/config/") ? path :
-                path.startsWith("engine/plugins") ? path :
-                path.replace("engine/", "engine/content/")
+                    path.startsWith("engine/config/") ? path :
+                        path.startsWith("engine/plugins") ? path :
+                            path.replace("engine/", "engine/content/")
         }
         return path.toLowerCase()
     }
@@ -557,7 +559,7 @@ function _globalPackageStore(provider: FileProvider) {
     globalNameMap.loadGlobal(provider)
     globalPackageStore.setupInitialLoadData()
     globalPackageStore.setupCulture()
-    globalPackageStore.loadContainers(this.mountedIoStoreReaders.map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
+    globalPackageStore.loadContainers(provider.mountedIoStoreReaders().map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
     return globalPackageStore
 }
 

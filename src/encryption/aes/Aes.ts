@@ -8,8 +8,8 @@ export class Aes {
 
     static parseKey(key: string): Buffer {
         const data = key.startsWith("0x") ? key.substring(2) : key
-        if (data.length !== 32)
-            throw InvalidAesKeyException("Given AES key is not properly formatted, needs to be exactly 32 bytes long")
+        if (data.length !== 64)
+            throw InvalidAesKeyException("Given AES key is not properly formatted, needs to be exactly 64 bytes long")
 
         return DataTypeConverter.parseHexBinary(data)
     }
