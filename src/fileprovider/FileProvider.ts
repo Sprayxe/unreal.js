@@ -460,8 +460,8 @@ export class FileProvider {
                 return this.scanFiles(path)
             } else if (ent.isFile()) {
                 const file = fs.readFileSync(path)
-                if (path.toLowerCase().endsWith("pak")) {
-                    try  {
+                if (path.endsWith("pak")) {
+                    try {
                         const reader = new PakFileReader(new File(path, file), this.game)
                         if (!reader.isEncrypted()) {
                             this.mount(reader)
