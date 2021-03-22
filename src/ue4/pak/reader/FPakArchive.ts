@@ -1,14 +1,15 @@
 import { FArchive } from "../../reader/FArchive";
 import { GAME_UE4_GET_AR_VER } from "../../versions/Game";
+import { File } from "../../../util/File";
 
 export abstract class FPakArchive extends FArchive {
     fileName: string
     hasPakInfo: boolean
     pakInfo: any
 
-    constructor(fileName: string) {
-        super()
-        this.fileName = fileName
+    constructor(file: File) {
+        super(file.content)
+        this.fileName = file.name
     }
 
     public abstract clone(): FPakArchive

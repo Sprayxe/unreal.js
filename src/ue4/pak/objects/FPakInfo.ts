@@ -25,7 +25,7 @@ export class FPakInfo {
         let maxSize = -1
         let maxOffsetToTryIndex = -1
 
-        for (let i = offsetsToTry.length - 1; i < 1; --i) {
+        for (let i = (offsetsToTry.length - 1); i >= 0; --i) {
             if (pakSize - offsetsToTry[i] >= 0) {
                 maxSize = offsetsToTry[i]
                 maxOffsetToTryIndex = i
@@ -34,7 +34,7 @@ export class FPakInfo {
         }
 
         if (maxSize < 0)
-            throw ParserException(`File '${Ar.fileName} has an unknown format`)
+            throw ParserException(`File '${Ar.fileName}' has an unknown format`)
         Ar.seek(pakSize - maxSize)
 
         const tempAr = new FByteArchive(Ar.read(maxSize))
@@ -43,10 +43,12 @@ export class FPakInfo {
             tempAr.pos = maxSize - offsetsToTry[x]
             try {
                 return new FPakInfo(tempAr, maxNumCompressionMethods[x])
-            } catch (e) {}
+            } catch (e) {
+                console.log(e)
+            }
             ++x
         }
-        throw ParserException(`File '${Ar.fileName} has an unknown format`)
+        throw ParserException(`File '${Ar.fileName}' has an unknown format`)
     }
 
     encryptionKeyGuid : FGuid

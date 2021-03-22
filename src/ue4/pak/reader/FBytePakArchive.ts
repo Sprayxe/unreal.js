@@ -1,4 +1,5 @@
 import { FPakArchive } from "./FPakArchive";
+import { File } from "../../../util/File";
 
 export class FBytePakArchive extends FPakArchive {
     data: Buffer
@@ -7,7 +8,7 @@ export class FBytePakArchive extends FPakArchive {
     pakFileSize: number
 
     constructor(data: Buffer, fileName: string, offsetInPakFile: number, pakFileSize: number) {
-        super(fileName)
+        super(new File(fileName, data))
         this.data = data
         this.fileName = fileName
         this.offsetInPakFile = offsetInPakFile

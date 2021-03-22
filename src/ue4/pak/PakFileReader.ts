@@ -25,22 +25,26 @@ type FDirectoryIndex = UnrealMap<string, FPakDirectory>
 export class PakFileReader {
     Ar: FPakArchive
     keepIndexData: boolean
-    file: Buffer
+    file: File
     game: number
 
-    constructor(file: string | Buffer, game?: number)
+    constructor(file: string | File, game?: number)
     constructor(Ar: FPakArchive, keepIndexData?: boolean)
     constructor(x?: any, y?: any) {
         if (x instanceof FPakArchive) {
             this.Ar = x
             this.keepIndexData = y || false
         } else {
-            this.file = x instanceof Buffer ? x : fs.readFileSync(x)
-            this.Ar = new FPakFileArchive(this.file, new File("", this.file))
+            const _file = typeof x === "string" ? new File(x, fs.readFileSync(x)) : x as File
+            this.file = _file
+            this.Ar = new FPakFileArchive(_file.content, new File(_file.path, _file.content))
             this.game = y || GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)
             this.Ar.game = this.game
             this.Ar.ver = GAME_UE4_GET_AR_VER(this.game)
         }
+        this.pakInfo = FPakInfo.readPakInfo(this.Ar)
+        this.Ar.pakInfo = this.pakInfo
+        this.fileName = this.Ar.fileName
     }
 
     concurrent = false

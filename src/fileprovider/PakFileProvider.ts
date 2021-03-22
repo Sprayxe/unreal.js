@@ -1,4 +1,4 @@
-import { AbstractFileProvider } from "./AbstractFileProvider";
+/*import { AbstractFileProvider } from "./AbstractFileProvider";
 import { PakFileReader } from "../ue4/pak/PakFileReader";
 import { FGuid } from "../ue4/objects/core/misc/Guid";
 import { FIoStoreReader } from "../ue4/io/IoStore";
@@ -17,7 +17,7 @@ import { Package } from "../ue4/assets/Package";
 import { File } from "../util/File";
 import { UnrealMap } from "../util/UnrealMap";
 
-export abstract class PakFileProvider extends AbstractFileProvider {
+export class PakFileProvider extends AbstractFileProvider {
     protected abstract _unloadedPaks: PakFileReader[]
     protected abstract _mountedPaks: PakFileReader[]
     protected abstract _mountedIoStoreReaders: FIoStoreReader[]
@@ -68,10 +68,6 @@ export abstract class PakFileProvider extends AbstractFileProvider {
         return this.unloadedPaks().filter(it => it.pakInfo.encryptionKeyGuid === guid)
     }
 
-    /**
-     * - Submits keys asynchronously
-     * @param newKeys Keys to submit
-     */
     async submitKeysAsync(newKeys: UnrealMap<FGuid, Buffer>) {
         for (const [guid, key] of newKeys) {
             if (!this.requiredKeys().find(k => k === guid))
@@ -163,10 +159,6 @@ export abstract class PakFileProvider extends AbstractFileProvider {
             try {
                 return null // TODO reader.read(chunkId)
             } catch (e) {
-                /* TODO if (e.status.errorCode != EIoErrorCode.NotFound) {
-                    throw e
-                    }
-                }*/
             }
         }
         throw new Error("Couldn't find any possible I/O store readers")
@@ -205,4 +197,4 @@ function _globalPackageStore(provider: FileProvider) {
 
 export abstract class PakMountListener {
     abstract onMount(reader: PakFileReader)
-}
+}*/

@@ -4,10 +4,9 @@ import { File } from "../../../util/File";
 export class FPakFileArchive extends FPakArchive {
     rafile: Buffer
     file: File
-    protected position = 0
 
     constructor(rafile: Buffer, file: File) {
-        super(file.name)
+        super(file)
         this.rafile = rafile
         this.file = file
     }

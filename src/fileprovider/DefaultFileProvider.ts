@@ -1,4 +1,4 @@
-import { GameFile } from "../ue4/pak/GameFile";
+/*import { GameFile } from "../ue4/pak/GameFile";
 import { UnrealMap } from "../util/UnrealMap";
 import { PakFileProvider } from "./PakFileProvider";
 import { PakFileReader } from "../ue4/pak/PakFileReader";
@@ -128,4 +128,4 @@ export class DefaultFileProvider extends PakFileProvider {
             return super.saveGameFile(_file)
         }
     }
-}
+}*/

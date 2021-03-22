@@ -1,4 +1,4 @@
-import { FileProvider } from "./FileProvider";
+/*import { FileProvider } from "./FileProvider";
 import { GameFile } from "../ue4/pak/GameFile";
 import { PakPackage } from "../ue4/assets/PakPackage";
 import { Package } from "../ue4/assets/Package";
@@ -9,7 +9,7 @@ import { AssetRegistry } from "../ue4/registry/AssetRegistry";
 import { IoPackage } from "../ue4/assets/IoPackage";
 import { UnrealMap } from "../util/UnrealMap";
 
-export abstract class AbstractFileProvider extends FileProvider {
+abstract class AbstractFileProvider extends FileProvider {
     protected globalDataLoaded = false
 
     loadGameFile(filePath: string): Package
@@ -171,4 +171,4 @@ export abstract class AbstractFileProvider extends FileProvider {
             return map
         }
     }
-}
+}*/

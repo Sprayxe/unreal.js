@@ -19,7 +19,7 @@ export class FArchive {
     littleEndian = true
 
     clone(): FArchive {
-        let clone = new FArchive(this.data);
+        const clone = new FArchive(this.data);
         clone.position = this.position
         clone.littleEndian = this.littleEndian
         return clone

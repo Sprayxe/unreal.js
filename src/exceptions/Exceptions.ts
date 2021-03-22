@@ -1,15 +1,15 @@
 export function ParserException(message: string) {
-    return `[UNREAL.JS] ${message}`
+    return new Error(`[UNREAL.JS - ERROR] ParserException: ${message}`)
 }
 
 export function InvalidAesKeyException(message: string) {
-    return `[UNREAL.JS - AES] ${message}`
+    return new Error(`[UNREAL.JS - ERROR] InvalidAesKeyException: ${message}`)
 }
 
 export function MissingSchemaException(message: string) {
-    return `[UNREAL.JS - PARSER] ${message}`
+    return new Error(`[UNREAL.JS - ERROR] MissingSchemaException: ${message}`)
 }
 
 export function UnknownPropertyException(message: string) {
-    return `[UNREAL.JS - PARSER] ${message}`
+    return new Error(`[UNREAL.JS - PARSER] UnknownPropertyException: ${message}`)
 }

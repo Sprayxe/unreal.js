@@ -105,10 +105,10 @@ export class FGuid {
                 this.d = x.readUInt32()
             } else {
                 const ar = Buffer.from(x)
-                this.a = ar.readIntBE(0, 1)
-                this.b = ar.readIntBE(1, 1)
-                this.c = ar.readIntBE(2, 1)
-                this.d = ar.readIntBE(3, 1)
+                this.a = ar.readIntLE(0, 1)
+                this.b = ar.readIntLE(1, 1)
+                this.c = ar.readIntLE(2, 1)
+                this.d = ar.readIntLE(3, 1)
             }
         }
     }
