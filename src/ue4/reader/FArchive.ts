@@ -49,10 +49,6 @@ export class FArchive {
         }
     }
 
-    peak() {
-        return this.isAtStopper() ? -1 : this.data[this.position] & 0xFF
-    }
-
     readInt8() {
         const localPos = this.position
         this.position += 1
@@ -90,17 +86,15 @@ export class FArchive {
     }
 
     readInt64() {
-        const low = this.readInt32()
-        let n = this.readInt32() * 4294967296.0 + low
-        if (low < 0) n += 4294967296
-        return n
+        const localPos = this.position
+        this.position += 8
+        return this.littleEndian ? this.data.readBigInt64LE(localPos) : this.data.readBigInt64BE(localPos)
     }
 
     readUInt64() {
-        const low = this.readUInt32()
-        let n = this.readUInt32() * 4294967296.0 + low
-        if (low < 0) n += 4294967296
-        return n
+        const localPos = this.position
+        this.position += 8
+        return this.littleEndian ? this.data.readBigUInt64LE(localPos) : this.data.readBigUInt64BE(localPos)
     }
 
     readFloat16() {

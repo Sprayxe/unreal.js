@@ -9,7 +9,7 @@ export class FIoContainerId {
     id = FIoContainerId.InvalidId
 
     constructor(Ar: FArchive) {
-        this.id = BigInt(Ar.readUInt64())
+        this.id = Ar.readUInt64()
     }
 
     value() {

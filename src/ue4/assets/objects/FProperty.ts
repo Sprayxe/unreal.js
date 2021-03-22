@@ -224,7 +224,7 @@ export class FProperty {
         } else if (propertyType === "UInt64Property") {
             return new UInt64Property(
                 this.valueOr(
-                    () => Ar.readUInt64(),
+                    () => Ar.readUInt64() as unknown as number,
                     () => 0,
                     type
                 )
@@ -353,7 +353,7 @@ export class FProperty {
         } else if (propertyType === "Int64Property") {
             return new Int64Property(
                 this.valueOr(
-                    () => Ar.readInt64(),
+                    () => Ar.readInt64() as unknown as number,
                     () => 0,
                     type
                 )
