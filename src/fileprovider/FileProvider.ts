@@ -39,7 +39,11 @@ export class FileProvider {
     globalPackageStore: FPackageStore = null
     localFiles = new UnrealMap<string, Buffer>()
 
-    constructor(folder: string, game: number = Ue4Version.GAME_UE4_LATEST, mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()) {
+    constructor(
+        folder: string,
+        game: number = Ue4Version.GAME_UE4_LATEST,
+        mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()
+    ) {
         this.folder = folder
         this.game = game
         this.mappingsProvider = mappingsProvider
@@ -420,13 +424,14 @@ export class FileProvider {
         if (this.globalDataLoaded && reader.Ar instanceof FPakFileArchive) {
             const ioStoreEnvironment = new FIoStoreEnvironment(reader.Ar.file.path.substring(0, reader.Ar.file.path.lastIndexOf(".")))
             try {
+                console.info("Mounting IoStore environment \"%s\"...", ioStoreEnvironment.path)
                 const ioStoreReader = new FIoStoreReader()
                 ioStoreReader.concurrent = reader.concurrent
                 ioStoreReader.initialize(ioStoreEnvironment, this.keys())
                 // TODO ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
                 this._mountedIoStoreReaders.push(ioStoreReader)
                 this.globalPackageStore.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
-                console.info("Mounted IoStore environment \"{}\"", ioStoreEnvironment.path)
+                console.info("Mounted IoStore environment \"%s\"", ioStoreEnvironment.path)
             } catch (e) {
                 console.warn("Failed to mount IoStore environment \"{}\" [{}]", ioStoreEnvironment.path, e.message)
             }
@@ -446,6 +451,7 @@ export class FileProvider {
                 this.loadGlobalData(new File(file, fs.readFileSync(file)))
             }
         }
+
         const dir = fs.readdirSync(folder)
         for (const dirEntry of dir) {
             const path = folder + dirEntry
@@ -454,8 +460,8 @@ export class FileProvider {
                 return this.scanFiles(path)
             } else if (ent.isFile()) {
                 const file = fs.readFileSync(path)
-                if (path.toLowerCase().endsWith("pak")) {
-                    try  {
+                if (path.endsWith("pak")) {
+                    try {
                         const reader = new PakFileReader(new File(path, file), this.game)
                         if (!reader.isEncrypted()) {
                             this.mount(reader)
@@ -486,7 +492,8 @@ export class FileProvider {
             this._mountedIoStoreReaders.push(ioStoreReader)
             console.info("Initialized I/O store")
         } catch (e) {
-            console.error("Failed to mount I/O store global environment: '{}'", e.message || e)
+            console.error(e)
+            console.error("Failed to mount I/O store global environment: '%s'", e.message || e)
         }
     }
 

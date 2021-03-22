@@ -54,9 +54,9 @@ export class FPakEntry {
             const Ar = params[0]
             const inIndex = params[1]
             this.name = inIndex ? Ar.readString() : ""
-            this.pos = Ar.readInt64() as unknown as number
-            this.size = Ar.readInt64() as unknown as number
-            this.uncompressedSize = Ar.readInt64() as unknown as number
+            this.pos = Ar.readInt64()
+            this.size = Ar.readInt64()
+            this.uncompressedSize = Ar.readInt64()
             if (Ar.pakInfo.version >= PakVersion_FNameBasedCompressionMethod) {
                 try {
                     this.compressionMethod = CompressionMethod[Ar.pakInfo.compressionMethods[Ar.readInt32()]]

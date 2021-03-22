@@ -54,7 +54,7 @@ export class PakFileReader {
 
     aesKey: Buffer = null
     get aesKeyStr() {
-        return DataTypeConverter.printHexBinary(this.aesKey)
+        return this.aesKey ? DataTypeConverter.printHexBinary(this.aesKey) : null
     }
     set aesKeyStr(value: string) {
         this.aesKey = Aes.parseKey(value)
@@ -161,7 +161,7 @@ export class PakFileReader {
                 throw "e"
             this.mountPrefix = aes
         } catch (e) {
-            throw InvalidAesKeyException(`Given encryption key '${this.aesKeyStr}' is not working with '${this.fileName}'`)
+            console.error(InvalidAesKeyException(`Given encryption key '${this.aesKeyStr}' is not working with '${this.fileName}'`).message)
         }
 
         const fileCount = primaryIndexAr.readInt32()
@@ -175,8 +175,8 @@ export class PakFileReader {
         if (!primaryIndexAr.readBoolean())
             throw ParserException("No directory index")
 
-        const directoryIndexOffset = primaryIndexAr.readInt64() as unknown as number
-        const directoryIndexSize = primaryIndexAr.readInt64() as unknown as number
+        const directoryIndexOffset = primaryIndexAr.readInt64()
+        const directoryIndexSize = primaryIndexAr.readInt64()
         primaryIndexAr.skip(20)
 
         const encodedPakEntriesSize = primaryIndexAr.readInt32()
@@ -285,13 +285,13 @@ export class PakFileReader {
         const isOffset32BitSafe = (value & (1 << 31)) !== 0
         offset = isOffset32BitSafe ?
             Ar.readUInt32() :
-            Ar.readInt64() as unknown as number
+            Ar.readInt64()
 
         // Read the UncompressedSize.
         const isUncompressedSize32BitSafe = (value & (1 << 30)) !== 0
         uncompressedSize = isUncompressedSize32BitSafe ?
             Ar.readUInt32() :
-            Ar.readInt64() as unknown as number
+            Ar.readInt64()
 
         // Fill in the Size.
         if (compressionMethodIndex !== 0) {
@@ -300,7 +300,7 @@ export class PakFileReader {
             if (isSize32BitSafe) {
                 size = Ar.readUInt32()
             } else {
-                size = Ar.readInt64() as unknown as number
+                size = Ar.readInt64()
             }
         } else {
             // The Size is the same thing as the UncompressedSize when

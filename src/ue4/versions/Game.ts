@@ -8,6 +8,18 @@ export const ue4Versions = [_.VER_UE4_0, _.VER_UE4_1, _.VER_UE4_2, _.VER_UE4_3, 
 ]
 export const LATEST_SUPPORTED_UE4_VERSION = 26
 
+export const GAME_UE4_BASE: number = 0x1000000
+
+export function GAME_UE4(x: number) {
+    return GAME_UE4_BASE + (x << 4)
+}
+export function GAME_UE4_GET_MINOR(x: number) {
+    return (x - GAME_UE4_BASE) >> 4
+}
+export function GAME_UE4_GET_AR_VER(game: number) {
+    return ue4Versions[GAME_UE4_GET_MINOR(game)]
+}
+
 export class Ue4Version {
     version: number
     game: number
@@ -46,18 +58,6 @@ export class Ue4Version {
     static GAME_UE4_26 = GAME_UE4(26)
 
     static GAME_UE4_LATEST = GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)
-}
-
-export const GAME_UE4_BASE: number = 0x1000000
-
-export function GAME_UE4(x: number) {
-    return GAME_UE4_BASE + (x << 4)
-}
-export function GAME_UE4_GET_MINOR(x: number) {
-    return (x - GAME_UE4_BASE) >> 4
-}
-export function GAME_UE4_GET_AR_VER(game: number) {
-    return ue4Versions[GAME_UE4_GET_MINOR(game)]
 }
 
 

@@ -42,7 +42,7 @@ export class FPakInfo {
         while (x < maxOffsetToTryIndex) {
             tempAr.pos = maxSize - offsetsToTry[x]
             try {
-                return new FPakInfo(tempAr, maxNumCompressionMethods[x])
+                return new FPakInfo(tempAr, maxNumCompressionMethods[x], Ar.fileName)
             } catch (e) {
                 console.log(e)
             }
@@ -60,7 +60,7 @@ export class FPakInfo {
     compressionMethods : string[]
     indexIsFrozen : boolean = false
 
-    constructor(Ar: FArchive, maxNumCompressionMethods: number = 4) {
+    constructor(Ar: FArchive, maxNumCompressionMethods: number = 4, fileName?: string) {
         // New FPakInfo fields
         this.encryptedIndex = Ar.readFlag()
         this.encryptionKeyGuid = new FGuid(Ar)
@@ -68,11 +68,11 @@ export class FPakInfo {
         // Old FPakInfoFields
         const magic = Ar.readUInt32()
         if (magic !== PAK_MAGIC)
-            throw ParserException("Invalid pak file magic")
+            throw ParserException(`Invalid pak file magic '${magic}'${fileName ? ` (${fileName})` : ""}`)
 
         this.version = Ar.readInt32()
-        this.indexOffset = Ar.readInt64() as unknown as number
-        this.indexSize = Ar.readInt64() as unknown as number
+        this.indexOffset = Ar.readInt64()
+        this.indexSize = Ar.readInt64()
         this.indexHash = Ar.read(20)
 
         if (this.version >= PakVersion_FrozenIndex && this.version < PakVersion_PathHashIndex) {
