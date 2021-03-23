@@ -30,6 +30,7 @@ import { File } from "../util/File";
 import { FPakFileArchive } from "../ue4/pak/reader/FPakFileArchive";
 import { DataTypeConverter } from "../util/DataTypeConverter";
 import { Aes } from "../encryption/aes/Aes";
+import { Lazy } from "../util/Lazy";
 
 export class FileProvider {
     folder: string
@@ -43,13 +44,22 @@ export class FileProvider {
     protected _requiredKeys: FGuid[] = []
     protected _keys = new UnrealMap<FGuid, Buffer>()
     protected mountListeners: PakMountListener[] = []
-    globalPackageStore: FPackageStore = null
+    globalPackageStore: Lazy<FPackageStore> = null
     localFiles = new UnrealMap<string, Buffer>()
 
     constructor(folder: string, game: number = Ue4Version.GAME_UE4_LATEST, mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()) {
         this.folder = folder
         this.game = game
         this.mappingsProvider = mappingsProvider
+        this.globalPackageStore = new Lazy(() => {
+            const globalNameMap = new FNameMap()
+            const globalPackageStore = new FPackageStore(this, globalNameMap)
+            globalNameMap.loadGlobal(this)
+            globalPackageStore.setupInitialLoadData()
+            globalPackageStore.setupCulture()
+            globalPackageStore.loadContainers(this.mountedIoStoreReaders().map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
+            return globalPackageStore
+        })
     }
 
     get files() {
@@ -95,7 +105,7 @@ export class FileProvider {
     }
 
     unloadedPaksByGuid(guid: FGuid) {
-        return this.unloadedPaks().filter(it => it.pakInfo.encryptionKeyGuid === guid)
+        return this.unloadedPaks().filter(it => it.pakInfo.encryptionKeyGuid.equals(guid))
     }
 
     /**
@@ -104,13 +114,11 @@ export class FileProvider {
      */
     async submitKeysAsync(newKeys: UnrealMap<FGuid, Buffer>) {
         for (const [guid, key] of newKeys) {
-            if (!this.requiredKeys().find(k => k === guid))
-                continue
+            this._keys.set(guid, key)
             for (const reader of this.unloadedPaksByGuid(guid)) {
                 try {
-                    console.log("Mounted IoStore environment \"%s\"", reader.fileName)
+                    console.log("Mounting IoStore environment \"%s\"...", reader.fileName)
                     reader.aesKey = key
-                    this._keys.set(guid, key)
                     this.mount(reader)
                     this._unloadedPaks = this._unloadedPaks.filter(v => v !== reader)
                     this._requiredKeys = this._requiredKeys.filter(v => !v.equals(guid))
@@ -429,7 +437,7 @@ export class FileProvider {
                 ioStoreReader.initialize(ioStoreEnvironment, this.keys())
                 // TODO ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
                 this._mountedIoStoreReaders.push(ioStoreReader)
-                this.globalPackageStore.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
+                this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
             } catch (e) {
                 console.warn("Failed to mount IoStore environment \"%s\" [%s]", ioStoreEnvironment.path, e.message)
             }
@@ -459,13 +467,18 @@ export class FileProvider {
                     const absolutePath = path.split("/").pop()
                     console.log("Mounting IoStore environment \"%s\"...", absolutePath)
                     const reader = new PakFileReader(new File(path, file), this.game)
-                    if (!reader.isEncrypted()) {
+                    const key = this.keys().find((v, k) => k.equals(reader.pakInfo.encryptionKeyGuid))
+                    const enc = reader.isEncrypted()
+                    if (enc && key) {
+                        reader.aesKey = key
+                        this.mount(reader)
+                        console.log("Mounted IoStore environment \"%s\"", absolutePath)
+                    }else if (!enc) {
                         this.mount(reader)
                         console.log("Mounted IoStore environment \"%s\"", absolutePath)
                     } else {
                         this._unloadedPaks.push(reader)
-                        if (!this._requiredKeys.find(r => r.equals(reader.pakInfo.encryptionKeyGuid)))
-                            this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
+                        this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
                         console.log("Could not mount IoStore environment \"%s\": Missing aes key", absolutePath)
                     }
                 } catch (e) {
@@ -481,7 +494,7 @@ export class FileProvider {
             }
         }
 
-        this.globalPackageStore = _globalPackageStore(this)
+        //this.globalPackageStore = _globalPackageStore(this)
     }
 
     protected loadGlobalData(globalTocFile: File) {
@@ -554,16 +567,6 @@ export class FileProvider {
         const delim = path.indexOf("/Content/")
         return delim === -1 ? path : "/Game" + path.substring(delim + "/Content".length)
     }
-}
-
-function _globalPackageStore(provider: FileProvider) {
-    const globalNameMap = new FNameMap()
-    const globalPackageStore = new FPackageStore(provider, globalNameMap)
-    globalNameMap.loadGlobal(provider)
-    globalPackageStore.setupInitialLoadData()
-    globalPackageStore.setupCulture()
-    globalPackageStore.loadContainers(provider.mountedIoStoreReaders().map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
-    return globalPackageStore
 }
 
 export abstract class PakMountListener {

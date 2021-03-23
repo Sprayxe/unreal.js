@@ -161,6 +161,7 @@ export class PakFileReader {
                 throw "e"
             this.mountPrefix = aes
         } catch (e) {
+            console.log(e)
             throw InvalidAesKeyException(`Given encryption key '${this.aesKeyStr}' is not working with '${this.fileName}'`)
         }
 
@@ -175,8 +176,8 @@ export class PakFileReader {
         if (!primaryIndexAr.readBoolean())
             throw ParserException("No directory index")
 
-        const directoryIndexOffset = primaryIndexAr.readInt64() as unknown as number
-        const directoryIndexSize = primaryIndexAr.readInt64() as unknown as number
+        const directoryIndexOffset = Number(primaryIndexAr.readInt64())
+        const directoryIndexSize = Number(primaryIndexAr.readInt64())
         primaryIndexAr.skip(20)
 
         const encodedPakEntriesSize = primaryIndexAr.readInt32()
@@ -195,7 +196,7 @@ export class PakFileReader {
         }
 
         const directoryIndexAr = this.Ar.createReader(directoryIndexData, directoryIndexOffset, FBytePakArchive)
-        const directoryIndex = directoryIndexAr.readTMap(null, (it) => {
+        const directoryIndex = directoryIndexAr.readTMap(undefined, (it) => {
             return {
                 key: it.readString(),
                 value: it.readTMap(null, (it2) => {

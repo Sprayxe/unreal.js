@@ -49,18 +49,4 @@ export class FBytePakArchive extends FPakArchive {
         this.data.copy(b, 0, this.position, this.position + size)
         return b
     }
-
-    read()
-    read(b: Buffer, off: number, len: number)
-    read(x?: any, y?: any, z?: any) {
-        if (!x) {
-            return this.isAtStopper() ? -1 : this.data[this.position++] & 0xFF
-        } else {
-            if (this.isAtStopper())
-                return -1
-            const count = Math.min(z, this.data.length - this.position)
-            this.data.copy(x, y, count)
-            return count
-        }
-    }
 }

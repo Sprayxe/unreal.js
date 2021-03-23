@@ -56,7 +56,6 @@ export class FMappedName {
     }
 
     isGlobal() {
-        console.log(((this.index & TYPE_MASK) >> TYPE_SHIFT) !== 0)
         return ((this.index & TYPE_MASK) >> TYPE_SHIFT) !== 0
     }
 

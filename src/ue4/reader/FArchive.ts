@@ -139,7 +139,6 @@ export class FArchive {
             const dat = new Array(utf16length - 1).push(this.readUInt16())
             if (this.readUInt16() !== 0)
                 throw ParserException("Serialized FString is not null-terminated")
-
             return dat.toString().slice(0, utf16length - 1)
         } else {
             if (length === 0) return ""
