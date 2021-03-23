@@ -31,8 +31,14 @@ import { FPakFileArchive } from "../ue4/pak/reader/FPakFileArchive";
 import { DataTypeConverter } from "../util/DataTypeConverter";
 import { Aes } from "../encryption/aes/Aes";
 import { Lazy } from "../util/Lazy";
+import { TypedEmitter } from "tiny-typed-emitter";
 
-export class FileProvider {
+interface FileProviderEvents {
+    "mounted:reader": (reader: PakFileReader) => void
+    "mounted:iostore": (reader: FIoStoreReader) => void
+}
+
+export class FileProvider extends TypedEmitter<FileProviderEvents> {
     folder: string
     protected globalDataLoaded = false
     game: number
@@ -43,11 +49,11 @@ export class FileProvider {
     protected _mountedIoStoreReaders: FIoStoreReader[] = []
     protected _requiredKeys: FGuid[] = []
     protected _keys = new UnrealMap<FGuid, Buffer>()
-    protected mountListeners: PakMountListener[] = []
     globalPackageStore: Lazy<FPackageStore> = null
     localFiles = new UnrealMap<string, Buffer>()
 
     constructor(folder: string, game: number = Ue4Version.GAME_UE4_LATEST, mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()) {
+        super()
         this.folder = folder
         this.game = game
         this.mappingsProvider = mappingsProvider
@@ -443,7 +449,7 @@ export class FileProvider {
             }
         }
 
-        this.mountListeners.forEach((it) => it.onMount(reader))
+        this.emit("mounted:reader", reader)
     }
 
     async findAndLoadFiles(folder: string = this.folder) {
@@ -504,17 +510,10 @@ export class FileProvider {
             ioStoreReader.initialize(new FIoStoreEnvironment(globalTocFile.path.substring(0, globalTocFile.path.lastIndexOf("."))), this._keys)
             this._mountedIoStoreReaders.push(ioStoreReader)
             console.log("Initialized I/O store")
+            this.emit("mounted:iostore", ioStoreReader)
         } catch (e) {
             console.error("Failed to mount I/O store global environment: '%s'", e.message || e)
         }
-    }
-
-    addOnMountListener(listener: PakMountListener) {
-        this.mountListeners.push(listener)
-    }
-
-    removeOnMountListener(listener: PakMountListener) {
-        this.mountListeners = this.mountListeners.filter(it => it !== listener)
     }
 
     /**
@@ -567,8 +566,4 @@ export class FileProvider {
         const delim = path.indexOf("/Content/")
         return delim === -1 ? path : "/Game" + path.substring(delim + "/Content".length)
     }
-}
-
-export abstract class PakMountListener {
-    abstract onMount(reader: PakFileReader)
 }
