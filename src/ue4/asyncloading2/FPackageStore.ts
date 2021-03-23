@@ -46,7 +46,7 @@ export class FPackageStore extends FOnContainerMountedListener {
     }
 
     setupInitialLoadData() {
-        const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(BigInt(0), 0, EIoChunkType.LoaderInitialLoadMeta))
+        const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
         const numScriptObjects = initialLoadArchive.readInt32()
         Utils.repeat(numScriptObjects, () => {

@@ -1,5 +1,5 @@
 import Collection from "@discordjs/collection";
-import objectHash from "object-hash";
+import objectHash from "node-object-hash";
 import { Utils } from "./Utils";
 
 export class UnrealMap<K, V> {
@@ -56,7 +56,7 @@ export class UnrealMap<K, V> {
      */
     public get(key: K): V | undefined {
         const ent = this.getEntryByKey(key)
-        return ent?.find(e => e.key.equals ? e.key.equals(key) : e.key === key)?.value
+        return ent ? ent.find(e => e.key.equals ? e.key.equals(key) : e.key === key)?.value : undefined
     }
 
     /**
@@ -455,7 +455,7 @@ export class UnrealMap<K, V> {
     }
 
     private hash(value: any) {
-        return typeof value === "object" ? objectHash(value) : Utils.hash(`${value}`).toString()
+        return objectHash().hash(value)
     }
 
     private mapToArray() {

@@ -436,6 +436,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
         this._mountedPaks.push(reader)
 
         if (this.globalDataLoaded && reader.Ar instanceof FPakFileArchive) {
+            const absolutePath = reader.Ar.file.path.split("/").pop()
             const ioStoreEnvironment = new FIoStoreEnvironment(reader.Ar.file.path.substring(0, reader.Ar.file.path.lastIndexOf(".")))
             try {
                 const ioStoreReader = new FIoStoreReader()
@@ -444,8 +445,9 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                 // TODO ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
                 this._mountedIoStoreReaders.push(ioStoreReader)
                 this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
+                console.log("Mounted IoStore environment \"%s\"", absolutePath)
             } catch (e) {
-                console.warn("Failed to mount IoStore environment \"%s\" [%s]", ioStoreEnvironment.path, e.message)
+                console.warn("Failed to mount IoStore environment \"%s\" [%s]", absolutePath, e.message)
             }
         }
 
@@ -478,10 +480,8 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                     if (enc && key) {
                         reader.aesKey = key
                         this.mount(reader)
-                        console.log("Mounted IoStore environment \"%s\"", absolutePath)
                     }else if (!enc) {
                         this.mount(reader)
-                        console.log("Mounted IoStore environment \"%s\"", absolutePath)
                     } else {
                         this._unloadedPaks.push(reader)
                         this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)

@@ -366,7 +366,8 @@ export class FIoStoreReader {
     read(chunkId: FIoChunkId/*, options: FIoReadOptions = FIoReadOptions()*/): Buffer {
         const offsetAndLength = this.toc.getOffsetAndLength(chunkId)
         if (!offsetAndLength) {
-            throw new Error("Unknown chunk ID")
+            console.error("Unknown chunk ID")
+            return
         }
 
         const offset = Number(offsetAndLength.offset);
