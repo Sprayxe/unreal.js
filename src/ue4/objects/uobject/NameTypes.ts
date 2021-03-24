@@ -9,7 +9,7 @@ export class FNameEntryId {
     constructor(value: number)
     constructor(Ar: FArchive)
     constructor(x?: any) {
-        this.value = x instanceof FArchive ? x.readUInt8() : x
+        this.value = x instanceof FArchive ? x.readUInt32() : x
     }
 }
 

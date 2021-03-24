@@ -19,6 +19,7 @@ import osLocale from "os-locale";
 import { FByteArchive } from "../reader/FByteArchive";
 import { Utils } from "../../util/Utils";
 import { UnrealMap } from "../../util/UnrealMap";
+import { ParserException } from "../../exceptions/Exceptions";
 
 export class FPackageStore extends FOnContainerMountedListener {
     provider: FileProvider
@@ -53,8 +54,9 @@ export class FPackageStore extends FOnContainerMountedListener {
             const obj = new FScriptObjectEntry(initialLoadArchive, this.globalNameMap.nameEntries)
             const mappedName = FMappedName.fromMinimalName(obj.objectName)
             if (!mappedName.isGlobal())
-                return console.error("FMappedName must be global, skipping.")
+                throw ParserException("FMappedName must be global")
             obj.objectName = this.globalNameMap.getMinimalName(mappedName)
+            this.scriptObjectEntriesMap.set(obj.globalIndex, obj)
             this.scriptObjectEntries.push(obj)
         })
     }

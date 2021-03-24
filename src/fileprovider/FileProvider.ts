@@ -439,12 +439,17 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
             const absolutePath = reader.Ar.file.path.split("/").pop()
             const ioStoreEnvironment = new FIoStoreEnvironment(reader.Ar.file.path.substring(0, reader.Ar.file.path.lastIndexOf(".")))
             try {
+                console.log("POSITION: 'const ioStoreReader = new FIoStoreReader()'")
                 const ioStoreReader = new FIoStoreReader()
                 ioStoreReader.concurrent = reader.concurrent
+                console.log("POSITION: 'ioStoreReader.initialize(ioStoreEnvironment, this.keys())'")
                 ioStoreReader.initialize(ioStoreEnvironment, this.keys())
                 // TODO ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
+                console.log("POSITION: 'this._mountedIoStoreReaders.push(ioStoreReader)'")
                 this._mountedIoStoreReaders.push(ioStoreReader)
+                console.log("POSITION: 'this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))'")
                 this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
+                console.log("POSITION: 'SUCCESSFULLY MOUNTED MESSAGE'")
                 console.log("Mounted IoStore environment \"%s\"", absolutePath)
             } catch (e) {
                 console.warn("Failed to mount IoStore environment \"%s\" [%s]", absolutePath, e.message)
@@ -480,7 +485,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                     if (enc && key) {
                         reader.aesKey = key
                         this.mount(reader)
-                    }else if (!enc) {
+                    } else if (!enc) {
                         this.mount(reader)
                     } else {
                         this._unloadedPaks.push(reader)

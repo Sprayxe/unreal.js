@@ -17,7 +17,7 @@ export const TYPE_SHIFT = INDEX_BITS
 
 export class FMappedName {
     static create(index: number, num: number, type: FMappedName_EType): FMappedName {
-        if (index > Number.MAX_VALUE)
+        if (index > 2147483647)
             throw new Error("Bad name index")
         const mappedName = new FMappedName()
         mappedName.index = (Utils.ordinal(type, FMappedName_EType) << TYPE_SHIFT) | index
@@ -37,7 +37,7 @@ export class FMappedName {
         return mappedName.isValid()
     }
 
-    private index: number = INVALID_INDEX
+    index: number = INVALID_INDEX
     num: number = INVALID_INDEX
 
     constructor(Ar?: FArchive) {

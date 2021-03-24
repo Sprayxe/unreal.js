@@ -60,8 +60,8 @@ export class Utils {
     static repeat(times: number, action: (n: number) => void) {
         let x = 0
         while (x < times) {
-            action(x)
             ++x
+            action(x - 1)
         }
     }
 }
