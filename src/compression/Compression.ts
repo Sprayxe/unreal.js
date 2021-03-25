@@ -54,6 +54,7 @@ export class Compression {
     static uncompress(formatName: string,
                       uncompressedBuffer: Buffer, uncompressedBufferOff: number, uncompressedSize: number,
                       compressedBuffer: Buffer, compressedBufferOff: number, compressedSize: number) {
+        if (!this.handlers.size) this.init()
         const handler = this.handlers.get(formatName)
         if (!handler)
             throw new Error(`Unknown compression method ${formatName}`)

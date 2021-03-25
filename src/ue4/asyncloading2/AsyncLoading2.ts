@@ -121,9 +121,8 @@ export class FPackageStoreEntry {
 
 export const _INDEX_BITS = 62
 export const _INDEX_MASK = (1 << _INDEX_BITS) - 1
-export const _TYPE_MASK2 = _INDEX_MASK
 export const _TYPE_SHIFT = _INDEX_BITS
-export const INVALID = 0
+export const INVALID = ~0
 export class FPackageObjectIndex {
     private typeAndId = INVALID
 
