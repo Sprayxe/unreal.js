@@ -157,7 +157,7 @@ export class PakFileProvider extends AbstractFileProvider {
         for (const readerStack in this._mountedIoStoreReaders) {
             const reader = this._mountedIoStoreReaders[readerStack]
             try {
-                return null // TODO reader.read(chunkId)
+                return null // TODO reader.readBuffer(chunkId)
             } catch (e) {
             }
         }

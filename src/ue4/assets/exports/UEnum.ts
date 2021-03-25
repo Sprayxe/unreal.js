@@ -18,7 +18,7 @@ export class UEnum extends UObject {
                 value: Ar.readInt64() as unknown as number
             }
         })
-        this.cppForm = Object.values(ECppForm)[Ar.read()]
+        this.cppForm = Object.values(ECppForm)[Ar.readUInt8()]
     }
 }
 

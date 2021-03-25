@@ -25,8 +25,8 @@ export function loadNameBatch(x?: any, y?: any) {
             const len = header.len()
             return [
                 header.isUtf16() ?
-                    Buffer.from(x.read(len * 2)).toString("utf16le") :
-                    Buffer.from(x.read(len)).toString("utf-8")
+                    Buffer.from(x.readBuffer(len * 2)).toString("utf16le") :
+                    Buffer.from(x.readBuffer(len)).toString("utf-8")
             ]
         })
     }

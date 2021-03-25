@@ -1,13 +1,9 @@
-import { FPakArchive } from "../reader/FPakArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FByteArchive } from "../../reader/FByteArchive";
 import { FArchive } from "../../reader/FArchive";
 import { FGuid } from "../../objects/core/misc/Guid";
-import {
-    PakVersion_FNameBasedCompressionMethod,
-    PakVersion_FrozenIndex,
-    PakVersion_PathHashIndex
-} from "../enums/PakVersion";
+import { FFileArchive } from "../../reader/FFileArchive";
+import { EPakVersion } from "../enums/PakVersion";
 
 export const PAK_MAGIC = 0x5A6F12E1
 
@@ -20,12 +16,13 @@ export const offsetsToTry = [size, size8, size8a, size9]
 export const maxNumCompressionMethods = [0, 4, 5, 5]
 
 export class FPakInfo {
-    static readPakInfo(Ar: FPakArchive) {
-        const pakSize = Ar.pakSize()
+    static readPakInfo(Ar: FArchive) {
+        const path = Ar instanceof FFileArchive ? Ar.path : "UNKNOWN"
+        const pakSize = Ar.size
         let maxSize = -1
         let maxOffsetToTryIndex = -1
 
-        for (let i = (offsetsToTry.length - 1); i >= 0; --i) {
+        for (let i = offsetsToTry.length - 1; i >= 0; --i) {
             if (pakSize - offsetsToTry[i] >= 0) {
                 maxSize = offsetsToTry[i]
                 maxOffsetToTryIndex = i
@@ -34,15 +31,15 @@ export class FPakInfo {
         }
 
         if (maxSize < 0)
-            throw ParserException(`File '${Ar.fileName}' has an unknown format`)
-        Ar.seek(pakSize - maxSize)
+            throw ParserException(`File '${path}' has an unknown format`)
+        Ar.pos = pakSize - maxSize
 
-        const tempAr = new FByteArchive(Ar.read(maxSize))
+        const tempAr = new FByteArchive(Ar.readBuffer(maxSize))
         let x = 0
         while (x < maxOffsetToTryIndex) {
             tempAr.pos = maxSize - offsetsToTry[x]
             try {
-                return new FPakInfo(tempAr, maxNumCompressionMethods[x], Ar.fileName)
+                return new FPakInfo(tempAr, maxNumCompressionMethods[x], path)
             } catch (e) {
                 if (!e.message.includes("boolean") && !e.message.includes("magic")) {
                     console.error(e)
@@ -50,17 +47,17 @@ export class FPakInfo {
             }
             ++x
         }
-        throw ParserException(`File '${Ar.fileName}' has an unknown format`)
+        throw ParserException(`File '${path}' has an unknown format`)
     }
 
-    encryptionKeyGuid : FGuid
-    encryptedIndex : boolean
-    version : number
-    indexOffset : number
-    indexSize : number
-    indexHash : Buffer
-    compressionMethods : string[]
-    indexIsFrozen : boolean = false
+    encryptionKeyGuid: FGuid
+    encryptedIndex: boolean
+    version: EPakVersion
+    indexOffset: number
+    indexSize: number
+    indexHash: Buffer
+    compressionMethods: string[]
+    indexIsFrozen: boolean = false
 
     constructor(Ar: FArchive, maxNumCompressionMethods: number = 4, fileName?: string) {
         // New FPakInfo fields
@@ -75,21 +72,19 @@ export class FPakInfo {
         this.version = Ar.readInt32()
         this.indexOffset = Number(Ar.readInt64()) // as unknown as number
         this.indexSize = Number(Ar.readInt64()) // as unknown as number
-        this.indexHash = Ar.read(20)
+        this.indexHash = Ar.readBuffer(20)
 
-        if (this.version >= PakVersion_FrozenIndex && this.version < PakVersion_PathHashIndex) {
+        if (this.version >= EPakVersion.PakVersion_FrozenIndex && this.version < EPakVersion.PakVersion_PathHashIndex) {
             this.indexIsFrozen = Ar.readBoolean()
             if (this.indexIsFrozen)
                 console.warn("Frozen PakFile Index")
         }
 
         this.compressionMethods = []
-        if (this.version >= PakVersion_FNameBasedCompressionMethod) {
+        if (this.version >= EPakVersion.PakVersion_FNameBasedCompressionMethod) {
             this.compressionMethods.push("None")
-            let y = 0
-            while (y < maxNumCompressionMethods) {
-                ++y
-                const d = Ar.read(32)
+            for (let i = 0; i < maxNumCompressionMethods; ++i) {
+                const d = Ar.readBuffer(32)
                 const str = Buffer.from(d.filter(it => it !== 0)).toString("utf8")
                 if (/\s/g.test(str))
                     return

@@ -1,5 +1,3 @@
-import { CompressionMethod } from "./CompressionMethod"
-import * as Long from "long"
 import { FPakEntry } from "./objects/FPakEntry";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { Utils } from "../../util/Utils"
@@ -10,7 +8,7 @@ export class GameFile {
     pos: number = null
     size: number = null
     uncompressedSize: number = null
-    compressionMethod: CompressionMethod = CompressionMethod.None
+    compressionMethod = "None"
     compressedBlocks: FPakCompressedBlock[] = []
     compressionBlockSize: number = 0
     isEncrypted: boolean = false
@@ -57,7 +55,7 @@ export class GameFile {
     }
 
     isCompressed() {
-        return this.uncompressedSize !== this.size || this.compressionMethod !== CompressionMethod.None
+        return this.uncompressedSize !== this.size || this.compressionMethod !== "None"
     }
     getPathWithoutExtension() {
         return this.path.substring(0, this.path.indexOf("."))

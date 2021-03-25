@@ -47,8 +47,8 @@ export class FStore {
 
         this.ansiStringOffsets = Utils.getArray(nums[5], () => [Ar.readUInt32()])
         this.wideStringOffsets = Utils.getArray(nums[6], () => [Ar.readUInt32()])
-        this.ansiStrings = Ar.read(nums[7])
-        this.wideStrings = Ar.wrappedAr.read(nums[8] * 2)
+        this.ansiStrings = Ar.readBuffer(nums[7])
+        this.wideStrings = Ar.wrappedAr.readBuffer(nums[8] * 2)
 
         this.numberlessPairs = Utils.getArray(nums[9], () => [Ar], FNumberlessPair)
         this.pairs = Utils.getArray(nums[10], () => [Ar], FNumberedPair)

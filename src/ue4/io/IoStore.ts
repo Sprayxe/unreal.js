@@ -51,10 +51,10 @@ export class FIoStoreTocHeader {
     reserved6 = new Array<bigint>(6)
 
     constructor(Ar: FArchive) {
-        Ar.read(this.tocMagic)
+        Ar.readToBuffer(this.tocMagic)
         if (!this.checkMagic())
             throw new Error("TOC header magic mismatch")
-        this.version = Ar.read()
+        this.version = Ar.readUInt8()
         this.reserved0 = Ar.readUInt8()
         this.reserved1 = Ar.readUInt16()
         this.tocHeaderSize = Ar.readUInt32()
@@ -68,7 +68,7 @@ export class FIoStoreTocHeader {
         this.partitionCount = Ar.readUInt32()
         this.containerId = new FIoContainerId(Ar)
         this.encryptionKeyGuid = new FGuid(Ar)
-        this.containerFlags = Ar.read()
+        this.containerFlags = Ar.readUInt8()
         this.reserved3 = Ar.readUInt8()
         this.reserved4 = Ar.readUInt16()
         this.reserved5 = Ar.readUInt32()
@@ -97,7 +97,7 @@ export class FIoOffsetAndLength {
 
     constructor(Ar: FArchive = null) {
         this.offsetAndLength = Buffer.from(new ArrayBuffer(5 + 5))
-        if (Ar) Ar.read(this.offsetAndLength)
+        if (Ar) Ar.readToBuffer(this.offsetAndLength)
     }
 
     get offset() {
@@ -150,7 +150,7 @@ export class FIoStoreTocCompressedBlockEntry {
     data = Buffer.alloc(5 + 3 + 3 + 1)
 
     constructor(Ar: FArchive) {
-        Ar.read(this.data)
+        Ar.readToBuffer(this.data)
     }
 
     get offset() {
@@ -242,7 +242,7 @@ export class FIoStoreTocResource {
         this.compressionMethods = new Array(this.header.compressionMethodNameCount + 1)
         this.compressionMethods[0] = "None"
         for (let i = 0; i < this.header.compressionMethodNameCount; i++) {
-            const compressionMethodName = tocBuffer.read(this.header.compressionMethodNameLength)
+            const compressionMethodName = tocBuffer.readBuffer(this.header.compressionMethodNameLength)
             let length = 0
             while (compressionMethodName[length] !== 0) {
                 ++length
@@ -253,11 +253,11 @@ export class FIoStoreTocResource {
         // Chunk block signatures
         if (this.header.containerFlags & EIoContainerFlags.Signed) {
             const hashSize = tocBuffer.readInt32()
-            tocBuffer.pos += hashSize // actually: const tocSignature = tocBuffer.read(hashSize)
-            tocBuffer.pos += hashSize // actually: const blockSignature = tocBuffer.read(hashSize)
+            tocBuffer.pos += hashSize // actually: const tocSignature = tocBuffer.readBuffer(hashSize)
+            tocBuffer.pos += hashSize // actually: const blockSignature = tocBuffer.readBuffer(hashSize)
             this.chunkBlockSignatures = new Array(this.header.tocCompressedBlockEntryCount)
             for (let i = 0; i < this.header.tocCompressedBlockEntryCount; i++) {
-                this.chunkBlockSignatures[i] = tocBuffer.read(20)
+                this.chunkBlockSignatures[i] = tocBuffer.readBuffer(20)
             }
 
             // You could verify hashes here but nah
@@ -269,7 +269,7 @@ export class FIoStoreTocResource {
         if (readOptions & EIoStoreTocReadOptions.ReadDirectoryIndex
             && this.header.containerFlags & EIoContainerFlags.Indexed
             && this.header.directoryIndexSize > 0) {
-            this.directoryIndexBuffer = tocBuffer.read(this.header.directoryIndexSize)
+            this.directoryIndexBuffer = tocBuffer.readBuffer(this.header.directoryIndexSize)
         }
 
         // Meta
@@ -319,8 +319,6 @@ export class FIoStoreReader {
         override fun initialValue() = FThreadBuffers()
     }*/
     environment: FIoStoreEnvironment
-
-    concurrent = false
 
     initialize(environment: FIoStoreEnvironment, decryptionKeys: UnrealMap<FGuid, Buffer>) {
         this.environment = environment

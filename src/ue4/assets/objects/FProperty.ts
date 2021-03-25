@@ -268,7 +268,7 @@ export class FProperty {
                 return new EnumProperty(FName.NAME_None, null)
             } else if (type !== ReadType.MAP && type !== ReadType.ARRAY && Ar.useUnversionedPropertySerialization) {
                 const ordinal = this.valueOr(
-                    () => typeData.isEnumAsByte ? Ar.read() : Ar.readInt32(),
+                    () => typeData.isEnumAsByte ? Ar.readUInt8() : Ar.readInt32(),
                     () => 0,
                     type
                 )

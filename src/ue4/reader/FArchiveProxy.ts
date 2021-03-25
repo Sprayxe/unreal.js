@@ -18,7 +18,7 @@ export class FArchiveProxy extends FArchive {
 
     read()
     read(buffer: Buffer)
-    read(param?: any) { return this.wrappedAr.read(param) }
+    read(param?: any) { return this.wrappedAr.readBuffer(param) }
 
     // Only overriding these to keep optimal performance with FByteArchive
     readInt8(): number { return this.wrappedAr.readInt8() }

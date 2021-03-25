@@ -22,7 +22,7 @@ export class FIoChunkHash {
     hash = Buffer.alloc(32)
 
     constructor(Ar: FArchive) {
-        Ar.read(this.hash)
+        Ar.readToBuffer(this.hash)
     }
 }
 
@@ -33,7 +33,7 @@ export class FIoChunkId {
     id = Buffer.alloc(12)
 
     constructor(Ar?: FArchive) {
-        if (Ar) Ar.read(this.id)
+        if (Ar) Ar.readToBuffer(this.id)
     }
 
     equals(other: FIoChunkId): boolean {

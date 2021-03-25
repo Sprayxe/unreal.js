@@ -18,13 +18,6 @@ export class FArchive {
     isFilterEditorOnly = true
     littleEndian = true
 
-    clone(): FArchive {
-        const clone = new FArchive(this.data);
-        clone.position = this.position
-        clone.littleEndian = this.littleEndian
-        return clone
-    }
-
     get pos() { return this.position }
 
     set pos(v: number) { this.position = v }
@@ -33,19 +26,19 @@ export class FArchive {
 
     isAtStopper() { return this.pos >= this.size }
 
-    read()
-    read(buffer: Buffer)
-    read(size: number): Buffer
-    read(param?: any): Buffer | number {
-        if (param) {
-            if (Buffer.isBuffer(param)) { // read(Buffer)
-                this.data.copy(param, 0, this.position, this.position += param.length)
-                return param.length
-            } else { // read(number)
-                return this.data.slice(this.position, this.position += param)
-            }
-        } else { // read()
-            return this.isAtStopper() ? -1 : this.data[this.position++] & 0xFF;
+    readToBuffer(b: Buffer, off: number = 0, len: number = b.length) {
+        this.data.copy(b, off, this.position, this.position += len)
+    }
+
+    readBuffer(num: number, copy: boolean = false): Buffer {
+        return this.readRange(this.position, this.position += num, copy)
+    }
+
+    readRange(begin: number, end: number, copy: boolean = false): Buffer {
+        if (copy) {
+            return this.data.slice(begin, end)
+        } else {
+            return this.data.subarray(begin, end)
         }
     }
 
@@ -97,12 +90,6 @@ export class FArchive {
         return this.littleEndian ? this.data.readBigUInt64LE(localPos) : this.data.readBigUInt64BE(localPos)
     }
 
-    readFloat16() {
-        const localPos = this.position
-        this.position += 2
-        return this.littleEndian ? this.data.readFloatLE(localPos) : this.data.readFloatBE(localPos)
-    }
-
     readFloat32() {
         const localPos = this.position
         this.position += 4
@@ -130,7 +117,7 @@ export class FArchive {
     }
 
     readString() {
-        const length = this.readInt32();
+        const length = this.readInt32()
         if (length < -65536 || length > 65536)
             throw ParserException(`Invalid String length '${length}'`)
 
@@ -142,7 +129,7 @@ export class FArchive {
             return dat.toString().slice(0, utf16length - 1)
         } else {
             if (length === 0) return ""
-            const str = this.read(length - 1).toString("utf-8")
+            const str = this.readBuffer(length - 1).toString("utf-8")
             if (this.readUInt8() !== 0)
                 throw ParserException("Serialized FString is not null-terminated")
             return str

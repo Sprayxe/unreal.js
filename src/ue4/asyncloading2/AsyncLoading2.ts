@@ -239,8 +239,8 @@ export class FContainerHeader {
     constructor(Ar: FArchive) {
         this.containerId = new FIoContainerId(Ar)
         this.packageCount = Ar.readUInt32()
-        this.names = Ar.read(Ar.readInt32())
-        this.nameHashes = Ar.read(Ar.readInt32())
+        this.names = Ar.readBuffer(Ar.readInt32())
+        this.nameHashes = Ar.readBuffer(Ar.readInt32())
         this.packageIds = Ar.readArray(() => new FPackageId(Ar))
         const storeEntriesNum = Ar.readInt32()
         const storeEntriesEnd = Ar.pos + storeEntriesNum

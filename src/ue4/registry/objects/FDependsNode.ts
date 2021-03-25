@@ -34,7 +34,7 @@ export class FDependsNode {
             if (outFlagBits) {
                 numFlagBits = flagSetWidth * numDependencies
                 const numFlagWords = Math.round(numFlagBits / 32)
-                inFlagBits = new BitSet(Ar.read(numFlagWords))
+                inFlagBits = new BitSet(Ar.readBuffer(numFlagWords))
             }
 
             for (const serializeIndex of inDependencies) {
