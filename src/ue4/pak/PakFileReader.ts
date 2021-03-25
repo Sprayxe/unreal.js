@@ -108,7 +108,7 @@ export class PakFileReader {
             const gameFile = new GameFile(entry, this.mountPoint, this.path)
             if (gameFile.isEncrypted)
                 this.encryptedFileCount++
-            files.set(gameFile.path, gameFile)
+            files.set(gameFile.path.toLowerCase(), gameFile)
         }
 
         return this.files = files
@@ -152,7 +152,7 @@ export class PakFileReader {
                 entry.name = path
                 if (entry.isEncrypted)
                     this.encryptedFileCount++
-                files.set(path, new GameFile(entry, this.mountPoint, this.path))
+                files.set(path.toLowerCase(), new GameFile(entry, this.mountPoint, this.path))
             }
         }
 
