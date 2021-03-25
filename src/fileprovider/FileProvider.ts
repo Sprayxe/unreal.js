@@ -445,7 +445,6 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                 if (this.globalPackageStore.isInitialized) {
                     this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
                 }
-                console.log("Mounted IoStore environment \"%s\"", absolutePath)
             } catch (e) {
                 console.warn("Failed to mount IoStore environment \"%s\"", absolutePath, e)
             }

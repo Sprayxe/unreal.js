@@ -9,6 +9,7 @@ import { UnrealMap } from "../../util/UnrealMap";
 import { Aes } from "../../encryption/aes/Aes";
 import { Compression } from "../../compression/Compression";
 import { Utils } from "../../util/Utils";
+import { sprintf } from "sprintf-js";
 
 /**
  * I/O store container format version
@@ -353,6 +354,12 @@ export class FIoStoreReader {
         /*if (tocResource.header.containerFlags & EIoContainerFlags.Indexed) {
             this.directoryIndexReader = new FIoDirectoryIndexReaderImpl(tocResource.directoryIndexBuffer, this.decryptionKey)
         }*/
+
+        console.log(sprintf("IoStore \"%s\": %d %s, version %d",
+            environment.path,
+            this.toc.tocResource.header.tocEntryCount,
+            this.decryptionKey ? "encrypted chunks" : "chunks",
+            this.toc.tocResource.header.version))
     }
 
     get containerId() { return this.toc.tocResource.header.containerId }

@@ -9,10 +9,10 @@ import { FPakEntry } from "./objects/FPakEntry";
 import { sprintf } from "sprintf-js";
 import { FFileArchive } from "../reader/FFileArchive";
 import { Utils } from "../../util/Utils";
-import { PakVersion_PathHashIndex } from "./enums/PakVersion";
 import { UnrealMap } from "../../util/UnrealMap";
 import { Compression } from "../../compression/Compression";
 import { FArchive } from "../reader/FArchive";
+import { EPakVersion } from "./enums/PakVersion";
 
 export class PakFileReader {
     path: string
@@ -78,7 +78,7 @@ export class PakFileReader {
     }
 
     readIndex(): GameFile[] {
-        const files = this.pakInfo.version >= PakVersion_PathHashIndex ? this.readIndexUpdated() : this.readIndexLegacy()
+        const files = this.pakInfo.version >= EPakVersion.PakVersion_PathHashIndex ? this.readIndexUpdated() : this.readIndexLegacy()
 
         // Print statistics
         let stats = sprintf("Pak \"%s\": %d files", this.path, this.fileCount)
