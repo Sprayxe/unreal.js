@@ -1,6 +1,5 @@
 import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
 import { FPakInfo } from "./objects/FPakInfo";
-import { DataTypeConverter } from "../../util/DataTypeConverter";
 import { Aes } from "../../encryption/aes/Aes";
 import { GameFile } from "./GameFile";
 import { InvalidAesKeyException, ParserException } from "../../exceptions/Exceptions";
@@ -9,7 +8,6 @@ import { FPakEntry } from "./objects/FPakEntry";
 import { sprintf } from "sprintf-js";
 import { FFileArchive } from "../reader/FFileArchive";
 import { Utils } from "../../util/Utils";
-import { UnrealMap } from "../../util/UnrealMap";
 import { Compression } from "../../compression/Compression";
 import { FArchive } from "../reader/FArchive";
 import { EPakVersion } from "./enums/PakVersion";
@@ -20,10 +18,9 @@ export class PakFileReader {
     game: number
     pakInfo: FPakInfo
     aesKey: Buffer = null
-    mountPrefix: string
-    fileCount = 0
+    mountPoint: string
     encryptedFileCount = 0
-    files: GameFile[]
+    files: Map<string, GameFile>
 
     constructor(path: string, game?: number) {
         this.path = path
@@ -77,96 +74,49 @@ export class PakFileReader {
         }
     }
 
-    readIndex(): GameFile[] {
-        const files = this.pakInfo.version >= EPakVersion.PakVersion_PathHashIndex ? this.readIndexUpdated() : this.readIndexLegacy()
+    readIndex(): Map<string, GameFile> {
+        this.encryptedFileCount = 0
+        this.Ar.pos = this.pakInfo.indexOffset
+        const indexAr = new FByteArchive(this.readAndDecrypt(this.pakInfo.indexSize))
+
+        let mountPoint: string
+        try {
+            mountPoint = indexAr.readString()
+        } catch (e) {
+            throw InvalidAesKeyException(`Given encryption key '0x${this.aesKey.toString("hex")}' is not working with '${this.path}'`)
+        }
+
+        this.mountPoint = this.fixMountPoint(mountPoint)
+        const files = this.pakInfo.version >= EPakVersion.PakVersion_PathHashIndex ? this.readIndexUpdated(indexAr) : this.readIndexLegacy(indexAr)
 
         // Print statistics
-        let stats = sprintf("Pak \"%s\": %d files", this.path, this.fileCount)
-        if (this.encryptedFileCount !== 0)
+        let stats = sprintf("Pak \"%s\": %d files", this.path, this.files.size)
+        if (this.encryptedFileCount)
             stats += sprintf(" (%d encrypted)", this.encryptedFileCount)
-        if (this.mountPrefix.includes("/"))
-            stats += sprintf(", mount point: \"%s\"", this.mountPrefix)
+        if (this.mountPoint.includes("/"))
+            stats += sprintf(", mount point: \"%s\"", this.mountPoint)
         console.info(stats + ", version %d", this.pakInfo.version)
 
         return files
     }
 
-    private readIndexLegacy() {
-        // Prepare index and decrypt if necessary
-        this.Ar.pos = this.pakInfo.indexOffset
-        const indexAr = new FByteArchive(this.readAndDecrypt(this.pakInfo.indexSize))
-
-        // Read the index
-        let mountPoint = indexAr.readString()
-        if (mountPoint)
-            throw InvalidAesKeyException(`Given encryption key '0x${this.aesKey.toString("hex")}' is not working with '${this.path}'`)
-
-        let badMountPoint = false
-        if (!mountPoint.startsWith("../../.."))
-            badMountPoint = true
-        else
-            mountPoint = mountPoint.replace("../../..", "")
-        if (mountPoint[0] !== '/' || (mountPoint.length > 1 && mountPoint[1] === '.'))
-            badMountPoint = true
-        if (badMountPoint) {
-            console.warn(`Pak \"${this.path}\" has strange mount point \"${mountPoint}\", mounting to root`)
-            mountPoint = "/"
-        }
-        if (mountPoint.startsWith('/'))
-            mountPoint = mountPoint.substring(1)
-        this.mountPrefix = mountPoint
-
-        this.fileCount = indexAr.readInt32()
-        this.encryptedFileCount = 0
-
-        const tempMap = new UnrealMap<string, GameFile>()
-        let i = 0
-        while (i < this.fileCount) {
+    private readIndexLegacy(indexAr: FByteArchive): Map<string, GameFile> {
+        const fileCount = indexAr.readInt32()
+        const files = new Map<string, GameFile>()
+        for (let i = 0; i < fileCount; i++) {
             const entry = new FPakEntry(indexAr, this.pakInfo, true)
-            const gameFile = new GameFile(entry, this.mountPrefix, this.path)
+            const gameFile = new GameFile(entry, this.mountPoint, this.path)
             if (gameFile.isEncrypted)
                 this.encryptedFileCount++
-            tempMap.set(gameFile.path, gameFile)
-            ++i
+            files.set(gameFile.path, gameFile)
         }
 
-        const files: GameFile[] = []
-        tempMap.forEach((it) => {
-            if (it.isUE4Package()) {
-                const uexp = tempMap.get(it.path.substring(0, it.path.lastIndexOf(".")) + ".uexp")
-                if (uexp)
-                    it.uexp = uexp
-                const ubulk = tempMap.get(it.path.substring(0, it.path.lastIndexOf(".")) + ".ubulk")
-                if (ubulk)
-                    it.ubulk = ubulk
-                files.push(it)
-            } else {
-                if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
-                    files.push(it)
-            }
-        })
-        this.files = files
-        return this.files
+        return this.files = files
     }
 
-    private readIndexUpdated(): GameFile[] {
-        // Prepare primary index and decrypt if necessary
-        this.Ar.pos = this.pakInfo.indexOffset
-        const primaryIndexAr = new FByteArchive(this.readAndDecrypt(this.pakInfo.indexSize))
-
-        try {
-            const str = primaryIndexAr.readString()
-            const aes = str.substring(str.lastIndexOf("../../../") + 1)
-            if (!aes)
-                throw "e"
-            this.mountPrefix = aes
-        } catch (e) {
-            console.log(e)
-            throw InvalidAesKeyException(`Given encryption key '0x${this.aesKey.toString("hex")}' is not working with '${this.path}'`)
-        }
-
+    private readIndexUpdated(primaryIndexAr: FByteArchive): Map<string, GameFile> {
         const fileCount = primaryIndexAr.readInt32()
-        primaryIndexAr.pos += 8
+        primaryIndexAr.pos += 8 // PathHashSeed
 
         if (!primaryIndexAr.readBoolean())
             throw ParserException("No path hash index")
@@ -178,67 +128,38 @@ export class PakFileReader {
 
         const directoryIndexOffset = Number(primaryIndexAr.readInt64())
         const directoryIndexSize = Number(primaryIndexAr.readInt64())
-        primaryIndexAr.pos += 20
+        primaryIndexAr.pos += 20 // Directory Index hash
 
         const encodedPakEntriesSize = primaryIndexAr.readInt32()
         const encodedPakEntries = primaryIndexAr.readBuffer(encodedPakEntriesSize)
+        const encodedPakEntriesAr = new FByteArchive(encodedPakEntries)
 
         if (primaryIndexAr.readInt32() < 0)
             throw ParserException("Corrupt pak PrimaryIndex detected!")
 
         this.Ar.pos = directoryIndexOffset
         const directoryIndexAr = new FByteArchive(this.readAndDecrypt(directoryIndexSize))
-        const directoryIndex = directoryIndexAr.readTMap(undefined, (it) => {
-            return {
-                key: it.readString(),
-                value: it.readTMap(null, (it2) => {
-                    return {
-                        key: it2.readString(),
-                        value: it2.readInt32()
-                    }
-                })
-            }
-        })
-
-        const encodedPakEntriesAr = new FByteArchive(encodedPakEntries)
-        const begin = encodedPakEntriesAr.pos
-
-        const tempMap = new UnrealMap<string, GameFile>()
-        let finalFileCount = 0
-        for (const [dirName, dirContent] of directoryIndex) {
-            for (const [fileName, offset] of dirContent) {
-                const path = dirName + fileName
-                encodedPakEntriesAr.pos = begin + offset
+        const directoryIndexNum = directoryIndexAr.readInt32()
+        const files = new Map<string, GameFile>()
+        for (let i = 0; i < directoryIndexNum; i++) {
+            const directory = directoryIndexAr.readString()
+            const filesNum = directoryIndexAr.readInt32()
+            for (let j = 0; j < filesNum; j++) {
+                const file = directoryIndexAr.readString()
+                const path = this.mountPoint + directory + file
+                encodedPakEntriesAr.pos = directoryIndexAr.readInt32()
                 const entry = FPakEntry.decodePakEntry(encodedPakEntriesAr, this.pakInfo)
                 entry.name = path
                 if (entry.isEncrypted)
                     this.encryptedFileCount++
-                tempMap.set(this.mountPrefix + path, new GameFile(entry, this.mountPrefix, this.path))
-                if (!path.endsWith(".uexp") && !path.endsWith(".ubulk"))
-                    finalFileCount++
+                files.set(path, new GameFile(entry, this.mountPoint, this.path))
             }
         }
 
-        const files = new Array<GameFile>(finalFileCount)
-        tempMap.forEach((it) => {
-            if (it.isUE4Package()) {
-                const uexp = tempMap.get(it.path.substring(0, it.path.lastIndexOf(".")) + ".uexp")
-                if (uexp)
-                    it.uexp = uexp
-                const ubulk = tempMap.get(it.path.substring(0, it.path.lastIndexOf(".")) + ".ubulk")
-                if (ubulk)
-                    it.ubulk = ubulk
-                files.push(it)
-            } else {
-                if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
-                    files.push(it)
-            }
-        })
-        this.files = files
-        return this.files
+        return this.files = files
     }
 
-    readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted()): Buffer {
+    private readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted()): Buffer {
         let data = this.Ar.readBuffer(num)
         if (isEncrypted) {
             const key = this.aesKey
@@ -247,6 +168,23 @@ export class PakFileReader {
             data = Aes.decrypt(data, key)
         }
         return data
+    }
+
+    private fixMountPoint(mountPoint: string) {
+        let badMountPoint = false
+        if (!mountPoint.startsWith("../../.."))
+            badMountPoint = true
+        else
+            mountPoint = mountPoint.replace("../../..", "")
+        if (mountPoint[0] !== '/' || (mountPoint.length > 1 && mountPoint[1] === '.'))
+            badMountPoint = true
+        if (badMountPoint) {
+            //console.warn(`Pak \"${this.path}\" has strange mount point \"${mountPoint}\", mounting to root`)
+            mountPoint = "/"
+        }
+        if (mountPoint.startsWith('/'))
+            mountPoint = mountPoint.substring(1)
+        return mountPoint;
     }
 
     indexCheckBytes(): Buffer {
@@ -264,7 +202,7 @@ export class PakFileReader {
                     return true
                 return this.testAesKey(this.indexCheckBytes(), x)
             } else {
-                return this.testAesKey(DataTypeConverter.parseHexBinary(x.startsWith("0x") ? x.substring(2) : x))
+                return this.testAesKey(Buffer.from(x.startsWith("0x") ? x.substring(2) : x, "hex"))
             }
         } else {
             x = Aes.decrypt(x, y)

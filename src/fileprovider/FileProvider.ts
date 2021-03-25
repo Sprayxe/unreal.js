@@ -27,7 +27,6 @@ import fs from "fs";
 import * as fsAsync from "fs/promises"
 import { InvalidAesKeyException, ParserException } from "../exceptions/Exceptions";
 import { FFileArchive } from "../ue4/reader/FFileArchive";
-import { DataTypeConverter } from "../util/DataTypeConverter";
 import { Aes } from "../encryption/aes/Aes";
 import { Lazy } from "../util/Lazy";
 import { TypedEmitter } from "tiny-typed-emitter";
@@ -76,7 +75,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
     }
 
     keysStr(): UnrealMap<FGuid, string> {
-        return this.keys().mapValues(it => DataTypeConverter.printAesKey(it))
+        return this.keys().mapValues(it => "0x" + it.toString("hex"))
     }
 
     requiredKeys(): FGuid[] {
@@ -489,8 +488,6 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                 this.localFiles.add(gamePath.toLowerCase())
             }
         }
-
-        //this.globalPackageStore = _globalPackageStore(this)
     }
 
     protected loadGlobalData(path: string) {

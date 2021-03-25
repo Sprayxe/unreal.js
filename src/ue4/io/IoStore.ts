@@ -1,15 +1,14 @@
 import { FGuid } from "../objects/core/misc/Guid"
 import { FArchive } from "../reader/FArchive"
 import { FIoContainerId } from "./IoContainerId"
-import * as fs from "fs";
-import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from "./IoDispatcher";
-import { FByteArchive } from "../reader/FByteArchive";
-import { int32, uint16, uint32, uint64, uint8 } from "../../Types";
-import { UnrealMap } from "../../util/UnrealMap";
-import { Aes } from "../../encryption/aes/Aes";
-import { Compression } from "../../compression/Compression";
-import { Utils } from "../../util/Utils";
-import { sprintf } from "sprintf-js";
+import * as fs from "fs"
+import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from "./IoDispatcher"
+import { FByteArchive } from "../reader/FByteArchive"
+import { uint16, uint32, uint64, uint8 } from "../../Types"
+import { UnrealMap } from "../../util/UnrealMap"
+import { Aes } from "../../encryption/aes/Aes"
+import { Compression } from "../../compression/Compression"
+import { Utils } from "../../util/Utils"
 
 /**
  * I/O store container format version
@@ -83,7 +82,7 @@ export class FIoStoreTocHeader {
         this.tocMagic = Buffer.from(FIoStoreTocHeader.TocMagicImg)
     }
 
-    checkMagic() {
+    checkMagic(): boolean {
         return this.tocMagic.equals(Buffer.from(FIoStoreTocHeader.TocMagicImg))
     }
 }
@@ -101,7 +100,7 @@ export class FIoOffsetAndLength {
         if (Ar) Ar.readToBuffer(this.offsetAndLength)
     }
 
-    get offset() {
+    get offset(): uint64 {
         return BigInt(this.offsetAndLength[4])
             | BigInt(this.offsetAndLength[3]) << 8n
             | BigInt(this.offsetAndLength[2]) << 16n
@@ -109,7 +108,7 @@ export class FIoOffsetAndLength {
             | BigInt(this.offsetAndLength[0]) << 32n
     }
 
-    get length() {
+    get length(): uint64 {
         return BigInt(this.offsetAndLength[9])
             | BigInt(this.offsetAndLength[8]) << 8n
             | BigInt(this.offsetAndLength[7]) << 16n
@@ -154,22 +153,22 @@ export class FIoStoreTocCompressedBlockEntry {
         Ar.readToBuffer(this.data)
     }
 
-    get offset() {
+    get offset(): uint64 {
         const offset = this.data.readBigUInt64LE()
         return offset & FIoStoreTocCompressedBlockEntry.OffsetMask
     }
 
-    get compressedSize() {
+    get compressedSize(): uint32 {
         const size = this.data.readUInt32LE(4)
         return size >> FIoStoreTocCompressedBlockEntry.SizeShift
     }
 
-    get uncompressedSize() {
+    get uncompressedSize(): uint32 {
         const size = this.data.readUInt32LE(2 * 4)
         return size & FIoStoreTocCompressedBlockEntry.SizeMask
     }
 
-    get compressionMethodIndex() {
+    get compressionMethodIndex(): uint8 {
         const index = this.data.readUInt32LE(2 * 4)
         return index >> FIoStoreTocCompressedBlockEntry.SizeBits
     }
@@ -199,6 +198,7 @@ export class FIoStoreTocResource {
     chunkBlockSignatures: Buffer[] //FSHAHash[]
     chunkMetas: FIoStoreTocEntryMeta[]
     directoryIndexBuffer: Buffer
+    //chunkIdToIndex = new UnrealMap<FIoChunkId, int32>()
 
     read(tocBuffer: FArchive, readOptions: EIoStoreTocReadOptions) {
         // Header
@@ -224,7 +224,9 @@ export class FIoStoreTocResource {
         // Chunk IDs
         this.chunkIds = new Array(this.header.tocEntryCount)
         for (let i = 0; i < this.header.tocEntryCount; i++) {
-            this.chunkIds[i] = new FIoChunkId(tocBuffer)
+            const id = new FIoChunkId(tocBuffer)
+            this.chunkIds[i] = id
+            //this.chunkIdToindex.set(id, i)
         }
 
         // Chunk offsets
@@ -256,10 +258,11 @@ export class FIoStoreTocResource {
             const hashSize = tocBuffer.readInt32()
             tocBuffer.pos += hashSize // actually: const tocSignature = tocBuffer.readBuffer(hashSize)
             tocBuffer.pos += hashSize // actually: const blockSignature = tocBuffer.readBuffer(hashSize)
-            this.chunkBlockSignatures = new Array(this.header.tocCompressedBlockEntryCount)
+            /*this.chunkBlockSignatures = new Array(this.header.tocCompressedBlockEntryCount)
             for (let i = 0; i < this.header.tocCompressedBlockEntryCount; i++) {
                 this.chunkBlockSignatures[i] = tocBuffer.readBuffer(20)
-            }
+            }*/
+            tocBuffer.pos += this.header.tocCompressedBlockEntryCount * 20
 
             // You could verify hashes here but nah
         } else {
@@ -283,36 +286,20 @@ export class FIoStoreTocResource {
             this.chunkMetas = []
         }
     }
-}
-
-export class FIoStoreToc {
-    chunkIdToIndex = new UnrealMap<FIoChunkId, int32>();
-    toc = new FIoStoreTocResource()
-    filesToIndex = new Array<string>()
-    fileTocEntryIndices = new Array<uint32>()
-
-    initialize() {
-        this.chunkIdToIndex.clear()
-
-        for (let chunkIndex = 0; chunkIndex < this.toc.chunkIds.length; ++chunkIndex) {
-            this.chunkIdToIndex.set(this.toc.chunkIds[chunkIndex], chunkIndex)
-        }
-    }
-
-    get tocResource() { return this.toc }
 
     getTocEntryIndex(chunkId: FIoChunkId) {
-        return this.chunkIdToIndex.get(chunkId)
+        //return this.chunkIdToIndex.get(chunkId) || -1
+        return this.chunkIds.findIndex(it => it.equals(chunkId))
     }
 
-    getOffsetAndLength(chunkId: FIoChunkId) {
-        const index = this.chunkIdToIndex.get(chunkId)
-        return index != null ? this.toc.chunkOffsetLengths[index] : null;
+    getOffsetAndLength(chunkId: FIoChunkId): any {
+        const index = this.chunkIds.findIndex(it => it.equals(chunkId))
+        return index >= 0 ? this.chunkOffsetLengths[index] : null
     }
 }
 
 export class FIoStoreReader {
-    private toc = new FIoStoreToc()
+    private toc = new FIoStoreTocResource()
     private decryptionKey?: Buffer = null
     private containerFileHandles: number[]
     //directoryIndexReader?: FIoDirectoryIndexReaderImpl = null
@@ -323,13 +310,11 @@ export class FIoStoreReader {
 
     initialize(environment: FIoStoreEnvironment, decryptionKeys: UnrealMap<FGuid, Buffer>) {
         this.environment = environment
-        const tocFilePath = this.environment.path + ".utoc";
-        const tocResource = this.toc.tocResource
-        tocResource.read(new FByteArchive(fs.readFileSync(tocFilePath)), EIoStoreTocReadOptions.ReadAll)
-        this.toc.initialize()
+        const tocFilePath = this.environment.path + ".utoc"
+        this.toc.read(new FByteArchive(fs.readFileSync(tocFilePath)), EIoStoreTocReadOptions.ReadAll)
 
-        this.containerFileHandles = new Array(tocResource.header.partitionCount)
-        for (let partitionIndex = 0; partitionIndex < tocResource.header.partitionCount; ++partitionIndex) {
+        this.containerFileHandles = new Array(this.toc.header.partitionCount)
+        for (let partitionIndex = 0; partitionIndex < this.toc.header.partitionCount; ++partitionIndex) {
             let containerFilePath = ""
             containerFilePath += this.environment.path
             if (partitionIndex > 0) {
@@ -343,8 +328,8 @@ export class FIoStoreReader {
             }
         }
 
-        if (tocResource.header.containerFlags & EIoContainerFlags.Encrypted) {
-            const findKey = decryptionKeys.get(tocResource.header.encryptionKeyGuid)
+        if (this.toc.header.containerFlags & EIoContainerFlags.Encrypted) {
+            const findKey = decryptionKeys.get(this.toc.header.encryptionKeyGuid)
             if (!findKey) {
                 throw new Error(`Missing decryption key for IoStore container file '${environment.path}'`)
             }
@@ -355,18 +340,18 @@ export class FIoStoreReader {
             this.directoryIndexReader = new FIoDirectoryIndexReaderImpl(tocResource.directoryIndexBuffer, this.decryptionKey)
         }*/
 
-        console.log(sprintf("IoStore \"%s\": %d %s, version %d",
+        console.log("IoStore \"%s\": %d %s, version %d",
             environment.path,
-            this.toc.tocResource.header.tocEntryCount,
+            this.toc.header.tocEntryCount,
             this.decryptionKey ? "encrypted chunks" : "chunks",
-            this.toc.tocResource.header.version))
+            this.toc.header.version)
     }
 
-    get containerId() { return this.toc.tocResource.header.containerId }
+    get containerId() { return this.toc.header.containerId }
 
-    get containerFlags() { return this.toc.tocResource.header.containerFlags }
+    get containerFlags() { return this.toc.header.containerFlags }
 
-    get encryptionKeyGuid() { return this.toc.tocResource.header.encryptionKeyGuid }
+    get encryptionKeyGuid() { return this.toc.header.encryptionKeyGuid }
 
     read(chunkId: FIoChunkId/*, options: FIoReadOptions = FIoReadOptions()*/): Buffer {
         const offsetAndLength = this.toc.getOffsetAndLength(chunkId)
@@ -375,11 +360,10 @@ export class FIoStoreReader {
             return
         }
 
-        const offset = Number(offsetAndLength.offset);
-        const length = Number(offsetAndLength.length);
-        const threadBuffers = new FThreadBuffers();
-        const tocResource = this.toc.tocResource
-        const compressionBlockSize = tocResource.header.compressionBlockSize
+        const offset = Number(offsetAndLength.offset)
+        const length = Number(offsetAndLength.length)
+        const threadBuffers = new FThreadBuffers()
+        const compressionBlockSize = this.toc.header.compressionBlockSize
         const firstBlockIndex = Math.floor(offset / compressionBlockSize)
         const lastBlockIndex = Math.floor((Utils.align(offset + length, compressionBlockSize) - 1) / compressionBlockSize)
         let offsetInBlock = offset % compressionBlockSize
@@ -387,7 +371,7 @@ export class FIoStoreReader {
         let dstOff = 0
         let remainingSize = length
         for (let blockIndex = firstBlockIndex; blockIndex <= lastBlockIndex; ++blockIndex) {
-            const compressionBlock = tocResource.compressionBlocks[blockIndex]
+            const compressionBlock = this.toc.compressionBlocks[blockIndex]
             const rawSize = Utils.align(compressionBlock.compressedSize, Aes.BLOCK_SIZE)
             if (threadBuffers.compressedBuffer == null || threadBuffers.compressedBuffer.length < rawSize) {
                 threadBuffers.compressedBuffer = Buffer.allocUnsafe(rawSize)
@@ -397,17 +381,17 @@ export class FIoStoreReader {
                 threadBuffers.uncompressedBuffer = Buffer.allocUnsafe(uncompressedSize)
             }
             const partitionIndex = 0//Math.floor(compressionBlock.offset / tocResource.header.partitionSize)
-            const partitionOffset = Number(compressionBlock.offset % tocResource.header.partitionSize)
+            const partitionOffset = Number(compressionBlock.offset % this.toc.header.partitionSize)
             const fileHandle = this.containerFileHandles[partitionIndex]
             fs.readSync(fileHandle, threadBuffers.compressedBuffer, 0, rawSize, partitionOffset)
-            if (tocResource.header.containerFlags & EIoContainerFlags.Encrypted) {
+            if (this.toc.header.containerFlags & EIoContainerFlags.Encrypted) {
                 Aes.decrypt(threadBuffers.compressedBuffer.subarray(0, rawSize), this.decryptionKey)
             }
             let src: Buffer
             if (compressionBlock.compressionMethodIndex === 0) {
                 src = threadBuffers.compressedBuffer
             } else {
-                const compressionMethod = tocResource.compressionMethods[compressionBlock.compressionMethodIndex]
+                const compressionMethod = this.toc.compressionMethods[compressionBlock.compressionMethodIndex]
                 try {
                     Compression.uncompress(compressionMethod, threadBuffers.uncompressedBuffer, 0, uncompressedSize, threadBuffers.compressedBuffer, 0, compressionBlock.compressedSize)
                     src = threadBuffers.uncompressedBuffer
