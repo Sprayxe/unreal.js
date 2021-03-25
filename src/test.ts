@@ -1,6 +1,5 @@
 import { FArchive } from "./ue4/reader/FArchive";
 import * as fs from "fs"
-import { DataTypeConverter } from "./util/DataTypeConverter";
 import { EIoStoreTocReadOptions, FIoStoreReader, FIoStoreTocResource } from "./ue4/io/IoStore";
 import { createIoChunkId, EIoChunkType, FIoStoreEnvironment } from "./ue4/io/IoDispatcher";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
@@ -35,7 +34,6 @@ export class UnrealJS {
 }
 
 (async () => {
-    DataTypeConverter.parseHexBinary("0xce0d9beff8da86195bc0f95e1612948871ed8daa0e9199d18272f5c80853156a")
     const u = new UnrealJS()
     const d = u.createGlobalReader()
 

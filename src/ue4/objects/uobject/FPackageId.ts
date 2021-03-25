@@ -50,4 +50,8 @@ export class FPackageId {
     hashCode() {
         return this.id
     }
+
+    toString() {
+        return this.id
+    }
 }

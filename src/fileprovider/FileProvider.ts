@@ -30,6 +30,7 @@ import { FFileArchive } from "../ue4/reader/FFileArchive";
 import { Aes } from "../encryption/aes/Aes";
 import { Lazy } from "../util/Lazy";
 import { TypedEmitter } from "tiny-typed-emitter";
+import Collection from "@discordjs/collection";
 
 interface FileProviderEvents {
     "mounted:reader": (reader: PakFileReader) => void
@@ -41,7 +42,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
     protected globalDataLoaded = false
     game: number
     mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()
-    protected _files = new UnrealMap<string, GameFile>()
+    protected _files = new Collection<string, GameFile>()
     protected _unloadedPaks = new Array<PakFileReader>()
     protected _mountedPaks = new Array<PakFileReader>()
     protected _mountedIoStoreReaders = new Array<FIoStoreReader>()
@@ -151,8 +152,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
      * @returns the game file or null if it wasn't found
      */
     findGameFile(filePath: string): GameFile {
-        const path = this.fixPath(filePath)
-        return this._files.get(path)
+        return this._files.get(this.fixPath(filePath))
     }
 
     /**
@@ -214,9 +214,15 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                     return null
                 const ubulk = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".ubulk")
                 return new PakPackage(uasset, uexp, ubulk, path, this, this.game)
+            } else {
+                const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
+                if (!storeEntry)
+                    return null
+                const ioBuffer = this.saveChunk(createIoChunkId(x.value(), 0, EIoChunkType.ExportBundleData))
+                return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore.value, this, this.game)
             }
         } catch (e) {
-            console.error(`Failed to load package ${typeof x === "string" ? x : x.path}`)
+            console.error(`Failed to load package ${x.toString()}`)
             console.error(e)
         }
     }

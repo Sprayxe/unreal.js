@@ -12,12 +12,12 @@ import { Locres } from "../../../locres/Locres";
 import { Utils } from "../../../../util/Utils";
 
 export enum EFormatArgumentType {
-    Int = "Int",
-    UInt = "UInt",
-    Float = "Float",
-    Double = "Double",
-    Text = "Text",
-    Gender = "Gender"
+    Int,
+    UInt,
+    Float,
+    Double,
+    Text,
+    Gender
 }
 
 export class FText {
@@ -191,8 +191,8 @@ export class FTextHistoryDateTime extends FTextHistory {
 
     serialize(Ar: FArchiveWriter) {
         this.sourceDateTime.serialize(Ar)
-        Ar.writeInt8(Utils.ordinal(this.dateStyle, EDateTimeStyle))
-        Ar.writeInt8(Utils.ordinal(this.timeStyle, EDateTimeStyle))
+        Ar.writeInt8(this.dateStyle)
+        Ar.writeInt8(this.timeStyle)
         Ar.writeString(this.timeZone)
         Ar.writeString(this.targetCulture)
     }
@@ -318,7 +318,7 @@ export class FFormatArgumentValue {
     }
 
     serialize(Ar: FArchiveWriter) {
-        Ar.writeInt8(Utils.ordinal(this.value, this.type))
+        Ar.writeInt8(this.type)
         switch (this.type) {
             case EFormatArgumentType.Int:
                 Ar.writeInt64(this.value as number)

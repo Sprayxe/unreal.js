@@ -20,7 +20,7 @@ export class FMappedName {
         if (index > 2147483647)
             throw new Error("Bad name index")
         const mappedName = new FMappedName()
-        mappedName.index = (Utils.ordinal(type, FMappedName_EType) << TYPE_SHIFT) | index
+        mappedName.index = (type << TYPE_SHIFT) | index
         mappedName.num = num
         return mappedName
     }
@@ -52,7 +52,7 @@ export class FMappedName {
     }
 
     getType() {
-        return Object.values(FMappedName_EType)[(this.index & TYPE_MASK) >> TYPE_SHIFT]
+        return (this.index & TYPE_MASK) >> TYPE_SHIFT
     }
 
     isGlobal() {
@@ -81,9 +81,9 @@ export class FMappedName {
 }
 
 export enum FMappedName_EType {
-    Package = "Package",
-    Container = "Container",
-    Global = "Global"
+    Package,
+    Container,
+    Global
 }
 
 export class FPackageStoreEntry {
@@ -135,7 +135,7 @@ export class FPackageObjectIndex {
             if (x instanceof FArchive) {
                 this.typeAndId = x.readUInt64() as unknown as number
             } else {
-                this.typeAndId = (Utils.ordinal(x, FPackageObjectIndex_EType) << _TYPE_SHIFT) | y
+                this.typeAndId = (Object.values(FPackageObjectIndex_EType)[x << TYPE_SHIFT] as number) | y
             }
         }
     }
@@ -161,7 +161,7 @@ export class FPackageObjectIndex {
     }
 
     isExport() {
-        return (this.typeAndId >> _TYPE_SHIFT) === Utils.ordinal(FPackageObjectIndex_EType.Export, FPackageObjectIndex_EType)
+        return (this.typeAndId >> _TYPE_SHIFT) === FPackageObjectIndex_EType.Export
     }
 
     isImport() {
@@ -169,11 +169,11 @@ export class FPackageObjectIndex {
     }
 
     isScriptImport() {
-        return (this.typeAndId >> _TYPE_SHIFT) === Utils.ordinal(FPackageObjectIndex_EType.ScriptImport, FPackageObjectIndex_EType)
+        return (this.typeAndId >> _TYPE_SHIFT) === FPackageObjectIndex_EType.ScriptImport
     }
 
     isPackageImport() {
-        return (this.typeAndId >> _TYPE_SHIFT) === Utils.ordinal(FPackageObjectIndex_EType.PackageImport, FPackageObjectIndex_EType)
+        return (this.typeAndId >> _TYPE_SHIFT) === FPackageObjectIndex_EType.PackageImport
     }
 
     toExport() {
@@ -205,12 +205,11 @@ export class FPackageObjectIndex {
 }
 
 export enum FPackageObjectIndex_EType {
-    Export = "Export",
-    ScriptImport = "ScriptImport",
-    PackageImport = "PackageImport",
-    Null = "Null"
+    Export,
+    ScriptImport,
+    PackageImport,
+    Null
 }
-
 
 export class FScriptObjectEntry {
     objectName: FMinimalName
