@@ -65,7 +65,7 @@ export class Oodle {
     static decompress(src: Buffer, dstLen?: Buffer | number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): Buffer {
         this.ensureLib()
         if (typeof dstLen === "number" && !dst) {
-            return this.decompress(src, Buffer.alloc(dstLen))
+            return this.decompress(src, Buffer.allocUnsafe(dstLen))
         } else if (Buffer.isBuffer(dstLen)) {
             return this.decompress(src, dstLen.length, dstLen, 0, 0, src.length)
         } else {
@@ -104,7 +104,7 @@ export class Oodle {
         const srcLength = uncompressed.length
         const dstLength = srcLength + 65536
         const sourcePointer = uncompressed.subarray(0, srcLength)
-        const dstPointer = Buffer.alloc(dstLength)
+        const dstPointer = Buffer.allocUnsafe(dstLength)
         const resultCode = this.oodleLib.OodleLZ_Compress(
             compressor,
             sourcePointer, srcLength,

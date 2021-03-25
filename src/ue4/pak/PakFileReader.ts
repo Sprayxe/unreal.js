@@ -46,7 +46,7 @@ export class PakFileReader {
         const tempEntry = new FPakEntry(exAr, this.pakInfo, false)
         if (gameFile.isCompressed()) {
             console.debug(`${gameFile.getName()} is compressed with ${gameFile.compressionMethod}`)
-            const uncompressedBuffer = Buffer.alloc(gameFile.uncompressedSize)
+            const uncompressedBuffer = Buffer.allocUnsafe(gameFile.uncompressedSize)
             let uncompressedBufferOff = 0
             tempEntry.compressionBlocks.forEach((block) => {
                 exAr.pos = block.compressedStart
