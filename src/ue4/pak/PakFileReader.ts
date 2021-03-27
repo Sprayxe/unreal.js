@@ -78,7 +78,6 @@ export class PakFileReader {
         this.encryptedFileCount = 0
         this.Ar.pos = this.pakInfo.indexOffset
         const indexAr = new FByteArchive(this.readAndDecrypt(this.pakInfo.indexSize))
-
         let mountPoint: string
         try {
             mountPoint = indexAr.readString()
