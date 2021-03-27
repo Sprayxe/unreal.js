@@ -52,7 +52,7 @@ export class FMappedName {
     }
 
     getType() {
-        return (this.index & TYPE_MASK) >> TYPE_SHIFT
+        return (this.index & TYPE_MASK) >>> TYPE_SHIFT
     }
 
     isGlobal() {
