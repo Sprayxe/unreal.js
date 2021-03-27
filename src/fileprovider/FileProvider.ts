@@ -421,12 +421,14 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
      * @returns the chunk data
      */
     saveChunk(chunkId: FIoChunkId): Buffer {
-        for (const readerStack in this._mountedIoStoreReaders) {
-            const reader = this._mountedIoStoreReaders[readerStack]
+        for (const reader of this._mountedIoStoreReaders) {
             try {
                 return reader.read(chunkId)
             } catch (e) {
-                console.error(e)
+                if (e.message === "Unknown chunk ID") {
+                    continue
+                }
+                throw e
             }
         }
         throw new Error("Couldn't find any possible I/O store readers")

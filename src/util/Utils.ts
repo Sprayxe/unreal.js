@@ -36,8 +36,9 @@ export class Utils {
     }
 
     static getArray(max: number, values: (i: number) => any[], clazz: any = null) {
-        let n = 0
+        if (max < 0) return []
         const array = new Array(max)
+        let n = 0
         while (n < max) {
             array[n] = clazz ? new clazz(...values(n)) : values(n)[0]
             ++n
@@ -46,8 +47,10 @@ export class Utils {
     }
 
     static repeat(times: number, action: (n: number) => void) {
-        for (let x = 0; x <= times; ++x) {
+        let x = 0
+        while (x < times) {
             action(x)
+            ++x
         }
     }
 }

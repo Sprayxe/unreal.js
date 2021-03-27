@@ -49,7 +49,7 @@ export class FPackageStore extends FOnContainerMountedListener {
     setupInitialLoadData() {
         const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
-        const numScriptObjects = initialLoadArchive.readInt32()
+        const numScriptObjects = initialLoadArchive.readInt32() - 1
         Utils.repeat(numScriptObjects, () => {
             const obj = new FScriptObjectEntry(initialLoadArchive, this.globalNameMap.nameEntries)
             const mappedName = FMappedName.fromMinimalName(obj.objectName)
