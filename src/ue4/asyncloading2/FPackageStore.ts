@@ -18,8 +18,8 @@ import {
 import osLocale from "os-locale";
 import { FByteArchive } from "../reader/FByteArchive";
 import { Utils } from "../../util/Utils";
-import { UnrealMap } from "../../util/UnrealMap";
 import { ParserException } from "../../exceptions/Exceptions";
+import Collection from "@discordjs/collection";
 
 export class FPackageStore extends FOnContainerMountedListener {
     provider: FileProvider
@@ -31,15 +31,15 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.globalNameMap = globalNameMap
     }
 
-    loadedContainers = new UnrealMap<FIoContainerId, FLoadedContainer>()
+    loadedContainers = new Collection<FIoContainerId, FLoadedContainer>()
 
     currentCultureNames: string[] = []
 
-    storeEntriesMap = new UnrealMap<FPackageId, FPackageStoreEntry>()
-    redirectsPackageMap = new UnrealMap<FPackageId, FPackageId>()
+    storeEntriesMap = new Collection<FPackageId, FPackageStoreEntry>()
+    redirectsPackageMap = new Collection<FPackageId, FPackageId>()
 
     scriptObjectEntries: FScriptObjectEntry[] = []
-    scriptObjectEntriesMap = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
+    scriptObjectEntriesMap = new Collection<FPackageObjectIndex, FScriptObjectEntry>()
 
     setupCulture() {
         this.currentCultureNames = []
@@ -67,58 +67,62 @@ export class FPackageStore extends FOnContainerMountedListener {
             return
 
         for (const container of containersToLoad) {
-            const containerId = container.containerId
-            let loadedContainer = this.loadedContainers.get(containerId)
-            if (!loadedContainer) {
-                const cont = new FLoadedContainer()
-                this.loadedContainers.set(containerId, cont)
-                loadedContainer = cont
-            }
-
-            if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
-                console.log(`Skipping loading mounted container ID '${containerId.value()}', already loaded with higher order`)
-                continue
-            }
-
-            console.log(`Loading mounted container ID '${containerId.value()}'`)
-            loadedContainer.bValid = true
-            loadedContainer.order = container.environment.order
-
-            const headerChunkId = createIoChunkId(containerId.value(), 0, EIoChunkType.ContainerHeader)
-            const ioBuffer = this.provider.saveChunk(headerChunkId)
-
-            const containerHeader = new FContainerHeader(new FByteArchive(ioBuffer))
-
-            const bHasContainerLocalNameMap = !!containerHeader.names
-            if (bHasContainerLocalNameMap) {
-                loadedContainer.containerNameMap.load(containerHeader.names, containerHeader.nameHashes, FMappedName_EType.Container)
-            }
-
-            loadedContainer.packageCount = containerHeader.packageCount
-            loadedContainer.storeEntries = containerHeader.storeEntries
-
-            loadedContainer.storeEntries.forEach((containerEntry, index) => {
-                const packageId = containerHeader.packageIds[index]
-                this.storeEntriesMap.set(packageId, containerEntry)
-            })
-
-            let localizedPackages: FSourceToLocalizedPackageIdMap = null
-            for (const cultureName of this.currentCultureNames) {
-                localizedPackages = containerHeader.culturePackageMap[cultureName]
-                if (localizedPackages)
-                    break
-            }
-
-            if (localizedPackages) {
-                for (const pair of localizedPackages) {
-                    const sourceId = pair.key
-                    const localizedId = pair.value
-                    this.redirectsPackageMap.set(sourceId, localizedId)
+            try {
+                const containerId = container.containerId
+                let loadedContainer = this.loadedContainers.find((v, k) => k.value() === containerId.value())
+                if (!loadedContainer) {
+                    const cont = new FLoadedContainer()
+                    this.loadedContainers.set(containerId, cont)
+                    loadedContainer = cont
                 }
-            }
 
-            for (const redirect of containerHeader.packageRedirects) {
-                this.redirectsPackageMap.set(redirect.key, redirect.value)
+                if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
+                    console.log(`Skipping loading mounted container ID '${containerId.value()}', already loaded with higher order`)
+                    continue
+                }
+
+                console.log(`Loading mounted container ID '${containerId.value()}'`)
+                loadedContainer.bValid = true
+                loadedContainer.order = container.environment.order
+
+                const headerChunkId = createIoChunkId(containerId.value(), 0, EIoChunkType.ContainerHeader)
+                const ioBuffer = this.provider.saveChunk(headerChunkId)
+
+                const containerHeader = new FContainerHeader(new FByteArchive(ioBuffer))
+
+                const bHasContainerLocalNameMap = !!containerHeader.names
+                if (bHasContainerLocalNameMap) {
+                    loadedContainer.containerNameMap.load(containerHeader.names, containerHeader.nameHashes, FMappedName_EType.Container)
+                }
+
+                loadedContainer.packageCount = containerHeader.packageCount
+                loadedContainer.storeEntries = containerHeader.storeEntries
+
+                loadedContainer.storeEntries.forEach((containerEntry, index) => {
+                    const packageId = containerHeader.packageIds[index]
+                    this.storeEntriesMap.set(packageId, containerEntry)
+                })
+
+                let localizedPackages: FSourceToLocalizedPackageIdMap = null
+                for (const cultureName of this.currentCultureNames) {
+                    localizedPackages = containerHeader.culturePackageMap[cultureName]
+                    if (localizedPackages)
+                        break
+                }
+
+                if (localizedPackages) {
+                    for (const pair of localizedPackages) {
+                        const sourceId = pair.key
+                        const localizedId = pair.value
+                        this.redirectsPackageMap.set(sourceId, localizedId)
+                    }
+                }
+
+                for (const redirect of containerHeader.packageRedirects) {
+                    this.redirectsPackageMap.set(redirect.key, redirect.value)
+                }
+            } catch (e) {
+                console.log(`Could not load container '${container.containerId.value()}', error: ${e}`)
             }
         }
 
@@ -129,30 +133,33 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.loadContainers([container])
     }
 
-    applyRedirects(redirects: UnrealMap<FPackageId, FPackageId>) {
+    applyRedirects(redirects: Collection<FPackageId, FPackageId>) {
         if (!redirects.size)
             return
 
         for (const [sourceId, redirectId] of redirects) {
             if (!redirectId.isValid())
                 throw new Error("Redirect must be valid")
-            const redirectEntry = this.storeEntriesMap.get(redirectId)
+            const redirectEntry = this.storeEntriesMap.find((v, k) => k.equals(redirectId))
             this.storeEntriesMap.set(sourceId, redirectEntry)
         }
 
         for (const storeEntry of this.storeEntriesMap.values()) {
             storeEntry.importedPackages.forEach((importedPackageId, index) => {
-                storeEntry.importedPackages[index] = redirects.get(importedPackageId)
+                storeEntry.importedPackages[index] = redirects.find((v, k) => k.equals(importedPackageId))
             })
         }
     }
 
     findStoreEntry(packageId: FPackageId) {
-        return this.storeEntriesMap.get(packageId)
+        return this.storeEntriesMap.find((v, k) => {
+            console.log(k)
+            return k.equals(packageId)
+        })
     }
 
     getRedirectedPackageId(packageId: FPackageId) {
-        return this.redirectsPackageMap.get(packageId)
+        return this.redirectsPackageMap.find((v, k) => k.equals(packageId))
     }
 }
 

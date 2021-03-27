@@ -8,8 +8,10 @@ export class FIoContainerId {
 
     id = FIoContainerId.InvalidId
 
-    constructor(Ar: FArchive) {
-        this.id = Ar.readUInt64()
+    constructor(id: bigint)
+    constructor(Ar: FArchive)
+    constructor(x?: any) {
+        this.id = x instanceof FArchive ? x.readUInt64() : x
     }
 
     value() {

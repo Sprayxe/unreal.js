@@ -197,6 +197,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                     const packageId = FPackageId.fromName(FName.dummy(name, 0))
                     try {
                         const ioFile = this.loadGameFile(packageId)
+                        console.log(ioFile)
                         if (ioFile)
                             return ioFile
                     } catch (e) {
@@ -216,6 +217,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                 return new PakPackage(uasset, uexp, ubulk, path, this, this.game)
             } else {
                 const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
+                console.log(x)
                 if (!storeEntry)
                     return null
                 const ioBuffer = this.saveChunk(createIoChunkId(x.value(), 0, EIoChunkType.ExportBundleData))
@@ -425,10 +427,9 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
             try {
                 return reader.read(chunkId)
             } catch (e) {
-                if (e.message === "Unknown chunk ID") {
-                    continue
+                if (e.message !== "Unknown chunk ID") {
+                    throw e
                 }
-                throw e
             }
         }
         throw new Error("Couldn't find any possible I/O store readers")

@@ -44,7 +44,7 @@ export class FPackageId {
         if (this === other) return true
         if (!(other instanceof FPackageId)) return false
         other as FPackageId
-        return this.id !== other.id
+        return this.id === other.id
     }
 
     hashCode() {
