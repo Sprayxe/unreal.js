@@ -5,10 +5,10 @@ import { FIoDirectoryIndexHandle } from "./IoDispatcher";
 import { Utils } from "../../util/Utils";
 
 export class FIoDirectoryIndexEntry {
-    name = ~0
-    firstChildEntry = ~0
-    nextSiblingEntry = ~0
-    firstFileEntry = ~0
+    name = 0xFFFFFFFF
+    firstChildEntry = 0xFFFFFFFF
+    nextSiblingEntry = 0xFFFFFFFF
+    firstFileEntry = 0xFFFFFFFF
 
     constructor(Ar: FArchive) {
         this.name = Ar.readUInt32()
@@ -19,9 +19,9 @@ export class FIoDirectoryIndexEntry {
 }
 
 export class FIoFileIndexEntry {
-    name = ~0
-    nextFileEntry = ~0
-    userData = ~0
+    name = 0xFFFFFFFF
+    nextFileEntry = 0xFFFFFFFF
+    userData = 0
 
     constructor(Ar: FArchive) {
         this.name = Ar.readUInt32()
@@ -38,7 +38,7 @@ export class FIoDirectoryIndexResource {
 
     constructor(Ar: FArchive) {
         const s = Ar.readString()
-        this.mountPoint = s.substring(s.indexOf("../../../") + 1)
+        this.mountPoint = s.substring(s.indexOf("../../../") + "../../../".length)
         this.directoryEntries = Ar.readArray(() => new FIoDirectoryIndexEntry(Ar))
         this.fileEntries = Ar.readArray(() => new FIoFileIndexEntry(Ar))
         this.stringTable = Ar.readArray(() =>  Ar.readString())
@@ -46,7 +46,7 @@ export class FIoDirectoryIndexResource {
 }
 
 type FDirectoryIndexVisitorFunction = (filename: string, tocEntryIndex: number) => boolean
-export class FIoDirectoryIndexReaderImpl {
+export class FIoDirectoryIndexReader {
     buffer: Buffer
     decryptionKey: Buffer
 
@@ -112,7 +112,7 @@ export class FIoDirectoryIndexReaderImpl {
 
     getFileName(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
-            const nameIndex = this.getFileEntry(directory).name
+            const nameIndex = this.getFileEntry(directory)?.name
             return this.directoryIndex.stringTable[nameIndex]
         } else {
             return ""
@@ -132,7 +132,9 @@ export class FIoDirectoryIndexReaderImpl {
         while (file.isValid()) {
             const tocEntryIndex = this.getFileData(file)
             const fileName = this.getFileName(file)
-            const filePath = Utils.pathAppend(Utils.pathAppend(this.getMountPoint(), path), fileName)
+            if (!fileName)
+                break
+            const filePath = this.getMountPoint() + `${path !== "" ? path + "/" : ""}` + fileName
             if (!visit(filePath, tocEntryIndex)) {
                 return false
             }

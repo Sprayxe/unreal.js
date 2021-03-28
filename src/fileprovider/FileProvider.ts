@@ -29,15 +29,10 @@ import { InvalidAesKeyException, ParserException } from "../exceptions/Exception
 import { FFileArchive } from "../ue4/reader/FFileArchive";
 import { Aes } from "../encryption/aes/Aes";
 import { Lazy } from "../util/Lazy";
-import { TypedEmitter } from "tiny-typed-emitter";
 import Collection from "@discordjs/collection";
+import EventEmitter from "events";
 
-interface FileProviderEvents {
-    "mounted:reader": (reader: PakFileReader) => void
-    "mounted:iostore": (reader: FIoStoreReader) => void
-}
-
-export class FileProvider extends TypedEmitter<FileProviderEvents> {
+export class FileProvider extends EventEmitter {
     folder: string
     protected globalDataLoaded = false
     game: number
@@ -445,7 +440,7 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                 const ioStoreReader = new FIoStoreReader()
                 ioStoreReader.initialize(ioStoreEnvironment, this.keys())
                 if (this.populateIoStoreFiles) {
-                    //ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
+                    ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
                 }
                 this._mountedIoStoreReaders.push(ioStoreReader)
                 if (this.globalPackageStore.isInitialized) {
@@ -495,6 +490,8 @@ export class FileProvider extends TypedEmitter<FileProviderEvents> {
                 this.localFiles.add(gamePath.toLowerCase())
             }
         }
+
+        this.emit("ready")
     }
 
     protected loadGlobalData(path: string) {

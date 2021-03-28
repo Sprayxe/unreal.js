@@ -103,7 +103,7 @@ export class FIoDirectoryIndexHandle {
     }
 
     static INVALID_HANDLE = ~0
-    static ROOT_HANDLE = ~0
+    static ROOT_HANDLE = 0
 
     static fromIndex(index: number) { return new FIoDirectoryIndexHandle(index) }
     static rootDirectory() { return new FIoDirectoryIndexHandle(FIoDirectoryIndexHandle.ROOT_HANDLE) }

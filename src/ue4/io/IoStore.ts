@@ -16,7 +16,7 @@ import { Aes } from "../../encryption/aes/Aes"
 import { Compression } from "../../compression/Compression"
 import { Utils } from "../../util/Utils"
 import { GameFile } from "../pak/GameFile";
-import { FIoDirectoryIndexReaderImpl } from "./IoDirectoryIndex";
+import { FIoDirectoryIndexReader } from "./IoDirectoryIndex";
 import { FPackageId } from "../objects/uobject/FPackageId";
 
 /**
@@ -311,7 +311,7 @@ export class FIoStoreReader {
     private toc = new FIoStoreTocResource()
     private decryptionKey?: Buffer = null
     private containerFileHandles: number[]
-    directoryIndexReader?: FIoDirectoryIndexReaderImpl = null
+    directoryIndexReader?: FIoDirectoryIndexReader = null
     /*private threadBuffers = object : ThreadLocal<FThreadBuffers>() {
         override fun initialValue() = FThreadBuffers()
     }*/
@@ -345,9 +345,9 @@ export class FIoStoreReader {
             this.decryptionKey = findKey
         }
 
-        /*if (tocResource.header.containerFlags & EIoContainerFlags.Indexed) {
-            this.directoryIndexReader = new FIoDirectoryIndexReaderImpl(tocResource.directoryIndexBuffer, this.decryptionKey)
-        }*/
+        if ((this.toc.header.containerFlags & EIoContainerFlags.Indexed) && this.toc.directoryIndexBuffer) {
+            this.directoryIndexReader = new FIoDirectoryIndexReader(this.toc.directoryIndexBuffer, this.decryptionKey)
+        }
 
         console.log("IoStore \"%s\": %d %s, version %d",
             environment.path,
@@ -417,10 +417,18 @@ export class FIoStoreReader {
 
     getFiles(): GameFile[] {
         const files = new Array<GameFile>()
-        this.directoryIndexReader?.iterateDirectoryIndex(FIoDirectoryIndexHandle.rootDirectory(), "", (filename, tocEntryIndex) => {
-            // TODO files.push(new GameFile(filename, this.environment.path, new FPackageId(Number(this.toc.chunkIds[tocEntryIndex]?.id))))
-            return true
-        })
+        this.directoryIndexReader?.iterateDirectoryIndex(
+            FIoDirectoryIndexHandle.rootDirectory(),
+            "",
+            (filename, tocEntryIndex) => {
+                files.push(GameFile.createFromIoStoreFile(
+                    filename,
+                    this.environment.path,
+                    new FPackageId(new FByteArchive(this.toc.chunkIds[tocEntryIndex].id)))
+                )
+                return true
+            }
+        )
         return files
     }
 }

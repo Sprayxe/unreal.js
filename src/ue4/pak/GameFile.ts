@@ -5,9 +5,9 @@ import { FPackageId } from "../objects/uobject/FPackageId";
 
 export class GameFile {
     path: string = ""
-    pos: number = null
-    size: number = null
-    uncompressedSize: number = null
+    pos: number = 0
+    size: number = 0
+    uncompressedSize: number = 0
     compressionMethod = "None"
     compressedBlocks: FPakCompressedBlock[] = []
     compressionBlockSize: number = 0
@@ -15,22 +15,31 @@ export class GameFile {
     pakFileName: string
     ioPackageId?: FPackageId = null
 
-    constructor(pakEntry: FPakEntry, mountPrefix: string, pakFileName: string) {
-        this.path = mountPrefix + pakEntry.name
-        this.pos = pakEntry.pos
-        this.size = pakEntry.size
-        this.uncompressedSize = pakEntry.uncompressedSize
-        this.compressionMethod = pakEntry.compressionMethod
-        this.compressedBlocks = pakEntry.compressionBlocks
-        this.compressionBlockSize = pakEntry.compressionBlockSize
-        this.isEncrypted = pakEntry.isEncrypted
-        this.pakFileName = pakFileName
-        this.ioPackageId = null
+    constructor(pakEntry?: FPakEntry, mountPrefix?: string, pakFileName?: string) {
+        if (pakEntry) {
+            this.path = mountPrefix + pakEntry.name
+            this.pos = pakEntry.pos
+            this.size = pakEntry.size
+            this.uncompressedSize = pakEntry.uncompressedSize
+            this.compressionMethod = pakEntry.compressionMethod
+            this.compressedBlocks = pakEntry.compressionBlocks
+            this.compressionBlockSize = pakEntry.compressionBlockSize
+            this.isEncrypted = pakEntry.isEncrypted
+            this.pakFileName = pakFileName
+            this.ioPackageId = null
+        }
+    }
+
+    static createFromIoStoreFile(path: string, pakFileName: string, ioPackageId: FPackageId) {
+        const file = new GameFile()
+        file.path = path
+        file.pakFileName = pakFileName
+        file.ioPackageId = ioPackageId
+        return file
     }
 
     uexp: GameFile
     ubulk?: GameFile = null
-
 
     getExtension() {
        return this.path.substring(this.path.lastIndexOf(".") + 1)
