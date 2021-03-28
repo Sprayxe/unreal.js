@@ -19,7 +19,7 @@ import osLocale from "os-locale";
 import { FByteArchive } from "../reader/FByteArchive";
 import { Utils } from "../../util/Utils";
 import { ParserException } from "../../exceptions/Exceptions";
-import Collection from "@discordjs/collection";
+import { UnrealMap } from "../../util/UnrealMap";
 
 export class FPackageStore extends FOnContainerMountedListener {
     provider: FileProvider
@@ -31,15 +31,15 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.globalNameMap = globalNameMap
     }
 
-    loadedContainers = new Collection<FIoContainerId, FLoadedContainer>()
+    loadedContainers = new UnrealMap<FIoContainerId, FLoadedContainer>()
 
     currentCultureNames: string[] = []
 
-    storeEntriesMap = new Collection<FPackageId, FPackageStoreEntry>()
-    redirectsPackageMap = new Collection<FPackageId, FPackageId>()
+    storeEntriesMap = new UnrealMap<FPackageId, FPackageStoreEntry>()
+    redirectsPackageMap = new UnrealMap<FPackageId, FPackageId>()
 
     scriptObjectEntries: FScriptObjectEntry[] = []
-    scriptObjectEntriesMap = new Collection<FPackageObjectIndex, FScriptObjectEntry>()
+    scriptObjectEntriesMap = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
 
     setupCulture() {
         this.currentCultureNames = []
@@ -133,33 +133,30 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.loadContainers([container])
     }
 
-    applyRedirects(redirects: Collection<FPackageId, FPackageId>) {
+    applyRedirects(redirects: UnrealMap<FPackageId, FPackageId>) {
         if (!redirects.size)
             return
 
         for (const [sourceId, redirectId] of redirects) {
             if (!redirectId.isValid())
                 throw new Error("Redirect must be valid")
-            const redirectEntry = this.storeEntriesMap.find((v, k) => k.equals(redirectId))
+            const redirectEntry = this.storeEntriesMap.get(redirectId)
             this.storeEntriesMap.set(sourceId, redirectEntry)
         }
 
         for (const storeEntry of this.storeEntriesMap.values()) {
             storeEntry.importedPackages.forEach((importedPackageId, index) => {
-                storeEntry.importedPackages[index] = redirects.find((v, k) => k.equals(importedPackageId))
+                storeEntry.importedPackages[index] = redirects.get(importedPackageId)
             })
         }
     }
 
     findStoreEntry(packageId: FPackageId) {
-        return this.storeEntriesMap.find((v, k) => {
-            console.log(k)
-            return k.equals(packageId)
-        })
+        return this.storeEntriesMap.get(packageId)
     }
 
     getRedirectedPackageId(packageId: FPackageId) {
-        return this.redirectsPackageMap.find((v, k) => k.equals(packageId))
+        return this.redirectsPackageMap.get(packageId)
     }
 }
 

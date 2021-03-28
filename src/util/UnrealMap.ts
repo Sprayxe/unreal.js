@@ -1,8 +1,34 @@
 import Collection from "@discordjs/collection";
 import objectHash from "node-object-hash";
-import { Utils } from "./Utils";
 
-export class UnrealMap<K, V> {
+export class UnrealMap<K, V> extends Collection<K, V> {
+    get(key: K): V | undefined {
+        if ((key as any).equals) {
+            return super.find((v, k: any) => k.equals(key))
+        } else {
+            return super.get(key)
+        }
+    }
+
+    delete(key: K): boolean {
+        if ((key as any).equals) {
+            const backup = this
+            this.clear()
+            backup
+                .filter((v, k: any) => !k.equals(key))
+                .forEach((v, k) => this.set(k, v))
+            return this.size !== backup.size
+        } else {
+            return super.delete(key)
+        }
+    }
+}
+
+/**
+ * @deprecated
+ * This hash map has been deprecated because of it's inefficiency
+ */
+class DeprecatedUnrealMap<K, V> {
     [Symbol.iterator]<T>() {
         const coll = new Map<K, V>()
         new Array()
@@ -22,7 +48,7 @@ export class UnrealMap<K, V> {
      * @param {*} value - The value of the element to add
      * @returns {Collection}
      */
-    public set(key: K, value: V): UnrealMap<K, V> {
+    public set(key: K, value: V): DeprecatedUnrealMap<K, V> {
         const hash = this.hash(key)
         // get all entries that are stored under this hash
         let list = this._map.get(hash)
@@ -362,11 +388,11 @@ export class UnrealMap<K, V> {
      * @param {*} [thisArg] Value to use as `this` when executing function
      * @returns {UnrealMap}
      */
-    public filter(fn: (value: V, key: K, collection: this) => boolean): UnrealMap<K, V>;
-    public filter<T>(fn: (this: T, value: V, key: K, collection: this) => boolean, thisArg: T): UnrealMap<K, V>;
-    public filter(fn: (value: V, key: K, collection: this) => boolean, thisArg?: unknown): UnrealMap<K, V> {
+    public filter(fn: (value: V, key: K, collection: this) => boolean): DeprecatedUnrealMap<K, V>;
+    public filter<T>(fn: (this: T, value: V, key: K, collection: this) => boolean, thisArg: T): DeprecatedUnrealMap<K, V>;
+    public filter(fn: (value: V, key: K, collection: this) => boolean, thisArg?: unknown): DeprecatedUnrealMap<K, V> {
         if (typeof thisArg !== 'undefined') fn = fn.bind(thisArg)
-        const results = new UnrealMap<K, V>() as this
+        const results = new DeprecatedUnrealMap<K, V>() as this
         for (const { key, value } of [].concat(...this.mapToArray())) {
             if (fn(value, key, this)) results.set(key, value)
         }
@@ -433,7 +459,7 @@ export class UnrealMap<K, V> {
      * @param {UnrealMap} collection Collection to compare with
      * @returns {boolean} Whether the collections have identical contents
      */
-    public equals(collection: UnrealMap<unknown, unknown>): boolean {
+    public equals(collection: DeprecatedUnrealMap<unknown, unknown>): boolean {
         if (!collection) return false // runtime check
         if (this === collection) return true
         if (this.size !== collection.size) return false
