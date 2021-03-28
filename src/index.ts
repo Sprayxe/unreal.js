@@ -1,7 +1,6 @@
 import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
-import axios from "axios";
-import { hash64 } from "farmhash";
+import axios from "axios;
 
 (async () => {
     const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
