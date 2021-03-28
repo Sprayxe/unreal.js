@@ -2,13 +2,22 @@ import { FGuid } from "../objects/core/misc/Guid"
 import { FArchive } from "../reader/FArchive"
 import { FIoContainerId } from "./IoContainerId"
 import * as fs from "fs"
-import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from "./IoDispatcher"
+import {
+    EIoContainerFlags,
+    FIoChunkHash,
+    FIoChunkId,
+    FIoDirectoryIndexHandle,
+    FIoStoreEnvironment
+} from "./IoDispatcher"
 import { FByteArchive } from "../reader/FByteArchive"
 import { uint16, uint32, uint64, uint8 } from "../../Types"
 import { UnrealMap } from "../../util/UnrealMap"
 import { Aes } from "../../encryption/aes/Aes"
 import { Compression } from "../../compression/Compression"
 import { Utils } from "../../util/Utils"
+import { GameFile } from "../pak/GameFile";
+import { FIoDirectoryIndexReaderImpl } from "./IoDirectoryIndex";
+import { FPackageId } from "../objects/uobject/FPackageId";
 
 /**
  * I/O store container format version
@@ -302,7 +311,7 @@ export class FIoStoreReader {
     private toc = new FIoStoreTocResource()
     private decryptionKey?: Buffer = null
     private containerFileHandles: number[]
-    //directoryIndexReader?: FIoDirectoryIndexReaderImpl = null
+    directoryIndexReader?: FIoDirectoryIndexReaderImpl = null
     /*private threadBuffers = object : ThreadLocal<FThreadBuffers>() {
         override fun initialValue() = FThreadBuffers()
     }*/
@@ -404,6 +413,15 @@ export class FIoStoreReader {
             dstOff += sizeInBlock
         }
         return dst
+    }
+
+    getFiles(): GameFile[] {
+        const files = new Array<GameFile>()
+        this.directoryIndexReader?.iterateDirectoryIndex(FIoDirectoryIndexHandle.rootDirectory(), "", (filename, tocEntryIndex) => {
+            // TODO files.push(new GameFile(filename, this.environment.path, new FPackageId(Number(this.toc.chunkIds[tocEntryIndex]?.id))))
+            return true
+        })
+        return files
     }
 }
 

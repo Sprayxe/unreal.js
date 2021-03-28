@@ -1,6 +1,7 @@
 import { FArchive } from "../reader/FArchive";
 import { int32, uint16, uint64 } from "../../Types";
 import { FIoContainerId } from "./IoContainerId";
+import { Utils } from "../../util/Utils";
 
 /**
  * Helper used to manage creation of I/O store file handles etc
@@ -93,4 +94,30 @@ export class FIoDispatcherMountedContainer {
 
 export abstract class FOnContainerMountedListener {
     abstract onContainerMounted(container: FIoDispatcherMountedContainer)
+}
+
+export class FIoDirectoryIndexHandle {
+    handle: number
+    private constructor(handle: number) {
+        this.handle = handle
+    }
+
+    static INVALID_HANDLE = ~0
+    static ROOT_HANDLE = ~0
+
+    static fromIndex(index: number) { return new FIoDirectoryIndexHandle(index) }
+    static rootDirectory() { return new FIoDirectoryIndexHandle(FIoDirectoryIndexHandle.ROOT_HANDLE) }
+    static invalid() { return new FIoDirectoryIndexHandle(FIoDirectoryIndexHandle.INVALID_HANDLE) }
+
+    isValid() { return this.handle !== FIoDirectoryIndexHandle.INVALID_HANDLE }
+
+    equals(other: any) {
+        if (this === other) return true
+        if (!(other instanceof FIoDirectoryIndexHandle)) return false
+        return this.handle === other.handle
+    }
+
+    hashCode() { return Utils.hash(this.handle.toString()) }
+
+    toIndex() { return this.handle }
 }

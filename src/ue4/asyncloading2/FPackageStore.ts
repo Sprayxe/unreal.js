@@ -137,12 +137,12 @@ export class FPackageStore extends FOnContainerMountedListener {
         if (!redirects.size)
             return
 
-        for (const [sourceId, redirectId] of redirects) {
+        redirects.forEach((redirectId, sourceId) => {
             if (!redirectId.isValid())
                 throw new Error("Redirect must be valid")
             const redirectEntry = this.storeEntriesMap.get(redirectId)
             this.storeEntriesMap.set(sourceId, redirectEntry)
-        }
+        })
 
         for (const storeEntry of this.storeEntriesMap.values()) {
             storeEntry.importedPackages.forEach((importedPackageId, index) => {
