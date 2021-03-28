@@ -61,7 +61,7 @@ export class FName {
 
     static NAME_None = new FName()
 
-    static dummy(text: string, num: number) {
+    static dummy(text: string, num: number = 0) {
         return new this.FNameDummy(text, num)
     }
 

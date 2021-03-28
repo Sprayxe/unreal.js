@@ -84,7 +84,6 @@ export class Oodle {
                 throw DecompressException(`Oodle decompression failed with code ${resultCode}`)
             const stop = Date.now()
             const seconds = (stop - start) / 1000
-            console.info(`Oodle decompress: ${srcLen} => ${dstLen} (${seconds} seconds)`)
             return dstPointer
         }
     }
@@ -116,7 +115,6 @@ export class Oodle {
         const dst = dstPointer.subarray(0, resultCode)
         const stop = Date.now()
         const seconds = (stop - start) / 1000
-        console.info(`Oodle compress: ${srcLength} => ${dst.length} (${seconds} seconds)`)
         return dst
     }
 
