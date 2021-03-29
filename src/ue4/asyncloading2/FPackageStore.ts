@@ -20,6 +20,7 @@ import { FByteArchive } from "../reader/FByteArchive";
 import { Utils } from "../../util/Utils";
 import { ParserException } from "../../exceptions/Exceptions";
 import { UnrealMap } from "../../util/UnrealMap";
+import { writeFileSync } from "fs";
 
 export class FPackageStore extends FOnContainerMountedListener {
     provider: FileProvider
@@ -152,6 +153,7 @@ export class FPackageStore extends FOnContainerMountedListener {
     }
 
     findStoreEntry(packageId: FPackageId) {
+        writeFileSync("test.json", JSON.stringify(this.storeEntriesMap.map((v, k) => k.id), null, 2))
         return this.storeEntriesMap.get(packageId)
     }
 
