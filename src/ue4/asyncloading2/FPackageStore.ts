@@ -146,6 +146,8 @@ export class FPackageStore extends FOnContainerMountedListener {
         })
 
         for (const storeEntry of this.storeEntriesMap.values()) {
+            if (!storeEntry)
+                continue;
             storeEntry.importedPackages.forEach((importedPackageId, index) => {
                 storeEntry.importedPackages[index] = redirects.get(importedPackageId)
             })
@@ -153,7 +155,6 @@ export class FPackageStore extends FOnContainerMountedListener {
     }
 
     findStoreEntry(packageId: FPackageId) {
-        writeFileSync("test.json", JSON.stringify(this.storeEntriesMap.map((v, k) => k.id), null, 2))
         return this.storeEntriesMap.get(packageId)
     }
 

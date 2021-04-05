@@ -213,7 +213,7 @@ export class FileProvider extends EventEmitter {
                 const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
                 if (!storeEntry)
                     return null
-                const ioBuffer = this.saveChunk(createIoChunkId(x.value(), 0, EIoChunkType.ExportBundleData))
+                const ioBuffer = this.saveChunk(createIoChunkId(BigInt(x.value()), 0, EIoChunkType.ExportBundleData))
                 return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore.value, this, this.game)
             }
         } catch (e) {
@@ -512,6 +512,14 @@ export class FileProvider extends EventEmitter {
      * @returns the file path translated into the correct format
      */
     fixPath(filePath: string): string {
+        return FileProvider.fixPath(filePath, this.gameName);
+    }
+
+    /**
+     * @param filePath the file path to be fixed
+     * @returns the file path translated into the correct format
+     */
+    static fixPath(filePath: string, gameName: string): string {
         let path = filePath.toLowerCase()
         path = path.replace("\\", "/")
         if (path.startsWith("/"))
@@ -522,7 +530,6 @@ export class FileProvider extends EventEmitter {
         if (!path.endsWith("/") && !path.substring(path.lastIndexOf("/") + 1).includes("."))
             path += ".uasset"
         if (path.startsWith("game/")) {
-            const gameName = this.gameName
             path =
                 path.startsWith("game/content/") ? path.replace("game/content/", gameName + "game/content/") :
                     path.startsWith("game/config/") ? path.replace("game/config/", gameName + "game/config/") :
@@ -545,16 +552,26 @@ export class FileProvider extends EventEmitter {
      * @warning This does convert FortniteGame/Plugins/GameFeatures/GameFeatureName/Content/Package into /GameFeatureName/Package
      */
     compactFilePath(path: string): string {
+        return FileProvider.compactFilePath(path);
+    }
+
+    /**
+     * Compacts a file path
+     * @param path Path to compact
+     * @warning This does convert FortniteGame/Plugins/GameFeatures/GameFeatureName/Content/Package into /GameFeatureName/Package
+     */
+    static compactFilePath(path: string): string {
+        path = path.toLowerCase()
         if (path[0] === "/") {
             return path
         }
-        if (path.startsWith("Engine/Content")) { // -> /Engine
-            return "/Engine" + path.substring("Engine/Content".length)
+        if (path.startsWith("engine/content")) { // -> /Engine
+            return "/engine" + path.substring("engine/content".length)
         }
-        if (path.startsWith("Engine/Plugins")) { // -> /Plugins
-            return path.substring("Engine".length)
+        if (path.startsWith("engine/plugins")) { // -> /Plugins
+            return path.substring("engine".length)
         }
-        const delim = path.indexOf("/Content/")
-        return (delim === -1 ? path : "/Game" + path.substring(delim + "/Content".length)).toLowerCase()
+        const delim = path.indexOf("/content/")
+        return delim === -1 ? path : "/game" + path.substring(delim + "/content".length)
     }
 }

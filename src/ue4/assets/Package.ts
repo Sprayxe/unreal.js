@@ -8,7 +8,7 @@ import { UScriptStruct } from "./exports/UScriptStruct";
 export abstract class Package extends UObject {
     fileName: string
     provider?: FileProvider = null
-    game: number = this.provider.game || Ue4Version.GAME_UE4_LATEST
+    game: number = this.provider?.game || Ue4Version.GAME_UE4_LATEST
 
     protected constructor(fileName: string, provider: FileProvider, game: number) {
         super()
