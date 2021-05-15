@@ -1,6 +1,6 @@
 # unreal.js
 This was an attempt to write a pak reader in (almost) pure javascript!\
-Inspired by: https://github.com/FabianFG/JFortniteParse\
+Inspired by: https://github.com/FabianFG/JFortniteParse
 
 
 I stopped working on it because of javascript's integer limitations.\
