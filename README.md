@@ -7,7 +7,7 @@ I stopped working on it because of javascript's integer limitations.\
 It comes to the point where reading buffers is becoming inaccurate because numbers are being rounded.\
 I am aware that "BigInt" exists (which can hold bigger numbers as the normal "Number" type) but it is rarely used and mostly leads to errors...
 
-Some stuff works though :D (listing directories seemed to work, also the output of `npm test` was good!)\
+Some stuff works though :D (reading directory index seemed to work, also the output of `npm test` was good!)\
 I decided to open-source it because maybe someone decides to try fixing it.
 
 I am not really providing support for this, but if anyone has questions, you can contact me via:
