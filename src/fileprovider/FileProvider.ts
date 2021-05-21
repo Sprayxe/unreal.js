@@ -258,7 +258,7 @@ export class FileProvider extends EventEmitter {
                     return null
                 const locres = this.saveGameFile(x)
                 return new Locres(locres, x.path, this.getLocresLanguageByPath(x.path))
-            } else {
+            } else if (typeof x === "string") {
                 const path = this.fixPath(x)
                 const gameFile = this.findGameFile(path)
                 if (!gameFile)
@@ -511,14 +511,8 @@ export class FileProvider extends EventEmitter {
      * @returns the file path translated into the correct format
      */
     fixPath(filePath: string): string {
-        return FileProvider.fixPath(filePath, this.gameName);
-    }
-
-    /**
-     * @param filePath the file path to be fixed
-     * @returns the file path translated into the correct format
-     */
-    static fixPath(filePath: string, gameName: string): string {
+        if (!filePath) return "";
+        const gameName = this.gameName
         let path = filePath.toLowerCase()
         path = path.replace("\\", "/")
         if (path.startsWith("/"))
@@ -551,15 +545,6 @@ export class FileProvider extends EventEmitter {
      * @warning This does convert FortniteGame/Plugins/GameFeatures/GameFeatureName/Content/Package into /GameFeatureName/Package
      */
     compactFilePath(path: string): string {
-        return FileProvider.compactFilePath(path);
-    }
-
-    /**
-     * Compacts a file path
-     * @param path Path to compact
-     * @warning This does convert FortniteGame/Plugins/GameFeatures/GameFeatureName/Content/Package into /GameFeatureName/Package
-     */
-    static compactFilePath(path: string): string {
         path = path.toLowerCase()
         if (path[0] === "/") {
             return path
