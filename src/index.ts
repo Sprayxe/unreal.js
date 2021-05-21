@@ -14,6 +14,7 @@ import axios from "axios";
 
     // const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     // console.log(pkg)
-    const loc = provider.loadLocres("ShooterGame/Content/Localization/Game/en-US/Game.locres")
-    console.log(loc)
+
+    const pkg = provider.loadObject("ShooterGame/Content/Characters/Breach/Breach_Strings")
+    console.log(pkg)
 })()

@@ -32,4 +32,14 @@ export class Locres {
             })
         })
     }
+
+    toJson() {
+        const obj = {}
+        this.texts.stringData.forEach((v, k) => {
+            const obj2 = {}
+            v.forEach((v2, k2) => obj2[k2] = v2)
+            obj[k] = obj2
+        })
+        return obj
+    }
 }

@@ -261,7 +261,7 @@ export class FileProvider extends EventEmitter {
             } else if (typeof x === "string") {
                 const path = this.fixPath(x)
                 const gameFile = this.findGameFile(path)
-                if (!gameFile)
+                if (gameFile)
                     return this.loadLocres(gameFile)
                 if (!path.endsWith(".locres"))
                     return null
@@ -511,7 +511,6 @@ export class FileProvider extends EventEmitter {
      * @returns the file path translated into the correct format
      */
     fixPath(filePath: string): string {
-        if (!filePath) return "";
         const gameName = this.gameName
         let path = filePath.toLowerCase()
         path = path.replace("\\", "/")

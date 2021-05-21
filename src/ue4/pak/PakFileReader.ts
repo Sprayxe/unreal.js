@@ -109,7 +109,6 @@ export class PakFileReader {
                 this.encryptedFileCount++
             files.set(gameFile.path.toLowerCase(), gameFile)
         }
-
         return this.files = files
     }
 

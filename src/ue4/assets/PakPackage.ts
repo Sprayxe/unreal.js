@@ -192,7 +192,7 @@ export class PakPackage extends Package {
         return this.getImportObject(imp) || this.getExportObject(imp)
     }
 
-    toJson(context: any, locres: Locres) {
+    toJson(context: any, locres?: Locres) {
         return {
             import_map: this.importMap,
             export_map: this.exportMap,
