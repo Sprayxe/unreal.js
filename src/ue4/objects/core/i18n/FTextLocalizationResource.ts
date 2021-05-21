@@ -14,10 +14,10 @@ export class FTextLocalizationResource {
 
     constructor(Ar: FArchive) {
         const magic = new FGuid(Ar)
-        if (magic !== this.locResMagic)
+        if (!magic.equals(this.locResMagic))
             throw ParserException("Wrong locres guid")
         this.version = Ar.readUInt8()
-        this.strArrayOffset = Ar.readInt64() as unknown as number
+        this.strArrayOffset = Number(Ar.readInt64())
         if (this.strArrayOffset === this.indexNone)
             throw ParserException("No offset found")
 

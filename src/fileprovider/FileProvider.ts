@@ -280,7 +280,6 @@ export class FileProvider extends EventEmitter {
         return FnLanguage.valueOfLanguageCode(filePath.split(new RegExp("Localization/(.*?)/"))[1])
     }
 
-
     /**
      * Searches for the game file and then loads a UE4 AssetRegistry file
      * @param filePath the path to search for

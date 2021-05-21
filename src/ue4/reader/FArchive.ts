@@ -123,7 +123,10 @@ export class FArchive {
 
         if (length < 0) {
             const utf16length = -length
-            const dat = new Array(utf16length - 1).push(this.readUInt16())
+            const arrLength = utf16length - 1
+            const dat = new Array(arrLength)
+            for (let i = 0; i < arrLength; ++i)
+                dat.push(this.readUInt16())
             if (this.readUInt16() !== 0)
                 throw ParserException("Serialized FString is not null-terminated")
             return dat.toString().slice(0, utf16length - 1)

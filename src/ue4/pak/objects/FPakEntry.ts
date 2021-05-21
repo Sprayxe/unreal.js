@@ -153,9 +153,9 @@ export class FPakEntry {
     constructor(Ar?: FArchive, pakInfo?: FPakInfo, inIndex?: boolean) {
         if (!Ar) return
         this.name = inIndex ? Ar.readString() : ""
-        this.pos = Ar.readInt64() as unknown as number
-        this.size = Ar.readInt64() as unknown as number
-        this.uncompressedSize = Ar.readInt64() as unknown as number
+        this.pos = Number(Ar.readInt64())
+        this.size = Number(Ar.readInt64())
+        this.uncompressedSize = Number(Ar.readInt64())
         if (pakInfo.version >= EPakVersion.PakVersion_FNameBasedCompressionMethod) {
             this.compressionMethod = pakInfo.compressionMethods[Ar.readInt32()] || "Unknown"
         } else {
