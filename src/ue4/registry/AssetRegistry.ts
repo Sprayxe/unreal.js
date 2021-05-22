@@ -40,7 +40,7 @@ export class AssetRegistry {
             if (localNumDependsNodes > 0)
                 this.loadDependenciesBeforeFlags(Ar, version)
         } else {
-            const dependencySectionSize = Ar.readInt64() as unknown as number
+            const dependencySectionSize = Number(Ar.readInt64())
             const dependencySectionEnd = Ar.pos + dependencySectionSize
             const localNumDependsNodes = Ar.readInt32()
             this.preallocatedDependsNodeDataBuffer = Utils.getArray(localNumDependsNodes, () => [], FDependsNode)

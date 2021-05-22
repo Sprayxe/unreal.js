@@ -70,8 +70,8 @@ export class FPakInfo {
             throw ParserException(`Invalid pak file magic '${magic}'${fileName ? ` (${fileName})` : ""}`)
 
         this.version = Ar.readInt32()
-        this.indexOffset = Number(Ar.readInt64()) // as unknown as number
-        this.indexSize = Number(Ar.readInt64()) // as unknown as number
+        this.indexOffset = Number(Ar.readInt64())
+        this.indexSize = Number(Ar.readInt64())
         this.indexHash = Ar.readBuffer(20)
 
         if (this.version >= EPakVersion.PakVersion_FrozenIndex && this.version < EPakVersion.PakVersion_PathHashIndex) {

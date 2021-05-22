@@ -59,7 +59,7 @@ export class FAssetRegistryReader extends FAssetRegistryArchive {
     private loadTags(): UnrealMap<FName, string> {
         const mapHandle = this.readUInt64()
         const out = new UnrealMap<FName, string>()
-        new FPartialMapHandle(mapHandle as unknown as number).makeFullHandle(this.tags).forEachPair((it) => {
+        new FPartialMapHandle(Number(mapHandle)).makeFullHandle(this.tags).forEachPair((it) => {
             out[it.key] = new FValueHandle(this.tags, it.value).asString()
         })
         return out

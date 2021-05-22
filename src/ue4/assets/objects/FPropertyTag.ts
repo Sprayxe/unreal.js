@@ -54,7 +54,6 @@ export class FPropertyTag {
                 this.size = x.readInt32()
                 this.arrayIndex = x.readInt32()
                 const tagType = this.type.text
-
                 if (tagType === "StructType") {
                     this.structName = x.readFName()
                     if (x.ver >= VER_UE4_STRUCT_GUID_IN_PROPERTY_TAG)

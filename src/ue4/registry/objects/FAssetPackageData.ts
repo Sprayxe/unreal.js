@@ -11,7 +11,7 @@ export class FAssetPackageData {
 
     constructor(Ar: FArchive, serializeHash: boolean) {
         this.packageName = Ar.readFName()
-        this.diskSize = Ar.readInt64() as unknown as number
+        this.diskSize = Number(Ar.readInt64())
         this.packageGuid = new FGuid(Ar)
         this.cookedHash = serializeHash ? new FMD5Hash(Ar) : null
     }

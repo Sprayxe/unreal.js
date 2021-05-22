@@ -1,10 +1,11 @@
 import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
 import axios from "axios";
+import { Game } from "./ue4/versions/Game";
 
 (async () => {
     // const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
-    const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks")
+    const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks", Game.GAME_VALORANT)
     provider.populateIoStoreFiles = true
     await provider.initialize()
 
@@ -15,6 +16,6 @@ import axios from "axios";
     // const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     // console.log(pkg)
 
-    const pkg = provider.loadObject("ShooterGame/Content/WwiseAudio/Events/Music/Music_Events/Events/Play_music_KillBanner6.uasset")
-    console.log(pkg)
+    const pkg = provider.loadGameFile("ShooterGame/Content/Characters/Wushu/Wushu_Strings.uasset")
+    console.log(pkg.toJson())
 })()

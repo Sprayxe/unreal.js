@@ -4,14 +4,13 @@ import { FAssetArchive } from "../reader/FAssetArchive";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { UnrealMap } from "../../../util/UnrealMap";
 
-
 export class UStringTable extends UObject {
     tableNamespace: string
     entries: UnrealMap<string, string>
     keysToMetadata: UnrealMap<string, UnrealMap<FName, string>>
 
     deserialize(Ar: FAssetArchive, validPos: number) {
-        // TODO super.deserialize(Ar, validPos)
+        super.deserialize(Ar, validPos)
         this.tableNamespace = Ar.readString()
         this.entries = Ar.readTMap(null, () => {
             return {

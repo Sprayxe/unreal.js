@@ -1,11 +1,11 @@
-import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
 import { ParserException } from "../../exceptions/Exceptions";
 import { FName } from "../objects/uobject/FName";
 import { UnrealMap } from "../../util/UnrealMap";
+import { Game } from "../versions/Game";
 
 export abstract class FArchiveWriter {
-    game = GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)
-    ver = GAME_UE4_GET_AR_VER(this.game)
+    game = Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
+    ver = Game.GAME_UE4_GET_AR_VER(this.game)
     abstract littleEndian: boolean
     abstract pos(): number
 

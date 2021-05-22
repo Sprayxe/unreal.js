@@ -136,16 +136,15 @@ export class PakPackage extends Package {
     }
 
     findObject(index?: FPackageIndex) {
-        return index === null || index.isNull() ? null :
+        return (index === null || index.isNull()) ? null :
             index.isImport() ? this.findImport(this.importMap[index.toImport()]) :
-                index.isExport() ? this.exportMap[index.toExport()]?.exportObject :
-                    null
+            index.isExport() ? this.exportMap[index.toExport()]?.exportObject :
+            null
     }
 
     loadImport(imp?: FObjectImport) {
         if (!imp) return null
-        const loaded = this.findImport(imp) || null
-        return loaded
+        return this.findImport(imp) || null
     }
 
     findImport(imp?: FObjectImport): UObject {
@@ -198,7 +197,7 @@ export class PakPackage extends Package {
             export_map: this.exportMap,
             export_properties: this.exports.map((it) => {
                 if (it instanceof UObject)
-                    return it.toJson(context, locres)
+                    return it.toJson(locres)
             })
         }
     }

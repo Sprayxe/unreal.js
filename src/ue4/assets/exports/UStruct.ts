@@ -149,7 +149,7 @@ export class FPropertySerialized extends FField {
         super.deserialize(Ar)
         this.arrayDim = Ar.readInt32()
         this.elementSize = Ar.readInt32()
-        this.saveFlags = Ar.readUInt64() as unknown as number
+        this.saveFlags = Number(Ar.readUInt64())
         this.repIndex = Ar.readUInt16()
         this.repNotifyFunc = Ar.readFName()
         this.blueprintReplicationCondition = Ar.readUInt8()

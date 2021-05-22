@@ -63,16 +63,15 @@ export class UObject extends IPropertyHolder {
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         this.properties = []
-        if (typeof (this as any).interfaces === "undefined") {
+        if (typeof((this as any).interfaces) === "undefined") {
             if (Ar.useUnversionedPropertySerialization) {
-                deserializeUnversionedProperties(this.properties, this.clazz, Ar)
+                this.properties = deserializeUnversionedProperties(this.properties, this.clazz, Ar)
             } else {
-                deserializeVersionedTaggedProperties(this.properties, Ar)
+                this.properties = deserializeVersionedTaggedProperties(this.properties, Ar)
             }
         }
         if (Ar.pos + 4 <= validPos && Ar.readBoolean() && Ar.pos + 16 <= validPos)
             this.objectGuid = new FGuid(Ar)
-
     }
 
     serialize(Ar: FAssetArchiveWriter) {
@@ -81,7 +80,7 @@ export class UObject extends IPropertyHolder {
         this.objectGuid?.serialize(Ar)
     }
 
-    toJson(context: any, locres: Locres = null) {
+    toJson(locres: Locres = null): any {
         const ob = {}
         this.properties.forEach((pTag) => {
             const tagValue = pTag.prop
@@ -155,6 +154,7 @@ function deserializeVersionedTaggedProperties(properties: FPropertyTag[], Ar: FA
             break
         properties.push(tag)
     }
+    return properties
 }
 
 function serializeProperties(Ar: FAssetArchiveWriter, properties: FPropertyTag[]) {

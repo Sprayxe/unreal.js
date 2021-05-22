@@ -81,7 +81,6 @@ export class FAssetArchive extends FByteArchive {
             return new FName(owner.nameMap, nameIndex, extraIndex)
         }
         this.handleBadNameIndex(nameIndex)
-        return new FName()
     }
 
     printError() {

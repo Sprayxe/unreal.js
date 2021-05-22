@@ -221,7 +221,6 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
 
     if (header.hasValues()) {
         const schemas = getOrCreateUnversionedSchema(struct).serializers
-
         if (header.bHasNonZeroValues) {
             const it = new FIterator(header, schemas)
             while (!it.bDone) {
@@ -263,4 +262,6 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
             }
         }
     }
+
+    return properties
 }

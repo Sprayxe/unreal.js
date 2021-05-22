@@ -9,7 +9,7 @@ export class FDateTime {
     constructor(date: number)
     constructor(x?: any) {
         if (x instanceof FArchive) {
-            this.date = x.readInt64() as unknown as number
+            this.date = Number(x.readInt64())
         } else {
             this.date = x
         }

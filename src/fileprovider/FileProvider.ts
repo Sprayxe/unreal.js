@@ -1,4 +1,4 @@
-import { GAME_UE4, Ue4Version } from "../ue4/versions/Game";
+import { Game, Ue4Version } from "../ue4/versions/Game";
 import { GameFile } from "../ue4/pak/GameFile";
 import { Package } from "../ue4/assets/Package";
 import { TypeMappingsProvider } from "../ue4/assets/mappings/TypeMappingsProvider";
@@ -458,7 +458,7 @@ export class FileProvider extends EventEmitter {
         if (!fs.existsSync(this.folder))
             throw ParserException(`Path '${this.folder}' does not exist!`)
 
-        if (this.game >= GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
+        if (this.game >= Game.GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
             const file = this.folder + "global"
             if (fs.existsSync(file + ".utoc")) {
                 this.loadGlobalData(file)

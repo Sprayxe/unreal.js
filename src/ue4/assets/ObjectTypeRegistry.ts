@@ -24,8 +24,8 @@ export class ObjectTypeRegistry {
         if (y) {
             this.classes.set(x, y)
         } else {
-            let name = x.name
-            if ((name[0] === 'U' || name[0] === 'A') && name[1].isUpperCase()) {
+            let name = x.name as string
+            if ((name[0] === 'U' || name[0] === 'A') && name[1] === name[1].toUpperCase()) {
                 name = name.substring(1)
             }
             this.registerClass(name, x)
@@ -39,8 +39,8 @@ export class ObjectTypeRegistry {
         if (y) {
             this.structs.set(x, y)
         } else {
-            let name = x.name
-            if ((name[0] === 'U' || name[0] === 'A') && name[1].isUpperCase()) {
+            let name = x.name as string
+            if ((name[0] === 'U' || name[0] === 'A') && name[1] === name[1].toUpperCase()) {
                 name = name.substring(1)
             }
             this.registerStruct(name, x)

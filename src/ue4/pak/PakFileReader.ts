@@ -1,4 +1,3 @@
-import { GAME_UE4, GAME_UE4_GET_AR_VER, LATEST_SUPPORTED_UE4_VERSION } from "../versions/Game";
 import { FPakInfo } from "./objects/FPakInfo";
 import { Aes } from "../../encryption/aes/Aes";
 import { GameFile } from "./GameFile";
@@ -11,6 +10,7 @@ import { Utils } from "../../util/Utils";
 import { Compression } from "../../compression/Compression";
 import { FArchive } from "../reader/FArchive";
 import { EPakVersion } from "./enums/PakVersion";
+import { Game } from "../versions/Game";
 
 export class PakFileReader {
     path: string
@@ -25,8 +25,8 @@ export class PakFileReader {
     constructor(path: string, game?: number) {
         this.path = path
         this.Ar = new FFileArchive(path)
-        this.Ar.game = this.game = game || GAME_UE4(LATEST_SUPPORTED_UE4_VERSION)
-        this.Ar.ver = GAME_UE4_GET_AR_VER(this.game)
+        this.Ar.game = this.game = game || Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
+        this.Ar.ver =Game. GAME_UE4_GET_AR_VER(this.game)
         this.pakInfo = FPakInfo.readPakInfo(this.Ar)
     }
 

@@ -7,8 +7,8 @@ export class UScriptStruct extends UStruct {
     set structClass(value: any) {
         if (this.superStruct)
             return
-        const superclass = Object.getPrototypeOf(Object.getPrototypeOf(value)).constructor
-        if (superclass && superclass !== UObject) {
+        const superclass = value
+        if (superclass && !(superclass instanceof UObject)) {
             this.superStruct = new UScriptStruct(superclass)
         }
     }
@@ -21,7 +21,7 @@ export class UScriptStruct extends UStruct {
             this.name = x.text || FName.NAME_None
         } else {
             this.name = (!(y instanceof FName) ? FName.dummy(x.name, 0) || FName.NAME_None : y).text
-            this.structClass(x)
+            this.structClass = x
             this.useClassProperties = true
         }
     }

@@ -55,14 +55,14 @@ export class FPackageIndex {
     }
 
     toImport(): number {
-        if (this.isImport())
-            throw new Error("Object is already an import.")
+        if (!this.isImport())
+            throw new Error("Object is not an import.")
         return -this.index - 1
     }
 
     toExport(): number {
-        if (this.isExport())
-            throw new Error("Object is already an export.")
+        if (!this.isExport())
+            throw new Error("Object is not an export.")
         return this.index - 1
     }
 
@@ -98,7 +98,7 @@ export class FPackageIndex {
     }
 
     load<T>() {
-        return /*this.owner*/(this.owner as any)?.loadObject/*<T>*/(this)
+        return this.owner?.loadObject/*<T>*/(this)
     }
 }
 
@@ -166,8 +166,8 @@ export class FObjectExport extends FObjectResource {
                 this.serialSize = Ar.readInt32()
                 this.serialOffset = Ar.readInt32()
             } else {
-                this.serialSize = Ar.readInt64() as unknown as number
-                this.serialOffset = Ar.readInt64() as unknown as number
+                this.serialSize = Number(Ar.readInt64())
+                this.serialOffset = Number(Ar.readInt64())
             }
 
             this.forcedExport = Ar.readBoolean()

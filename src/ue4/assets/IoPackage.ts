@@ -200,10 +200,11 @@ export class IoPackage extends Package {
         return exportIndex !== -1 ? this.exportsLazy[exportIndex] : null
     }
 
-    toJson(context: any, locres: Locres) {
+    toJson(locres: Locres) {
+        const context = {}
         context["import_map"] = this.importMap
         context["export_map"] = this.exportMap
-        context["export_properties"] = this.exports.map(it => it.toJson(context, locres))
+        context["export_properties"] = this.exports.map(it => it.toJson(locres))
         return context
     }
 
