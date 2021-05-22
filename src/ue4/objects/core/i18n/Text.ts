@@ -277,7 +277,7 @@ export class StringTableEntry extends FTextHistory {
                 if (!table)
                     throw ParserException(`Failed to load string table '${this.tableId}'`)
 
-                this.text = table.entries.get(this.key)
+                this.text = table.Entries.get(this.key)
                 if (!this.text)
                     throw ParserException("Didn't find needed in key in string table")
             } else {

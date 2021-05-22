@@ -89,7 +89,7 @@ export class FAssetArchive extends FByteArchive {
 
     readObject<T>(): T {
         const it = new FPackageIndex(this)
-        const out = this.owner.findObject(it)
+        const out = this.owner.findObject<T>(it)
         if (!it.isNull() && !out) {
             console.warn(`${this.pkgName}: ${it} not found`)
         }

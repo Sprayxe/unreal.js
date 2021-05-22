@@ -61,9 +61,9 @@ export abstract class Package extends UObject {
         return this.exports.filter(e => e instanceof UObject)
     }
 
-    abstract findObject(index: FPackageIndex)
-    loadObject(index: FPackageIndex) {
-        return this.findObject(index)
+    abstract findObject<T>(index: FPackageIndex): T
+    loadObject<T>(index: FPackageIndex) {
+        return this.findObject<T>(index)
     }
 
     abstract findObjectByName(objectName: string, className?: string): UObject

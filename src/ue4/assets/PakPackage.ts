@@ -51,14 +51,14 @@ export class PakPackage extends Package {
 
         uassetAr.game = this.game
         uassetAr.ver = this.version
-        uassetAr.owner = this
+        uassetAr.owner = this as Package
         uexpAr.game = this.game
         uexpAr.ver = this.version
-        uexpAr.owner = this
+        uexpAr.owner = this as Package
         if (ubulkAr) {
             ubulkAr.game = this.game
             ubulkAr.ver = this.version
-            ubulkAr.owner = this
+            ubulkAr.owner = this as Package
         }
 
         this.nameMap = []
@@ -135,10 +135,10 @@ export class PakPackage extends Package {
         })
     }
 
-    findObject(index?: FPackageIndex) {
+    findObject<T>(index?: FPackageIndex): T {
         return (index === null || index.isNull()) ? null :
-            index.isImport() ? this.findImport(this.importMap[index.toImport()]) :
-            index.isExport() ? this.exportMap[index.toExport()]?.exportObject :
+            index.isImport() ? this.findImport(this.importMap[index.toImport()]) as unknown as T :
+            index.isExport() ? this.exportMap[index.toExport()]?.exportObject as unknown as T :
             null
     }
 

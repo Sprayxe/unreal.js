@@ -2,6 +2,7 @@ import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
 import axios from "axios";
 import { Game } from "./ue4/versions/Game";
+import { UStringTable } from "./ue4/assets/exports/UStringTable";
 
 (async () => {
     // const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
@@ -16,6 +17,6 @@ import { Game } from "./ue4/versions/Game";
     // const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     // console.log(pkg)
 
-    const pkg = provider.loadGameFile("ShooterGame/Content/Characters/Wushu/Wushu_Strings.uasset")
+    const pkg = provider.loadObject<UStringTable>("ShooterGame/Content/Characters/Wushu/Wushu_Strings.uasset")
     console.log(pkg.toJson())
 })()

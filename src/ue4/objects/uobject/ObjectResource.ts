@@ -12,6 +12,7 @@ import {
 } from "../../versions/Versions";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
 import { FAssetArchiveWriter } from "../../assets/writer/FAssetArchiveWriter";
+import { IoPackage } from "../../assets/IoPackage";
 
 export class FPackageIndex {
     index: number
@@ -19,9 +20,9 @@ export class FPackageIndex {
 
     get name(): FName {
         if (this.owner instanceof PakPackage) {
-            return (this.owner as /*PakPackage*/ any).getResource().objectName
+            return (this.owner as PakPackage).getResource(this).objectName
         } else if (typeof this.owner === "object") {
-            return (this.owner as /*IoPackage*/ any).findObjectMinimal(this)?.getName()
+            return (this.owner as IoPackage).findObjectMinimal(this)?.getName()
         } else {
             return null
         }
@@ -98,7 +99,7 @@ export class FPackageIndex {
     }
 
     load<T>() {
-        return this.owner?.loadObject/*<T>*/(this)
+        return this.owner?.loadObject<T>(this)
     }
 }
 
