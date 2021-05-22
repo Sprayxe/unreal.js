@@ -95,14 +95,14 @@ export class FPropertyTag {
                                 ReadType.NORMAL
                             )
                         if (finalPos !== x.pos) {
-                            console.warn(`FPropertyTagType $name (${this.type}) was not read properly, pos ${x.pos}, calculated pos ${finalPos}`)
+                            console.warn(`FPropertyTagType ${this.name} (${this.type}) was not read properly, pos ${x.pos}, calculated pos ${finalPos}`)
                         }
                         // Even if the property wasn't read properly
                         // we don't need to crash here because we know the expected size
                         x.pos = finalPos
                     } catch (e) {
                         if (finalPos !== x.pos) {
-                            console.warn(`Failed to read FPropertyTagType $name (${this.type}), skipping it, please report`)
+                            console.warn(`Failed to read FPropertyTagType ${this.name} (${this.type}), skipping it, please report`)
                         }
                         // Also no need to crash here, just seek to the desired offset
                         x.pos = finalPos

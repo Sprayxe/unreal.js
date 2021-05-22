@@ -1,28 +1,45 @@
 import { UnrealMap } from "../../util/UnrealMap"
+import fs from "fs/promises";
 
 export class ObjectTypeRegistry {
-    static classes: UnrealMap<string, any> = new UnrealMap()
-    static structs: UnrealMap<string, any> = new UnrealMap()
+    static registry = {}
 
-    static init() {
-        this.registerEngine()
-        this.registerFortnite()
+    static async init() {
+        await this.registerEngine()
+        await this.registerValorant()
+        //await this.registerFortnite()
     }
 
-    private static registerEngine() {
-
+    private static async registerEngine() {
+        const dir = (await fs.readdir("./dist/ue4/assets/exports")).filter(f => !f.endsWith(".map"))
+        for (const file of dir) {
+            const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
+            this.registerClass(clazz)
+        }
     }
 
-    private static registerFortnite() {
+    private static async registerFortnite() {
+        /*const dir = await fs.readdir("./dist/ue4/assets/exports")
+        for (const file of dir) {
+            const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
+            this.registerClass(clazz)
+        }*/
+        throw new Error("Not implemented.")
+    }
 
+    private static async registerValorant() {
+        const dir = (await fs.readdir("./dist/valorant/exports")).filter(f => !f.endsWith(".map"))
+        for (const file of dir) {
+            const clazz = (await import(`../../valorant/exports/${file}`))[file.split(".").shift()]
+            this.registerClass(clazz)
+        }
     }
 
     static registerClass(clazz: any)
     static registerClass(serializedName: string, clazz: any)
     static registerClass(x?: any, y?: any) {
-        if (this.classes.size < 1) this.init()
         if (y) {
-            this.classes.set(x, y)
+            this.registry[x] = y
         } else {
             let name = x.name as string
             if ((name[0] === 'U' || name[0] === 'A') && name[1] === name[1].toUpperCase()) {
@@ -32,22 +49,7 @@ export class ObjectTypeRegistry {
         }
     }
 
-    static registerStruct(clazz: any)
-    static registerStruct(serializedName: string, clazz: any)
-    static registerStruct(x?: any, y?: any) {
-        if (this.structs.size < 1) this.init()
-        if (y) {
-            this.structs.set(x, y)
-        } else {
-            let name = x.name as string
-            if ((name[0] === 'U' || name[0] === 'A') && name[1] === name[1].toUpperCase()) {
-                name = name.substring(1)
-            }
-            this.registerStruct(name, x)
-        }
-    }
-
     static get(name: string) {
-        return this.classes.get(name) || this.structs.get(name)
+        return this.registry[name]
     }
 }

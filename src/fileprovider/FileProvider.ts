@@ -31,6 +31,7 @@ import { Aes } from "../encryption/aes/Aes";
 import { Lazy } from "../util/Lazy";
 import Collection from "@discordjs/collection";
 import EventEmitter from "events";
+import { ObjectTypeRegistry } from "../ue4/assets/ObjectTypeRegistry";
 
 export class FileProvider extends EventEmitter {
     folder: string
@@ -454,6 +455,7 @@ export class FileProvider extends EventEmitter {
     }
 
     async initialize() {
+        await ObjectTypeRegistry.init()
         this.folder = this.folder.endsWith("/") ? this.folder : this.folder + "/"
         if (!fs.existsSync(this.folder))
             throw ParserException(`Path '${this.folder}' does not exist!`)

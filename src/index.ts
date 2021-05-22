@@ -18,5 +18,5 @@ import { UStringTable } from "./ue4/assets/exports/UStringTable";
     // console.log(pkg)
 
     const pkg = provider.loadObject<UStringTable>("ShooterGame/Content/Characters/Wushu/Wushu_Strings.uasset")
-    console.log(pkg.toJson())
+    console.log(pkg.toJson().export_map[0].exportObject)
 })()

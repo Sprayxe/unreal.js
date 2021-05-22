@@ -98,7 +98,7 @@ export class FPackageIndex {
         }
     }
 
-    load<T>() {
+    load<T>(): T {
         return this.owner?.loadObject<T>(this)
     }
 }
