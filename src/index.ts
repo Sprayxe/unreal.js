@@ -16,7 +16,7 @@ import { UStringTable } from "./ue4/assets/exports/UStringTable";
 
     // const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     // console.log(pkg)
-
+    
     const pkg = provider.loadObject<UStringTable>("ShooterGame/Content/Characters/Wushu/Wushu_Strings.uasset")
-    console.log(pkg.toJson().export_map[0].exportObject)
+    console.log(pkg.toJson())
 })()

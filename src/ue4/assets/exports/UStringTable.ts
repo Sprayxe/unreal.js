@@ -3,6 +3,7 @@ import { FName } from "../../objects/uobject/FName";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { UnrealMap } from "../../../util/UnrealMap";
+import { Locres } from "../../locres/Locres";
 
 export class UStringTable extends UObject {
     TableNamespace: string
@@ -43,4 +44,27 @@ export class UStringTable extends UObject {
             })
         })
     }
+
+    toJson(locres: Locres = null): IUStringTable {
+        const obj = {}
+        obj["tableNamespace"] = this.TableNamespace
+        obj["entries"] = {}
+        obj["keysToMetadata"] = {}
+        this.Entries.forEach((v, k) => {
+            obj["entries"][k] = v
+        })
+        this.KeysToMetadata.forEach((v, k) => {
+            obj["keysToMetadata"][k] = {}
+            v.forEach((v2, k2) => {
+                obj["keysToMetadata"][k][k2.toString()] = v2
+            })
+        })
+        return obj as IUStringTable
+    }
+}
+
+export interface IUStringTable {
+    tableNamespace: string
+    entries: any,
+    keysToMetadata; any
 }
