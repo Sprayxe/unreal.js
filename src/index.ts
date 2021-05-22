@@ -15,6 +15,6 @@ import axios from "axios";
     // const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     // console.log(pkg)
 
-    const pkg = provider.loadObject("ShooterGame/Content/Characters/Breach/Breach_Strings")
+    const pkg = provider.loadObject("ShooterGame/Content/WwiseAudio/Events/Music/Music_Events/Events/Play_music_KillBanner6.uasset")
     console.log(pkg)
 })()

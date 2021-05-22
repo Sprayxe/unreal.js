@@ -101,14 +101,33 @@ export class PakFileReader {
 
     private readIndexLegacy(indexAr: FByteArchive): Map<string, GameFile> {
         const fileCount = indexAr.readInt32()
-        const files = new Map<string, GameFile>()
+
+        const tempMap = new Map<string, GameFile>()
         for (let i = 0; i < fileCount; i++) {
             const entry = new FPakEntry(indexAr, this.pakInfo, true)
             const gameFile = new GameFile(entry, this.mountPoint, this.path)
             if (gameFile.isEncrypted)
                 this.encryptedFileCount++
-            files.set(gameFile.path.toLowerCase(), gameFile)
+            tempMap.set(gameFile.path.toLowerCase(), gameFile)
         }
+
+        const ext = (k: string, v: string) => k.endsWith(".uasset")
+            ? k.replace(".uasset", v)
+            : k.replace(".umap", v);
+        const files = new Map<string, GameFile>()
+        tempMap.forEach((it, k) => {
+            if (it.isUE4Package()) {
+                const uexp = tempMap.get(ext(k, ".uexp"))
+                if (uexp != null) it.uexp = uexp;
+                const ubulk = tempMap.get(ext(k, ".ubulk"))
+                if (ubulk != null) it.uexp = ubulk;
+                files.set(k , it)
+            } else {
+                if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
+                    files.set(k, it)
+            }
+        })
+
         return this.files = files
     }
 

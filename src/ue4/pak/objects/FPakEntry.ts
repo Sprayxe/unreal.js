@@ -49,13 +49,13 @@ export class FPakEntry {
         const isOffset32BitSafe = (value & (1 << 31)) !== 0
         offset = isOffset32BitSafe ?
             Ar.readUInt32() :
-            Ar.readInt64() as unknown as number
+            Number(Ar.readInt64())
 
         // Read the UncompressedSize.
         const isUncompressedSize32BitSafe = (value & (1 << 30)) !== 0
         uncompressedSize = isUncompressedSize32BitSafe ?
             Ar.readUInt32() :
-            Ar.readInt64() as unknown as number
+            Number(Ar.readInt64())
 
         // Fill in the Size.
         if (compressionMethodIndex !== 0) {
@@ -64,7 +64,7 @@ export class FPakEntry {
             if (isSize32BitSafe) {
                 size = Ar.readUInt32()
             } else {
-                size = Ar.readInt64() as unknown as number
+                size = Number(Ar.readInt64())
             }
         } else {
             // The Size is the same thing as the UncompressedSize when
