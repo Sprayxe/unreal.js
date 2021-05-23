@@ -1,6 +1,10 @@
 import { StringBuilder } from "./StringBuilder";
 
 export class Utils {
+    static clamp(self: number, min: number, max: number) {
+        return Math.min(Math.max(self, min), max)
+    }
+
     static hash(str: string) {
         let hash = 0, i, chr;
         if (str.length === 0)

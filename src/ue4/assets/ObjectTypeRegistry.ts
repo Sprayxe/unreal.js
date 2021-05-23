@@ -1,4 +1,3 @@
-import { UnrealMap } from "../../util/UnrealMap"
 import fs from "fs/promises";
 
 export class ObjectTypeRegistry {
@@ -14,6 +13,8 @@ export class ObjectTypeRegistry {
         const dir = (await fs.readdir("./dist/ue4/assets/exports")).filter(f => !f.endsWith(".map"))
         for (const file of dir) {
             const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
+            if (clazz.ObjectRegistryIgnore)
+                continue;
             this.registerClass(clazz)
         }
     }
@@ -22,6 +23,8 @@ export class ObjectTypeRegistry {
         /*const dir = await fs.readdir("./dist/ue4/assets/exports")
         for (const file of dir) {
             const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
+            if (clazz.ObjectRegistryIgnore)
+                continue;
             this.registerClass(clazz)
         }*/
         throw new Error("Not implemented.")
@@ -31,6 +34,8 @@ export class ObjectTypeRegistry {
         const dir = (await fs.readdir("./dist/valorant/exports")).filter(f => !f.endsWith(".map"))
         for (const file of dir) {
             const clazz = (await import(`../../valorant/exports/${file}`))[file.split(".").shift()]
+            if (clazz.ObjectRegistryIgnore)
+                continue;
             this.registerClass(clazz)
         }
     }
