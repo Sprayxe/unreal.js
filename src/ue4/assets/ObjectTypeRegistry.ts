@@ -10,7 +10,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerEngine() {
-        const dir = (await fs.readdir("./dist/ue4/assets/exports")).filter(f => !f.endsWith(".map"))
+        const dir = (await fs.readdir("./dist/ue4/assets/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir) {
             const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
@@ -20,7 +20,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerFortnite() {
-        /*const dir = await fs.readdir("./dist/ue4/assets/exports")
+        /*const dir = await fs.readdir("./dist/ue4/assets/exports").filter(f => f.endsWith(".js"))
         for (const file of dir) {
             const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
@@ -31,7 +31,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerValorant() {
-        const dir = (await fs.readdir("./dist/valorant/exports")).filter(f => !f.endsWith(".map"))
+        const dir = (await fs.readdir("./dist/valorant/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir) {
             const clazz = (await import(`../../valorant/exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)

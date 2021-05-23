@@ -147,7 +147,7 @@ export class UObject extends IPropertyHolder {
     }
 }
 
-function deserializeVersionedTaggedProperties(properties: FPropertyTag[], Ar: FAssetArchive) {
+export function deserializeVersionedTaggedProperties(properties: FPropertyTag[], Ar: FAssetArchive) {
     while (true) {
         const tag = new FPropertyTag(Ar, true)
         if (tag.name.isNone())
@@ -157,7 +157,7 @@ function deserializeVersionedTaggedProperties(properties: FPropertyTag[], Ar: FA
     return properties
 }
 
-function serializeProperties(Ar: FAssetArchiveWriter, properties: FPropertyTag[]) {
+export function serializeProperties(Ar: FAssetArchiveWriter, properties: FPropertyTag[]) {
     properties.forEach((it) => it.serialize(Ar, true))
     const nameMap = FName.getByNameMap("None", Ar.nameMap)
     if (!nameMap)

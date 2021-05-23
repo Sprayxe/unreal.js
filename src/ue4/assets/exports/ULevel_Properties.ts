@@ -1,11 +1,10 @@
-import { ObjectRegistryIgnore } from "../../../util/decorators/ObjectRegistryIgnore";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { FGuid } from "../../objects/core/misc/Guid";
 import { FVector } from "../../objects/core/math/FVector";
 import { FIntVector } from "../../objects/core/math/FIntVector";
+import { UObject } from "./UObject";
 
-@ObjectRegistryIgnore
-export class ULevel_Properties {
+export class ULevel_Properties extends UObject {
     public /*World*/ OwningWorld: FPackageIndex
     public Model: FPackageIndex
     public ModelComponents: FPackageIndex[]

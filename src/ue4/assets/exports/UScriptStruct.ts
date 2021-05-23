@@ -7,6 +7,8 @@ export class UScriptStruct extends UStruct {
     private field = null
 
     set structClass(value: any) {
+        if (value == null)
+            return
         this.field = new value()
         if (this.superStruct)
             return
@@ -15,6 +17,7 @@ export class UScriptStruct extends UStruct {
             this.superStruct = new UScriptStruct(superclass)
         }
     }
+
     get structClass() {
         return this.field
     }
