@@ -111,15 +111,12 @@ export class PakFileReader {
             tempMap.set(gameFile.path.toLowerCase(), gameFile)
         }
 
-        const ext = (k: string, v: string) => k.endsWith(".uasset")
-            ? k.replace(".uasset", v)
-            : k.replace(".umap", v);
         const files = new Map<string, GameFile>()
         tempMap.forEach((it, k) => {
             if (it.isUE4Package()) {
-                const uexp = tempMap.get(ext(k, ".uexp"))
+                const uexp = tempMap.get(PakFileReader.extension(k, ".uexp"))
                 if (uexp != null) it.uexp = uexp;
-                const ubulk = tempMap.get(ext(k, ".ubulk"))
+                const ubulk = tempMap.get(PakFileReader.extension(k, ".ubulk"))
                 if (ubulk != null) it.uexp = ubulk;
                 files.set(k , it)
             } else {
@@ -157,7 +154,7 @@ export class PakFileReader {
         this.Ar.pos = directoryIndexOffset
         const directoryIndexAr = new FByteArchive(this.readAndDecrypt(directoryIndexSize))
         const directoryIndexNum = directoryIndexAr.readInt32()
-        const files = new Map<string, GameFile>()
+        const tempMap = new Map<string, GameFile>()
         for (let i = 0; i < directoryIndexNum; i++) {
             const directory = directoryIndexAr.readString()
             const filesNum = directoryIndexAr.readInt32()
@@ -169,11 +166,31 @@ export class PakFileReader {
                 entry.name = path
                 if (entry.isEncrypted)
                     this.encryptedFileCount++
-                files.set(path.toLowerCase(), new GameFile(entry, this.mountPoint, this.path))
+                tempMap.set(path.toLowerCase(), new GameFile(entry, this.mountPoint, this.path))
             }
         }
 
+        const files = new Map<string, GameFile>()
+        tempMap.forEach((it, k) => {
+            if (it.isUE4Package()) {
+                const uexp = tempMap.get(PakFileReader.extension(k, ".uexp"))
+                if (uexp != null) it.uexp = uexp;
+                const ubulk = tempMap.get(PakFileReader.extension(k, ".ubulk"))
+                if (ubulk != null) it.uexp = ubulk;
+                files.set(k , it)
+            } else {
+                if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
+                    files.set(k, it)
+            }
+        })
+
         return this.files = files
+    }
+
+    private static extension(k: string, v: string): string {
+        return k.endsWith(".uasset")
+            ? k.replace(".uasset", v)
+            : k.replace(".umap", v);
     }
 
     private readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted()): Buffer {
