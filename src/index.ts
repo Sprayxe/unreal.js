@@ -1,23 +1,21 @@
 import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
 import axios from "axios";
-import { Game } from "./ue4/versions/Game";
-import { UObject } from "./ue4/assets/exports/UObject";
-import { ContractDataAssetV2 } from "./valorant/exports/ContractDataAssetV2";
+//import { Game } from "./ue4/versions/Game";
 
 (async () => {
-    // const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
-    const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks", Game.GAME_VALORANT)
+    const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
+    //const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks", Game.GAME_VALORANT)
     provider.populateIoStoreFiles = true
     await provider.initialize()
 
-    // const { data } = (await axios.get("https://fortnite-api.com/v2/aes")).data
-    // await provider.submitKey(FGuid.mainGuid, data.mainKey)
+    const { data } = (await axios.get("https://fortnite-api.com/v2/aes")).data
+    await provider.submitKey(FGuid.mainGuid, data.mainKey)
     await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
 
-    // const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
-    // console.log(pkg)
-    
-    const pkg = provider.loadObject<ContractDataAssetV2>("ShooterGame/Content/Contracts/Story/Episode2/Contract_Episode2_Act1_DataAssetV2")
-    console.log(pkg.toJson())
+    const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
+    console.log(pkg)
+
+    //const pkg = provider.loadObject("ShooterGame/Content/ContentTiers/Deluxe_UIData")
+    //console.log(pkg.toJson())
 })()

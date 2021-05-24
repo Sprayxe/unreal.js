@@ -17,7 +17,7 @@ export class UStruct extends UObject {
         super.deserialize(Ar, validPos)
         this.superStruct = Ar.readObject()
         this.children = Ar.readArray(() => new FPackageIndex(Ar))
-        this.serializeProperties(Ar)
+        this.deserializeProperties(Ar)
         // region FStructScriptLoader::FStructScriptLoader
         const bytecodeBufferSize = Ar.readInt32()
         const serializedScriptSize = Ar.readInt32()
@@ -27,7 +27,7 @@ export class UStruct extends UObject {
         // endregion
     }
 
-    protected serializeProperties(Ar: FAssetArchive) {
+    protected deserializeProperties(Ar: FAssetArchive) {
         this.childProperties = Ar.readArray((it: number) => {
             const propertyTypeName = Ar.readFName()
             const prop = FField.construct(propertyTypeName)

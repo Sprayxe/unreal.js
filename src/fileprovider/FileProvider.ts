@@ -32,6 +32,7 @@ import { Lazy } from "../util/Lazy";
 import Collection from "@discordjs/collection";
 import EventEmitter from "events";
 import { ObjectTypeRegistry } from "../ue4/assets/ObjectTypeRegistry";
+import { UObject } from "../ue4/assets/exports/UObject";
 
 export class FileProvider extends EventEmitter {
     folder: string
@@ -223,8 +224,8 @@ export class FileProvider extends EventEmitter {
         }
     }
 
-    loadObject<T>(objectPath: string): T
-    loadObject<T>(softObjectPath: any): T
+    loadObject<T extends UObject>(objectPath: string): T
+    loadObject<T extends UObject>(softObjectPath: any): T
     loadObject(objectPath?: string): any {
         if (objectPath == null || objectPath === "None") return null;
         let packagePath = objectPath

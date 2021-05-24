@@ -191,15 +191,18 @@ export class PakPackage extends Package {
         return this.getImportObject(imp) || this.getExportObject(imp)
     }
 
-    toJson(context: any, locres?: Locres) {
-        return {
-            import_map: this.importMap,
-            export_map: this.exportMap,
-            export_properties: this.exports.map((it) => {
-                if (it instanceof UObject)
-                    return it.toJson(locres)
+    toJson(context: any, locres?: Locres): IJson[] {
+        const object = []
+        for (const it of this.exports) {
+            if (!(it instanceof UObject)) continue
+            const json = it.toJson(locres)
+            object.push({
+                type: it.exportType,
+                name: it.name,
+                properties: json
             })
         }
+        return object
     }
 
     private getPackage(imp: FPackageIndex) {
@@ -295,5 +298,10 @@ export class PakPackage extends Package {
         obj.exportMap = this.exportMap
         return obj
     }
+}
 
+interface IJson {
+    type: string,
+    name: string,
+    properties: any
 }

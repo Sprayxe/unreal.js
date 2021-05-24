@@ -17,6 +17,7 @@ import { FSoftClassPath, FSoftObjectPath } from "../../objects/uobject/SoftObjec
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FExportArchive } from "../reader/FExportArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
+import { ObjectTypeRegistry } from "../ObjectTypeRegistry";
 
 export class FProperty {
     getTagTypeValue() {

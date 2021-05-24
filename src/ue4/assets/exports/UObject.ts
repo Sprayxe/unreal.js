@@ -31,7 +31,7 @@ export class UObject extends IPropertyHolder {
         return current as unknown as Package
     }
 
-    get exportType() {
+    get exportType(): string {
         return this.clazz?.name || UObject.name
     }
 
@@ -65,6 +65,7 @@ export class UObject extends IPropertyHolder {
         this.properties = []
         if (typeof((this as any).interfaces) === "undefined") {
             if (Ar.useUnversionedPropertySerialization) {
+                if (this.clazz == null) throw ParserException("Found unversioned properties but object does not have a class.");
                 this.properties = deserializeUnversionedProperties(this.properties, this.clazz, Ar)
             } else {
                 this.properties = deserializeVersionedTaggedProperties(this.properties, Ar)

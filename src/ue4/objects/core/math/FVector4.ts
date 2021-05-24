@@ -17,6 +17,11 @@ export class FVector4 {
     public w: number
 
     /**
+     * - Constructor which initializes all components to 0.0
+     */
+    constructor()
+
+    /**
      * - Constructor which initializes all components using FArchive
      */
     constructor(Ar: FArchive)
@@ -54,7 +59,7 @@ export class FVector4 {
      */
     constructor(xy: FVector2D, zw: FVector2D)
 
-    constructor(arg1: any, arg2?: any, arg3?: any, arg4?: any) {
+    constructor(arg1?: any, arg2?: any, arg3?: any, arg4?: any) {
         if (arg1 instanceof FArchive) {
             this.x = arg1.readFloat32()
             this.y = arg1.readFloat32()
@@ -75,11 +80,16 @@ export class FVector4 {
             this.y = arg1.g
             this.z = arg1.b
             this.w = arg1.a
-        } else {
+        } else if (arg1 != null && arg2 != null) {
             this.x = arg1
             this.y = arg2
             this.z = arg3
             this.w = arg4
+        } else {
+            this.x = 0.0
+            this.y = 0.0
+            this.z = 0.0
+            this.w = 0.0
         }
     }
 }

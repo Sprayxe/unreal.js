@@ -151,11 +151,9 @@ export class FArchive {
     readTMap<K, V>(length: number = this.readInt32(), init: (it: FArchive) => Pair<K, V>): UnrealMap<K, V> {
         if (length == null) length = this.readInt32()
         const map = new UnrealMap<K, V>()
-        let i = 0
-        while (i < length) {
+        for (let i = 0; i < length; ++i) {
             const { key, value } = init(this)
             map.set(key, value)
-            ++i
         }
         return map
     }

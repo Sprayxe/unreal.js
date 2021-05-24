@@ -1,12 +1,13 @@
-import { UClass } from "./UClass";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { UActorComponent } from "./components/UActorComponent";
 import { UTimelineTemplate } from "./UTimelineTemplate";
 import { UFunction } from "./UFunction";
+import { UObject } from "./UObject";
+import { FAssetArchive } from "../reader/FAssetArchive";
 
-export class UBlueprintGeneratedClass_Properties extends UClass {
+export class UBlueprintGeneratedClass_Properties extends UObject {
     public NumReplicatedProperties: number
-    public bHasNativizedParent: number
+    public bHasNativizedParent: boolean
     public bHasCookedComponentInstancingData: boolean
     public DynamicBindingObjects: FPackageIndex[]
     public ComponentTemplates: UActorComponent[]

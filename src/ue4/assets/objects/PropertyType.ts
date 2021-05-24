@@ -28,7 +28,7 @@ export class PropertyType {
         if (!x) {
             this.type = FName.NAME_None
         } else if (x instanceof FPropertyTag) {
-            this.type = x.name
+            this.type = x.type
             this.structName = x.structName
             this.bool = x.boolVal
             this.enumName = x.enumName

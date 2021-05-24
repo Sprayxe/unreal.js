@@ -2,6 +2,7 @@ import { FName } from "./FName";
 import { Package } from "../../assets/Package";
 import { FArchive } from "../../reader/FArchive";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
+import { UObject } from "../../assets/exports/UObject";
 
 /**
  * A struct that contains a string reference to an object, either a top level asset or a subobject.
@@ -48,7 +49,7 @@ export class FSoftObjectPath {
         }
     }
 
-    load<T>() {
+    load<T extends UObject>() {
         return this.owner?.provider?.loadObject<T>(this)
     }
 }

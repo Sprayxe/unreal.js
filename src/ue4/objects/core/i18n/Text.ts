@@ -261,7 +261,6 @@ export class FormatNumber extends FTextHistory {
 export class StringTableEntry extends FTextHistory {
     tableId: FName
     key: string
-
     text: string
 
     constructor(Ar: FArchive)

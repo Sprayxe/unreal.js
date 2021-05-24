@@ -31,8 +31,8 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerValorant() {
-        const dir = (await fs.readdir("./dist/valorant/exports")).filter(f => f.endsWith(".js"))
-        for (const file of dir) {
+        const dir1 = (await fs.readdir("./dist/valorant/exports")).filter(f => f.endsWith(".js"))
+        for (const file of dir1) {
             const clazz = (await import(`../../valorant/exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
@@ -47,7 +47,7 @@ export class ObjectTypeRegistry {
             this.registry[x] = y
         } else {
             let name = x.name as string
-            if ((name[0] === 'U' || name[0] === 'A') && name[1] === name[1].toUpperCase()) {
+            if ((name[0] === "U" || name[0] === "A") && name[1] === name[1].toUpperCase()) {
                 name = name.substring(1)
             }
             this.registerClass(name, x)
