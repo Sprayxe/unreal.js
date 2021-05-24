@@ -2,12 +2,12 @@ import { FName } from "./FName";
 import { FArchive } from "../../reader/FArchive";
 import CityHash from "farmhash"
 
-export const INVALID_ID = (~0).toString()
+export const INVALID_ID = ~0
 export class FPackageId {
     static fromName(name: FName) {
         const nameStr = name.toString().toLowerCase()
         const nameBuf = Buffer.from(nameStr, "utf16le")
-        const hash = CityHash.hash64(nameBuf)
+        const hash = Number(CityHash.hash64(nameBuf))
         if (hash === INVALID_ID)
             throw new Error(`Package name hash collision \"${nameStr}\" and InvalidId`)
         return new FPackageId(hash)
@@ -16,11 +16,11 @@ export class FPackageId {
     id = INVALID_ID
 
     constructor()
-    constructor(id: string)
+    constructor(id: number)
     constructor(Ar: FArchive)
     constructor(x?: any) {
         if (x instanceof FArchive) {
-            this.id = x.readUInt64().toString()
+            this.id = Number(x.readUInt64())
         } else {
             this.id = x
         }

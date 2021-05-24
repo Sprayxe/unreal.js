@@ -11,7 +11,7 @@ import axios from "axios";
 
     const { data } = (await axios.get("https://fortnite-api.com/v2/aes")).data
     await provider.submitKey(FGuid.mainGuid, data.mainKey)
-    await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
+    //await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
 
     const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     console.log(pkg)
