@@ -172,9 +172,10 @@ export class PakPackage extends Package {
         return null
     }
 
-    findObjectByName(objectName: string, className?: string): UObject {
+    findObjectByName(objectName: string, className?: string) {
         const exp = this.exportMap.find(it => {
-            return it.objectName.text === objectName && (className == null || (this.getImportObject(it.classIndex))?.objectName?.text === className)
+            return it.objectName.text === objectName
+                && (className == null || (this.getImportObject(it.classIndex))?.objectName?.text === className)
         })
         return exp?.exportObject
     }

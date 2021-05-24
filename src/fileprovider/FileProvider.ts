@@ -33,6 +33,7 @@ import Collection from "@discordjs/collection";
 import EventEmitter from "events";
 import { ObjectTypeRegistry } from "../ue4/assets/ObjectTypeRegistry";
 import { UObject } from "../ue4/assets/exports/UObject";
+import { FSoftObjectPath } from "../ue4/objects/uobject/SoftObjectPath";
 
 export class FileProvider extends EventEmitter {
     folder: string
@@ -224,20 +225,23 @@ export class FileProvider extends EventEmitter {
         }
     }
 
-    loadObject<T extends UObject>(objectPath: string): T
-    loadObject<T extends UObject>(softObjectPath: any): T
-    loadObject(objectPath?: string): any {
+    loadObject<T extends UObject>(objectPath: string | FSoftObjectPath, objectName?: string): T {
         if (objectPath == null || objectPath === "None") return null;
-        let packagePath = objectPath
-        //let objectName: string
-        const dotIndex = packagePath.indexOf(".")
-        if (dotIndex === -1) {
-            //  objectName = packagePath.substring(packagePath.lastIndexOf("/") + 1)
-        } else {
-            // objectName = packagePath.substring(dotIndex + 1)
-            packagePath = packagePath.substring(0, dotIndex)
+        let packagePath: string = objectPath as any
+        if (objectPath instanceof FSoftObjectPath) {
+            packagePath = objectPath.assetPathName.text
         }
-        return this.loadGameFile(packagePath)
+        if (objectName == null) {
+            const dotIndex = packagePath.indexOf(".")
+            if (dotIndex === -1) {
+                objectName = packagePath.substring(packagePath.lastIndexOf("/") + 1)
+            } else {
+                objectName = packagePath.substring(dotIndex + 1)
+                packagePath = packagePath.substring(0, dotIndex)
+            }
+        }
+        const pkg = this.loadGameFile(packagePath) // TODO allow reading umaps via this route, currently fixPath() only appends .uasset. EDIT(2020-12-15): This works with IoStore assets, but not PAK assets.
+        return pkg?.findObjectByName(objectName) as T
     }
 
     /**
