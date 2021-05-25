@@ -1,4 +1,4 @@
-import { Package } from "./Package";
+import { IJson, Package } from "./Package";
 import { FPackageId } from "../objects/uobject/FPackageId";
 import { FPackageStore } from "../asyncloading2/FPackageStore";
 import {
@@ -200,12 +200,18 @@ export class IoPackage extends Package {
         return exportIndex !== -1 ? this.exportsLazy[exportIndex] : null
     }
 
-    toJson(locres: Locres) {
-        const context = {}
-        context["import_map"] = this.importMap
-        context["export_map"] = this.exportMap
-        context["export_properties"] = this.exports.map(it => it.toJson(locres))
-        return context
+    toJson(locres: Locres): IJson[] {
+        const object = []
+        for (const it of this.exports) {
+            if (!(it instanceof UObject)) continue
+            const json = it.toJson(locres)
+            object.push({
+                type: it.exportType,
+                name: it.name,
+                properties: json
+            })
+        }
+        return object
     }
 
     findObjectMinimal(index?: FPackageIndex) {

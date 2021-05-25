@@ -10,6 +10,8 @@ import { FIntVector } from "../../objects/core/math/FIntVector";
 import { FVector } from "../../objects/core/math/FVector";
 import { FVector2D } from "../../objects/core/math/FVector2D";
 import { FVector4 } from "../../objects/core/math/FVector4";
+import { ObjectTypeRegistry } from "../ObjectTypeRegistry";
+import { FStructFallback } from "./FStructFallback";
 
 export class UScriptStruct {
     structName: FName
@@ -119,6 +121,9 @@ export class UScriptStruct {
                     break
                 case "VectorMaterialInput": // TODO FFVectorMaterialInput
                     break
+                default:
+                    console.debug(`Using property serialization for struct ${this.structName}`)
+                    this.structType = new FStructFallback(x, y.structClass, z)
             }
         } else {
             this.structName = x

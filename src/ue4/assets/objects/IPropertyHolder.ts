@@ -1,3 +1,5 @@
+import { FPropertyTag } from "./FPropertyTag";
+
 export class IPropertyHolder {
-    properties: any[] = []
+    properties: FPropertyTag[] = []
 }

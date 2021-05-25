@@ -4,6 +4,7 @@ import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { UObject } from "./exports/UObject";
 import { UStruct } from "./exports/UStruct";
 import { UScriptStruct } from "./exports/UScriptStruct";
+import { Locres } from "../locres/Locres";
 
 export abstract class Package extends UObject {
     fileName: string
@@ -67,4 +68,11 @@ export abstract class Package extends UObject {
     }
 
     abstract findObjectByName(objectName: string, className?: string): UObject
+    abstract toJson(locres?: Locres): IJson[]
+}
+
+export interface IJson {
+    type: string,
+    name: string,
+    properties: any
 }

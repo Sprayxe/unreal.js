@@ -1,7 +1,7 @@
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { Ue4Version } from "../versions/Game";
 import { FNameEntry } from "../objects/uobject/FNameEntry";
-import { Package } from "./Package";
+import { IJson, Package } from "./Package";
 import { FPackageFileSummary } from "../objects/uobject/PackageFileSummary";
 import { FObjectExport, FObjectImport, FPackageIndex } from "../objects/uobject/ObjectResource";
 import { FAssetArchive } from "./reader/FAssetArchive";
@@ -192,7 +192,7 @@ export class PakPackage extends Package {
         return this.getImportObject(imp) || this.getExportObject(imp)
     }
 
-    toJson(context: any, locres?: Locres): IJson[] {
+    toJson(locres?: Locres): IJson[] {
         const object = []
         for (const it of this.exports) {
             if (!(it instanceof UObject)) continue
@@ -299,10 +299,4 @@ export class PakPackage extends Package {
         obj.exportMap = this.exportMap
         return obj
     }
-}
-
-interface IJson {
-    type: string,
-    name: string,
-    properties: any
 }
