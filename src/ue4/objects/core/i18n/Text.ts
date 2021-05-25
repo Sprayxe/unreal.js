@@ -22,7 +22,7 @@ export enum EFormatArgumentType {
 
 export class FText {
     flags: number
-    historyType: any
+    historyType: ETextHistoryType
     textHistory: FTextHistory
     text: string
 
@@ -35,12 +35,12 @@ export class FText {
         const x =  params[0]
         if (x instanceof FArchive) {
             this.flags = x.readUInt32()
-            this.historyType = new ETextHistoryType(0).valueOfByte(x.readInt8())
+            this.historyType = x.readInt8()
             this.textHistory = this.historyType === ETextHistoryType.None ? new FTextHistoryNone(x) :
                 this.historyType === ETextHistoryType.Base ? new FTextHistoryBase(x) :
-                this.historyType === ETextHistoryType.OrderedFormat ? new OrderedFormat(x) :
-                this.historyType === ETextHistoryType.AsCurrency ? new FormatNumber(x) :
-                this.historyType === ETextHistoryType.StringTableEntry ? new StringTableEntry(x) :
+                this.historyType === ETextHistoryType.OrderedFormat ? new FTextHistoryOrderedFormat(x) :
+                this.historyType === ETextHistoryType.AsCurrency ? new FTextHistoryFormatNumber(x) :
+                this.historyType === ETextHistoryType.StringTableEntry ? new FTextHistoryStringTableEntry(x) :
                 null;
             this.text = this.textHistory.text
         } else if (typeof x === "string" && params.length === 1) {
@@ -79,7 +79,7 @@ export class FText {
 
     serialize(Ar: FArchiveWriter) {
         Ar.writeUInt32(this.flags)
-        Ar.writeInt8(this.historyType.value)
+        Ar.writeInt8(this.historyType)
         this.textHistory.serialize(Ar)
     }
 }
@@ -198,7 +198,7 @@ export class FTextHistoryDateTime extends FTextHistory {
     }
 }
 
-export class OrderedFormat extends FTextHistory {
+export class FTextHistoryOrderedFormat extends FTextHistory {
     sourceFmt: FText
     args: FFormatArgumentValue[]
 
@@ -225,7 +225,7 @@ export class OrderedFormat extends FTextHistory {
     }
 }
 
-export class FormatNumber extends FTextHistory {
+export class FTextHistoryFormatNumber extends FTextHistory {
     /** The source value to format from */
     sourceValue: FFormatArgumentValue
     /** The culture to format using */
@@ -258,7 +258,7 @@ export class FormatNumber extends FTextHistory {
     }
 }
 
-export class StringTableEntry extends FTextHistory {
+export class FTextHistoryStringTableEntry extends FTextHistory {
     tableId: FName
     key: string
     text: string
