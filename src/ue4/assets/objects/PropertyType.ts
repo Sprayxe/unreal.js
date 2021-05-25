@@ -8,6 +8,7 @@ import {
     FSetProperty,
     FStructProperty
 } from "../exports/UStruct";
+import { Lazy } from "../../../util/Lazy";
 
 export class PropertyType {
     type: FName
@@ -17,16 +18,19 @@ export class PropertyType {
     isEnumAsByte: boolean = true
     innerType: PropertyType = null
     valueType: PropertyType = null
-    structClass: any = null
+    structClass: Lazy<any> = null
     enumClass: any = null
 
     constructor()
+    constructor(type: FName)
     constructor(JsonObject: any)
     constructor(tag: FPropertyTag)
     constructor(prop: FPropertySerialized)
     constructor(x?: any) {
         if (!x) {
             this.type = FName.NAME_None
+        } else if (x instanceof FName) {
+            this.type = x
         } else if (x instanceof FPropertyTag) {
             this.type = x.type
             this.structName = x.structName
@@ -46,7 +50,7 @@ export class PropertyType {
             } else if (x instanceof FSetProperty) {
                 this.innerType = x.elementProp ? new PropertyType(x.elementProp) : null
             } else if (x instanceof FStructProperty) {
-                this.structClass = x.struct
+                this.structClass = new Lazy<any>(() => x.struct)
                 this.structName = FName.dummy(this.structClass?.value?.name, 0) || FName.NAME_None
             }
         }

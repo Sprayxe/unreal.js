@@ -2,7 +2,7 @@ import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
 //import axios from "axios";
 import { Game } from "./ue4/versions/Game";
-import { Default__Deluxe_UIData_C } from "./valorant/exports/Default__Deluxe_UIData_C";
+import { StructProperty } from "./ue4/assets/objects/FProperty";
 
 (async () => {
     //const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
@@ -18,6 +18,6 @@ import { Default__Deluxe_UIData_C } from "./valorant/exports/Default__Deluxe_UID
     //const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     //console.log(pkg)
 
-    const pkg = provider.loadObject("ShooterGame/Content/Contracts/Characters/Wushu/WushuChapter1_DataAsset.Default__WushuChapter1_DataAsset_C")
+    const pkg = provider.loadGameFile("ShooterGame/Content/Contracts/Characters/Yoru/Contract_Yoru_DataAssetV2")
     console.log(pkg.toJson())
 })()

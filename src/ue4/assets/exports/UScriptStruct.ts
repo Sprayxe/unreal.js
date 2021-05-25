@@ -22,6 +22,7 @@ export class UScriptStruct extends UStruct {
         return this.field
     }
 
+    constructor()
     constructor(name: FName)
     constructor(clazz: any, name: FName)
     constructor(x?: any, y?: any) {
