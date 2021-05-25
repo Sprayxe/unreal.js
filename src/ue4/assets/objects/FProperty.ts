@@ -17,7 +17,6 @@ import { FSoftClassPath, FSoftObjectPath } from "../../objects/uobject/SoftObjec
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FExportArchive } from "../reader/FExportArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
-import { ObjectTypeRegistry } from "../ObjectTypeRegistry";
 
 export class FProperty {
     getTagTypeValue() {
@@ -112,6 +111,10 @@ export class FProperty {
         } else if (this instanceof UInt64Property) {
             this.number = value as number
         }
+    }
+
+    toJsonValue() {
+        return null
     }
 
     static readPropertyValue(Ar: FAssetArchive, typeData: PropertyType, type: ReadType) {
@@ -455,6 +458,10 @@ export class ArrayProperty extends FProperty {
         super()
         this.array = array
     }
+
+    toJsonValue(): any[] {
+        return this.array.contents.map(c => c.toJsonValue())
+    }
 }
 
 export class BoolProperty extends FProperty {
@@ -463,6 +470,10 @@ export class BoolProperty extends FProperty {
     constructor(bool: boolean) {
         super()
         this.bool = bool
+    }
+
+    toJsonValue(): boolean {
+        return this.bool
     }
 }
 
@@ -473,6 +484,10 @@ export class ByteProperty extends FProperty {
         super()
         this.byte = byte
     }
+
+    toJsonValue(): number {
+        return this.byte
+    }
 }
 
 export class ClassProperty extends FProperty {
@@ -481,6 +496,10 @@ export class ClassProperty extends FProperty {
     constructor(index: FPackageIndex) {
         super()
         this.index = index
+    }
+
+    toJsonValue(): any {
+        return this.index.load()?.toJson() || null
     }
 }
 
@@ -491,6 +510,13 @@ export class DelegateProperty extends FProperty {
         super()
         this.delegate = delegate
     }
+
+    toJsonValue(): any {
+        return {
+            functionName: this.delegate.functionName.text,
+            packageObject: this.delegate.object.load()?.toJson() || null
+        }
+    }
 }
 
 export class DoubleProperty extends FProperty {
@@ -499,6 +525,10 @@ export class DoubleProperty extends FProperty {
     constructor(number: number) {
         super()
         this.number = number
+    }
+
+    toJsonValue(): number {
+        return this.number
     }
 }
 
@@ -511,6 +541,13 @@ export class EnumProperty extends FProperty {
         this.name = name
         this.enumConstant = enumConstant
     }
+
+    toJsonValue(): any {
+        return {
+            name: this.name.text,
+            enumConstant: this.enumConstant
+        }
+    }
 }
 
 export class FieldPathProperty extends FProperty {
@@ -519,6 +556,13 @@ export class FieldPathProperty extends FProperty {
     constructor(fieldPath: FFieldPath) {
         super()
         this.fieldPath = fieldPath
+    }
+
+    toJsonValue(): any {
+        return {
+            path: this.fieldPath.path.map(f => f.text),
+            resolvedOwner: this.fieldPath.resolvedOwner.load()?.toJson() || null
+        }
     }
 }
 
@@ -529,6 +573,10 @@ export class FloatProperty extends FProperty {
         super()
         this.float = float
     }
+
+    toJsonValue(): number {
+        return this.float
+    }
 }
 
 export class Int16Property extends FProperty {
@@ -537,6 +585,10 @@ export class Int16Property extends FProperty {
     constructor(number: number) {
         super()
         this.number = number
+    }
+
+    toJsonValue(): number {
+        return this.number
     }
 }
 
@@ -547,6 +599,10 @@ export class Int64Property extends FProperty {
         super()
         this.number = number
     }
+
+    toJsonValue(): number {
+        return this.number
+    }
 }
 
 export class Int8Property extends FProperty {
@@ -555,6 +611,10 @@ export class Int8Property extends FProperty {
     constructor(number: number) {
         super()
         this.number = number
+    }
+
+    toJsonValue(): number {
+        return this.number
     }
 }
 
@@ -565,6 +625,10 @@ export class IntProperty extends FProperty {
         super()
         this.number = number
     }
+
+    toJsonValue(): number {
+        return this.number
+    }
 }
 
 export class InterfaceProperty extends FProperty {
@@ -573,6 +637,10 @@ export class InterfaceProperty extends FProperty {
     constructor(interfaceProperty: UInterfaceProperty) {
         super()
         this.interfaceProperty = interfaceProperty
+    }
+
+    toJsonValue(): number {
+        return this.interfaceProperty.interfaceNumber
     }
 }
 
@@ -583,6 +651,10 @@ export class LazyObjectProperty extends FProperty {
         super()
         this.guid = guid
     }
+
+    toJsonValue(): string {
+        return this.guid.guid.toString()
+    }
 }
 
 export class MapProperty extends FProperty {
@@ -591,6 +663,14 @@ export class MapProperty extends FProperty {
     constructor(map: UScriptMap) {
         super()
         this.map = map
+    }
+
+    toJsonValue(): any {
+        return {
+            numKeysToRemove: this.map.numKeysToRemove,
+            mapData: this.map.mapData.map((v, k) => {
+                return { key: k.toJsonValue(), value: v.toJsonValue() } })
+        }
     }
 }
 
@@ -601,6 +681,11 @@ export class MulticastDelegateProperty extends FProperty {
         super()
         this.delegate = delegate
     }
+
+    toJsonValue(): { functionName: string, object: any }[] {
+        return this.delegate.invocationList
+            .map(d => { return { functionName: d.functionName.text, object: d.object.load() || null } })
+    }
 }
 
 export class NameProperty extends FProperty {
@@ -609,6 +694,10 @@ export class NameProperty extends FProperty {
     constructor(name: FName) {
         super()
         this.name = name
+    }
+
+    toJsonValue(): string {
+        return this.name.text
     }
 }
 
@@ -619,6 +708,10 @@ export class ObjectProperty extends FProperty {
         super()
         this.index = index
     }
+
+    toJsonValue(): any {
+        return this.index.load()?.toJson() || null
+    }
 }
 
 export class SetProperty extends FProperty {
@@ -627,6 +720,13 @@ export class SetProperty extends FProperty {
     constructor(array: UScriptArray) {
         super()
         this.array = array
+    }
+
+    toJsonValue(): any {
+        return {
+            contents: this.array.contents.map(c => c.toJsonValue()),
+            innerTag: this.array.innerTag.toJson()
+        }
     }
 }
 
@@ -637,6 +737,14 @@ export class SoftClassProperty extends FProperty {
         super()
         this.object = object
     }
+
+    toJsonValue(): any {
+        return {
+            assetPathName: this.object.assetPathName.text,
+            subPathString: this.object.subPathString,
+            object: this.object.load()?.toJson() || null
+        }
+    }
 }
 
 export class SoftObjectProperty extends FProperty {
@@ -645,6 +753,14 @@ export class SoftObjectProperty extends FProperty {
     constructor(object: FSoftObjectPath) {
         super()
         this.object = object
+    }
+
+    toJsonValue(): any {
+        return {
+            assetPathName: this.object.assetPathName.text,
+            subPathString: this.object.subPathString,
+            object: this.object.load()?.toJson() || null
+        }
     }
 }
 
@@ -655,6 +771,10 @@ export class StrProperty extends FProperty {
         super()
         this.str = str
     }
+
+    toJsonValue(): string {
+        return this.str
+    }
 }
 
 export class StructProperty extends FProperty {
@@ -663,6 +783,10 @@ export class StructProperty extends FProperty {
     constructor(struct: UScriptStruct) {
         super()
         this.struct = struct
+    }
+
+    toJsonValue(): string {
+        return this.struct.structName.text
     }
 }
 
@@ -673,6 +797,10 @@ export class TextProperty extends FProperty {
         super()
         this.text = text
     }
+
+    toJsonValue(): string {
+        return this.text.text
+    }
 }
 
 export class UInt16Property extends FProperty {
@@ -681,6 +809,10 @@ export class UInt16Property extends FProperty {
     constructor(number: number) {
         super()
         this.number = number
+    }
+
+    toJsonValue(): number {
+        return this.number
     }
 }
 
@@ -691,6 +823,10 @@ export class UInt32Property extends FProperty {
         super()
         this.number = number
     }
+
+    toJsonValue(): number {
+        return this.number
+    }
 }
 
 export class UInt64Property extends FProperty {
@@ -700,6 +836,10 @@ export class UInt64Property extends FProperty {
         super()
         this.number = number
     }
+
+    toJsonValue(): number {
+        return this.number
+    }
 }
 
 export class WeakObjectProperty extends FProperty {
@@ -708,6 +848,10 @@ export class WeakObjectProperty extends FProperty {
     constructor(index: FPackageIndex) {
         super()
         this.index = index
+    }
+
+    toJsonValue() {
+        return this.index.load()?.toJson() || null
     }
 }
 

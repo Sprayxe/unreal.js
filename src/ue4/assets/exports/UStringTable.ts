@@ -6,20 +6,20 @@ import { UnrealMap } from "../../../util/UnrealMap";
 import { Locres } from "../../locres/Locres";
 
 export class UStringTable extends UObject {
-    TableNamespace: string
-    Entries: UnrealMap<string, string>
-    KeysToMetadata: UnrealMap<string, UnrealMap<FName, string>>
+    tableNamespace: string
+    entries: UnrealMap<string, string>
+    keysToMetadata: UnrealMap<string, UnrealMap<FName, string>>
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
-        this.TableNamespace = Ar.readString()
-        this.Entries = Ar.readTMap(null, () => {
+        this.tableNamespace = Ar.readString()
+        this.entries = Ar.readTMap(null, () => {
             return {
                 key: Ar.readString(),
                 value: Ar.readString()
             }
         })
-        this.KeysToMetadata = Ar.readTMap(null, () => {
+        this.keysToMetadata = Ar.readTMap(null, () => {
             const map = new UnrealMap<FName, string>()
             map.set(Ar.readFName(), Ar.readString())
             return {
@@ -31,12 +31,12 @@ export class UStringTable extends UObject {
 
     serialize(Ar: FAssetArchiveWriter) {
         super.serialize(Ar)
-        Ar.writeString(this.TableNamespace)
-        Ar.writeTMap(this.Entries, (key, value) => {
+        Ar.writeString(this.tableNamespace)
+        Ar.writeTMap(this.entries, (key, value) => {
             Ar.writeString(key)
             Ar.writeString(value)
         })
-        Ar.writeTMap(this.KeysToMetadata, (key, value) => {
+        Ar.writeTMap(this.keysToMetadata, (key, value) => {
             Ar.writeString(key)
             Ar.writeTMap(value, (metaKey, metaValue) => {
                 Ar.writeFName(metaKey)
@@ -47,13 +47,13 @@ export class UStringTable extends UObject {
 
     toJson(locres: Locres = null): IUStringTable {
         const obj = {}
-        obj["tableNamespace"] = this.TableNamespace
+        obj["tableNamespace"] = this.tableNamespace
         obj["entries"] = {}
         obj["keysToMetadata"] = {}
-        this.Entries.forEach((v, k) => {
+        this.entries.forEach((v, k) => {
             obj["entries"][k] = v
         })
-        this.KeysToMetadata.forEach((v, k) => {
+        this.keysToMetadata.forEach((v, k) => {
             obj["keysToMetadata"][k] = {}
             v.forEach((v2, k2) => {
                 obj["keysToMetadata"][k][k2.toString()] = v2

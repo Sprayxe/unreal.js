@@ -167,4 +167,24 @@ export class FPropertyTag {
     toString() {
         return `${this.name.text}   -->   ${this.prop ? this.getTagTypeValue() : "Failed to parse"}`
     }
+
+    toJson() {
+        return {
+            prop: this.prop.toJsonValue(),
+            type: this.type.text,
+            boolVal: this.boolVal,
+            name: this.name.text,
+            structName: this.structName.text,
+            enumName: this.enumName.text,
+            innerType: this.innerType.text,
+            valueType: this.valueType.text,
+            size: this.size,
+            arrayIndex: this.arrayIndex,
+            sizeOffset: this.sizeOffset,
+            structGuid: this.structGuid?.toString() || null,
+            hasPropertyGuid: this.hasPropertyGuid,
+            propertyGuid: this.propertyGuid?.toString() || null,
+            typeData: this.typeData.toString()
+        }
+    }
 }

@@ -87,7 +87,9 @@ export class UObject extends IPropertyHolder {
             const tagValue = pTag.prop
             if (!tagValue)
                 return
-            ob[pTag.name.text] = tagValue
+            const tagKey = pTag.name.text.split("")
+            tagKey[0] = tagKey[0].toLowerCase()
+            ob[tagKey.join("")] = tagValue.toJsonValue()
         })
         return ob
     }
