@@ -742,7 +742,6 @@ export class SoftClassProperty extends FProperty {
         return {
             assetPathName: this.object.assetPathName.text,
             subPathString: this.object.subPathString,
-            object: this.object.load()?.toJson() || null
         }
     }
 }
@@ -759,7 +758,6 @@ export class SoftObjectProperty extends FProperty {
         return {
             assetPathName: this.object.assetPathName.text,
             subPathString: this.object.subPathString,
-            object: this.object.load()?.toJson() || null
         }
     }
 }
