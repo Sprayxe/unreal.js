@@ -2,9 +2,12 @@ import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
 //import axios from "axios";
 import { Game } from "./ue4/versions/Game";
+import { CityHash } from "./util/CityHash";
 
 (async () => {
-    //const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
+    const nameBuf = Buffer.from("/game/athena/items/cosmetics/characters/cid_144_athena_commando_m_soccerdudea", "utf16le")
+    console.log(CityHash.cityHash64(nameBuf, 0, nameBuf.length).toUnsigned().toString())
+    /*//const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
     //const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
     const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks", Game.GAME_VALORANT)
     provider.populateIoStoreFiles = true
@@ -18,5 +21,5 @@ import { Game } from "./ue4/versions/Game";
     //console.log(pkg)
 
     const pkg = provider.loadGameFile("ShooterGame/Content/Contracts/Characters/Yoru/Contract_Yoru_DataAssetV2")
-    console.log(pkg.toJson())
+    console.log(pkg.toJson())*/
 })()
