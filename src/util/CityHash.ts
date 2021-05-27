@@ -27,9 +27,9 @@ export type long = Long.Long
  */
 export class CityHash {
     // Some primes between 2^63 and 2^64 for various uses.
-    private static readonly k0 = Long.fromString("0xc3a5c85c97cb3127", true)
-    private static readonly k1 = Long.fromString("0xb492b66fbe98f273", true)
-    private static readonly k2 = Long.fromString("0x9ae16a3b2f90404f", true)
+    private static readonly k0 = Long.fromString("14097894508562428199", true)
+    private static readonly k1 = Long.fromString("13011662864482103923", true)
+    private static readonly k2 = Long.fromString("11160318154034397263", true)
 
     private static toLongLE(b: Buffer, i: number): long {
         return Long.fromNumber((b[i + 7]), true).shiftLeft(56)
@@ -213,7 +213,7 @@ export class CityHash {
         let y = this.fetch64(s, pos + len - 16).add(this.fetch64(s, pos + len - 56))
         let z = this.hashLen16(this.fetch64(s, pos + len - 48).add(len), this.fetch64(s, pos + len - 24))
         let v = this.weakHashLen32WithSeeds1(s, pos + len - 64, Long.fromNumber(len, true), z)
-        let w = this.weakHashLen32WithSeeds1(s, pos + len - 32, this.k1.add(y), x)
+        let w = this.weakHashLen32WithSeeds1(s, pos + len - 32, y.add(this.k1), x)
         x = x.multiply(this.k1).add(this.fetch64(s, pos))
 
         // Decrease len to the nearest multiple of 64, and operate on 64-byte chunks.
@@ -231,8 +231,8 @@ export class CityHash {
             len -= 64
         } while (len !== 0)
 
-        return this.hashLen16Mul(this.hashLen16(v[0], w[0]).add(this.shiftMix(y).multiply(this.k1).add(x)),
-            this.hashLen16(v[1], w[0]), x)
+        return this.hashLen16(this.hashLen16(v[0], w[0]).add(this.shiftMix(y).multiply(this.k1)).add(z),
+            this.hashLen16(v[1], w[1]).add(x))
     }
 
     /**
@@ -259,7 +259,7 @@ export class CityHash {
      * This is intended to be a reasonably good hash function.
      */
     public static cityHash128to64(u: long, v: long): long {
-        const kMul = Long.fromString("0x9ddfea08eb382d69", true)
+        const kMul = Long.fromString("11376068507788127593", true)
         let a = u.xor(v).multiply(kMul)
         a = a.xor(a.shiftRightUnsigned(47))
         let b = v.xor(a).multiply(kMul)
