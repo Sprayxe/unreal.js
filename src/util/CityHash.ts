@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import * as Long from "long"
 export type long = Long.Long
 

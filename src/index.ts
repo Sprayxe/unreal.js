@@ -9,13 +9,17 @@ import axios from "axios";
     provider.populateIoStoreFiles = true
     await provider.initialize()
 
-    const { data } = (await axios.get("https://fortnite-api.com/v2/aes")).data
-    await provider.submitKey(FGuid.mainGuid, data.mainKey)
+    await submitFortniteAesKeys(provider)
     //await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
 
     const pkg = provider.loadObject("FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA")
     console.log(pkg)
-
     //const pkg = provider.loadGameFile("ShooterGame/Content/Contracts/Characters/Yoru/Contract_Yoru_DataAssetV2")
     //console.log(pkg.toJson())
 })()
+
+async function submitFortniteAesKeys(provider: FileProvider) {
+    const { data } = await axios.get("https://benbot.app/api/v1/aes")
+    await provider.submitKey(FGuid.mainGuid, data.mainKey.replace("0x", ""))
+    // TODO: dynamic keys
+}
