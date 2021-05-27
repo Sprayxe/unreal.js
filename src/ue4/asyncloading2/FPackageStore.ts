@@ -20,7 +20,6 @@ import { FByteArchive } from "../reader/FByteArchive";
 import { Utils } from "../../util/Utils";
 import { ParserException } from "../../exceptions/Exceptions";
 import { UnrealMap } from "../../util/UnrealMap";
-import { writeFileSync } from "fs";
 
 export class FPackageStore extends FOnContainerMountedListener {
     provider: FileProvider
@@ -48,7 +47,7 @@ export class FPackageStore extends FOnContainerMountedListener {
     }
 
     setupInitialLoadData() {
-        const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderInitialLoadMeta))
+        const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId("0", 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
         const numScriptObjects = initialLoadArchive.readInt32() - 1
         Utils.repeat(numScriptObjects, () => {
@@ -78,11 +77,11 @@ export class FPackageStore extends FOnContainerMountedListener {
                 }
 
                 if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
-                    console.log(`Skipping loading mounted container ID '${containerId.value()}', already loaded with higher order`)
+                    console.debug(`Skipping loading mounted container ID '${containerId.value()}', already loaded with higher order`)
                     continue
                 }
 
-                console.log(`Loading mounted container ID '${containerId.value()}'`)
+                console.debug(`Loading mounted container ID '${containerId.value()}'`)
                 loadedContainer.bValid = true
                 loadedContainer.order = container.environment.order
 
@@ -106,7 +105,7 @@ export class FPackageStore extends FOnContainerMountedListener {
 
                 let localizedPackages: FSourceToLocalizedPackageIdMap = null
                 for (const cultureName of this.currentCultureNames) {
-                    localizedPackages = containerHeader.culturePackageMap[cultureName]
+                    localizedPackages = containerHeader.culturePackageMap.get(cultureName)
                     if (localizedPackages)
                         break
                 }
@@ -123,7 +122,7 @@ export class FPackageStore extends FOnContainerMountedListener {
                     this.redirectsPackageMap.set(redirect.key, redirect.value)
                 }
             } catch (e) {
-                console.log(`Could not load container '${container.containerId.value()}', error: ${e}`)
+                console.debug(`Could not load container '${container.containerId.value()}', error: ${e}`)
             }
         }
 

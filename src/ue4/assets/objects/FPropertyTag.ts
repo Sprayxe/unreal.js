@@ -1,6 +1,6 @@
 import { FName } from "../../objects/uobject/FName";
 import { INDEX_NONE } from "../../../util/Const";
-import { FGuid } from "../../objects/core/misc/Guid";
+import { EGuidFormats, FGuid } from "../../objects/core/misc/Guid";
 import {
     VER_UE4_ARRAY_PROPERTY_INNER_TAGS,
     VER_UE4_PROPERTY_GUID_IN_PROPERTY_TAG,
@@ -181,9 +181,9 @@ export class FPropertyTag {
             size: this.size,
             arrayIndex: this.arrayIndex,
             sizeOffset: this.sizeOffset,
-            structGuid: this.structGuid?.toString() || null,
+            structGuid: this.structGuid?.toString(EGuidFormats.DigitsWithHyphens) || null,
             hasPropertyGuid: this.hasPropertyGuid,
-            propertyGuid: this.propertyGuid?.toString() || null,
+            propertyGuid: this.propertyGuid?.toString(EGuidFormats.DigitsWithHyphens) || null,
             typeData: this.typeData.toString()
         }
     }

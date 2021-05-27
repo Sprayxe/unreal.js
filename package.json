@@ -28,7 +28,6 @@
     "axios": "^0.21.1",
     "bitset": "^5.1.1",
     "crypto": "^1.0.1",
-    "farmhash": "^3.2.1",
     "ffi-napi": "^4.0.2",
     "long": "^4.0.0",
     "node-object-hash": "^2.3.1",

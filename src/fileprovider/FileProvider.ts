@@ -216,7 +216,7 @@ export class FileProvider extends EventEmitter {
                 const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
                 if (!storeEntry)
                     return null
-                const ioBuffer = this.saveChunk(createIoChunkId(BigInt(x.value()), 0, EIoChunkType.ExportBundleData))
+                const ioBuffer = this.saveChunk(createIoChunkId(x.value(), 0, EIoChunkType.ExportBundleData))
                 return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore.value, this, this.game)
             }
         } catch (e) {
@@ -403,7 +403,7 @@ export class FileProvider extends EventEmitter {
     saveGameFile(x: any) {
         if (x instanceof GameFile) {
             if (x.ioPackageId)
-                return this.saveChunk(createIoChunkId(BigInt(x.ioPackageId.value()), 0, EIoChunkType.ExportBundleData))
+                return this.saveChunk(createIoChunkId(x.ioPackageId.value(), 0, EIoChunkType.ExportBundleData))
             const reader = this._mountedPaks.find(it => it.path === x.pakFileName)
             if (!reader)
                 throw new Error("Couldn't find any possible pak file readers")

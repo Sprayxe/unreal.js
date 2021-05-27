@@ -42,10 +42,8 @@ export class Utils {
     static getArray(max: number, values: (i: number) => any[], clazz: any = null) {
         if (max < 0) return []
         const array = new Array(max)
-        let n = 0
-        while (n < max) {
+        for (let n = 0; n < max; ++n) {
             array[n] = clazz ? new clazz(...values(n)) : values(n)[0]
-            ++n
         }
         return array
     }

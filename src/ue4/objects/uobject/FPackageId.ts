@@ -1,13 +1,13 @@
 import { FName } from "./FName";
 import { FArchive } from "../../reader/FArchive";
-import CityHash from "farmhash"
+import { CityHash } from "../../../util/CityHash";
 
-export const INVALID_ID = ~0
+export const INVALID_ID = (~0).toString()
 export class FPackageId {
     static fromName(name: FName) {
         const nameStr = name.toString().toLowerCase()
         const nameBuf = Buffer.from(nameStr, "utf16le")
-        const hash = Number(CityHash.hash64(nameBuf))
+        const hash = CityHash.cityHash64(nameBuf, 0, nameBuf.length).toUnsigned().toString()
         if (hash === INVALID_ID)
             throw new Error(`Package name hash collision \"${nameStr}\" and InvalidId`)
         return new FPackageId(hash)
@@ -16,11 +16,11 @@ export class FPackageId {
     id = INVALID_ID
 
     constructor()
-    constructor(id: number)
+    constructor(id: string)
     constructor(Ar: FArchive)
     constructor(x?: any) {
         if (x instanceof FArchive) {
-            this.id = Number(x.readUInt64())
+            this.id = x.readUInt64().toString()
         } else {
             this.id = x
         }
@@ -33,10 +33,6 @@ export class FPackageId {
     value() {
         if (this.id === INVALID_ID)
             throw new Error("Field 'id' must not be zero")
-        return this.id
-    }
-
-    valueForDebugging() {
         return this.id
     }
 

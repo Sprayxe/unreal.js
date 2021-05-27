@@ -7,7 +7,7 @@ import { FUniqueObjectGuid } from "../../objects/uobject/FUniqueObjectGuid";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { PropertyType } from "./PropertyType";
 import { UScriptStruct } from "./UScriptStruct";
-import { FGuid } from "../../objects/core/misc/Guid";
+import { EGuidFormats, FGuid } from "../../objects/core/misc/Guid";
 import { FText, FTextHistoryNone } from "../../objects/core/i18n/Text";
 import { ETextHistoryType } from "../enums/ETextHistoryType";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
@@ -653,7 +653,7 @@ export class LazyObjectProperty extends FProperty {
     }
 
     toJsonValue(): string {
-        return this.guid.guid.toString()
+        return this.guid.guid.toString(EGuidFormats.DigitsWithHyphens)
     }
 }
 

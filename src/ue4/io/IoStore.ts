@@ -301,7 +301,7 @@ export class FIoStoreTocResource {
         return this.chunkIds.findIndex(it => it.equals(chunkId))
     }
 
-    getOffsetAndLength(chunkId: FIoChunkId): any {
+    getOffsetAndLength(chunkId: FIoChunkId): FIoOffsetAndLength {
         const index = this.chunkIds.findIndex(it => it.equals(chunkId))
         return index >= 0 ? this.chunkOffsetLengths[index] : null
     }
@@ -374,7 +374,7 @@ export class FIoStoreReader {
         const firstBlockIndex = Math.floor(offset / compressionBlockSize)
         const lastBlockIndex = Math.floor((Utils.align(offset + length, compressionBlockSize) - 1) / compressionBlockSize)
         let offsetInBlock = offset % compressionBlockSize
-        const dst = Buffer.allocUnsafe(length)
+        const dst = Buffer.alloc(length)
         let dstOff = 0
         let remainingSize = length
         for (let blockIndex = firstBlockIndex; blockIndex <= lastBlockIndex; ++blockIndex) {
@@ -385,7 +385,7 @@ export class FIoStoreReader {
             }
             const uncompressedSize = compressionBlock.uncompressedSize
             if (threadBuffers.uncompressedBuffer == null || threadBuffers.uncompressedBuffer.length < uncompressedSize) {
-                threadBuffers.uncompressedBuffer = Buffer.allocUnsafe(uncompressedSize)
+                threadBuffers.uncompressedBuffer = Buffer.alloc(uncompressedSize)
             }
             const partitionIndex = 0//Math.floor(compressionBlock.offset / tocResource.header.partitionSize)
             const partitionOffset = Number(compressionBlock.offset % this.toc.header.partitionSize)
