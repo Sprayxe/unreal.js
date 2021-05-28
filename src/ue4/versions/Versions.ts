@@ -90,5 +90,6 @@ export const VER_UE4_26 = 519
 export const VER_UE4_NON_OUTER_PACKAGE_IMPORT = 520
 export const VER_UE4_ASSETREGISTRY_DEPENDENCYFLAGS = 521
 export const VER_UE4_CORRECT_LICENSEE_FLAG = 522
+export const VER_UE4_27 = 523
 // look for NEW_ENGINE_VERSION over the code to find places where version constants should be inserted.
 // LATEST_SUPPORTED_UE4_VERSION should be updated too.

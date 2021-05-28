@@ -6,12 +6,12 @@ export class Game {
         _.VER_UE4_10, _.VER_UE4_11, _.VER_UE4_12, _.VER_UE4_13, _.VER_UE4_14,
         _.VER_UE4_15, _.VER_UE4_16, _.VER_UE4_17, _.VER_UE4_18, _.VER_UE4_19,
         _.VER_UE4_20, _.VER_UE4_21, _.VER_UE4_22, _.VER_UE4_23, _.VER_UE4_24,
-        _.VER_UE4_25, _.VER_UE4_26
+        _.VER_UE4_25, _.VER_UE4_26, _.VER_UE4_27
     ]
 
     static GAME_UE4_BASE = 0x1000000
 
-    static LATEST_SUPPORTED_UE4_VERSION = 26
+    static LATEST_SUPPORTED_UE4_VERSION = 27
 
     static get GAME_VALORANT() {
         return this.GAME_UE4(22) + 1
@@ -66,6 +66,7 @@ export class Ue4Version {
     static GAME_UE4_24 = Game.GAME_UE4(24)
     static GAME_UE4_25 = Game.GAME_UE4(25)
     static GAME_UE4_26 = Game.GAME_UE4(26)
+    static GAME_UE4_27 = Game.GAME_UE4(27)
 
     static GAME_VALORANT = Game.GAME_VALORANT
 
