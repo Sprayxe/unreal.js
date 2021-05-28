@@ -69,7 +69,7 @@ export class FPackageStore extends FOnContainerMountedListener {
         for (const container of containersToLoad) {
             try {
                 const containerId = container.containerId
-                let loadedContainer = this.loadedContainers.find((v, k) => k.value() === containerId.value())
+                let loadedContainer = this.loadedContainers.get(containerId)
                 if (!loadedContainer) {
                     const cont = new FLoadedContainer()
                     this.loadedContainers.set(containerId, cont)

@@ -381,18 +381,18 @@ export class FIoStoreReader {
             const compressionBlock = this.toc.compressionBlocks[blockIndex]
             const rawSize = Utils.align(compressionBlock.compressedSize, Aes.BLOCK_SIZE)
             if (threadBuffers.compressedBuffer == null || threadBuffers.compressedBuffer.length < rawSize) {
-                threadBuffers.compressedBuffer = Buffer.allocUnsafe(rawSize)
+                threadBuffers.compressedBuffer = Buffer.alloc(rawSize)
             }
             const uncompressedSize = compressionBlock.uncompressedSize
             if (threadBuffers.uncompressedBuffer == null || threadBuffers.uncompressedBuffer.length < uncompressedSize) {
                 threadBuffers.uncompressedBuffer = Buffer.alloc(uncompressedSize)
             }
-            const partitionIndex = 0//Math.floor(compressionBlock.offset / tocResource.header.partitionSize)
+            const partitionIndex = Math.floor(Number(compressionBlock.offset / this.toc.header.partitionSize))
             const partitionOffset = Number(compressionBlock.offset % this.toc.header.partitionSize)
             const fileHandle = this.containerFileHandles[partitionIndex]
             fs.readSync(fileHandle, threadBuffers.compressedBuffer, 0, rawSize, partitionOffset)
             if (this.toc.header.containerFlags & EIoContainerFlags.Encrypted) {
-                Aes.decrypt(threadBuffers.compressedBuffer.subarray(0, rawSize), this.decryptionKey)
+                threadBuffers.compressedBuffer = Aes.decrypt(threadBuffers.compressedBuffer, this.decryptionKey)
             }
             let src: Buffer
             if (compressionBlock.compressionMethodIndex === 0) {

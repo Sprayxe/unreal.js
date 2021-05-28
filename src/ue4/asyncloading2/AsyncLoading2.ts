@@ -5,6 +5,8 @@ import { FPackageId } from "../objects/uobject/FPackageId";
 import { FIoContainerId } from "../io/IoContainerId";
 import { Pair } from "../../util/Pair";
 import { UnrealMap } from "../../util/UnrealMap";
+import { CityHash } from "../../util/CityHash";
+import Long from "long";
 
 export type FSourceToLocalizedPackageIdMap = Pair<FPackageId, FPackageId>[]
 export type FCulturePackageMap = UnrealMap<string, FSourceToLocalizedPackageIdMap>
@@ -122,29 +124,40 @@ export class FPackageStoreEntry {
 export const _INDEX_BITS = 62
 export const _INDEX_MASK = (1 << _INDEX_BITS) - 1
 export const _TYPE_SHIFT = _INDEX_BITS
-export const INVALID = ~0
+export const INVALID = Long.fromNumber(~0)
 export class FPackageObjectIndex {
-    private typeAndId = INVALID
+    private readonly typeAndId = INVALID
 
     constructor()
-    constructor(type: FPackageObjectIndex_EType, id: number)
+    constructor(type: FPackageObjectIndex_EType, id: Long.Long)
     constructor(Ar: FArchive)
     constructor(x?: any, y?: any) {
         if (x) {
             if (x instanceof FArchive) {
-                this.typeAndId = Number(x.readUInt64())
+                this.typeAndId = Long.fromString(x.readUInt64().toString())
             } else {
-                this.typeAndId = (Object.values(FPackageObjectIndex_EType)[x << TYPE_SHIFT] as number) | y
+                this.typeAndId = Long.fromNumber(Object.values(FPackageObjectIndex_EType)[x << TYPE_SHIFT] as number).or(y)
             }
         }
     }
 
-    static generateImportHashFromObjectPath(objectPath: string) {
-        return 0
+    static generateImportHashFromObjectPath(objectPath: string): Long.Long {
+        const fullImportPath = objectPath.split("")
+        fullImportPath.forEach((c, i) => {
+            if (c === "." || c === ":") {
+                fullImportPath[i] = "/"
+            } else {
+                fullImportPath[i] = c.toLowerCase()
+            }
+        })
+        const data = Buffer.from(fullImportPath.join(""), "utf16le")
+        let hash = CityHash.cityHash64(data, 0, data.length).toUnsigned()
+        hash = hash.and(Long.fromNumber(3).shiftLeft(62))
+        return hash
     }
 
     static fromExportIndex(index: number) {
-        return new FPackageObjectIndex(FPackageObjectIndex_EType.Export, index)
+        return new FPackageObjectIndex(FPackageObjectIndex_EType.Export, Long.fromNumber(index))
     }
 
     static fromScriptPath(scriptObjectPath: string) {
@@ -160,7 +173,7 @@ export class FPackageObjectIndex {
     }
 
     isExport() {
-        return (this.typeAndId >> _TYPE_SHIFT) === FPackageObjectIndex_EType.Export
+        return this.typeAndId.shiftRight(_TYPE_SHIFT).equals(FPackageObjectIndex_EType.Export)
     }
 
     isImport() {
@@ -168,11 +181,11 @@ export class FPackageObjectIndex {
     }
 
     isScriptImport() {
-        return (this.typeAndId >> _TYPE_SHIFT) === FPackageObjectIndex_EType.ScriptImport
+        return this.typeAndId.shiftRight(_TYPE_SHIFT).equals(FPackageObjectIndex_EType.ScriptImport)
     }
 
     isPackageImport() {
-        return (this.typeAndId >> _TYPE_SHIFT) === FPackageObjectIndex_EType.PackageImport
+        return this.typeAndId.shiftRight(_TYPE_SHIFT).equals(FPackageObjectIndex_EType.PackageImport)
     }
 
     toExport() {
@@ -182,11 +195,11 @@ export class FPackageObjectIndex {
     }
 
     type() {
-        return Object.values(FPackageObjectIndex_EType)[this.typeAndId >> TYPE_SHIFT] // custom
+        return Object.values(FPackageObjectIndex_EType)[this.typeAndId.shiftRight(TYPE_SHIFT).toNumber()] // custom
     }
 
     value() {
-        return this.typeAndId & _INDEX_MASK
+        return this.typeAndId.and(_INDEX_MASK)
     }
 
     equals(other?: any): Boolean {
@@ -195,7 +208,7 @@ export class FPackageObjectIndex {
 
         other as FPackageObjectIndex
 
-        return this.typeAndId === other.typeAndId;
+        return this.typeAndId.equals(other.typeAndId)
     }
 
     hashCode() {
@@ -242,7 +255,11 @@ export class FContainerHeader {
         this.packageIds = Ar.readArray(() => new FPackageId(Ar))
         const storeEntriesNum = Ar.readInt32()
         const storeEntriesEnd = Ar.pos + storeEntriesNum
-        this.storeEntries = Utils.getArray(this.packageCount, () => [Ar], FPackageStoreEntry)
+        this.storeEntries = []
+        for (let i = 0; i < this.packageCount; ++i) {
+            this.storeEntries.push(new FPackageStoreEntry(Ar))
+        }
+        //this.storeEntries = Utils.getArray(this.packageCount, () => [Ar], FPackageStoreEntry)
         Ar.pos = storeEntriesEnd
         this.culturePackageMap = Ar.readTMap(null, () => {
             return {
@@ -332,12 +349,12 @@ export class FExportBundleEntry {
 
     constructor(Ar: FArchive) {
         this.localExportIndex = Ar.readInt32()
-        this.commandType = Object.values(EExportCommandType)[Ar.readInt32()]
+        this.commandType = Object.values(EExportCommandType)[Ar.readInt32()] as number
     }
 }
 
 export enum EExportCommandType {
-    ExportCommandType_Create = "ExportCommandType_Create",
-    ExportCommandType_Serialize = "ExportCommandType_Serialize",
-    ExportCommandType_Count = "ExportCommandType_Count"
+    ExportCommandType_Create,
+    ExportCommandType_Serialize,
+    ExportCommandType_Count
 }

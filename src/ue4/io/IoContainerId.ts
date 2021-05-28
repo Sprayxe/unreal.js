@@ -8,10 +8,12 @@ export class FIoContainerId {
 
     id = FIoContainerId.InvalidId
 
+    constructor()
     constructor(id: string)
     constructor(Ar: FArchive)
     constructor(x?: any) {
-        this.id = x instanceof FArchive ? x.readUInt64().toString() : x
+        if (x)
+            this.id = x instanceof FArchive ? x.readUInt64().toString() : x
     }
 
     value() {

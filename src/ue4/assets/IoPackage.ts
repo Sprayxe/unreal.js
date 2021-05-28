@@ -150,7 +150,7 @@ export class IoPackage extends Package {
             return null
 
         if (index.isExport()) {
-            return new ResolvedExportObject(index.toExport(), this)
+            return new ResolvedExportObject(index.toExport().toNumber(), this)
         } else if (index.isScriptImport()) {
             const ent = this.globalPackageStore.scriptObjectEntriesMap.get(index)
             if (ent) return new ResolvedScriptImport(ent, this)

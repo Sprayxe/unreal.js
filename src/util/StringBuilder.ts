@@ -1,7 +1,8 @@
+// this is a mess
 export class StringBuilder {
 	value: any[] = []
 
-	constructor(value: string | number = "") {
+	constructor(value: any = "") {
 		if (typeof value === "number") {
 			this.value = new Array(value)
 		} else {
