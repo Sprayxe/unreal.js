@@ -164,7 +164,7 @@ export class FPackageStore extends FOnContainerMountedListener {
 
 export class FLoadedContainer {
     containerNameMap = new FNameMap()
-    storeEntries: FPackageStoreEntry[]
+    storeEntries: FPackageStoreEntry[] = []
     packageCount = 0
     order = 0
     bValid = false

@@ -1,7 +1,8 @@
 import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
+import { IStructType } from "../../../assets/objects/UScriptStruct";
 
-export class FDateTime {
+export class FDateTime implements IStructType {
     date: number = 0
 
     constructor()
@@ -21,5 +22,9 @@ export class FDateTime {
 
     toDate() {
         return new Date(this.date)
+    }
+
+    toJson(): any {
+        return this.date
     }
 }

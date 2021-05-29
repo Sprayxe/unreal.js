@@ -3,8 +3,9 @@
  */
 import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
+import { IStructType } from "../../../assets/objects/UScriptStruct";
 
-export class FVector2D {
+export class FVector2D implements IStructType {
     /** Vector's X component. */
     public x: number
     /** Vector's Y component. */
@@ -51,5 +52,12 @@ export class FVector2D {
 
     toString() {
         return `X=${this.x.toLocaleString()} Y=${this.y.toLocaleString()}`
+    }
+
+    toJson(): any {
+        return {
+            x: this.x,
+            y: this.y
+        }
     }
 }

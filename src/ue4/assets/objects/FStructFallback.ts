@@ -36,9 +36,9 @@ export class FStructFallback extends IPropertyHolder {
                 const structClass = y?.value
                 if (structClass == null)
                     throw MissingSchemaException(`Unknown struct ${z}`)
-                this.properties = deserializeUnversionedProperties(this.properties, structClass, Ar)
+                deserializeUnversionedProperties(this.properties, structClass, Ar)
             } else {
-                this.properties = deserializeVersionedTaggedProperties(this.properties, Ar)
+                deserializeVersionedTaggedProperties(this.properties, Ar)
             }
         }
     }
@@ -65,5 +65,11 @@ export class FStructFallback extends IPropertyHolder {
         if (val == null)
             throw new TypeError(`${name} must not be null.`)
         return val as T
+    }
+
+    toJson(): any {
+        const obj = {}
+        this.properties.forEach((it) => obj[it.name.text] = it.prop?.toJsonValue())
+        return obj
     }
 }

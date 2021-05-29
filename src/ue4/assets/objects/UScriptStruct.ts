@@ -15,7 +15,7 @@ import { FStructFallback } from "./FStructFallback";
 
 export class UScriptStruct {
     structName: FName
-    structType: any
+    structType: IStructType
 
     constructor(Ar: FAssetArchive, typeData: PropertyType, type: ReadType)
     constructor(structName: FName, structType: any)
@@ -130,4 +130,8 @@ export class UScriptStruct {
             this.structType = y
         }
     }
+}
+
+export interface IStructType {
+    toJson(): any
 }

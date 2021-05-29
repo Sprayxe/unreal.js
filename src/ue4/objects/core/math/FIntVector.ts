@@ -1,7 +1,8 @@
 import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
+import { IStructType } from "../../../assets/objects/UScriptStruct";
 
-export class FIntVector {
+export class FIntVector implements IStructType {
     public x: number
     public y: number
     public z: number
@@ -24,5 +25,13 @@ export class FIntVector {
         Ar.writeInt32(this.x)
         Ar.writeInt32(this.y)
         Ar.writeInt32(this.z)
+    }
+
+    toJson(): any {
+        return {
+            x: this.x,
+            y: this.y,
+            z: this.z
+        }
     }
 }

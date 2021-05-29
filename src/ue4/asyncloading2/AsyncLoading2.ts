@@ -259,7 +259,6 @@ export class FContainerHeader {
         for (let i = 0; i < this.packageCount; ++i) {
             this.storeEntries.push(new FPackageStoreEntry(Ar))
         }
-        //this.storeEntries = Utils.getArray(this.packageCount, () => [Ar], FPackageStoreEntry)
         Ar.pos = storeEntriesEnd
         this.culturePackageMap = Ar.readTMap(null, () => {
             return {

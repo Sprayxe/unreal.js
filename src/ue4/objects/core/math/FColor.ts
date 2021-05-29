@@ -2,8 +2,9 @@ import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 import { sprintf } from "sprintf-js";
 import { Utils } from "../../../../util/Utils";
+import { IStructType } from "../../../assets/objects/UScriptStruct"
 
-export class FLinearColor {
+export class FLinearColor implements IStructType {
     public r: number
     public g: number
     public b: number
@@ -75,6 +76,15 @@ export class FLinearColor {
     toString() {
         return `(R=${this.r},G=${this.g},B=${this.b},A=${this.a})`
     }
+
+    toJson(): any {
+        return {
+            r: this.r,
+            g: this.g,
+            b: this.b,
+            a: this.a
+        }
+    }
 }
 
 /**
@@ -83,7 +93,7 @@ export class FLinearColor {
  * Note: Linear color values should always be converted to gamma space before stored in an FColor, as 8 bits of precision is not enough to store linear space colors!
  * This can be done with FLinearColor.toFColor(true)
  */
-export class FColor {
+export class FColor implements IStructType {
     public r: number
     public g: number
     public b: number
@@ -164,5 +174,14 @@ export class FColor {
      */
     toPackedBGRA() {
         return (this.b << 24) | (this.r << 16) | (this.r << 8) | (this.b << 0)
+    }
+
+    toJson() {
+        return {
+            r: this.r,
+            g: this.g,
+            b: this.b,
+            a: this.a
+        }
     }
 }

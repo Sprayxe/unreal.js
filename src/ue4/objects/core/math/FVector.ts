@@ -6,10 +6,11 @@ import { FIntVector } from "./FIntVector";
 import { FIntPoint } from "./FIntPoint";
 import { KINDA_SMALL_NUMBER } from "../../../../util/Const";
 import { square } from "./UnrealMathUtility";
+import { IStructType } from "../../../assets/objects/UScriptStruct";
 
 /** Allowed error for a normalized vector (against squared magnitude) */
 const THRESH_VECTOR_NORMALIZED = 0.01
-export class FVector {
+export class FVector implements IStructType {
     /** Vector's X component. */
     public x: number
     /** Vector's Y component. */
@@ -118,6 +119,14 @@ export class FVector {
             this.x = arg1.x
             this.y = arg2
             this.z = arg3
+        }
+    }
+
+    toJson(): any {
+        return {
+            x: this.x,
+            y: this.y,
+            z: this.z
         }
     }
 

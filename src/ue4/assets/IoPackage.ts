@@ -153,7 +153,7 @@ export class IoPackage extends Package {
             return new ResolvedExportObject(index.toExport().toNumber(), this)
         } else if (index.isScriptImport()) {
             const ent = this.globalPackageStore.scriptObjectEntriesMap.get(index)
-            if (ent) return new ResolvedScriptImport(ent, this)
+            if (ent) return new ResolvedScriptObject(ent, this)
         } else if (index.isPackageImport()) {
             for (const pkg of this.importedPackages) {
                 pkg?.exportMap?.forEach((exportMapEntry, exportIndex) => {
@@ -277,7 +277,7 @@ export class ResolvedExportObject extends ResolvedObject {
     getObject() { return this.exportObject }
 }
 
-export class ResolvedScriptImport extends ResolvedObject {
+export class ResolvedScriptObject extends ResolvedObject {
     scriptImport: FScriptObjectEntry
 
     constructor(scriptImport: FScriptObjectEntry, pkg: IoPackage) {

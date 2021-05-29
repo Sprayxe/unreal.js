@@ -18,6 +18,7 @@ import { Utils } from "../../util/Utils"
 import { GameFile } from "../pak/GameFile";
 import { FIoDirectoryIndexReader } from "./IoDirectoryIndex";
 import { FPackageId } from "../objects/uobject/FPackageId";
+import { Lazy } from "../../util/Lazy";
 
 /**
  * I/O store container format version
@@ -274,15 +275,17 @@ export class FIoStoreTocResource {
             tocBuffer.pos += this.header.tocCompressedBlockEntryCount * 20
 
             // You could verify hashes here but nah
-        } else {
+        }/* else {
             this.chunkBlockSignatures = []
-        }
+        }*/
 
         // Directory index
         if (readOptions & EIoStoreTocReadOptions.ReadDirectoryIndex
             && this.header.containerFlags & EIoContainerFlags.Indexed
             && this.header.directoryIndexSize > 0) {
             this.directoryIndexBuffer = tocBuffer.readBuffer(this.header.directoryIndexSize)
+        } else {
+            tocBuffer.pos += this.header.directoryIndexSize
         }
 
         // Meta
@@ -311,7 +314,11 @@ export class FIoStoreReader {
     private toc = new FIoStoreTocResource()
     private decryptionKey?: Buffer = null
     private containerFileHandles: number[]
-    directoryIndexReader?: FIoDirectoryIndexReader = null
+    directoryIndexReader: Lazy<FIoDirectoryIndexReader> = new Lazy<FIoDirectoryIndexReader>(() => {
+        const out = new FIoDirectoryIndexReader(this.toc.directoryIndexBuffer, this.decryptionKey)
+        this.toc.directoryIndexBuffer = null
+        return out
+    })
     /*private threadBuffers = object : ThreadLocal<FThreadBuffers>() {
         override fun initialValue() = FThreadBuffers()
     }*/
@@ -345,10 +352,6 @@ export class FIoStoreReader {
             this.decryptionKey = findKey
         }
 
-        if ((this.toc.header.containerFlags & EIoContainerFlags.Indexed) && this.toc.directoryIndexBuffer) {
-            this.directoryIndexReader = new FIoDirectoryIndexReader(this.toc.directoryIndexBuffer, this.decryptionKey)
-        }
-
         console.log("IoStore \"%s\": %d %s, version %d",
             environment.path,
             this.toc.header.tocEntryCount,
@@ -366,7 +369,6 @@ export class FIoStoreReader {
         const offsetAndLength = this.toc.getOffsetAndLength(chunkId)
         if (!offsetAndLength)
             throw new Error("Unknown chunk ID")
-
         const offset = Number(offsetAndLength.offset)
         const length = Number(offsetAndLength.length)
         const threadBuffers = new FThreadBuffers()
@@ -417,7 +419,7 @@ export class FIoStoreReader {
 
     getFiles(): GameFile[] {
         const files = new Array<GameFile>()
-        this.directoryIndexReader?.iterateDirectoryIndex(
+        this.directoryIndexReader.value.iterateDirectoryIndex(
             FIoDirectoryIndexHandle.rootDirectory(),
             "",
             (filename, tocEntryIndex) => {

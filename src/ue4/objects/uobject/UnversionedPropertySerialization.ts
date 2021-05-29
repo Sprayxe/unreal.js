@@ -262,6 +262,4 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
             }
         }
     }
-
-    return properties
 }

@@ -1,7 +1,8 @@
 import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
+import { IStructType } from "../../../assets/objects/UScriptStruct";
 
-export class FIntPoint {
+export class FIntPoint implements IStructType {
     public x: number
     public y: number
 
@@ -24,5 +25,12 @@ export class FIntPoint {
 
     toString() {
         return `X=${this.x} Y=${this.y}`
+    }
+
+    toJson(): any {
+        return {
+            x: this.x,
+            y: this.y
+        }
     }
 }

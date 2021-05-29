@@ -460,7 +460,9 @@ export class ArrayProperty extends FProperty {
     }
 
     toJsonValue(): any[] {
-        return this.array.contents.map(c => c.toJsonValue())
+        return this.array.contents
+            .map(c => c.toJsonValue())
+            .filter(c => c != null)
     }
 }
 
@@ -499,7 +501,7 @@ export class ClassProperty extends FProperty {
     }
 
     toJsonValue(): any {
-        return this.index.load()?.toJson() || null
+        return null // TODO load the object
     }
 }
 
@@ -710,7 +712,7 @@ export class ObjectProperty extends FProperty {
     }
 
     toJsonValue(): any {
-        return this.index.load()?.toJson() || null
+        return null // TODO load the object
     }
 }
 
@@ -741,7 +743,7 @@ export class SoftClassProperty extends FProperty {
     toJsonValue(): any {
         return {
             assetPathName: this.object.assetPathName.text,
-            subPathString: this.object.subPathString,
+            subPathString: this.object.subPathString
         }
     }
 }
@@ -757,7 +759,7 @@ export class SoftObjectProperty extends FProperty {
     toJsonValue(): any {
         return {
             assetPathName: this.object.assetPathName.text,
-            subPathString: this.object.subPathString,
+            subPathString: this.object.subPathString
         }
     }
 }
@@ -784,7 +786,7 @@ export class StructProperty extends FProperty {
     }
 
     toJsonValue(): string {
-        return this.struct.structName.text
+        return this.struct.structType.toJson()
     }
 }
 
@@ -849,7 +851,7 @@ export class WeakObjectProperty extends FProperty {
     }
 
     toJsonValue() {
-        return this.index.load()?.toJson() || null
+        return null
     }
 }
 

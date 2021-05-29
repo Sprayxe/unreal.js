@@ -27,11 +27,11 @@ export class UUserDefinedStruct extends UScriptStruct {
             return
         if (false && this.Status === EUserDefinedStructureStatus.UDSS_UpToDate) {
             // UScriptStruct::SerializeItem
-            let defaultProperties: FPropertyTag[] = [] // TODO should we save this?
+            const defaultProperties: FPropertyTag[] = [] // TODO should we save this?
             if (Ar.useUnversionedPropertySerialization) {
-                defaultProperties = deserializeUnversionedProperties(defaultProperties, this, Ar)
+                deserializeUnversionedProperties(defaultProperties, this, Ar)
             } else {
-                defaultProperties = deserializeVersionedTaggedProperties(defaultProperties, Ar)
+                deserializeVersionedTaggedProperties(defaultProperties, Ar)
             }
         }
     }

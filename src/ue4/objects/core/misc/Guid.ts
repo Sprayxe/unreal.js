@@ -1,6 +1,7 @@
 import { FArchive } from "../../../reader/FArchive";
 import { sprintf } from "sprintf-js";
 import { Utils } from "../../../../util/Utils";
+import { IStructType } from "../../../assets/objects/UScriptStruct";
 
 // tslint:disable:no-bitwise
 
@@ -65,7 +66,7 @@ export enum EGuidFormats {
     Base36Encoded = "Base36Encoded"
 }
 
-export class FGuid {
+export class FGuid implements IStructType {
     static mainGuid = new FGuid()
 
     /** Holds the first component. */
@@ -237,6 +238,10 @@ export class FGuid {
                 this.d
             )
         }
+    }
+
+    toJson(): any {
+        return this.toString(EGuidFormats.DigitsWithHyphens)
     }
 
     hashCode(): number {

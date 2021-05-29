@@ -2,8 +2,9 @@ import { FVector } from "./FVector";
 import { FVector2D } from "./FVector2D";
 import { FArchive } from "../../../reader/FArchive";
 import { FLinearColor } from "./FColor";
+import { IStructType } from "../../../assets/objects/UScriptStruct";
 
-export class FVector4 {
+export class FVector4 implements IStructType {
     /** The vector's X-component. */
     public x: number
 
@@ -90,6 +91,15 @@ export class FVector4 {
             this.y = 0.0
             this.z = 0.0
             this.w = 0.0
+        }
+    }
+
+    toJson(): any {
+        return {
+            x: this.x,
+            y: this.y,
+            z: this.z,
+            w: this.w
         }
     }
 }

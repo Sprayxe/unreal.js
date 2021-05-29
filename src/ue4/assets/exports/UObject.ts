@@ -66,9 +66,9 @@ export class UObject extends IPropertyHolder {
         if (typeof((this as any).interfaces) === "undefined") {
             if (Ar.useUnversionedPropertySerialization) {
                 if (this.clazz == null) throw ParserException("Found unversioned properties but object does not have a class.");
-                this.properties = deserializeUnversionedProperties(this.properties, this.clazz, Ar)
+                deserializeUnversionedProperties(this.properties, this.clazz, Ar)
             } else {
-                this.properties = deserializeVersionedTaggedProperties(this.properties, Ar)
+                deserializeVersionedTaggedProperties(this.properties, Ar)
             }
         }
         if (Ar.pos + 4 <= validPos && Ar.readBoolean() && Ar.pos + 16 <= validPos)
@@ -157,7 +157,6 @@ export function deserializeVersionedTaggedProperties(properties: FPropertyTag[],
             break
         properties.push(tag)
     }
-    return properties
 }
 
 export function serializeProperties(Ar: FAssetArchiveWriter, properties: FPropertyTag[]) {
