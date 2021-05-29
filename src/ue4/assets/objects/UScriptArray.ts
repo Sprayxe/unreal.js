@@ -22,7 +22,7 @@ export class UScriptArray {
             for (let i = 0; i < elementCount; ++i) {
                 const content = FProperty.readPropertyValue(x, this.innerTag?.typeData || innerType, ReadType.ARRAY)
                 if (content)
-                    this.contents.push(content)
+                    this.contents[i] = content
                 else
                     console.warn(`Failed to read array content of type ${innerType} at ${x.pos}, index ${i}`)
             }

@@ -462,7 +462,6 @@ export class ArrayProperty extends FProperty {
     toJsonValue(): any[] {
         return this.array.contents
             .map(c => c.toJsonValue())
-            .filter(c => c != null)
     }
 }
 
