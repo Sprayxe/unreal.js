@@ -11,7 +11,7 @@ import { deserializeUnversionedProperties } from "../../objects/uobject/Unversio
 import { Locres } from "../../locres/Locres";
 import { StringBuilder } from "../../../util/StringBuilder";
 
-export class UObject extends IPropertyHolder {
+export class UObject implements IPropertyHolder {
     name: string = ""
     outer: UObject = null
     clazz: any = null
@@ -36,7 +36,6 @@ export class UObject extends IPropertyHolder {
     }
 
     constructor(properties: FPropertyTag[] = []) {
-        super()
         this.properties = properties
     }
 

@@ -9,13 +9,15 @@ import { UScriptStruct } from "../exports/UScriptStruct";
 import { deserializeUnversionedProperties } from "../../objects/uobject/UnversionedPropertySerialization";
 import { deserializeVersionedTaggedProperties } from "../exports/UObject";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
+import { IStructType } from "./UScriptStruct";
 
-export class FStructFallback extends IPropertyHolder {
+export class FStructFallback implements IStructType, IPropertyHolder {
+    public properties: FPropertyTag[] = []
+
     constructor(Ar: FAssetArchive, struct: Lazy<UStruct>, structName: FName)
     constructor(Ar: FAssetArchive, structName: FName)
     constructor(properties: FPropertyTag[])
     constructor(x: any, y?: any, z?: any) {
-        super()
         if (Array.isArray(x)) {
             this.properties = x
         } else if (x instanceof FAssetArchive && z == null) {
