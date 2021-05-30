@@ -29,6 +29,7 @@ import { FExportArchive } from "./reader/FExportArchive";
 import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { Locres } from "../locres/Locres";
 import { GSuppressMissingSchemaErrors } from "../../Globals";
+import { UnrealArray } from "../../util/UnrealArray";
 
 export class IoPackage extends Package {
     packageId: FPackageId
@@ -74,19 +75,19 @@ export class IoPackage extends Package {
         Ar.pos = this.summary.importMapOffset
         const importMapSize = this.summary.exportMapOffset - this.summary.importMapOffset
         const importCount = importMapSize / 8
-        this.importMap = Utils.getArray(importCount, () => [Ar], FPackageObjectIndex)
+        this.importMap = new UnrealArray(importCount, () => new FPackageObjectIndex(Ar))
 
         // Export map
         Ar.pos = this.summary.exportMapOffset
         const exportCount = storeEntry.exportCount
-        this.exportMap = Utils.getArray(exportCount, () => [Ar], FExportMapEntry)
+        this.exportMap = new UnrealArray(exportCount, () => new FExportMapEntry(Ar))
         this.exportsLazy = new Array<UObject>(exportCount)
 
         // Export bundles
         Ar.pos = this.summary.exportBundlesOffset
         const exportBundleCount = storeEntry.exportBundleCount
-        this.exportBundleHeaders = Utils.getArray(exportBundleCount, () => [Ar], FExportBundleHeader)
-        this.exportBundleEntries = Utils.getArray(exportCount * 2, () => [Ar], FExportBundleEntry)
+        this.exportBundleHeaders = new UnrealArray(exportBundleCount, () => new FExportBundleHeader(Ar))
+        this.exportBundleEntries = new UnrealArray(exportCount * 2, () => new FExportBundleEntry(Ar))
 
         // Graph data
         Ar.pos = this.summary.graphDataOffset
@@ -299,7 +300,7 @@ export class ResolvedScriptObject extends ResolvedObject {
             }
             const enm = new UEnum()
             enm.name = name.text
-            enm.names = Utils.getArray(enumValues.length, (it) => [FName.dummy(`${name}::${enumValues[it]}`, 0), it], Pair)
+            enm.names = new UnrealArray(enumValues.length, (it) => new Pair<FName, number>(FName.dummy(`${name}::${enumValues[it]}`), it))
             return enm
         } else {
             let struct = this.pkg.provider?.mappingsProvider?.getStruct(name)

@@ -7,6 +7,7 @@ import { Pair } from "../../util/Pair";
 import { UnrealMap } from "../../util/UnrealMap";
 import { CityHash } from "../../util/CityHash";
 import Long from "long";
+import { UnrealArray } from "../../util/UnrealArray";
 
 export type FSourceToLocalizedPackageIdMap = Pair<FPackageId, FPackageId>[]
 export type FCulturePackageMap = UnrealMap<string, FSourceToLocalizedPackageIdMap>
@@ -114,7 +115,7 @@ export class FPackageStoreEntry {
         }
         const continuePos = Ar.pos
         Ar.pos = initialPos + offsetToDataFromThis
-        const result = Utils.getArray(arrayNum, () => [init(Ar)])
+        const result = new UnrealArray(arrayNum, () => init(Ar))
         Ar.pos = continuePos
         return result
     }

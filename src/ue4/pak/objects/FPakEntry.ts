@@ -5,6 +5,7 @@ import { Utils } from "../../../util/Utils";
 import { Aes } from "../../../encryption/aes/Aes";
 import { FArchive } from "../../reader/FArchive";
 import { EPakVersion } from "../enums/PakVersion";
+import { UnrealArray } from "../../../util/UnrealArray";
 
 export class FPakEntry {
     name: string
@@ -79,7 +80,7 @@ export class FPakEntry {
         // passed in entry.
         const compressionBlocksCount = (value >> 6) & 0xffff
 
-        compressionBlocks = Utils.getArray(compressionBlocksCount, () => [0, 0], FPakCompressedBlock)
+        compressionBlocks = new UnrealArray(compressionBlocksCount, () => new FPakCompressedBlock())
 
         // Filter the compression block size or use the UncompressedSize if less that 64k.
         compressionBlockSize = 0

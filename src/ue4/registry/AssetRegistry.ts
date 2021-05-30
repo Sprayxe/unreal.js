@@ -8,6 +8,7 @@ import { FAssetData } from "./objects/FAssetData";
 import { FDependsNode } from "./objects/FDependsNode";
 import { FAssetPackageData } from "./objects/FAssetPackageData";
 import { Utils } from "../../util/Utils";
+import { UnrealArray } from "../../util/UnrealArray";
 
 export class AssetRegistry {
     preallocatedAssetDataBuffer: FAssetData[]
@@ -36,14 +37,14 @@ export class AssetRegistry {
 
         if (version.version <= Type.AddedDependencyFlags) {
             const localNumDependsNodes = Ar.readInt32()
-            this.preallocatedDependsNodeDataBuffer = Utils.getArray(localNumDependsNodes, () => [], FDependsNode)
+            this.preallocatedDependsNodeDataBuffer = new UnrealArray(localNumDependsNodes, () => new FDependsNode())
             if (localNumDependsNodes > 0)
                 this.loadDependenciesBeforeFlags(Ar, version)
         } else {
             const dependencySectionSize = Number(Ar.readInt64())
             const dependencySectionEnd = Ar.pos + dependencySectionSize
             const localNumDependsNodes = Ar.readInt32()
-            this.preallocatedDependsNodeDataBuffer = Utils.getArray(localNumDependsNodes, () => [], FDependsNode)
+            this.preallocatedDependsNodeDataBuffer = new UnrealArray(localNumDependsNodes, () => new FDependsNode())
             if (localNumDependsNodes > 0)
                 this.loadDependencies(Ar)
             Ar.pos = dependencySectionEnd

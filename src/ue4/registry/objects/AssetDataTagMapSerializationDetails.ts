@@ -11,6 +11,7 @@ import { FNameEntryId } from "../../objects/uobject/NameTypes";
 import { FAssetRegistryReader } from "../reader/AssetRegistryArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { Utils } from "../../../util/Utils";
+import { UnrealArray } from "../../../util/UnrealArray";
 
 export const OLD_BEGIN_MAGIC = 0x12345678
 export const BEGIN_MAGIC = 0x12345679
@@ -29,29 +30,29 @@ export class FStore {
         if (!order)
             throw ParserException("Bad init magic")
 
-        const nums = Utils.getArray(11, () => [Ar.readInt32()])
+        const nums = new UnrealArray(11, () => Ar.readInt32())
 
         if (order === ELoadOrder.TextFirst) {
             const textDataBytes = Ar.readUInt32()
-            this.texts = Utils.getArray(nums[4], () => [Ar.readString()])
+            this.texts = new UnrealArray(nums[4], () => Ar.readString())
         }
 
-        this.numberlessNames = Utils.getArray(nums[0], () => [Ar], FNameEntryId)
-        this.names = Utils.getArray(nums[1], () => [Ar.readFName()])
-        this.numberlessExportPaths = Utils.getArray(nums[2], () => [Ar, this.nameMap], FNumberlessExportPath)
-        this.exportPaths = Utils.getArray(nums[3], () => [Ar], FAssetRegistryExportPath)
+        this.numberlessNames = new UnrealArray(nums[0], () => new FNameEntryId(Ar))
+        this.names = new UnrealArray(nums[1], () => Ar.readFName())
+        this.numberlessExportPaths = new UnrealArray(nums[2], () => new FNumberlessExportPath(Ar, this.nameMap))
+        this.exportPaths = new UnrealArray(nums[3], () => new FAssetRegistryExportPath(Ar))
 
         if (order === ELoadOrder.Member) {
-            this.texts = Utils.getArray(nums[4], () => [Ar.readString()])
+            this.texts = new UnrealArray(nums[4], () => Ar.readString())
         }
 
-        this.ansiStringOffsets = Utils.getArray(nums[5], () => [Ar.readUInt32()])
-        this.wideStringOffsets = Utils.getArray(nums[6], () => [Ar.readUInt32()])
+        this.ansiStringOffsets = new UnrealArray(nums[5], () => Ar.readUInt32())
+        this.wideStringOffsets = new UnrealArray(nums[6], () => Ar.readUInt32())
         this.ansiStrings = Ar.readBuffer(nums[7])
         this.wideStrings = Ar.wrappedAr.readBuffer(nums[8] * 2)
 
-        this.numberlessPairs = Utils.getArray(nums[9], () => [Ar], FNumberlessPair)
-        this.pairs = Utils.getArray(nums[10], () => [Ar], FNumberedPair)
+        this.numberlessPairs = new UnrealArray(nums[9], () => new FNumberlessPair(Ar))
+        this.pairs = new UnrealArray(nums[10], () => new FNumberedPair(Ar))
 
         if (Ar.readUInt32() !== END_MAGIC)
             throw new Error("Bytes did not match 'END_MAGIC' at end")

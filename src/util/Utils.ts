@@ -39,15 +39,6 @@ export class Utils {
         return value + alignment & ~(alignment - 1)
     }
 
-    static getArray(max: number, values: (i: number) => any[], clazz: any = null) {
-        if (max < 0) return []
-        const array = new Array(max)
-        for (let n = 0; n < max; ++n) {
-            array[n] = clazz ? new clazz(...values(n)) : values(n)[0]
-        }
-        return array
-    }
-
     static repeat(times: number, action: (n: number) => void) {
         let x = 0
         while (x < times) {

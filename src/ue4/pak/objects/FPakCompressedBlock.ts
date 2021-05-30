@@ -1,8 +1,23 @@
-export class FPakCompressedBlock {
-    compressedStart = 0
-    compressedEnd = 0
+import { FArchive } from "../../reader/FArchive";
+import { FArchiveWriter } from "../../writer/FArchiveWriter";
 
-    serialize(Ar: any) {
+export class FPakCompressedBlock {
+    public compressedStart: number
+    public compressedEnd: number
+
+    constructor(Ar: FArchive)
+    constructor(compressedStart: number, compressedEnd: number)
+    constructor(x: any, y?: any) {
+        if (x instanceof FArchive) {
+            this.compressedStart = Number(x.readInt64())
+            this.compressedEnd = Number(x.readInt64())
+        } else {
+            this.compressedStart = x
+            this.compressedEnd = y
+        }
+    }
+
+    serialize(Ar: FArchiveWriter) {
         Ar.writeInt64(this.compressedStart)
         Ar.writeInt64(this.compressedEnd)
     }

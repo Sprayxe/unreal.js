@@ -3,6 +3,7 @@ import { FName } from "../objects/uobject/FName";
 import { UnrealMap } from "../../util/UnrealMap";
 import { Game } from "../versions/Game";
 
+// lol fix this, its shit lmfaoo
 export abstract class FArchiveWriter {
     game = Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
     ver = Game.GAME_UE4_GET_AR_VER(this.game)
