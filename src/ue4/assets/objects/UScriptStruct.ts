@@ -28,6 +28,16 @@ import { FLevelSequenceObjectReferenceMap } from "../../objects/levelsequence/FL
 import { FMovieSceneEvaluationKey } from "../../objects/moviescene/evaluation/FMovieSceneEvaluationKey";
 import { FMovieSceneEvaluationTemplate } from "../../objects/moviescene/evaluation/FMovieSceneEvaluationTemplate";
 import { FMovieSceneFrameRange } from "../../objects/moviescene/FMovieSceneFrameRange";
+import { FMovieSceneSegment } from "../../objects/moviescene/evaluation/FMovieSceneSegment";
+import { FNavAgentSelector } from "../../objects/ai/navigation/FNavAgentSelector";
+import { FNiagaraVariable } from "../../objects/niagara/FNiagaraVariable";
+import { FNiagaraVariableBase } from "../../objects/niagara/FNiagaraVariableBase";
+import { FNiagaraVariableWithOffset } from "../../objects/niagara/FNiagaraVariableWithOffset";
+import { FPerPlatformBool, FPerPlatformFloat, FPerPlatformInt } from "../../objects/engine/PerPlatformProperties";
+import { FQuat } from "../../objects/core/math/FQuat";
+import { FRotator } from "../../objects/core/math/FRotator";
+import { FSmartName } from "../../objects/engine/animation/FSmartName";
+import { FWeightedRandomSampler } from "../../objects/engine/FWeightedRandomSampler";
 
 export class UScriptStruct {
     structName: FName
@@ -93,7 +103,8 @@ export class UScriptStruct {
                 case "MovieSceneFrameRange":
                     this.structType = new FMovieSceneFrameRange(x)
                     break
-                case "MovieSceneSegment": // TODO FMovieSceneSegment
+                case "MovieSceneSegment":
+                    this.structType = new FMovieSceneSegment(x)
                     break
                 case "MovieSceneSegmentIdentifier":
                     this.structType = new FFrameNumber(x)
@@ -104,25 +115,34 @@ export class UScriptStruct {
                 case "MovieSceneTrackIdentifier":
                     this.structType = new FFrameNumber(x)
                     break
-                case "NavAgentSelector": // TODO FNavAgentSelector
+                case "NavAgentSelector":
+                    this.structType = new FNavAgentSelector(x)
                     break
-                case "NiagaraVariable": // TODO FNiagaraVariable
+                case "NiagaraVariable":
+                    this.structType = new FNiagaraVariable(x)
                     break
-                case "NiagaraVariableBase": // TODO FNiagaraVariableBase
+                case "NiagaraVariableBase":
+                    this.structType = new FNiagaraVariableBase(x)
                     break
-                case "NiagaraVariableWithOffset": // TODO FNiagaraVariableWithOffset
+                case "NiagaraVariableWithOffset":
+                    this.structType = new FNiagaraVariableWithOffset(x)
                     break
-                case "PerPlatformBool": // TODO FPerPlatformBool
+                case "PerPlatformBool":
+                    this.structType = new FPerPlatformBool(x)
                     break
-                case "PerPlatformFloat": // TODO FPerPlatformFloat
+                case "PerPlatformFloat":
+                    this.structType = new FPerPlatformFloat(x)
                     break
-                case "PerPlatformInt": // TODO FPerPlatformInt
+                case "PerPlatformInt":
+                    this.structType = new FPerPlatformInt(x)
                     break
-                case "Quat": // TODO FQuat
+                case "Quat":
+                    this.structType = new FQuat(x)
                     break
                 case "RichCurveKey": // TODO FRichCurveKey
                     break
-                case "Rotator": // TODO FRotator
+                case "Rotator":
+                    this.structType = z !== ReadType.ZERO ? new FRotator(x) : new FRotator()
                     break
                 case "ScalarMaterialInput":
                     this.structType = new FScalarMaterialInput(x)
@@ -131,9 +151,11 @@ export class UScriptStruct {
                     break
                 case "SimpleCurveKey": // TODO FSimpleCurveKey
                     break
-                case "SkeletalMeshSamplingLODBuiltData": // TODO FSkeletalMeshSamplingLODBuiltData
+                case "SkeletalMeshSamplingLODBuiltData":
+                    this.structType = new FWeightedRandomSampler(x)
                     break
-                case "SmartName": // TODO FSmartName
+                case "SmartName":
+                    this.structType = new FSmartName(x)
                     break
                 case "SoftObjectPath":
                     const softObjectPath = z !== ReadType.ZERO ? new FSoftObjectPath(x) : new FSoftObjectPath()

@@ -32,7 +32,7 @@ export class TRangeBound<T> implements IStructType {
     toJson(): any {
         return {
             type: Object.keys(ERangeBoundTypes)[this.type],
-            value: this.value
+            value: (this.value as any).toJson ? (this.value as any).toJson() : this.value
         }
     }
 }

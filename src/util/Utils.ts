@@ -34,4 +34,8 @@ export class Utils {
             ++x
         }
     }
+
+    static toRadians(angdeg: number) {
+        return angdeg * 0.017453292519943295 // DEGREES_TO_RADIANS
+    }
 }
