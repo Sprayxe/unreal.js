@@ -75,12 +75,6 @@ export class FMappedName {
         if (this.index !== other.index) return false
         return this.num === other.num
     }
-
-    hashCode() {
-        let result = Utils.hash(this.index.toString())
-        result = 31 * result + Utils.hash(this.num.toString())
-        return result
-    }
 }
 
 export enum FMappedName_EType {
@@ -203,17 +197,13 @@ export class FPackageObjectIndex {
         return this.typeAndId.and(_INDEX_MASK)
     }
 
-    equals(other?: any): Boolean {
+    equals(other?: any): boolean {
         if (this === other) return true
         if (!(other instanceof FPackageObjectIndex)) return false
 
         other as FPackageObjectIndex
 
         return this.typeAndId.equals(other.typeAndId)
-    }
-
-    hashCode() {
-        return Utils.hash(this.typeAndId.toString())
     }
 }
 

@@ -30,12 +30,6 @@ export class FName {
         return this.text === other.text
     }
 
-    hashCode(): number {
-        let result = this.num
-        result = 31 * result + Utils.hash(this.text.toLowerCase())
-        return result
-    }
-
     isNone(): boolean {
         return this.text === "None"
     }

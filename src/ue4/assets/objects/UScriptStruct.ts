@@ -10,8 +10,24 @@ import { FIntVector } from "../../objects/core/math/FIntVector";
 import { FVector } from "../../objects/core/math/FVector";
 import { FVector2D } from "../../objects/core/math/FVector2D";
 import { FVector4 } from "../../objects/core/math/FVector4";
-import { ObjectTypeRegistry } from "../ObjectTypeRegistry";
 import { FStructFallback } from "./FStructFallback";
+import { FBox } from "../../objects/core/math/FBox";
+import { FBox2D } from "../../objects/core/math/FBox2D";
+import { FSoftClassPath, FSoftObjectPath } from "../../objects/uobject/SoftObjectPath";
+import {
+    FColorMaterialInput,
+    FExpressionInput,
+    FMaterialAttributesInput,
+    FScalarMaterialInput,
+    FVector2MaterialInput,
+    FVectorMaterialInput
+} from "../../objects/engine/MaterialExpressionIO";
+import { FFrameNumber } from "../../objects/core/misc/FFrameNumber";
+import { FGameplayTagContainer } from "../../objects/gameplaytags/FGameplayTagContainer";
+import { FLevelSequenceObjectReferenceMap } from "../../objects/levelsequence/FLevelSequenceLegacyObjectReference";
+import { FMovieSceneEvaluationKey } from "../../objects/moviescene/evaluation/FMovieSceneEvaluationKey";
+import { FMovieSceneEvaluationTemplate } from "../../objects/moviescene/evaluation/FMovieSceneEvaluationTemplate";
+import { FMovieSceneFrameRange } from "../../objects/moviescene/FMovieSceneFrameRange";
 
 export class UScriptStruct {
     structName: FName
@@ -23,24 +39,30 @@ export class UScriptStruct {
         if (x instanceof FAssetArchive) {
             this.structName = y.structName
             switch (this.structName.text) {
-                case "Box": // TODO FBox
+                case "Box":
+                    this.structType = z !== ReadType.ZERO ? new FBox(x) : new FBox()
                     break
-                case "Box2D": // TODO FBox2D
+                case "Box2D":
+                    this.structType = z !== ReadType.ZERO ? new FBox2D(x) : new FBox2D()
                     break
                 case "Color":
                     this.structType = z !== ReadType.ZERO ? new FColor(x) : new FColor()
                     break
-                case "ColorMaterialInput": // TODO FColorMaterialInput
+                case "ColorMaterialInput":
+                    this.structType = new FColorMaterialInput(x)
                     break
                 case "DateTime":
                 case "Timespan":
                     this.structType = z !== ReadType.ZERO ? new FDateTime(x) : new FDateTime()
                     break
-                case "ExpressionInput": // TODO FExpressionInput
+                case "ExpressionInput":
+                    this.structType = new FExpressionInput(x)
                     break
-                case "FrameNumber": // TODO FFrameNumber
+                case "FrameNumber":
+                    this.structType = new FFrameNumber(x)
                     break
-                case "GameplayTagContainer": // TODO FGameplayTagContainer
+                case "GameplayTagContainer":
+                    this.structType = z !== ReadType.ZERO ? new FGameplayTagContainer(x) : new FGameplayTagContainer()
                     break
                 case "Guid":
                     this.structType = z !== ReadType.ZERO ? new FGuid(x) : new FGuid()
@@ -51,28 +73,36 @@ export class UScriptStruct {
                 case "IntVector":
                     this.structType = new FIntVector(x)
                     break
-                case "LevelSequenceObjectReferenceMap": // TODO FLevelSequenceObjectReferenceMap
+                case "LevelSequenceObjectReferenceMap":
+                    this.structType = new FLevelSequenceObjectReferenceMap(x)
                     break
                 case "LinearColor":
                     this.structType = z !== ReadType.ZERO ? new FLinearColor(x) : new FLinearColor()
                     break
-                case "MaterialAttributesInput": // TODO FMaterialAttributesInput
+                case "MaterialAttributesInput":
+                    this.structType = new FMaterialAttributesInput(x)
                     break
-                case "MovieSceneEvaluationKey": // TODO FMovieSceneEvaluationKey
+                case "MovieSceneEvaluationKey":
+                    this.structType = new FMovieSceneEvaluationKey(x)
                     break
-                case "MovieSceneEvaluationTemplate": // TODO FMovieSceneEvaluationTemplate
+                case "MovieSceneEvaluationTemplate":
+                    this.structType = new FMovieSceneEvaluationTemplate(x)
                     break
                 case "MovieSceneFloatValue": // TODO FRichCurveKey
                     break
-                case "MovieSceneFrameRange": // TODO FMovieSceneFrameRange
+                case "MovieSceneFrameRange":
+                    this.structType = new FMovieSceneFrameRange(x)
                     break
                 case "MovieSceneSegment": // TODO FMovieSceneSegment
                     break
-                case "MovieSceneSegmentIdentifier": // TODO FFrameNumber
+                case "MovieSceneSegmentIdentifier":
+                    this.structType = new FFrameNumber(x)
                     break
-                case "MovieSceneSequenceID": // TODO FFrameNumber
+                case "MovieSceneSequenceID":
+                    this.structType = new FFrameNumber(x)
                     break
-                case "MovieSceneTrackIdentifier": // TODO FFrameNumber
+                case "MovieSceneTrackIdentifier":
+                    this.structType = new FFrameNumber(x)
                     break
                 case "NavAgentSelector": // TODO FNavAgentSelector
                     break
@@ -94,7 +124,8 @@ export class UScriptStruct {
                     break
                 case "Rotator": // TODO FRotator
                     break
-                case "ScalarMaterialInput": // TODO FScalarMaterialInput
+                case "ScalarMaterialInput":
+                    this.structType = new FScalarMaterialInput(x)
                     break
                 case "SectionEvaluationDataTree": // TODO FSectionEvaluationDataTree
                     break
@@ -105,8 +136,14 @@ export class UScriptStruct {
                 case "SmartName": // TODO FSmartName
                     break
                 case "SoftObjectPath":
+                    const softObjectPath = z !== ReadType.ZERO ? new FSoftObjectPath(x) : new FSoftObjectPath()
+                    softObjectPath.owner = x.owner
+                    this.structType = softObjectPath
                     break
-                case "SoftClassPath": // TODO FSoftClassPath
+                case "SoftClassPath":
+                    const softClassPath = z !== ReadType.ZERO ? new FSoftClassPath(x) : new FSoftClassPath()
+                    softClassPath.owner = x.owner
+                    this.structType = softClassPath
                     break
                 case "Vector":
                     this.structType = z !== ReadType.ZERO ? new FVector(x) : new FVector()
@@ -114,12 +151,14 @@ export class UScriptStruct {
                 case "Vector2D":
                     this.structType = z !== ReadType.ZERO ? new FVector2D(x) : new FVector2D()
                     break
-                case "Vector2MaterialInput": // TODO FVector2MaterialInput
+                case "Vector2MaterialInput":
+                    this.structType = new FVector2MaterialInput(x)
                     break
                 case "Vector4":
                     this.structType = z !== ReadType.ZERO ? new FVector4(x) : new FVector4()
                     break
-                case "VectorMaterialInput": // TODO FFVectorMaterialInput
+                case "VectorMaterialInput":
+                    this.structType = new FVectorMaterialInput(x)
                     break
                 default:
                     console.debug(`Using property serialization for struct ${this.structName}`)

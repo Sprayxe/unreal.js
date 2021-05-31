@@ -756,10 +756,7 @@ export class SoftObjectProperty extends FProperty {
     }
 
     toJsonValue(): any {
-        return {
-            assetPathName: this.object.assetPathName.text,
-            subPathString: this.object.subPathString
-        }
+        return this.object.toJson()
     }
 }
 

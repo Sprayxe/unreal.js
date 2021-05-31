@@ -115,7 +115,5 @@ export class FIoDirectoryIndexHandle {
         return this.handle === other.handle
     }
 
-    hashCode() { return Utils.hash(this.handle.toString()) }
-
     toIndex() { return this.handle }
 }

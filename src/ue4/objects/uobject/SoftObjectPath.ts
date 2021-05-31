@@ -3,6 +3,7 @@ import { Package } from "../../assets/Package";
 import { FArchive } from "../../reader/FArchive";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
 import { UObject } from "../../assets/exports/UObject";
+import { IStructType } from "../../assets/objects/UScriptStruct";
 
 /**
  * A struct that contains a string reference to an object, either a top level asset or a subobject.
@@ -10,7 +11,7 @@ import { UObject } from "../../assets/exports/UObject";
  * This is stored internally as an FName pointing to the top level asset (/package/path.assetname) and an option a string subobject path.
  * If the MetaClass metadata is applied to a FProperty with this the UI will restrict to that type of asset.
  */
-export class FSoftObjectPath {
+export class FSoftObjectPath implements IStructType {
     /** Asset path, patch to a top level object in a package. This is /package/path.assetname */
     assetPathName: FName
 
@@ -51,6 +52,13 @@ export class FSoftObjectPath {
 
     load<T extends UObject>() {
         return this.owner?.provider?.loadObject<T>(this)
+    }
+
+    toJson(): any {
+        return {
+            assetPathName: this.assetPathName.text,
+            subPathString: this.subPathString
+        }
     }
 }
 

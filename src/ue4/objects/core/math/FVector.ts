@@ -7,6 +7,7 @@ import { FIntPoint } from "./FIntPoint";
 import { KINDA_SMALL_NUMBER } from "../../../../util/Const";
 import { square } from "./UnrealMathUtility";
 import { IStructType } from "../../../assets/objects/UScriptStruct";
+import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 
 /** Allowed error for a normalized vector (against squared magnitude) */
 const THRESH_VECTOR_NORMALIZED = 0.01
@@ -120,6 +121,12 @@ export class FVector implements IStructType {
             this.y = arg2
             this.z = arg3
         }
+    }
+
+    serialize(Ar: FArchiveWriter) {
+        Ar.writeFloat32(this.x)
+        Ar.writeFloat32(this.y)
+        Ar.writeFloat32(this.z)
     }
 
     toJson(): any {

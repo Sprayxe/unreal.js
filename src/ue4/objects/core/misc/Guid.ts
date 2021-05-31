@@ -243,13 +243,4 @@ export class FGuid implements IStructType {
     toJson(): any {
         return this.toString(EGuidFormats.DigitsWithHyphens)
     }
-
-    hashCode(): number {
-        const h = (x) => `${x}`
-        let result = Utils.hash(h(this.a))
-        result = 31 * result + Utils.hash(h(this.b))
-        result = 31 * result + Utils.hash(h(this.c))
-        result = 31 * result + Utils.hash(h(this.d))
-        return result
-    }
 }

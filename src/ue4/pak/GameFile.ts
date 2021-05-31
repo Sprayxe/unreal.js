@@ -94,14 +94,4 @@ export class GameFile {
 
         return this.compressionMethod === other.compressionMethod
     }
-
-    hashCode(): number {
-        let result = Utils.hash(this.path)
-        const s = (v: any) => v.toString()
-        result = 31 * result + Utils.hash(s(this.pos))
-        result = 31 * result + Utils.hash(s(this.size))
-        result = 31 * result + Utils.hash(s(this.uncompressedSize))
-        result = 31 * result + Utils.hash(this.compressionMethod)
-        return result
-    }
 }

@@ -65,7 +65,7 @@ export abstract class FArchiveWriter {
         i ? this.writeInt32(1) : this.writeInt32(0)
     }
 
-    writeFlag(i : Boolean) {
+    writeFlag(i : boolean) {
         i ? this.writeInt8(1) : this.writeInt8(0)
     }
 
@@ -84,20 +84,20 @@ export abstract class FArchiveWriter {
 
     writeFName(name: FName) {}
 
-    writeTMapWithoutSize<K, V>(map: UnrealMap<K, V>, write: (K, V) => void) {
+    writeTMapWithoutSize<K, V>(map: UnrealMap<K, V>, write: (key: K, value: V) => void) {
         map.forEach((v, k) => write(k, v))
     }
 
-    writeTMap<K, V>(map: UnrealMap<K, V>, write: (K, V) => void) {
+    writeTMap<K, V>(map: UnrealMap<K, V>, write: (key: K, value: V) => void) {
         this.writeInt32(map.size)
         this.writeTMapWithoutSize(map, write)
     }
 
-    writeTArrayWithoutSize<T>(array: T[], write: (T) => void) {
+    writeTArrayWithoutSize<T>(array: T[], write: (it: T) => void) {
         array.forEach((v) => write(v))
     }
 
-    writeTArray<T>(array: T[], write: (T) => void) {
+    writeTArray<T>(array: T[], write: (it: T) => void) {
         this.writeInt32(array.length)
         this.writeTArrayWithoutSize(array, write)
     }

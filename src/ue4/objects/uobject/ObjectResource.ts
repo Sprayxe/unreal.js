@@ -82,12 +82,6 @@ export class FPackageIndex {
         Ar.writeInt32(this.index)
     }
 
-    hashCode(): number {
-        let result = this.index
-        result = 31 * result + (Utils.hash(`${this.owner}`) || 0) // actually index only
-        return result
-    }
-
     toString() {
         if (this.isImport()) {
             return `Import: ${this.toImport()}`
