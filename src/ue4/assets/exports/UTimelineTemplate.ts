@@ -4,7 +4,7 @@ import { FName } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { ETimelineLengthMode } from "../enums/ETimelineLengthMode";
 import { ETickingGroup } from "../enums/ETickingGroup";
-import { UCurveFloat } from "../../objects/engine/curves/CurveFloat";
+import { UCurveFloat } from "../../objects/engine/curves/UCurveFloat";
 import { FBPVariableMetaDataEntry } from "../objects/FBPVariableMetaDataEntry";
 
 export class UTimelineTemplate extends UObject {

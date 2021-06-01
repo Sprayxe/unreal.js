@@ -9,3 +9,6 @@ export class ObjectRef<T> {
         return new ObjectRef<T>(element)
     }
 }
+
+export type FloatRef = ObjectRef<number>
+export type IntRef = ObjectRef<number>

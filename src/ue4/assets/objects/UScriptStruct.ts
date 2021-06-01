@@ -38,6 +38,9 @@ import { FQuat } from "../../objects/core/math/FQuat";
 import { FRotator } from "../../objects/core/math/FRotator";
 import { FSmartName } from "../../objects/engine/animation/FSmartName";
 import { FWeightedRandomSampler } from "../../objects/engine/FWeightedRandomSampler";
+import { FSectionEvaluationDataTree } from "../../objects/moviescene/evaluation/FSectionEvaluationDataTree";
+import { FRichCurveKey } from "../../objects/engine/curves/FRichCurve";
+import { FSimpleCurveKey } from "../../objects/engine/curves/FSimpleCurve";
 
 export class UScriptStruct {
     structName: FName
@@ -98,7 +101,8 @@ export class UScriptStruct {
                 case "MovieSceneEvaluationTemplate":
                     this.structType = new FMovieSceneEvaluationTemplate(x)
                     break
-                case "MovieSceneFloatValue": // TODO FRichCurveKey
+                case "MovieSceneFloatValue":
+                    this.structType = new FRichCurveKey(x)
                     break
                 case "MovieSceneFrameRange":
                     this.structType = new FMovieSceneFrameRange(x)
@@ -139,7 +143,8 @@ export class UScriptStruct {
                 case "Quat":
                     this.structType = new FQuat(x)
                     break
-                case "RichCurveKey": // TODO FRichCurveKey
+                case "RichCurveKey":
+                    this.structType = new FRichCurveKey(x)
                     break
                 case "Rotator":
                     this.structType = z !== ReadType.ZERO ? new FRotator(x) : new FRotator()
@@ -147,9 +152,11 @@ export class UScriptStruct {
                 case "ScalarMaterialInput":
                     this.structType = new FScalarMaterialInput(x)
                     break
-                case "SectionEvaluationDataTree": // TODO FSectionEvaluationDataTree
+                case "SectionEvaluationDataTree":
+                    this.structType = new FSectionEvaluationDataTree(x)
                     break
-                case "SimpleCurveKey": // TODO FSimpleCurveKey
+                case "SimpleCurveKey":
+                    this.structType = new FSimpleCurveKey(x)
                     break
                 case "SkeletalMeshSamplingLODBuiltData":
                     this.structType = new FWeightedRandomSampler(x)
