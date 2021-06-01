@@ -10,14 +10,15 @@ import { FIoContainerId } from "../io/IoContainerId";
 import { FPackageId } from "../objects/uobject/FPackageId";
 import {
     FContainerHeader,
-    FMappedName, FMappedName_EType,
+    FMappedName,
+    FMappedName_EType,
     FPackageObjectIndex,
     FPackageStoreEntry,
-    FScriptObjectEntry, FSourceToLocalizedPackageIdMap
+    FScriptObjectEntry,
+    FSourceToLocalizedPackageIdMap
 } from "./AsyncLoading2";
 import osLocale from "os-locale";
 import { FByteArchive } from "../reader/FByteArchive";
-import { Utils } from "../../util/Utils";
 import { ParserException } from "../../exceptions/Exceptions";
 import { UnrealMap } from "../../util/UnrealMap";
 
@@ -49,8 +50,8 @@ export class FPackageStore extends FOnContainerMountedListener {
     setupInitialLoadData() {
         const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId("0", 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
-        const numScriptObjects = initialLoadArchive.readInt32() - 1
-        Utils.repeat(numScriptObjects, () => {
+        const numScriptObjects = initialLoadArchive.readInt32()
+        for (let i = 0; i < numScriptObjects; ++i) {
             const obj = new FScriptObjectEntry(initialLoadArchive, this.globalNameMap.nameEntries)
             const mappedName = FMappedName.fromMinimalName(obj.objectName)
             if (!mappedName.isGlobal())
@@ -58,11 +59,11 @@ export class FPackageStore extends FOnContainerMountedListener {
             obj.objectName = this.globalNameMap.getMinimalName(mappedName)
             this.scriptObjectEntriesMap.set(obj.globalIndex, obj)
             this.scriptObjectEntries.push(obj)
-        })
+        }
     }
 
     loadContainers(containers: FIoDispatcherMountedContainer[]) {
-        const containersToLoad = containers.filter(it =>  it.containerId.isValid())
+        const containersToLoad = containers.filter(it => it.containerId.isValid())
         if (!containersToLoad.length)
             return
 
