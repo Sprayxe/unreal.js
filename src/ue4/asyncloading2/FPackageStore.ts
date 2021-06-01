@@ -7,7 +7,6 @@ import {
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { FNameMap } from "./FNameMap";
 import { FIoContainerId } from "../io/IoContainerId";
-import { FPackageId } from "../objects/uobject/FPackageId";
 import {
     FContainerHeader,
     FMappedName,
@@ -36,8 +35,8 @@ export class FPackageStore extends FOnContainerMountedListener {
 
     currentCultureNames: string[] = []
 
-    storeEntriesMap = new UnrealMap<FPackageId, FPackageStoreEntry>()
-    redirectsPackageMap = new UnrealMap<FPackageId, FPackageId>()
+    storeEntriesMap = {}
+    redirectsPackageMap = {}
 
     scriptObjectEntries: FScriptObjectEntry[] = []
     scriptObjectEntriesMap = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
@@ -101,7 +100,7 @@ export class FPackageStore extends FOnContainerMountedListener {
 
                 loadedContainer.storeEntries.forEach((containerEntry, index) => {
                     const packageId = containerHeader.packageIds[index]
-                    this.storeEntriesMap.set(packageId, containerEntry)
+                    this.storeEntriesMap[packageId] = containerEntry
                 })
 
                 let localizedPackages: FSourceToLocalizedPackageIdMap = null
@@ -113,14 +112,12 @@ export class FPackageStore extends FOnContainerMountedListener {
 
                 if (localizedPackages) {
                     for (const pair of localizedPackages) {
-                        const sourceId = pair.key
-                        const localizedId = pair.value
-                        this.redirectsPackageMap.set(sourceId, localizedId)
+                        this.redirectsPackageMap[pair.key] = pair.value
                     }
                 }
 
                 for (const redirect of containerHeader.packageRedirects) {
-                    this.redirectsPackageMap.set(redirect.key, redirect.value)
+                    this.redirectsPackageMap[redirect.key] = redirect.value
                 }
             } catch (e) {
                 console.debug(`Could not load container '${container.containerId.value()}', error: ${e}`)
@@ -134,32 +131,33 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.loadContainers([container])
     }
 
-    applyRedirects(redirects: UnrealMap<FPackageId, FPackageId>) {
-        if (!redirects.size)
+    applyRedirects(redirects: object) {
+        if (!Object.keys(redirects).length)
             return
 
-        redirects.forEach((redirectId, sourceId) => {
+        for (const sourceId in redirects) {
+            const redirectId = redirects[sourceId]
             if (!redirectId.isValid())
                 throw new Error("Redirect must be valid")
-            const redirectEntry = this.storeEntriesMap.get(redirectId)
-            this.storeEntriesMap.set(sourceId, redirectEntry)
-        })
+            this.storeEntriesMap[sourceId] = this.storeEntriesMap[redirectId]
+        }
 
-        for (const storeEntry of this.storeEntriesMap.values()) {
+        for (const storeEntryKey in this.storeEntriesMap) {
+            const storeEntry = this.storeEntriesMap[storeEntryKey]
             if (!storeEntry)
                 continue;
             storeEntry.importedPackages.forEach((importedPackageId, index) => {
-                storeEntry.importedPackages[index] = redirects.get(importedPackageId)
+                storeEntry.importedPackages[index] = redirects[importedPackageId]
             })
         }
     }
 
-    findStoreEntry(packageId: FPackageId) {
-        return this.storeEntriesMap.get(packageId)
+    findStoreEntry(packageId: string) {
+        return this.storeEntriesMap[packageId]
     }
 
-    getRedirectedPackageId(packageId: FPackageId) {
-        return this.redirectsPackageMap.get(packageId)
+    getRedirectedPackageId(packageId: string) {
+        return this.redirectsPackageMap[packageId]
     }
 }
 

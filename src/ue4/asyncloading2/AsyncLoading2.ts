@@ -1,16 +1,14 @@
-import { Utils } from "../../util/Utils";
 import { FArchive } from "../reader/FArchive";
 import { FMinimalName } from "../objects/uobject/NameTypes";
-import { FPackageId } from "../objects/uobject/FPackageId";
 import { FIoContainerId } from "../io/IoContainerId";
 import { Pair } from "../../util/Pair";
-import { UnrealMap } from "../../util/UnrealMap";
 import { CityHash } from "../../util/CityHash";
 import Long from "long";
 import { UnrealArray } from "../../util/UnrealArray";
+import Collection from "@discordjs/collection";
 
-export type FSourceToLocalizedPackageIdMap = Pair<FPackageId, FPackageId>[]
-export type FCulturePackageMap = UnrealMap<string, FSourceToLocalizedPackageIdMap>
+export type FSourceToLocalizedPackageIdMap = Pair<string, string>[]
+export type FCulturePackageMap = Collection<string, FSourceToLocalizedPackageIdMap>
 
 export const INVALID_INDEX = ~0
 export const INDEX_BITS = 30
@@ -89,7 +87,7 @@ export class FPackageStoreEntry {
     exportBundleCount = 0
     loadOrder = 0
     pad = 0
-    importedPackages: FPackageId[]
+    importedPackages: string[]
 
     constructor(Ar: FArchive) {
         this.exportBundlesSize = Number(Ar.readUInt64())
@@ -97,7 +95,7 @@ export class FPackageStoreEntry {
         this.exportBundleCount = Ar.readInt32()
         this.loadOrder = Ar.readUInt32()
         this.pad = Ar.readUInt32()
-        this.importedPackages = this.readCArrayView(Ar, (x) => new FPackageId(x))
+        this.importedPackages = this.readCArrayView(Ar, (x) => x.readUInt64().toString())
     }
 
     private readCArrayView<T>(Ar: FArchive, init: (Ar: FArchive) => T): T[] {
@@ -233,17 +231,17 @@ export class FContainerHeader {
     packageCount = 0
     names: Buffer
     nameHashes: Buffer
-    packageIds: FPackageId[]
+    packageIds: string[]
     storeEntries: FPackageStoreEntry[]
     culturePackageMap: FCulturePackageMap
-    packageRedirects: Pair<FPackageId, FPackageId>[]
+    packageRedirects: Pair<string, string>[]
 
     constructor(Ar: FArchive) {
         this.containerId = new FIoContainerId(Ar)
         this.packageCount = Ar.readUInt32()
         this.names = Ar.readBuffer(Ar.readInt32())
         this.nameHashes = Ar.readBuffer(Ar.readInt32())
-        this.packageIds = Ar.readArray(() => new FPackageId(Ar))
+        this.packageIds = Ar.readArray(() => Ar.readUInt64().toString())
         const storeEntriesNum = Ar.readInt32()
         const storeEntriesEnd = Ar.pos + storeEntriesNum
         this.storeEntries = []
@@ -254,10 +252,10 @@ export class FContainerHeader {
         this.culturePackageMap = Ar.readTMap(null, () => {
             return {
                 key: Ar.readString(),
-                value: Ar.readArray(() => new Pair(new FPackageId(Ar), new FPackageId(Ar)))
+                value: Ar.readArray(() => new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
             }
         })
-        this.packageRedirects = Ar.readArray(() => new Pair(new FPackageId(Ar), new FPackageId(Ar)))
+        this.packageRedirects = Ar.readArray(() => new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
     }
 }
 

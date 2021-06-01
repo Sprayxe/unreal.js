@@ -3,6 +3,19 @@ import { FArchive } from "../../reader/FArchive";
 import { CityHash } from "../../../util/CityHash";
 
 export const INVALID_ID = (~0).toString()
+
+export function createFPackageId(name: FName): string {
+    const nameStr = name.toString().toLowerCase()
+    const nameBuf = Buffer.from(nameStr, "utf16le")
+    const hash = CityHash.cityHash64(nameBuf, 0, nameBuf.length).toUnsigned().toString()
+    if (hash === INVALID_ID)
+        throw new Error(`Package name hash collision \"${nameStr}\" and InvalidId`)
+    return hash
+}
+
+/**
+ * @deprecated Use '<FArchive>.readUInt64().toString()' or 'createFPackageId(<FName>)'
+ */
 export class FPackageId {
     static fromName(name: FName) {
         const nameStr = name.toString().toLowerCase()

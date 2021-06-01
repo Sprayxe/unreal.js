@@ -1,7 +1,5 @@
 import { FPakEntry } from "./objects/FPakEntry";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
-import { Utils } from "../../util/Utils"
-import { FPackageId } from "../objects/uobject/FPackageId";
 
 export class GameFile {
     path: string = ""
@@ -13,7 +11,7 @@ export class GameFile {
     compressionBlockSize: number = 0
     isEncrypted: boolean = false
     pakFileName: string
-    ioPackageId?: FPackageId = null
+    ioPackageId?: string = null
 
     constructor(pakEntry?: FPakEntry, mountPrefix?: string, pakFileName?: string) {
         if (pakEntry) {
@@ -30,7 +28,7 @@ export class GameFile {
         }
     }
 
-    static createFromIoStoreFile(path: string, pakFileName: string, ioPackageId: FPackageId) {
+    static createFromIoStoreFile(path: string, pakFileName: string, ioPackageId: string) {
         const file = new GameFile()
         file.path = path
         file.pakFileName = pakFileName

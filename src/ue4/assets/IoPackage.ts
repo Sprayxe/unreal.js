@@ -1,5 +1,4 @@
 import { IJson, Package } from "./Package";
-import { FPackageId } from "../objects/uobject/FPackageId";
 import { FPackageStore } from "../asyncloading2/FPackageStore";
 import {
     EExportCommandType,
@@ -31,7 +30,7 @@ import { GSuppressMissingSchemaErrors } from "../../Globals";
 import { UnrealArray } from "../../util/UnrealArray";
 
 export class IoPackage extends Package {
-    packageId: FPackageId
+    packageId: string
     globalPackageStore: FPackageStore
     summary: FPackageSummary
     nameMap: FNameMap
@@ -45,7 +44,7 @@ export class IoPackage extends Package {
     bulkDataStartOffset = 0
 
     constructor(uasset: Buffer,
-                packageId: FPackageId,
+                packageId: string,
                 storeEntry: FPackageStoreEntry,
                 globalPackageStore: FPackageStore,
                 provider: FileProvider,
@@ -200,7 +199,7 @@ export class IoPackage extends Package {
         return exportIndex !== -1 ? this.exportsLazy[exportIndex] : null
     }
 
-    toJson(locres: Locres): IJson[] {
+    toJson(locres?: Locres): IJson[] {
         const object = []
         for (const it of this.exports) {
             if (!(it instanceof UObject)) continue
@@ -227,11 +226,11 @@ export class IoPackage extends Package {
 }
 
 export class FImportedPackage {
-    importedPackageId: FPackageId
+    importedPackageId: string
     externalArcs: FArc[]
 
     constructor(Ar: FArchive) {
-        this.importedPackageId = new FPackageId(Ar)
+        this.importedPackageId = Ar.readUInt64().toString()
         this.externalArcs = Ar.readArray(() => new FArc(Ar))
     }
 }

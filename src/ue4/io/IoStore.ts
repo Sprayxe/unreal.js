@@ -17,7 +17,6 @@ import { Compression } from "../../compression/Compression"
 import { Utils } from "../../util/Utils"
 import { GameFile } from "../pak/GameFile";
 import { FIoDirectoryIndexReader } from "./IoDirectoryIndex";
-import { FPackageId } from "../objects/uobject/FPackageId";
 import { Lazy } from "../../util/Lazy";
 
 /**
@@ -426,7 +425,7 @@ export class FIoStoreReader {
                 files.push(GameFile.createFromIoStoreFile(
                     filename,
                     this.environment.path,
-                    new FPackageId(new FByteArchive(this.toc.chunkIds[tocEntryIndex].id)))
+                    new FByteArchive(this.toc.chunkIds[tocEntryIndex].id).readUInt64().toString())
                 )
                 return true
             }
