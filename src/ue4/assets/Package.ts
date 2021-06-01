@@ -24,7 +24,7 @@ export abstract class Package extends UObject {
     }
     packageFlags = 0
 
-    protected constructExport(struct: UStruct): UObject {
+    protected static constructExport(struct: UStruct): UObject {
         let current = struct
         while (current) {
             const c = (current as UScriptStruct)?.structClass
@@ -42,24 +42,27 @@ export abstract class Package extends UObject {
 
     /**
      * @returns the first export of the given type
-     * @throws {Error} if there is no export of the given type
+     * @throws {TypeError} if there is no export of the given type
      */
-    getExportOfType() {
-        return this.getExportOfType()[0]
+    getExportOfType<T extends UObject>(type: T) {
+        const obj = this.getExportsOfType(type)[0]
+        if (obj)
+            return obj
+        throw new TypeError(`Could not find export of type '${type.name}'`)
     }
 
     /**
      * @returns the first export of the given type or null if there is no
      */
-    getExportOfTypeOrNull() {
-        return this.getExportsOfType()[0] || null
+    getExportOfTypeOrNull<T extends UObject>(type: T) {
+        return this.getExportsOfType(type)[0] || null
     }
 
     /**
      * @returns the all exports of the given type
      */
-    getExportsOfType() {
-        return this.exports.filter(e => e instanceof UObject)
+    getExportsOfType<T extends UObject>(type: T) {
+        return this.exports.filter(e => e instanceof (type as any))
     }
 
     abstract findObject<T>(index: FPackageIndex): T

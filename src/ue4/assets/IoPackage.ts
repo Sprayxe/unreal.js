@@ -16,7 +16,6 @@ import { UObject } from "./exports/UObject";
 import { FArchive } from "../reader/FArchive";
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { FByteArchive } from "../reader/FByteArchive";
-import { Utils } from "../../util/Utils";
 import { FName } from "../objects/uobject/FName";
 import { EPackageFlags } from "../objects/uobject/EPackageFlags";
 import { MissingSchemaException, ParserException } from "../../exceptions/Exceptions";
@@ -110,7 +109,7 @@ export class IoPackage extends Package {
                     function _exportsLazy() {
                         // Create
                         const objectName = self.nameMap.getName(exp.objectName)
-                        const obj = self.constructExport(self.resolveObjectIndex(exp.classIndex)?.getObject() as UStruct)
+                        const obj = Package.constructExport(self.resolveObjectIndex(exp.classIndex)?.getObject() as UStruct)
                         obj.name = objectName.text
                         obj.outer = (self.resolveObjectIndex(exp.outerIndex) as ResolvedExportObject)?.exportObject || self
                         obj.template = (self.resolveObjectIndex(exp.templateIndex) as ResolvedExportObject)?.exportObject

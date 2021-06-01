@@ -118,7 +118,7 @@ export class PakPackage extends Package {
                 const uexpAr2 = uexpAr.clone()
                 uexpAr2.seekRelative(e.serialOffset)
                 const validPos = (uexpAr2.pos + e.serialSize)
-                const obj = this.constructExport(e.classIndex.load())
+                const obj = Package.constructExport(e.classIndex.load())
                 obj.export = e
                 obj.name = e.objectName.text
                 obj.outer = e.outerIndex.load() || this
