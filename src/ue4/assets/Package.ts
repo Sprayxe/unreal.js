@@ -41,10 +41,12 @@ export abstract class Package extends UObject {
     }
 
     /**
+     * @param type The class object which is either UObject or extends it
      * @returns the first export of the given type
      * @throws {TypeError} if there is no export of the given type
+     * @example getExportOfType(CharacterAbilityUIData)
      */
-    getExportOfType<T extends UObject>(type: T) {
+    getExportOfType(type: any) {
         const obj = this.getExportsOfType(type)[0]
         if (obj)
             return obj
@@ -52,17 +54,21 @@ export abstract class Package extends UObject {
     }
 
     /**
+     * @param type The class object which is either UObject or extends it
      * @returns the first export of the given type or null if there is no
+     * @example getExportOfType(CharacterAbilityUIData)
      */
-    getExportOfTypeOrNull<T extends UObject>(type: T) {
+    getExportOfTypeOrNull(type: any) {
         return this.getExportsOfType(type)[0] || null
     }
 
     /**
+     * @param type The class object which is either UObject or extends it
      * @returns the all exports of the given type
+     * @example getExportOfType(CharacterAbilityUIData)
      */
-    getExportsOfType<T extends UObject>(type: T) {
-        return this.exports.filter(e => e instanceof (type as any))
+    getExportsOfType(type: any) {
+        return this.exports.filter(e => e instanceof type)
     }
 
     abstract findObject<T>(index: FPackageIndex): T
