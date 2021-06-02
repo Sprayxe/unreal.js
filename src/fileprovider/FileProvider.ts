@@ -4,7 +4,7 @@ import { Package } from "../ue4/assets/Package";
 import { TypeMappingsProvider } from "../ue4/assets/mappings/TypeMappingsProvider";
 import { ReflectionTypeMappingsProvider } from "../ue4/assets/mappings/ReflectionTypeMappingsProvider";
 import { Locres } from "../ue4/locres/Locres";
-import { FnLanguage } from "../ue4/locres/FnLanguage";
+import { FnLanguage, valueOfLanguageCode } from "../ue4/locres/FnLanguage";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
 import {
     createIoChunkId,
@@ -284,8 +284,8 @@ export class FileProvider extends EventEmitter {
         }
     }
 
-    getLocresLanguageByPath(filePath: string) {
-        return FnLanguage.valueOfLanguageCode(filePath.split(new RegExp("Localization/(.*?)/"))[1])
+    getLocresLanguageByPath(filePath: string): FnLanguage {
+        return valueOfLanguageCode(filePath.split(new RegExp("Localization/(.*?)/"))[1])
     }
 
     /**

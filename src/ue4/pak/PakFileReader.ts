@@ -13,6 +13,7 @@ import { EPakVersion } from "./enums/PakVersion";
 import { Game } from "../versions/Game";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { UnrealArray } from "../../util/UnrealArray";
+import Collection from "@discordjs/collection";
 
 export class PakFileReader {
     path: string
@@ -22,7 +23,7 @@ export class PakFileReader {
     aesKey: Buffer = null
     mountPoint: string
     encryptedFileCount = 0
-    files: Map<string, GameFile>
+    files: Collection<string, GameFile>
 
     constructor(path: string, game?: number) {
         this.path = path
@@ -113,7 +114,7 @@ export class PakFileReader {
             tempMap.set(gameFile.path.toLowerCase(), gameFile)
         }
 
-        const files = new Map<string, GameFile>()
+        const files = new Collection<string, GameFile>()
         tempMap.forEach((it, k) => {
             if (it.isUE4Package()) {
                 const uexp = tempMap.get(PakFileReader.extension(k, ".uexp"))
@@ -172,7 +173,7 @@ export class PakFileReader {
             }
         }
 
-        const files = new Map<string, GameFile>()
+        const files = new Collection<string, GameFile>()
         tempMap.forEach((it, k) => {
             if (it.isUE4Package()) {
                 const uexp = tempMap.get(PakFileReader.extension(k, ".uexp"))

@@ -6,14 +6,13 @@ import { UnrealMap } from "../../util/UnrealMap";
 export class Locres {
     locres: Buffer
     fileName: string
-    language: string
+    language: FnLanguage
     texts: FTextLocalizationResource
 
-    constructor(file: Buffer, fileName: string = "UNKNOWN-LOCRES-FILE", language: string = FnLanguage.UNKNOWN) {
+    constructor(file: Buffer, fileName: string = "UNKNOWN-LOCRES-FILE", language: FnLanguage = FnLanguage.UNKNOWN) {
         this.locres = file
         this.fileName = fileName
         this.language = language
-
         const locresAr = new FByteArchive(this.locres)
         this.texts = new FTextLocalizationResource(locresAr)
     }
