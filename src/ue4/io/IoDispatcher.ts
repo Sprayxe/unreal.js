@@ -1,7 +1,5 @@
 import { FArchive } from "../reader/FArchive";
-import { int32, uint16, uint64 } from "../../Types";
-import { FIoContainerId } from "./IoContainerId";
-import { Utils } from "../../util/Utils";
+import { int32, uint16 } from "../../Types";
 
 /**
  * Helper used to manage creation of I/O store file handles etc
@@ -82,9 +80,9 @@ export enum EIoContainerFlags {
 
 export class FIoDispatcherMountedContainer {
     environment: FIoStoreEnvironment
-    containerId: FIoContainerId
+    containerId: string
 
-    constructor(environment: FIoStoreEnvironment, containerId: FIoContainerId) {
+    constructor(environment: FIoStoreEnvironment, containerId: string) {
         this.environment = environment
         this.containerId = containerId
     }

@@ -6,7 +6,6 @@ import {
 } from "../io/IoDispatcher";
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { FNameMap } from "./FNameMap";
-import { FIoContainerId } from "../io/IoContainerId";
 import {
     FContainerHeader,
     FMappedName,
@@ -31,12 +30,12 @@ export class FPackageStore extends FOnContainerMountedListener {
         this.globalNameMap = globalNameMap
     }
 
-    loadedContainers = new UnrealMap<FIoContainerId, FLoadedContainer>()
+    loadedContainers = {} // UnrealMap<FIoContainerId, FLoadedContainer>
 
     currentCultureNames: string[] = []
 
-    storeEntriesMap = {}
-    redirectsPackageMap = {}
+    storeEntriesMap = {} // UnrealMap<FPackageId, FPackageStoreEntry>
+    redirectsPackageMap = {} // UnrealMap<FPackageId, FPackageId>
 
     scriptObjectEntries: FScriptObjectEntry[] = []
     scriptObjectEntriesMap = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
@@ -62,69 +61,67 @@ export class FPackageStore extends FOnContainerMountedListener {
     }
 
     loadContainers(containers: FIoDispatcherMountedContainer[]) {
-        const containersToLoad = containers.filter(it => it.containerId.isValid())
+        const start = Date.now()
+        const invalidId = (0xFFFFFFFFFFFFFFFFn).toString()
+        const containersToLoad = containers.filter(it => it.containerId !== invalidId)
         if (!containersToLoad.length)
             return
 
         for (const container of containersToLoad) {
-            try {
-                const containerId = container.containerId
-                let loadedContainer = this.loadedContainers.get(containerId)
-                if (!loadedContainer) {
-                    const cont = new FLoadedContainer()
-                    this.loadedContainers.set(containerId, cont)
-                    loadedContainer = cont
+            const containerId = container.containerId
+            let loadedContainer = this.loadedContainers[containerId]
+            if (!loadedContainer) {
+                const cont = new FLoadedContainer()
+                this.loadedContainers[containerId] = cont
+                loadedContainer = cont
+            }
+
+            if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
+                console.debug(`Skipping loading mounted container ID '${containerId}', already loaded with higher order`)
+                continue
+            }
+
+            loadedContainer.bValid = true
+            loadedContainer.order = container.environment.order
+
+            const headerChunkId = createIoChunkId(containerId, 0, EIoChunkType.ContainerHeader)
+            const ioBuffer = this.provider.saveChunk(headerChunkId)
+
+            const containerHeader = new FContainerHeader(new FByteArchive(ioBuffer))
+
+            const bHasContainerLocalNameMap = !!containerHeader.names
+            if (bHasContainerLocalNameMap) {
+                loadedContainer.containerNameMap.load(containerHeader.names, containerHeader.nameHashes, FMappedName_EType.Container)
+            }
+
+            loadedContainer.packageCount = containerHeader.packageCount
+            loadedContainer.storeEntries = containerHeader.storeEntries
+
+            loadedContainer.storeEntries.forEach((containerEntry, index) => {
+                const packageId = containerHeader.packageIds[index]
+                this.storeEntriesMap[packageId] = containerEntry
+            })
+
+            let localizedPackages: FSourceToLocalizedPackageIdMap = null
+            for (const cultureName of this.currentCultureNames) {
+                localizedPackages = containerHeader.culturePackageMap.get(cultureName)
+                if (localizedPackages)
+                    break
+            }
+
+            if (localizedPackages) {
+                for (const pair of localizedPackages) {
+                    this.redirectsPackageMap[pair.key] = pair.value
                 }
+            }
 
-                if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
-                    console.debug(`Skipping loading mounted container ID '${containerId.value()}', already loaded with higher order`)
-                    continue
-                }
-
-                console.debug(`Loading mounted container ID '${containerId.value()}'`)
-                loadedContainer.bValid = true
-                loadedContainer.order = container.environment.order
-
-                const headerChunkId = createIoChunkId(containerId.value(), 0, EIoChunkType.ContainerHeader)
-                const ioBuffer = this.provider.saveChunk(headerChunkId)
-
-                const containerHeader = new FContainerHeader(new FByteArchive(ioBuffer))
-
-                const bHasContainerLocalNameMap = !!containerHeader.names
-                if (bHasContainerLocalNameMap) {
-                    loadedContainer.containerNameMap.load(containerHeader.names, containerHeader.nameHashes, FMappedName_EType.Container)
-                }
-
-                loadedContainer.packageCount = containerHeader.packageCount
-                loadedContainer.storeEntries = containerHeader.storeEntries
-
-                loadedContainer.storeEntries.forEach((containerEntry, index) => {
-                    const packageId = containerHeader.packageIds[index]
-                    this.storeEntriesMap[packageId] = containerEntry
-                })
-
-                let localizedPackages: FSourceToLocalizedPackageIdMap = null
-                for (const cultureName of this.currentCultureNames) {
-                    localizedPackages = containerHeader.culturePackageMap.get(cultureName)
-                    if (localizedPackages)
-                        break
-                }
-
-                if (localizedPackages) {
-                    for (const pair of localizedPackages) {
-                        this.redirectsPackageMap[pair.key] = pair.value
-                    }
-                }
-
-                for (const redirect of containerHeader.packageRedirects) {
-                    this.redirectsPackageMap[redirect.key] = redirect.value
-                }
-            } catch (e) {
-                console.debug(`Could not load container '${container.containerId.value()}', error: ${e}`)
+            for (const redirect of containerHeader.packageRedirects) {
+                this.redirectsPackageMap[redirect.key] = redirect.value
             }
         }
 
         this.applyRedirects(this.redirectsPackageMap)
+        console.log(Date.now() - start + "ms")
     }
 
     onContainerMounted(container:FIoDispatcherMountedContainer) {

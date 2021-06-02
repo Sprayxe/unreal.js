@@ -1,6 +1,6 @@
 import { FGuid } from "../objects/core/misc/Guid"
 import { FArchive } from "../reader/FArchive"
-import { FIoContainerId } from "./IoContainerId"
+import { createFIoContainerId } from "./IoContainerId"
 import * as fs from "fs"
 import {
     EIoContainerFlags,
@@ -50,7 +50,7 @@ export class FIoStoreTocHeader {
     compressionBlockSize: uint32
     directoryIndexSize: uint32
     partitionCount: uint32
-    containerId: FIoContainerId
+    containerId: string
     encryptionKeyGuid: FGuid
     containerFlags: EIoContainerFlags
     reserved3: uint8
@@ -75,7 +75,7 @@ export class FIoStoreTocHeader {
         this.compressionBlockSize = Ar.readUInt32()
         this.directoryIndexSize = Ar.readUInt32()
         this.partitionCount = Ar.readUInt32()
-        this.containerId = new FIoContainerId(Ar)
+        this.containerId = createFIoContainerId(Ar)
         this.encryptionKeyGuid = new FGuid(Ar)
         this.containerFlags = Ar.readUInt8()
         this.reserved3 = Ar.readUInt8()

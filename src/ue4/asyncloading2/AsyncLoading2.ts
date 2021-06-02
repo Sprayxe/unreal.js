@@ -1,6 +1,6 @@
 import { FArchive } from "../reader/FArchive";
 import { FMinimalName } from "../objects/uobject/NameTypes";
-import { FIoContainerId } from "../io/IoContainerId";
+import { createFIoContainerId } from "../io/IoContainerId";
 import { Pair } from "../../util/Pair";
 import { CityHash } from "../../util/CityHash";
 import Long from "long";
@@ -227,7 +227,7 @@ export class FScriptObjectEntry {
 }
 
 export class FContainerHeader {
-    containerId: FIoContainerId
+    containerId: string
     packageCount = 0
     names: Buffer
     nameHashes: Buffer
@@ -237,7 +237,7 @@ export class FContainerHeader {
     packageRedirects: Pair<string, string>[]
 
     constructor(Ar: FArchive) {
-        this.containerId = new FIoContainerId(Ar)
+        this.containerId = createFIoContainerId(Ar)
         this.packageCount = Ar.readUInt32()
         this.names = Ar.readBuffer(Ar.readInt32())
         this.nameHashes = Ar.readBuffer(Ar.readInt32())

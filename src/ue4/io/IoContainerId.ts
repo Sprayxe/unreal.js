@@ -1,7 +1,18 @@
 import { FArchive } from "../reader/FArchive";
 
+export function createFIoContainerId(source?: string | FArchive) {
+    let id = (0xFFFFFFFFFFFFFFFFn).toString()
+    if (source) {
+        id = source instanceof FArchive
+            ? source.readUInt64().toString()
+            : source
+    }
+    return id
+}
+
 /**
- * Container ID.
+ * - Container ID:
+ * @deprecated Use 'createFIoContainerId(source?: string | FArchive)' and 'isFIoContainerIdValid(id: string)'
  */
 export class FIoContainerId {
     static InvalidId = (0xFFFFFFFFFFFFFFFFn).toString()
