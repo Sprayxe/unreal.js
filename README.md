@@ -48,7 +48,6 @@ The file provider is basically the heart of the library and from there you contr
    ```
    Replace:
    - `GAMEPATH`: Path to valorant's paks
-<br>
    
 #### Basics: Loading an asset
 - **Loading whole file**
@@ -68,10 +67,9 @@ The file provider is basically the heart of the library and from there you contr
   Replace:
   - `PATH`: Path to the file you want to load
   - `OBJECTNAME`: Name of the object to load\
-   You can leave this parameter out if you provide the object name as file extension\
+   You can leave this parameter out if you provide the object name as file extension
 
-TODO: Textures, Soundwaves, ItemDefinitions  
-<br>
+TODO: Textures, Soundwaves, ItemDefinitions
 
 #### Basics: Loading locres
 - **Loading by file path**   
@@ -103,9 +101,7 @@ Replace:
 - `GAME`: Game version you are using (e.g `Game.GAME_VALORANT`)\
   You can leave it out if you want to use the latest version
 - `KEY`: Aes key used for decrypting the pak\
-  **WARNING** Using a wrong aes key will throw an exception! You can\
-  use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
-<br>
+  **WARNING** Using a wrong aes key will throw an exception! You can use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
 
 #### Advanced: Loading a package manually
 ```js
@@ -125,7 +121,6 @@ Replace:
 - `PACKAGEID`: The id of the io package
 - `STOREENTRY`: Instance of the io package's `FPackageStoreEntry`
 - `GLOBALPACKAGESTORE`: The file provider's `FPackageStore` object
-
 
 ## Support, Feedback, Contact
 - Discord
