@@ -48,8 +48,7 @@ The file provider is basically the heart of the library and from there you contr
    ```
    Replace:
    - `GAMEPATH`: Path to valorant's paks
-
-<br> 
+<br>
    
 #### Basics: Loading an asset
 - **Loading whole file**
@@ -72,7 +71,6 @@ The file provider is basically the heart of the library and from there you contr
    You can leave this parameter out if you provide the object name as file extension\
 
 TODO: Textures, Soundwaves, ItemDefinitions  
-
 <br>
 
 #### Basics: Loading locres
@@ -90,8 +88,7 @@ TODO: Textures, Soundwaves, ItemDefinitions
   const { FnLanguage } = require("unreal.js") // requires the language enum
   const locres = provider.loadLocres(FnLanguage.DE) // loads using enum
   console.log(locres.toJson()) // turns locres into json format 
-  ```
-  
+  ```  
 <br>
   
 #### Advanced: Loading a pak file manually
@@ -109,7 +106,6 @@ Replace:
 - `KEY`: Aes key used for decrypting the pak\
   **WARNING** Using a wrong aes key will throw an exception! You can\
   use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
-  
 <br>
 
 #### Advanced: Loading a package manually
