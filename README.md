@@ -12,7 +12,7 @@
 
 ### Prerequisites 
 - Node.JS installed
-- Experience with JavaScript or TypeScript
+- **Experience with JavaScript or TypeScript**
 
 ### Installation 
 `npm i unreal.js --save`
@@ -32,8 +32,8 @@ The file provider is basically the heart of the library and from there you contr
     await provider.submitKey(FGuid.mainGuid, "KEY")
     ```
     Replace:
-    - GAMEPATH: Path to fortnite's paks
-    - KEY: Current main [aes key](https://benbot.app/api/v1/aes)
+    - `GAMEPATH`: Path to fortnite's paks
+    - `KEY`: Current main [aes key](https://benbot.app/api/v1/aes)
    
 
 - **Usage with VALORANT**
@@ -47,7 +47,9 @@ The file provider is basically the heart of the library and from there you contr
     await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
    ```
    Replace:
-   - GAMEPATH: Path to valorant's paks
+   - `GAMEPATH`: Path to valorant's paks
+
+<br> 
    
 #### Load an asset
 - **Load whole file**
@@ -56,7 +58,7 @@ The file provider is basically the heart of the library and from there you contr
    console.log(pkg.toJson()) // turns file into json format
   ```
   Replace:
-  - PATH: Path to the file you want to load
+  - `PATH`: Path to the file you want to load
    
 
 - **Load specific object from file**
@@ -65,11 +67,13 @@ The file provider is basically the heart of the library and from there you contr
   console.log(pkg.toJson()) // turns object into json format
   ```
   Replace:
-  - PATH: Path to the file you want to load
-  - OBJECTNAME: Name of the object to load\
+  - `PATH`: Path to the file you want to load
+  - `OBJECTNAME`: Name of the object to load\
    You can leave this parameter out if you provide the object name as file extension\
 
-TODO: Textures, Soundwaves, ItemDefinitions    
+TODO: Textures, Soundwaves, ItemDefinitions  
+
+<br>
 
 #### Load locres
 - **By file path**   
@@ -78,7 +82,7 @@ TODO: Textures, Soundwaves, ItemDefinitions
    console.log(locres.toJson()) // turns locres into json format 
    ```
   Replace:
-  - PATH: Path to the .locres file
+  - `PATH`: Path to the .locres file
 
 
 - **By enum**
@@ -87,6 +91,8 @@ TODO: Textures, Soundwaves, ItemDefinitions
   const locres = provider.loadLocres(FnLanguage.DE) // loads using enum
   console.log(locres.toJson()) // turns locres into json format 
   ```
+  
+<br>
   
 #### Load a pak file manually
 ```js
@@ -97,13 +103,14 @@ reader.readIndex() // Read the index
 reader.extract(reader.files.first()) // Gets the first file and extracts it as Buffer
 ```
 Replace:
-- PATH: Path to the pak file
-- GAME: Game version you are using (e.g `Game.GAME_VALORANT`)\
+- `PATH`: Path to the pak file
+- `GAME`: Game version you are using (e.g `Game.GAME_VALORANT`)\
   You can leave it out if you want to use the latest version
-- KEY: Aes key used for decrypting the pak\
-  [WARNING] Using a wrong aes key will throw an exception! You can\
+- `KEY`: Aes key used for decrypting the pak\
+  **WARNING** Using a wrong aes key will throw an exception! You can\
   use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
   
+<br>
 
 #### Load a package manually
 ```js
@@ -114,15 +121,16 @@ const pkg = new PakPackage(UASSETBUFFER, UEXPBUFFER, UBULKBUFFER, NAME, PROVIDER
 const pkg2 = new IoPackage(UASSETBUFFER, PACKAGEID, STOREENTRY, GLOBALPACKAGESTORE, PROVIDER, GAME)
 ```
 Replace:
-- UASSETBUFFER: Buffer of the .uasset file
-- UEXPBUFFER: Buffer of the .uexp file
-- UBULKBUFFER: Buffer of the .ubulk file (pass `null` if it doesn't exist)
-- NAME: Name of the package
-- PROVIDER: Instance of a fileprovider (optional in `PakPackage`)
-- GAME: Version of the game you are using (e.g `Game.GAME_VALORANT`, optional in both)
-- PACKAGEID: The id of the io package
-- STOREENTRY: Instance of the io package's `FPackageStoreEntry`
-- GLOBALPACKAGESTORE: The file provider's `FPackageStore` object
+- `UASSETBUFFER`: Buffer of the .uasset file
+- `UEXPBUFFER`: Buffer of the .uexp file
+- `UBULKBUFFER`: Buffer of the .ubulk file (pass `null` if it doesn't exist)
+- `NAME`: Name of the package
+- `PROVIDER`: Instance of a fileprovider (optional in `PakPackage`)
+- `GAME`: Version of the game you are using (e.g `Game.GAME_VALORANT`, optional in both)
+- `PACKAGEID`: The id of the io package
+- `STOREENTRY`: Instance of the io package's `FPackageStoreEntry`
+- `GLOBALPACKAGESTORE`: The file provider's `FPackageStore` object
+
 
 ## Support, Feedback, Contact
 - Discord
