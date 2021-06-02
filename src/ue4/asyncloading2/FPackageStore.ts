@@ -60,13 +60,15 @@ export class FPackageStore extends FOnContainerMountedListener {
         }
     }
 
+    // TODO: This is slow, takes somewhere around ~3-4s (probably because of sync methods)
     loadContainers(containers: FIoDispatcherMountedContainer[]) {
-        const start = Date.now()
         const invalidId = (0xFFFFFFFFFFFFFFFFn).toString()
         const containersToLoad = containers.filter(it => it.containerId !== invalidId)
         if (!containersToLoad.length)
             return
 
+        const start = Date.now()
+        console.log(`Loading ${containersToLoad.length} mounted containers...`)
         for (const container of containersToLoad) {
             const containerId = container.containerId
             let loadedContainer = this.loadedContainers[containerId]
@@ -121,7 +123,7 @@ export class FPackageStore extends FOnContainerMountedListener {
         }
 
         this.applyRedirects(this.redirectsPackageMap)
-        console.log(Date.now() - start + "ms")
+        console.log(`Loaded mounted containers in ${Date.now() - start}ms!`)
     }
 
     onContainerMounted(container:FIoDispatcherMountedContainer) {
