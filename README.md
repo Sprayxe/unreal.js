@@ -89,7 +89,6 @@ TODO: Textures, Soundwaves, ItemDefinitions
   const locres = provider.loadLocres(FnLanguage.DE) // loads using enum
   console.log(locres.toJson()) // turns locres into json format 
   ```  
-<br>
   
 #### Advanced: Loading a pak file manually
 ```js
