@@ -51,8 +51,8 @@ The file provider is basically the heart of the library and from there you contr
 
 <br> 
    
-#### Load an asset
-- **Load whole file**
+#### Basics: Loading an asset
+- **Loading whole file**
   ```js
    const pkg = provider.loadGameFile("PATH") // loads the file
    console.log(pkg.toJson()) // turns file into json format
@@ -61,7 +61,7 @@ The file provider is basically the heart of the library and from there you contr
   - `PATH`: Path to the file you want to load
    
 
-- **Load specific object from file**
+- **Loading specific object from file**
   ```js
   const obj = provider.loadObject("PATH", "OBJECTNAME") // loads the object
   console.log(pkg.toJson()) // turns object into json format
@@ -75,8 +75,8 @@ TODO: Textures, Soundwaves, ItemDefinitions
 
 <br>
 
-#### Load locres
-- **By file path**   
+#### Basics: Loading locres
+- **Loading by file path**   
    ```js
    const locres = provider.loadLocres("PATH") // loads the locres file
    console.log(locres.toJson()) // turns locres into json format 
@@ -85,7 +85,7 @@ TODO: Textures, Soundwaves, ItemDefinitions
   - `PATH`: Path to the .locres file
 
 
-- **By enum**
+- **Loading by enum**
   ```js
   const { FnLanguage } = require("unreal.js") // requires the language enum
   const locres = provider.loadLocres(FnLanguage.DE) // loads using enum
@@ -94,7 +94,7 @@ TODO: Textures, Soundwaves, ItemDefinitions
   
 <br>
   
-#### Load a pak file manually
+#### Advanced: Loading a pak file manually
 ```js
 const { PakFileReader } = require("unreal.js") // Require the reader
 const reader = new PakFileReader("PATH", "GAME") // Create a new instance
@@ -112,7 +112,7 @@ Replace:
   
 <br>
 
-#### Load a package manually
+#### Advanced: Loading a package manually
 ```js
 const { PakPackage, IoPackage } = require("unreal.js") // require package classes
 // load a pak package (e.g valorant)
@@ -144,7 +144,7 @@ Replace:
 ## Contributors
 - [Sprayxe](https://twitter.com/@Sprayxe_)
 - [AmrSatrio](https://twitter.com/@AmrSatrio)
-- Inspired by [JFortniteParse](https://github.com/JFortniteParse)
+- Inspired by [JFortniteParse](https://github.com/FabianFG/JFortniteParse)
   - [FunGames](https://twitter.com/FunGamesLeaks)
   
 ## Donate
