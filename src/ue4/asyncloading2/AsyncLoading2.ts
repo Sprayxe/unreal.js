@@ -244,18 +244,17 @@ export class FContainerHeader {
         this.packageIds = Ar.readArray(() => Ar.readUInt64().toString())
         const storeEntriesNum = Ar.readInt32()
         const storeEntriesEnd = Ar.pos + storeEntriesNum
-        this.storeEntries = []
-        for (let i = 0; i < this.packageCount; ++i) {
-            this.storeEntries.push(new FPackageStoreEntry(Ar))
-        }
+        this.storeEntries = new UnrealArray(this.packageCount, () =>  new FPackageStoreEntry(Ar))
         Ar.pos = storeEntriesEnd
         this.culturePackageMap = Ar.readTMap(null, () => {
             return {
                 key: Ar.readString(),
-                value: Ar.readArray(() => new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
+                value: Ar.readArray(() =>
+                    new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
             }
         })
-        this.packageRedirects = Ar.readArray(() => new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
+        this.packageRedirects = Ar.readArray(() =>
+            new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
     }
 }
 

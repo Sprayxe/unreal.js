@@ -173,7 +173,7 @@ export class FileProvider extends EventEmitter {
      * @param filePath the path to search for
      * @returns the parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
      */
-    loadGameFile(filePath: String): Package
+    loadGameFile(filePath: string): Package
     loadGameFile(x?: any) {
         try {
             if (x instanceof GameFile) {
@@ -505,10 +505,8 @@ export class FileProvider extends EventEmitter {
 
     protected loadGlobalData(path: string) {
         this.globalDataLoaded = true
+        Oodle.ensureLib()
         try {
-            const s = Date.now()
-            Oodle.ensureLib()
-            console.log("Loaded oodle library in " + (Date.now() - s) + "ms")
             const ioStoreReader = new FIoStoreReader()
             ioStoreReader.initialize(new FIoStoreEnvironment(path), this._keys)
             this._mountedIoStoreReaders.push(ioStoreReader)

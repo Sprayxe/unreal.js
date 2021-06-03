@@ -1,6 +1,7 @@
 import * as ffi from "ffi-napi"
 import { CompressException, DecompressException, OodleException } from "./Exceptions";
 import ref from "ref-napi";
+import { INTEGER_MAX_VALUE } from "../util/Const";
 
 export const COMPRESSOR_LZH = 0
 export const COMPRESSOR_LZHLW = 1
@@ -69,21 +70,22 @@ export class Oodle {
         } else if (Buffer.isBuffer(dstLen)) {
             return this.decompress(src, dstLen.length, dstLen, 0, 0, src.length)
         } else {
-            const start = Date.now()
+            //const start = Date.now()
             const sourcePointer = src.subarray(srcOff, srcOff + srcLen)
             const dstPointer = dst.subarray(dstOff, dstOff + dstLen)
             const resultCode = this.oodleLib.OodleLZ_Decompress(
                 sourcePointer, srcLen,
                 dstPointer, dstLen,
-                0, 0, 0,
+                0, 0, INTEGER_MAX_VALUE,
                 ref.NULL, 0,
                 ref.NULL, ref.NULL, ref.NULL,
                 0, 0
             )
             if (resultCode <= 0)
                 throw DecompressException(`Oodle decompression failed with code ${resultCode}`)
-            const stop = Date.now()
-            const seconds = (stop - start) / 1000
+            //const stop = Date.now()
+            //const seconds = (stop - start) / 1000
+            //console.debug(`Oodle decompress: ${srcLen} => ${dstLen} (${seconds} seconds)`)
             return dstPointer
         }
     }
@@ -99,7 +101,7 @@ export class Oodle {
      */
     static compress(uncompressed: Buffer, compressor: number, compressionLevel: number) {
         this.ensureLib()
-        const start = Date.now()
+        //const start = Date.now()
         const srcLength = uncompressed.length
         const dstLength = srcLength + 65536
         const sourcePointer = uncompressed.subarray(0, srcLength)
@@ -113,8 +115,9 @@ export class Oodle {
         if (resultCode <= 0)
             throw CompressException(`Oodle compression failed with code ${resultCode}`)
         const dst = dstPointer.subarray(0, resultCode)
-        const stop = Date.now()
-        const seconds = (stop - start) / 1000
+        //const stop = Date.now()
+        //const seconds = (stop - start) / 1000
+        //console.debug(`Oodle compress: ${srcLength} => ${dstLength} (${seconds} seconds)`)
         return dst
     }
 
