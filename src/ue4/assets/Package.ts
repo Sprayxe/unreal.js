@@ -46,7 +46,7 @@ export abstract class Package extends UObject {
      * @throws {TypeError} if there is no export of the given type
      * @example getExportOfType(CharacterAbilityUIData)
      */
-    getExportOfType(type: any) {
+    getExportOfType(type: Function) {
         const obj = this.getExportsOfType(type)[0]
         if (obj)
             return obj
@@ -58,7 +58,7 @@ export abstract class Package extends UObject {
      * @returns the first export of the given type or null if there is no
      * @example getExportOfType(CharacterAbilityUIData)
      */
-    getExportOfTypeOrNull(type: any) {
+    getExportOfTypeOrNull(type: Function) {
         return this.getExportsOfType(type)[0] || null
     }
 
@@ -67,7 +67,7 @@ export abstract class Package extends UObject {
      * @returns the all exports of the given type
      * @example getExportOfType(CharacterAbilityUIData)
      */
-    getExportsOfType(type: any) {
+    getExportsOfType(type: Function) {
         return this.exports.filter(e => e instanceof type)
     }
 
