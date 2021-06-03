@@ -18,6 +18,7 @@ import { Utils } from "../../util/Utils"
 import { GameFile } from "../pak/GameFile";
 import { FIoDirectoryIndexReader } from "./IoDirectoryIndex";
 import { Lazy } from "../../util/Lazy";
+import Collection from "@discordjs/collection";
 
 /**
  * I/O store container format version
@@ -207,7 +208,7 @@ export class FIoStoreTocResource {
     chunkBlockSignatures: Buffer[] //FSHAHash[]
     chunkMetas: FIoStoreTocEntryMeta[]
     directoryIndexBuffer: Buffer
-    //chunkIdToIndex = new UnrealMap<FIoChunkId, int32>()
+    chunkIdToIndex = new Collection<string, number>()
 
     read(tocBuffer: FArchive, readOptions: EIoStoreTocReadOptions) {
         // Header
@@ -235,7 +236,7 @@ export class FIoStoreTocResource {
         for (let i = 0; i < this.header.tocEntryCount; i++) {
             const id = new FIoChunkId(tocBuffer)
             this.chunkIds[i] = id
-            //this.chunkIdToindex.set(id, i)
+            this.chunkIdToIndex.set(id.id.toString("base64"), i)
         }
 
         // Chunk offsets
@@ -299,13 +300,12 @@ export class FIoStoreTocResource {
     }
 
     getTocEntryIndex(chunkId: FIoChunkId) {
-        //return this.chunkIdToIndex.get(chunkId) || -1
-        return this.chunkIds.findIndex(it => it.equals(chunkId))
+        return this.chunkIdToIndex.get(chunkId.id.toString("base64")) || -1
     }
 
     getOffsetAndLength(chunkId: FIoChunkId): FIoOffsetAndLength {
-        const index = this.chunkIds.findIndex(it => it.equals(chunkId))
-        return index >= 0 ? this.chunkOffsetLengths[index] : null
+        const index = this.chunkIdToIndex.get(chunkId.id.toString("base64"))
+        return index != null ? this.chunkOffsetLengths[index] : null
     }
 }
 
@@ -378,7 +378,8 @@ export class FIoStoreReader {
         const dst = Buffer.alloc(length)
         let dstOff = 0
         let remainingSize = length
-        for (let blockIndex = firstBlockIndex; blockIndex <= lastBlockIndex; ++blockIndex) {
+        let blockIndex = firstBlockIndex // 'while()' seems to be faster than: 'for (let blockIndex = firstBlockIndex; blockIndex <= lastBlockIndex; ++blockIndex)'
+        while (blockIndex <= lastBlockIndex) {
             const compressionBlock = this.toc.compressionBlocks[blockIndex]
             const rawSize = Utils.align(compressionBlock.compressedSize, Aes.BLOCK_SIZE)
             if (threadBuffers.compressedBuffer == null || threadBuffers.compressedBuffer.length < rawSize) {
@@ -412,6 +413,7 @@ export class FIoStoreReader {
             offsetInBlock = 0
             remainingSize -= sizeInBlock
             dstOff += sizeInBlock
+            ++blockIndex
         }
         return dst
     }

@@ -34,6 +34,7 @@ import { ObjectTypeRegistry } from "../ue4/assets/ObjectTypeRegistry";
 import { UObject } from "../ue4/assets/exports/UObject";
 import { FSoftObjectPath } from "../ue4/objects/uobject/SoftObjectPath";
 import { createFPackageId } from "../ue4/objects/uobject/FPackageId";
+import { Oodle } from "../oodle/Oodle";
 
 export class FileProvider extends EventEmitter {
     folder: string
@@ -508,6 +509,7 @@ export class FileProvider extends EventEmitter {
             const ioStoreReader = new FIoStoreReader()
             ioStoreReader.initialize(new FIoStoreEnvironment(path), this._keys)
             this._mountedIoStoreReaders.push(ioStoreReader)
+            Oodle.ensureLib()
             console.log("Initialized I/O store")
             this.emit("mounted:iostore", ioStoreReader)
         } catch (e) {
