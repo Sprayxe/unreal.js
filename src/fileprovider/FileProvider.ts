@@ -506,10 +506,12 @@ export class FileProvider extends EventEmitter {
     protected loadGlobalData(path: string) {
         this.globalDataLoaded = true
         try {
+            const s = Date.now()
+            Oodle.ensureLib()
+            console.log("Loaded oodle library in " + (Date.now() - s) + "ms")
             const ioStoreReader = new FIoStoreReader()
             ioStoreReader.initialize(new FIoStoreEnvironment(path), this._keys)
             this._mountedIoStoreReaders.push(ioStoreReader)
-            Oodle.ensureLib()
             console.log("Initialized I/O store")
             this.emit("mounted:iostore", ioStoreReader)
         } catch (e) {
