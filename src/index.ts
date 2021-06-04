@@ -3,9 +3,7 @@ import { FGuid } from "./ue4/objects/core/misc/Guid";
 import axios from "axios";
 //import { UnrealMap } from "./util/UnrealMap";
 import { Game } from "./ue4/versions/Game";
-import { USoundWave } from "./ue4/assets/exports/USoundWave";
-import { SoundWave } from "./ue4/converters/SoundWave";
-import { writeFileSync } from "fs";
+import { writeFileSync, unlinkSync } from "fs";
 import { UAkMediaAssetData } from "./ue4/assets/exports/UAkMediaAssetData";
 import { WwiseAudio } from "./ue4/converters/WwiseAudio";
 
@@ -25,7 +23,7 @@ import { WwiseAudio } from "./ue4/converters/WwiseAudio";
     const sound = pkg.getExportOfTypeOrNull(UAkMediaAssetData) as UAkMediaAssetData
     if (sound) {
         const soundWave = WwiseAudio.convert(sound)
-        writeFileSync(`329781885.${soundWave.format}`, soundWave.data)
+        await soundWave.export()
         return
     }
     console.log("No audio file found.")
