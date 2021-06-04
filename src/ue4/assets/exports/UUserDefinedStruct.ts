@@ -3,7 +3,7 @@ import { UScriptStruct } from "./UScriptStruct";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { EObjectFlags } from "../../objects/uobject/EObjectFlags";
 import { FPropertyTag } from "../objects/FPropertyTag";
-import { deserializeUnversionedProperties } from "../../objects/uobject/UnversionedPropertySerialization";
+import { deserializeUnversionedProperties } from "../../objects/uobject/serialization/UnversionedPropertySerialization";
 import { deserializeVersionedTaggedProperties } from "./UObject";
 
 export enum EUserDefinedStructureStatus {

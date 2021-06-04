@@ -1,23 +1,32 @@
 import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
 import axios from "axios";
-import { UnrealMap } from "./util/UnrealMap";
-//import { Game } from "./ue4/versions/Game";
+//import { UnrealMap } from "./util/UnrealMap";
+import { Game } from "./ue4/versions/Game";
+import { USoundWave } from "./ue4/assets/exports/USoundWave";
+import { SoundWave } from "./ue4/converters/SoundWave";
+import { writeFileSync } from "fs";
 
 (async () => {
-    const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
-    //const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks", Game.GAME_VALORANT)
-    provider.populateIoStoreFiles = true
+    //const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
+    const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks", Game.GAME_VALORANT)
+    //provider.populateIoStoreFiles = true
     await provider.initialize()
 
-    await submitFortniteAesKeys(provider)
-    //await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
+    //await submitFortniteAesKeys(provider)
+    await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
 
-    const path = "FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA"
-    //const path = "ShooterGame/Content/Contracts/Characters/Yoru/Contract_Yoru_DataAssetV2"
+    //const path = "FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA"
+    const path = "ShooterGame/Content/WwiseAudio/Media/329781885"
 
     const pkg = provider.loadGameFile(path)
-    console.log(pkg)
+    const sound = pkg.getExportOfTypeOrNull(USoundWave) as USoundWave
+    if (sound) {
+        const soundWave = SoundWave.convert(sound)
+        writeFileSync(`329781885.${soundWave.format}`, soundWave.data)
+        return
+    }
+    console.log("No audio file found.")
 })()
 
 async function submitFortniteAesKeys(provider: FileProvider) {

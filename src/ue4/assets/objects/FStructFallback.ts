@@ -6,7 +6,7 @@ import { FName } from "../../objects/uobject/FName";
 import { FPropertyTag } from "./FPropertyTag";
 import { MissingSchemaException, ParserException } from "../../../exceptions/Exceptions";
 import { UScriptStruct } from "../exports/UScriptStruct";
-import { deserializeUnversionedProperties } from "../../objects/uobject/UnversionedPropertySerialization";
+import { deserializeUnversionedProperties } from "../../objects/uobject/serialization/UnversionedPropertySerialization";
 import { deserializeVersionedTaggedProperties } from "../exports/UObject";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { IStructType } from "./UScriptStruct";

@@ -14,6 +14,7 @@ import { ObjectTypeRegistry } from "./ObjectTypeRegistry";
 import { Locres } from "../locres/Locres";
 import { FAssetArchiveWriter, FByteArchiveWriter } from "./writer/FAssetArchiveWriter";
 import { WritableStreamBuffer } from "stream-buffers";
+import { sum } from "lodash"
 
 export class PakPackage extends Package {
     protected packageMagic = 0x9E2A83C1
@@ -109,7 +110,7 @@ export class PakPackage extends Package {
         // If attached also setup the ubulk reader
         if (ubulkAr != null) {
             ubulkAr.uassetSize = this.info.totalHeaderSize
-            ubulkAr.uexpSize = eval(this.exportMap.map(it => it.serialSize).join("+"))
+            ubulkAr.uexpSize = sum(this.exportMap.map(it => it.serialSize))
             uexpAr.addPayload(PayloadType.UBULK, ubulkAr)
         }
 

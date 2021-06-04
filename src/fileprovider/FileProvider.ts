@@ -225,6 +225,7 @@ export class FileProvider extends EventEmitter {
             }
         } catch (e) {
             console.error(`Failed to load package ${x.toString()}`)
+            console.error(e)
         }
     }
 

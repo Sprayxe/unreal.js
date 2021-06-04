@@ -7,9 +7,10 @@ import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { FName } from "../../objects/uobject/FName";
 import { ParserException } from "../../../exceptions/Exceptions";
-import { deserializeUnversionedProperties } from "../../objects/uobject/UnversionedPropertySerialization";
+import { deserializeUnversionedProperties } from "../../objects/uobject/serialization/UnversionedPropertySerialization";
 import { Locres } from "../../locres/Locres";
 import { StringBuilder } from "../../../util/StringBuilder";
+import { camelCase } from "lodash"
 
 export class UObject implements IPropertyHolder {
     name: string = ""
@@ -86,9 +87,7 @@ export class UObject implements IPropertyHolder {
             const tagValue = pTag.prop
             if (!tagValue)
                 return
-            const tagKey = pTag.name.text.split("")
-            tagKey[0] = tagKey[0].toLowerCase()
-            ob[tagKey.join("")] = tagValue.toJsonValue()
+            ob[camelCase(pTag.name.text)] = tagValue.toJsonValue()
         })
         return ob
     }

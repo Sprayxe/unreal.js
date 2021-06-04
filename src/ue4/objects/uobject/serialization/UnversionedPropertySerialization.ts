@@ -1,17 +1,17 @@
-import { PropertyInfo } from "../../assets/objects/PropertyInfo";
-import { FProperty, ReadType } from "../../assets/objects/FProperty";
-import { FAssetArchive } from "../../assets/reader/FAssetArchive";
-import { FPropertyTag } from "../../assets/objects/FPropertyTag";
-import { FExportArchive } from "../../assets/reader/FExportArchive";
-import { FName } from "./FName";
-import { UStruct } from "../../assets/exports/UStruct";
-import { UScriptStruct } from "../../assets/exports/UScriptStruct";
+import { PropertyInfo } from "../../../assets/objects/PropertyInfo";
+import { FProperty, ReadType } from "../../../assets/objects/FProperty";
+import { FAssetArchive } from "../../../assets/reader/FAssetArchive";
+import { FPropertyTag } from "../../../assets/objects/FPropertyTag";
+import { FExportArchive } from "../../../assets/reader/FExportArchive";
+import { FName } from "../FName";
+import { UStruct } from "../../../assets/exports/UStruct";
+import { UScriptStruct } from "../../../assets/exports/UScriptStruct";
 import BitSet from "bitset";
-import { FArchive } from "../../reader/FArchive";
-import { INDEX_NONE } from "../../../util/Const";
-import { ParserException, UnknownPropertyException } from "../../../exceptions/Exceptions";
-import { UnrealMap } from "../../../util/UnrealMap";
-import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../Globals";
+import { FArchive } from "../../../reader/FArchive";
+import { INDEX_NONE } from "../../../../util/Const";
+import { ParserException, UnknownPropertyException } from "../../../../exceptions/Exceptions";
+import { UnrealMap } from "../../../../util/UnrealMap";
+import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../../Globals";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo
