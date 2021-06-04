@@ -6,6 +6,8 @@ import { Game } from "./ue4/versions/Game";
 import { USoundWave } from "./ue4/assets/exports/USoundWave";
 import { SoundWave } from "./ue4/converters/SoundWave";
 import { writeFileSync } from "fs";
+import { UAkMediaAssetData } from "./ue4/assets/exports/UAkMediaAssetData";
+import { WwiseAudio } from "./ue4/converters/WwiseAudio";
 
 (async () => {
     //const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
@@ -20,9 +22,9 @@ import { writeFileSync } from "fs";
     const path = "ShooterGame/Content/WwiseAudio/Media/329781885"
 
     const pkg = provider.loadGameFile(path)
-    const sound = pkg.getExportOfTypeOrNull(USoundWave) as USoundWave
+    const sound = pkg.getExportOfTypeOrNull(UAkMediaAssetData) as UAkMediaAssetData
     if (sound) {
-        const soundWave = SoundWave.convert(sound)
+        const soundWave = WwiseAudio.convert(sound)
         writeFileSync(`329781885.${soundWave.format}`, soundWave.data)
         return
     }

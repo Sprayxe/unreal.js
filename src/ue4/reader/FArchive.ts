@@ -120,7 +120,6 @@ export class FArchive {
         const length = this.readInt32()
         if (length < -65536 || length > 65536)
             throw ParserException(`Invalid String length '${length}'`)
-
         if (length < 0) {
             const utf16length = -length
             const arrLength = utf16length - 1
@@ -139,8 +138,8 @@ export class FArchive {
         }
     }
 
-    readArray<T>(init: (index) => T): T[] {
-        const num = this.readInt32();
+    readArray<T>(init: (index) => T, length?: number): T[] {
+        const num = length ? length : this.readInt32();
         const array = new Array(num);
         for (let i = 0; i < num; i++) {
             array[i] = init(i);
