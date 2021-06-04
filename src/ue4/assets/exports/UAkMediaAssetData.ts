@@ -1,6 +1,7 @@
 import { UObject } from "./UObject";
 import { FByteBulkData } from "../objects/FByteBulkData";
 import { FAssetArchive } from "../reader/FAssetArchive";
+import { Locres } from "../../locres/Locres";
 
 export class UAkMediaAssetData extends UObject {
     public isStreamed = false
@@ -13,6 +14,14 @@ export class UAkMediaAssetData extends UObject {
         this.isStreamed = this.getOrDefault("IsStreamed", false)
         this.useDeviceMemory = this.getOrDefault("UseDeviceMemory", false)
         this.dataChunks = Ar.readArray(() => new FAkMediaDataChunk(Ar))
+    }
+
+    toJson(locres: Locres = null): any {
+        return {
+            isStreamed: this.isStreamed,
+            useDeviceMemory: this.useDeviceMemory,
+            dataChunks: this.dataChunks.map(chunk => chunk.toJson())
+        }
     }
 }
 
