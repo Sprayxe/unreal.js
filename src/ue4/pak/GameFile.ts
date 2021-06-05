@@ -11,7 +11,7 @@ export class GameFile {
     compressionBlockSize: number = 0
     isEncrypted: boolean = false
     pakFileName: string
-    ioPackageId?: string = null
+    ioPackageId?: bigint = null
 
     constructor(pakEntry?: FPakEntry, mountPrefix?: string, pakFileName?: string) {
         if (pakEntry) {
@@ -28,7 +28,7 @@ export class GameFile {
         }
     }
 
-    static createFromIoStoreFile(path: string, pakFileName: string, ioPackageId: string) {
+    static createFromIoStoreFile(path: string, pakFileName: string, ioPackageId: bigint) {
         const file = new GameFile()
         file.path = path
         file.pakFileName = pakFileName

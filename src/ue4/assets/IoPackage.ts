@@ -30,7 +30,7 @@ import { GSuppressMissingSchemaErrors } from "../../Globals";
 import { UnrealArray } from "../../util/UnrealArray";
 
 export class IoPackage extends Package {
-    packageId: string
+    packageId: bigint
     globalPackageStore: FPackageStore
     summary: FPackageSummary
     nameMap: FNameMap
@@ -44,7 +44,7 @@ export class IoPackage extends Package {
     bulkDataStartOffset = 0
 
     constructor(uasset: Buffer,
-                packageId: string,
+                packageId: bigint,
                 storeEntry: FPackageStoreEntry,
                 globalPackageStore: FPackageStore,
                 provider: FileProvider,
@@ -226,11 +226,11 @@ export class IoPackage extends Package {
 }
 
 export class FImportedPackage {
-    importedPackageId: string
+    importedPackageId: bigint
     externalArcs: FArc[]
 
     constructor(Ar: FArchive) {
-        this.importedPackageId = Ar.readUInt64().toString()
+        this.importedPackageId = Ar.readUInt64()
         this.externalArcs = Ar.readArray(() => new FArc(Ar))
     }
 }

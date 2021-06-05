@@ -37,8 +37,8 @@ export class UnrealJS {
     const u = new UnrealJS()
     const d = u.createGlobalReader()
 
-    let namesId = createIoChunkId("0", 0, EIoChunkType.LoaderGlobalNames)
-    let hashesId = createIoChunkId("0", 0, EIoChunkType.LoaderGlobalNameHashes)
+    let namesId = createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNames)
+    let hashesId = createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNameHashes)
 
     const nameBuffer = new FByteArchive(d.read(namesId))
     const hashBuffer = new FByteArchive(d.read(hashesId))

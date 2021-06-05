@@ -166,7 +166,7 @@ export class FileProvider extends EventEmitter {
      * @param packageId the package ID to load.
      * @returns the parsed package
      */
-    loadGameFile(packageId: string): IoPackage
+    loadGameFile(packageId: bigint): IoPackage
 
     /**
      * Searches for the game file and then load its contained package
@@ -186,42 +186,40 @@ export class FileProvider extends EventEmitter {
                 const ubulk = x.hasUbulk() ? this.saveGameFile(x.ubulk) : null
                 return new PakPackage(uasset, uexp, ubulk, x.path, this, this.game)
             } else if (typeof x === "string") {
-                if (x.includes("/")) {
-                    const path = this.fixPath(x)
-                    const gameFile = this.findGameFile(path)
-                    if (gameFile)
-                        return this.loadGameFile(gameFile)
-                    // try load from IoStore
-                    if (this.globalDataLoaded) {
-                        const name = this.compactFilePath(x)
-                        const packageId = createFPackageId(FName.dummy(name))
-                        try {
-                            const ioFile = this.loadGameFile(packageId)
-                            if (ioFile)
-                                return ioFile
-                        } catch (e) {
-                            console.error(e)
-                            console.error(`Failed to load package ${path}`)
-                        }
+                const path = this.fixPath(x)
+                const gameFile = this.findGameFile(path)
+                if (gameFile)
+                    return this.loadGameFile(gameFile)
+                // try load from IoStore
+                if (this.globalDataLoaded) {
+                    const name = this.compactFilePath(x)
+                    const packageId = createFPackageId(FName.dummy(name))
+                    try {
+                        const ioFile = this.loadGameFile(packageId)
+                        if (ioFile)
+                            return ioFile
+                    } catch (e) {
+                        console.error(e)
+                        console.error(`Failed to load package ${path}`)
                     }
-                    // try load from file system
-                    if (!path.endsWith(".uasset") && !path.endsWith(".umap"))
-                        return null
-                    const uasset = this.saveGameFile(path)
-                    if (!uasset)
-                        return null
-                    const uexp = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".uexp")
-                    if (!uexp)
-                        return null
-                    const ubulk = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".ubulk")
-                    return new PakPackage(uasset, uexp, ubulk, path, this, this.game)
-                } else {
-                    const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
-                    if (!storeEntry)
-                        return null
-                    const ioBuffer = this.saveChunk(createIoChunkId(x, 0, EIoChunkType.ExportBundleData))
-                    return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore.value, this, this.game)
                 }
+                // try load from file system
+                if (!path.endsWith(".uasset") && !path.endsWith(".umap"))
+                    return null
+                const uasset = this.saveGameFile(path)
+                if (!uasset)
+                    return null
+                const uexp = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".uexp")
+                if (!uexp)
+                    return null
+                const ubulk = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".ubulk")
+                return new PakPackage(uasset, uexp, ubulk, path, this, this.game)
+            } else {
+                const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
+                if (!storeEntry)
+                    return null
+                const ioBuffer = this.saveChunk(createIoChunkId(x, 0, EIoChunkType.ExportBundleData))
+                return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore.value, this, this.game)
             }
         } catch (e) {
             console.error(`Failed to load package ${x.toString()}`)

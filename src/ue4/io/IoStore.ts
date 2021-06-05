@@ -51,7 +51,7 @@ export class FIoStoreTocHeader {
     compressionBlockSize: uint32
     directoryIndexSize: uint32
     partitionCount: uint32
-    containerId: string
+    containerId: bigint
     encryptionKeyGuid: FGuid
     containerFlags: EIoContainerFlags
     reserved3: uint8
@@ -427,7 +427,7 @@ export class FIoStoreReader {
                 files.push(GameFile.createFromIoStoreFile(
                     filename,
                     this.environment.path,
-                    new FByteArchive(this.toc.chunkIds[tocEntryIndex].id).readUInt64().toString())
+                    new FByteArchive(this.toc.chunkIds[tocEntryIndex].id).readUInt64())
                 )
                 return true
             }

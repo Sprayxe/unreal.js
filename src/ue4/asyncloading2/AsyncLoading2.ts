@@ -7,7 +7,7 @@ import Long from "long";
 import { UnrealArray } from "../../util/UnrealArray";
 import Collection from "@discordjs/collection";
 
-export type FSourceToLocalizedPackageIdMap = Pair<string, string>[]
+export type FSourceToLocalizedPackageIdMap = Pair<bigint, bigint>[]
 export type FCulturePackageMap = Collection<string, FSourceToLocalizedPackageIdMap>
 
 export const INVALID_INDEX = ~0
@@ -227,21 +227,21 @@ export class FScriptObjectEntry {
 }
 
 export class FContainerHeader {
-    containerId: string
+    containerId: bigint
     packageCount = 0
     names: Buffer
     nameHashes: Buffer
-    packageIds: string[]
+    packageIds: bigint[]
     storeEntries: FPackageStoreEntry[]
     culturePackageMap: FCulturePackageMap
-    packageRedirects: Pair<string, string>[]
+    packageRedirects: Pair<bigint, bigint>[]
 
     constructor(Ar: FArchive) {
         this.containerId = createFIoContainerId(Ar)
         this.packageCount = Ar.readUInt32()
         this.names = Ar.readBuffer(Ar.readInt32())
         this.nameHashes = Ar.readBuffer(Ar.readInt32())
-        this.packageIds = Ar.readArray(() => Ar.readUInt64().toString())
+        this.packageIds = Ar.readArray(() => Ar.readUInt64())
         const storeEntriesNum = Ar.readInt32()
         const storeEntriesEnd = Ar.pos + storeEntriesNum
         this.storeEntries = new UnrealArray(this.packageCount, () =>  new FPackageStoreEntry(Ar))
@@ -250,11 +250,11 @@ export class FContainerHeader {
             return {
                 key: Ar.readString(),
                 value: Ar.readArray(() =>
-                    new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
+                    new Pair(Ar.readUInt64(), Ar.readUInt64()))
             }
         })
         this.packageRedirects = Ar.readArray(() =>
-            new Pair(Ar.readUInt64().toString(), Ar.readUInt64().toString()))
+            new Pair(Ar.readUInt64(), Ar.readUInt64()))
     }
 }
 

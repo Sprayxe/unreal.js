@@ -1,10 +1,10 @@
 import { FArchive } from "../reader/FArchive";
 
-export function createFIoContainerId(source?: string | FArchive) {
-    let id = (0xFFFFFFFFFFFFFFFFn).toString()
+export function createFIoContainerId(source?: bigint | FArchive) {
+    let id = 0xFFFFFFFFFFFFFFFFn
     if (source) {
         id = source instanceof FArchive
-            ? source.readUInt64().toString()
+            ? source.readUInt64()
             : source
     }
     return id

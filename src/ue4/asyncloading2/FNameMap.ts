@@ -15,8 +15,8 @@ export class FNameMap {
         if (this.nameEntries.length)
             throw new Error("Nameentries must be empty")
 
-        const namesId = createIoChunkId("0", 0, EIoChunkType.LoaderGlobalNames)
-        const hashesId = createIoChunkId("0", 0, EIoChunkType.LoaderGlobalNameHashes)
+        const namesId = createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNames)
+        const hashesId = createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNameHashes)
 
         const nameBuffer = provider.saveChunk(namesId)
         const hashBuffer = provider.saveChunk(hashesId)

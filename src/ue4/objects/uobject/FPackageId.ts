@@ -4,13 +4,13 @@ import { CityHash } from "../../../util/CityHash";
 
 export const INVALID_ID = (~0).toString()
 
-export function createFPackageId(name: FName): string {
+export function createFPackageId(name: FName): bigint {
     const nameStr = name.toString().toLowerCase()
     const nameBuf = Buffer.from(nameStr, "utf16le")
     const hash = CityHash.cityHash64(nameBuf, 0, nameBuf.length).toUnsigned().toString()
     if (hash === INVALID_ID)
         throw new Error(`Package name hash collision \"${nameStr}\" and InvalidId`)
-    return hash
+    return BigInt(hash)
 }
 
 /**

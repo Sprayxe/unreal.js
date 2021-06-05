@@ -60,9 +60,9 @@ export enum EIoChunkType {
 /**
  * Creates a chunk identifier
  */
-export function createIoChunkId(chunkId: string, chunkIndex: uint16, ioChunkType: EIoChunkType) {
+export function createIoChunkId(chunkId: bigint, chunkIndex: uint16, ioChunkType: EIoChunkType) {
     const ioChunkId = new FIoChunkId()
-    ioChunkId.id.writeBigUInt64LE(BigInt(chunkId), 0)
+    ioChunkId.id.writeBigUInt64LE(chunkId, 0)
     ioChunkId.id.writeUInt16LE(chunkIndex, 8)
     ioChunkId.id.writeUInt8(ioChunkType, 11)
     return ioChunkId
@@ -80,9 +80,9 @@ export enum EIoContainerFlags {
 
 export class FIoDispatcherMountedContainer {
     environment: FIoStoreEnvironment
-    containerId: string
+    containerId: bigint
 
-    constructor(environment: FIoStoreEnvironment, containerId: string) {
+    constructor(environment: FIoStoreEnvironment, containerId: bigint) {
         this.environment = environment
         this.containerId = containerId
     }
