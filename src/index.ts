@@ -23,7 +23,7 @@ import { WwiseAudio } from "./ue4/converters/WwiseAudio";
     const sound = pkg.getExportOfTypeOrNull(UAkMediaAssetData) as UAkMediaAssetData
     if (sound) {
         const soundWave = WwiseAudio.convert(sound)
-        await soundWave.export()
+        soundWave.export()
         return
     }
     console.log("No audio file found.")

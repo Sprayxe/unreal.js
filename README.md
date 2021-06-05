@@ -69,7 +69,37 @@ The file provider is basically the heart of the library and from there you contr
   - `OBJECTNAME`: Name of the object to load\
    You can leave this parameter out if you provide the object name as file extension
 
-TODO: Textures, Soundwaves, ItemDefinitions
+#### Basics: Exporting sounds
+- **Exporting a sound wave**
+  ```js
+  // this will find an export which matches the class 'USoundWave'
+  const sound = pkg.getExportOfType(USoundWave)
+  // use 'pkg.getExportOfTypeOrNull(USoundWave)' if you check for undefined/null manually
+  const wave = SoundWave.convert(sound) // converts USoundWave to a usable file
+  // writes it it a file
+  writeFileSync(`MySoundFile.${wave.format}`, wave.data)
+  ```
+
+
+- **Exporting wwise audio (VALORANT)**
+  ```js
+  // this will find an export which matches the class 'UAkMediaAssetData'
+  const mediaData = pkg.getExportOfType(UAkMediaAssetData)
+  const wwise = WwiseAudio.convert(mediaData) // Converts it to a .wem file
+  // writes it to a file
+  writeFileSync(`MySoundFile.${wwise.format}`, wwise.data)
+  ```
+  **IMPORTANT**: `.wem` are not playable by windows, you have to convert it to a `.wav` file first!\
+  Unreal.JS is able to do that with [vgmstream](https://github.com/vgmstream/vgmstream). Download the zip file from [here](google-drive-link),
+  create a folder called 'vgm' in your working directory and extract all files into it. Then do:
+  ```js
+  // this will find an export which matches the class 'UAkMediaAssetData'
+  const mediaData = pkg.getExportOfType(UAkMediaAssetData)
+  const wwise = WwiseAudio.convert(mediaData) // Converts it to a .wem file
+  // converts and exports it as playable .wav file
+  wwise.export() // you can pass an output path (must include whole path with filename and extension)
+  ```
+  TODO: Textures, ItemDefinitions
 
 #### Basics: Loading locres
 - **Loading by file path**   
@@ -135,7 +165,7 @@ Replace:
 - [Sprayxe](https://twitter.com/@Sprayxe_)
 - [AmrSatrio](https://twitter.com/@AmrSatrio)
 - Inspired by [JFortniteParse](https://github.com/FabianFG/JFortniteParse)
-  - [FunGames](https://twitter.com/FunGamesLeaks)
+- Inspired by [CUE4Parse](https://github.com/FabianFG/CUE4Parse)
   
 ## Donate
 - [PayPal] TODO: PUT LINK HERE     > prob some fancy readme badge :bonk:
@@ -143,6 +173,7 @@ Replace:
 
 ## Dependencies
 - [typescript](https://npmjs.com/typescript)
+- [lodash](https://npmjs.com/lodash)  
 - [sprintf-js](https://npmjs.com/sprintf-js)
 - [ref-napi](https://npmjs.com/ref-napi)
 - [ffi-napi](https://npmjs.com/ffi-napi)
