@@ -1,7 +1,8 @@
 import { UAkMediaAssetData } from "../assets/exports/UAkMediaAssetData";
 import { sum } from "lodash";
 import { execFileSync } from "child_process"
-import { writeFileSync, unlinkSync } from "fs";
+import { writeFileSync, unlinkSync, existsSync } from "fs";
+import { ParserException } from "../../exceptions/Exceptions";
 
 export class WwiseAudio {
     public name: string
@@ -23,18 +24,19 @@ export class WwiseAudio {
     }
 
     export(outputPath?: string) {
-        const path = process.cwd() + "\\" + this.name
+        const cwd = process.cwd()
+        if (!existsSync(cwd + "\\vgm\\test.exe"))
+            throw ParserException("Converting .wem files requires vgmstream. Please check the ReadMe of the lib for further information!")
+        const path = cwd + "\\" + this.name
         const src = path + "." + this.format
-        // TODO: change path later (when release)
-        const exec = `D:\\Uasset\\Vgm\\test.exe "${src}" -o "${outputPath || path + ".wav"}"`
-        writeFileSync(src, this.data)
-        execFileSync(exec, {
+        writeFileSync(src, this.data) // write .wem file
+        execFileSync(`${cwd}\\vgm\\test.exe "${src}" -o "${outputPath || path + ".wav"}"`, {
             windowsHide: true,
             stdio: "pipe",
-            cwd: "D:\\Uasset\\Vgm",
+            cwd: `${cwd}\\vgm`,
             shell: true
-        })
-        unlinkSync(src)
+        }) // convert to .wav file
+        unlinkSync(src) // delete .wem file
     }
 
     static convert(mediaData: UAkMediaAssetData): WwiseAudio {

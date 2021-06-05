@@ -2,6 +2,7 @@ import * as ffi from "ffi-napi"
 import { CompressException, DecompressException, OodleException } from "./Exceptions";
 import ref from "ref-napi";
 import { INTEGER_MAX_VALUE } from "../util/Const";
+import { existsSync } from "fs";
 
 export const COMPRESSOR_LZH = 0
 export const COMPRESSOR_LZHLW = 1
@@ -124,6 +125,8 @@ export class Oodle {
     static ensureLib() {
         try {
             if (!this.oodleLib) {
+                if (!existsSync(process.cwd() + "/oo2core_8_win64.dll"))
+                    throw OodleException("Missing oodle library 'oo2core_8_win64.dll'!")
                 this.oodleLib = ffi.Library("oo2core_8_win64.dll", {
                     OodleLZ_Decompress: ["int", ["uint8*", "int", "uint8*", "size_t", "int", "int", "int", "uint8*", "size_t", "void*", "void*", "void*", "size_t", "int"]],
                     OodleLZ_Compress: ["int", ["int", "uint8*", "size_t", "uint8*", "int", "void*", "size_t", "size_t", "void*", "size_t"]]

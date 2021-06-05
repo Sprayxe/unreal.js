@@ -20,7 +20,8 @@
 ### Usage
 #### Basics: FileProvider
 The file provider is basically the heart of the library and from there you control basically all features.
-- **Usage with Fortnite**
+- **Usage with Fortnite**\
+  **IMPORTANT**: When using the library Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory.
     ```js
     // Require library and create new instance
     const { FileProvider, FGuid } = require("unreal.js")
@@ -90,7 +91,7 @@ The file provider is basically the heart of the library and from there you contr
   writeFileSync(`MySoundFile.${wwise.format}`, wwise.data)
   ```
   **IMPORTANT**: `.wem` are not playable by windows, you have to convert it to a `.wav` file first!\
-  Unreal.JS is able to do that with [vgmstream](https://github.com/vgmstream/vgmstream). Download the zip file from [here](google-drive-link),
+  Unreal.JS is able to do that with [vgmstream](https://github.com/vgmstream/vgmstream). Download the zip file from [here](https://drive.google.com/file/d/1Fed4ba_FvegUgeIXCgnlcoUzoABC-ZxX/view?usp=sharing),
   create a folder called 'vgm' in your working directory and extract all files into it. Then do:
   ```js
   // this will find an export which matches the class 'UAkMediaAssetData'
