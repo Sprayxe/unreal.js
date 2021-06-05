@@ -3,9 +3,6 @@ import { FGuid } from "./ue4/objects/core/misc/Guid";
 import axios from "axios";
 //import { UnrealMap } from "./util/UnrealMap";
 import { Game } from "./ue4/versions/Game";
-import { writeFileSync, unlinkSync } from "fs";
-import { UAkMediaAssetData } from "./ue4/assets/exports/UAkMediaAssetData";
-import { WwiseAudio } from "./ue4/converters/WwiseAudio";
 
 (async () => {
     //const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
@@ -20,13 +17,7 @@ import { WwiseAudio } from "./ue4/converters/WwiseAudio";
     const path = "ShooterGame/Content/WwiseAudio/Media/329781885"
 
     const pkg = provider.loadGameFile(path)
-    const sound = pkg.getExportOfTypeOrNull(UAkMediaAssetData) as UAkMediaAssetData
-    if (sound) {
-        const soundWave = WwiseAudio.convert(sound)
-        soundWave.export()
-        return
-    }
-    console.log("No audio file found.")
+    console.log(pkg.toJson())
 })()
 
 async function submitFortniteAesKeys(provider: FileProvider) {
