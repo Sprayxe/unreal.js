@@ -21,7 +21,7 @@
 #### Basics: FileProvider
 The file provider is basically the heart of the library and from there you control basically all features.
 - **Usage with Fortnite**\
-  **IMPORTANT**: When using the library Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory.
+  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory.
     ```js
     // Require library and create new instance
     const { FileProvider, FGuid } = require("unreal.js")
