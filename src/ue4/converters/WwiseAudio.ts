@@ -2,16 +2,16 @@ import { UAkMediaAssetData } from "../assets/exports/UAkMediaAssetData";
 import { sum } from "lodash";
 import { execFileSync } from "child_process"
 import { writeFileSync, unlinkSync } from "fs";
-import { v4 } from "uuid"
 
 export class WwiseAudio {
+    public name: string
     public data: Buffer
     public format: string
-    public readonly id = v4().split("-").join("")
 
-    constructor(data: Buffer, format: string) {
+    constructor(data: Buffer, format: string, name: string) {
         this.data = data
         this.format = format
+        this.name = name
     }
 
     equals(other?: any) {
@@ -23,15 +23,16 @@ export class WwiseAudio {
     }
 
     export(outputPath?: string) {
-        const path = process.cwd() + "\\" + this.id
+        const path = process.cwd() + "\\" + this.name
         const src = path + "." + this.format
+        // TODO: change path later (when release)
         const exec = `D:\\Uasset\\Vgm\\test.exe "${src}" -o "${outputPath || path + ".wav"}"`
         writeFileSync(src, this.data)
         execFileSync(exec, {
-            shell: true,
             windowsHide: true,
-            stdio: "inherit",
-            input: ""
+            stdio: "pipe",
+            cwd: "D:\\Uasset\\Vgm",
+            shell: true
         })
         unlinkSync(src)
     }
@@ -43,6 +44,8 @@ export class WwiseAudio {
             dataChunk.bulkData.data.copy(data, dataOff, 0, dataChunk.bulkData.data.length)
             dataOff += dataChunk.bulkData.data.length
         })
-        return new WwiseAudio(data, "wem")
+        const pathEnd = mediaData.owner.fileName.split("/").pop()
+        const fileName = pathEnd.substring(0, pathEnd.lastIndexOf(".") - 1)
+        return new WwiseAudio(data, "WEM", fileName)
     }
 }

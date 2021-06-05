@@ -1,6 +1,7 @@
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { EBulkDataFlags, EBulkDataFlags_Check } from "../enums/EBulkDataFlags";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
+import { VER_UE4_BULKDATA_AT_LARGE_OFFSETS } from "../../versions/Versions";
 
 export class FByteBulkDataHeader {
     public bulkDataFlags: number
@@ -21,12 +22,13 @@ export class FByteBulkDataHeader {
                 this.elementCount = arg.readInt32()
                 this.sizeOnDisk = arg.readInt32()
             }
-            this.offsetInFile = Number(arg.readInt32())
-            if (!EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_NoOffsetFixUp, this.bulkDataFlags)) {
+            this.offsetInFile = arg.ver >= VER_UE4_BULKDATA_AT_LARGE_OFFSETS ? Number(arg.readInt64()) : arg.readInt32()
+             if (!EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_NoOffsetFixUp, this.bulkDataFlags)) {
                 this.offsetInFile += arg.bulkDataStartOffset
             }
             if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_BadDataVersion, this.bulkDataFlags)) {
                 arg.pos += 2 // const dummyValue = Ar.readUInt16()
+                this.bulkDataFlags &= ~EBulkDataFlags.BULKDATA_BadDataVersion
             }
         } else {
             this.bulkDataFlags = arg
