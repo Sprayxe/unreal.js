@@ -24,7 +24,7 @@ export class Utils {
     }
 
     static align(value: number, alignment: number) {
-        return value + alignment & ~(alignment - 1)
+        return value + alignment - 1 & ~(alignment - 1)
     }
 
     static repeat(times: number, action: (n: number) => void) {
