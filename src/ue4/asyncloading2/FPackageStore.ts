@@ -141,7 +141,6 @@ export class FPackageStore extends FOnContainerMountedListener {
             this.storeEntries.set(sourceId, this.storeEntries.get(redirectId))
         }
 
-        
         for (const storeEntry of this.storeEntries.values()) {
             storeEntry.importedPackages.forEach((importedPackageId, index) => {
                 storeEntry.importedPackages[index] = redirects[importedPackageId]

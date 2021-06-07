@@ -23,6 +23,11 @@ export class Utils {
         return (value & (alignment - 1)) <= 0
     }
 
+    static alignBigInt(value: bigint, alignment: bigint) {
+        const h = value + alignment - 1n & ~(alignment - 1n)
+        return Number(h)
+    }
+
     static align(value: number, alignment: number) {
         return value + alignment - 1 & ~(alignment - 1)
     }

@@ -368,12 +368,14 @@ export class FIoStoreReader {
         const offsetAndLength = this.toc.getOffsetAndLength(chunkId)
         if (!offsetAndLength)
             throw new Error("Unknown chunk ID")
-        const offset = Number(offsetAndLength.offset)
-        const length = Number(offsetAndLength.length)
+        const _offset = offsetAndLength.offset
+        const _length = offsetAndLength.length
+        const offset = Number(_offset)
+        const length = Number(_length)
         const threadBuffers = new FThreadBuffers()
         const compressionBlockSize = this.toc.header.compressionBlockSize
         const firstBlockIndex = Math.floor(offset / compressionBlockSize)
-        const lastBlockIndex = Math.floor((Utils.align(offset + length, compressionBlockSize) - 1) / compressionBlockSize)
+        const lastBlockIndex = Math.floor((Utils.alignBigInt(_offset + _length, BigInt(compressionBlockSize)) - 1) / compressionBlockSize)
         let offsetInBlock = offset % compressionBlockSize
         const dst = Buffer.alloc(length)
         let dstOff = 0
