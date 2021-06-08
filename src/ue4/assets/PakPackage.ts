@@ -15,6 +15,7 @@ import { Locres } from "../locres/Locres";
 import { FAssetArchiveWriter, FByteArchiveWriter } from "./writer/FAssetArchiveWriter";
 import { WritableStreamBuffer } from "stream-buffers";
 import { sum } from "lodash"
+import { Lazy } from "../../util/Lazy";
 
 export class PakPackage extends Package {
     protected packageMagic = 0x9E2A83C1
@@ -115,7 +116,7 @@ export class PakPackage extends Package {
         }
 
         this.exportMap.forEach((e) => {
-            const parse = () => {
+            e.exportObject = new Lazy<UObject>(() => {
                 const uexpAr2 = uexpAr.clone()
                 uexpAr2.seekRelative(e.serialOffset)
                 const validPos = (uexpAr2.pos + e.serialSize)
@@ -131,8 +132,7 @@ export class PakPackage extends Package {
                     console.debug(`Successfully read ${obj.exportType} at ${uexpAr2.toNormalPos(e.serialOffset)} with size ${e.serialSize}`)
                 }
                 return obj
-            }
-            e.exportObject = parse()
+            })
         })
     }
 
@@ -178,7 +178,7 @@ export class PakPackage extends Package {
             return it.objectName.text === objectName
                 && (className == null || (this.getImportObject(it.classIndex))?.objectName?.text === className)
         })
-        return exp?.exportObject
+        return exp?.exportObject?.value
     }
 
     getImportObject(imp: FPackageIndex) {

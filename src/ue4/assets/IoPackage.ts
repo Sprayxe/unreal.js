@@ -8,7 +8,8 @@ import {
     FMappedName_EType,
     FPackageObjectIndex,
     FPackageStoreEntry,
-    FPackageSummary, FScriptObjectEntry
+    FPackageSummary,
+    FScriptObjectEntry
 } from "../asyncloading2/AsyncLoading2";
 import { FNameMap } from "../asyncloading2/FNameMap";
 import { UObject } from "./exports/UObject";
@@ -28,6 +29,7 @@ import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { Locres } from "../locres/Locres";
 import { GSuppressMissingSchemaErrors } from "../../Globals";
 import { UnrealArray } from "../../util/UnrealArray";
+import { Lazy } from "../../util/Lazy";
 
 export class IoPackage extends Package {
     packageId: bigint
@@ -40,7 +42,7 @@ export class IoPackage extends Package {
     exportBundleEntries: FExportBundleEntry[]
     graphData: FImportedPackage[]
     importedPackages: IoPackage[]
-    exportsLazy: UObject[]
+    exportsLazy: Lazy<UObject>[]
     bulkDataStartOffset = 0
 
     constructor(uasset: Buffer,
@@ -59,8 +61,10 @@ export class IoPackage extends Package {
         // Name map
         this.nameMap = new FNameMap()
         if (this.summary.nameMapNamesSize > 0) {
-            const nameMapNamesData = new FByteArchive(Buffer.from(uasset, this.summary.nameMapNamesOffset, this.summary.nameMapNamesSize))
-            const nameMapHashesData = new FByteArchive(Buffer.from(uasset, this.summary.nameMapHashesOffset, this.summary.nameMapHashesSize))
+            const nameMapNamesData = new FByteArchive(uasset.subarray(0, this.summary.nameMapNamesOffset + this.summary.nameMapNamesSize))
+            nameMapNamesData.pos = this.summary.nameMapNamesOffset
+            const nameMapHashesData = new FByteArchive(uasset.subarray(0, this.summary.nameMapHashesOffset + this.summary.nameMapHashesSize))
+            nameMapHashesData.pos = this.summary.nameMapHashesOffset
             this.nameMap.load(nameMapNamesData, nameMapHashesData, FMappedName_EType.Package)
         }
 
@@ -79,7 +83,7 @@ export class IoPackage extends Package {
         Ar.pos = this.summary.exportMapOffset
         const exportCount = storeEntry.exportCount
         this.exportMap = new UnrealArray(exportCount, () => new FExportMapEntry(Ar))
-        this.exportsLazy = new Array<UObject>(exportCount)
+        this.exportsLazy = new Array<Lazy<UObject>>(exportCount)
 
         // Export bundles
         Ar.pos = this.summary.exportBundlesOffset
@@ -94,31 +98,29 @@ export class IoPackage extends Package {
         // Preload dependencies
         this.importedPackages = this.graphData.map(it => provider.loadGameFile(it.importedPackageId))
 
-        const allExportDataOffset = this.summary.graphDataOffset + this.summary.graphDataSize
-        let currentExportDataOffset = allExportDataOffset
+        let currentExportDataOffset = this.summary.graphDataOffset + this.summary.graphDataSize
         for (const exportBundle of this.exportBundleHeaders) {
-            let i = 0
-            while (i < exportBundle.entryCount) {
+            for (let i = 0; i < exportBundle.entryCount; ++i) {
                 const entry = this.exportBundleEntries[exportBundle.firstEntryIndex + i]
                 if (entry.commandType === EExportCommandType.ExportCommandType_Serialize) {
                     const localExportIndex = entry.localExportIndex
                     const exp = this.exportMap[localExportIndex]
                     const localExportDataOffset = currentExportDataOffset
-                    const self = this
-                    function _exportsLazy() {
+                    this.exportsLazy[localExportIndex] = new Lazy<UObject>(() => {
                         // Create
-                        const objectName = self.nameMap.getName(exp.objectName)
-                        const obj = Package.constructExport(self.resolveObjectIndex(exp.classIndex)?.getObject() as UStruct)
+                        const objectName = this.nameMap.getName(exp.objectName)
+                        const obj = Package.constructExport(this.resolveObjectIndex(exp.classIndex)?.getObject()?.value as UStruct)
                         obj.name = objectName.text
-                        obj.outer = (self.resolveObjectIndex(exp.outerIndex) as ResolvedExportObject)?.exportObject || self
-                        obj.template = (self.resolveObjectIndex(exp.templateIndex) as ResolvedExportObject)?.exportObject
+                        // TODO remove 'false' param, fix the issue
+                        obj.outer = (this.resolveObjectIndex(exp.outerIndex, false) as ResolvedExportObject)?.exportObject?.value || this
+                        obj.template = (this.resolveObjectIndex(exp.templateIndex, false) as ResolvedExportObject)?.exportObject?.value
                         obj.flags = exp.objectFlags
 
                         // Serialize
-                        const Ar = new FExportArchive(uasset, obj, self)
-                        Ar.useUnversionedPropertySerialization = (self.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0
+                        const Ar = new FExportArchive(uasset, obj, this)
+                        Ar.useUnversionedPropertySerialization = (this.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0
                         Ar.uassetSize = exp.cookedSerialOffset - localExportDataOffset
-                        Ar.bulkDataStartOffset = self.bulkDataStartOffset
+                        Ar.bulkDataStartOffset = this.bulkDataStartOffset
                         Ar.pos = localExportDataOffset
                         const validPos = Ar.pos + exp.cookedSerialSize
                         try {
@@ -134,11 +136,9 @@ export class IoPackage extends Package {
                             }
                         }
                         return obj
-                    }
-                    this.exportsLazy[localExportIndex] = _exportsLazy()
+                    })
                     currentExportDataOffset = exp.cookedSerialSize
                 }
-                ++i
             }
         }
         this.bulkDataStartOffset = currentExportDataOffset
@@ -196,7 +196,7 @@ export class IoPackage extends Package {
             if (is) exportIndex = k
             return is
         })
-        return exportIndex !== -1 ? this.exportsLazy[exportIndex] : null
+        return exportIndex !== -1 ? this.exportsLazy[exportIndex].value : null
     }
 
     toJson(locres?: Locres): IJson[] {
@@ -255,13 +255,13 @@ export abstract class ResolvedObject {
     abstract getName(): FName
     getOuter(): ResolvedObject { return null }
     getSuper(): ResolvedObject { return null }
-    getObject(): UObject { return null }
+    getObject(): Lazy<UObject> { return null }
 }
 
 export class ResolvedExportObject extends ResolvedObject {
     exportIndex: number
     exportMapEntry: FExportMapEntry
-    exportObject: UObject
+    exportObject: Lazy<UObject>
 
     constructor(exportIndex: number, pkg: IoPackage) {
         super(pkg)
@@ -286,29 +286,31 @@ export class ResolvedScriptObject extends ResolvedObject {
 
     getName(): FName { return this.scriptImport.objectName.toName() }
     getOuter() { return this.pkg.resolveObjectIndex(this.scriptImport.outerIndex) }
-    getObject(): UObject {
-        const name = this.getName()
-        if (name.text[0] === "E") {
-            let enumValues = this.pkg.provider?.mappingsProvider?.getEnum(name)
-            if (!enumValues) {
-                if ((this.pkg.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0) {
-                    throw MissingSchemaException(`Unknown enum ${name}`)
+    getObject(): Lazy<UObject> {
+        return new Lazy<UObject>(() => {
+            const name = this.getName()
+            if (name.text[0] === "E") {
+                let enumValues = this.pkg.provider?.mappingsProvider?.getEnum(name)
+                if (!enumValues) {
+                    if ((this.pkg.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0) {
+                        throw MissingSchemaException(`Unknown enum ${name}`)
+                    }
+                    enumValues = []
                 }
-                enumValues = []
-            }
-            const enm = new UEnum()
-            enm.name = name.text
-            enm.names = new UnrealArray(enumValues.length, (it) => new Pair<FName, number>(FName.dummy(`${name}::${enumValues[it]}`), it))
-            return enm
-        } else {
-            let struct = this.pkg.provider?.mappingsProvider?.getStruct(name)
-            if (!struct) {
-                if ((this.pkg.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0) {
-                    throw MissingSchemaException(`Unknown struct ${name}`)
+                const enm = new UEnum()
+                enm.name = name.text
+                enm.names = new UnrealArray(enumValues.length, (it) => new Pair<FName, number>(FName.dummy(`${name}::${enumValues[it]}`), it))
+                return enm
+            } else {
+                let struct = this.pkg.provider?.mappingsProvider?.getStruct(name)
+                if (!struct) {
+                    if ((this.pkg.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0) {
+                        throw MissingSchemaException(`Unknown struct ${name}`)
+                    }
+                    struct = new UScriptStruct(name)
                 }
-                struct = new UScriptStruct(name)
+                return struct
             }
-            return struct
-        }
+        })
     }
 }

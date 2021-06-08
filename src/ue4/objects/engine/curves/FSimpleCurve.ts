@@ -187,6 +187,13 @@ export class FSimpleCurve extends FRealCurve {
         return interpVal + cycleValueOffset
     }
 
+    toJson() {
+        const obj = super.toJson() as any
+        obj.interpMode = Object.keys(ERichCurveInterpMode)[this.interpMode]
+        obj.keys = this.keys.map(k => k.toJson())
+        return obj
+    }
+
     private evalForTwoKeys(key1: FSimpleCurveKey, key2: FSimpleCurveKey, inTime: number) {
         const diff = key2.time - key1.time
         if (diff > 0 && this.interpMode !== ERichCurveInterpMode.RCIM_Constant) {

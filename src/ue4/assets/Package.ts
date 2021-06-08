@@ -5,6 +5,7 @@ import { UObject } from "./exports/UObject";
 import { UStruct } from "./exports/UStruct";
 import { UScriptStruct } from "./exports/UScriptStruct";
 import { Locres } from "../locres/Locres";
+import { Lazy } from "../../util/Lazy";
 
 export abstract class Package extends UObject {
     fileName: string
@@ -18,9 +19,9 @@ export abstract class Package extends UObject {
         this.game = game
     }
 
-    abstract exportsLazy: UObject[]
+    abstract exportsLazy: Lazy<UObject>[]
     get exports(): UObject[] {
-        return this.exportsLazy.map(it => it)
+        return this.exportsLazy.map(it => it.value)
     }
     packageFlags = 0
 

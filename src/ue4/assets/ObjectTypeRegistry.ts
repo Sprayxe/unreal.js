@@ -6,7 +6,7 @@ export class ObjectTypeRegistry {
     static async init() {
         await this.registerEngine()
         await this.registerValorant()
-        //await this.registerFortnite()
+        await this.registerFortnite()
     }
 
     private static async registerEngine() {
@@ -20,14 +20,13 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerFortnite() {
-        /*const dir = await fs.readdir("./dist/ue4/assets/exports").filter(f => f.endsWith(".js"))
+        const dir = (await fs.readdir("./dist/fort/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir) {
-            const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
+            const clazz = (await import(`../../fort/exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
             this.registerClass(clazz)
-        }*/
-        throw new Error("Not implemented.")
+        }
     }
 
     private static async registerValorant() {

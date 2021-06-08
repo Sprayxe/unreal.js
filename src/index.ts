@@ -21,8 +21,8 @@ import axios from "axios";
 })()
 
 async function submitFortniteAesKeys(provider: FileProvider) {
-    const { data } = await axios.get("https://benbot.app/api/v1/aes")
-    await provider.submitKey(FGuid.mainGuid, data.mainKey)
+    //const { data } = await axios.get("https://benbot.app/api/v1/aes")
+    await provider.submitKey(FGuid.mainGuid, "0x7412E4B98E3CEB374FBF9EB5654A5D7B785B18E3A997FAF8D22EFEEA00DF851E")
     /*const keys = new UnrealMap<FGuid, string>()
     for (const key in data.dynamicKeys) {
         const value = data.dynamicKeys[key]

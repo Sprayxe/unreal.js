@@ -12,5 +12,4 @@ export class UCurveFloat extends UObject {
     public FloatCurve: FRichCurve = null
     /** Flag to represent event curve */
     public bIsEventCurve: boolean = null
-
 }

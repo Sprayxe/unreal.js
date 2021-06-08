@@ -4,12 +4,14 @@ import { UObject } from "./UObject";
 
 export class UScriptStruct extends UStruct {
     useClassProperties = false
-    private field = null
+    private field0 = null
+    private field1 = null
 
     set structClass(value: any) {
         if (value == null)
             return
-        this.field = new value()
+        this.field1 = value
+        this.field0 = new value()
         if (this.superStruct)
             return
         const superclass = value
@@ -18,19 +20,23 @@ export class UScriptStruct extends UStruct {
         }
     }
 
+    get rawStructClass() {
+        return this.field1
+    }
+
     get structClass() {
-        return this.field
+        return this.field0
     }
 
     constructor()
     constructor(name: FName)
-    constructor(clazz: any, name: FName)
+    constructor(clazz: any, name?: FName)
     constructor(x?: any, y?: any) {
         super()
-        if (!y) {
-            this.name = x?.text || FName.NAME_None
+        if (x instanceof FName) {
+            this.name = x?.text || FName.NAME_None.text
         } else {
-            this.name = (!(y instanceof FName) ? FName.dummy(x.name, 0) || FName.NAME_None : y).text
+            this.name = (!(y instanceof FName) ? FName.dummy(x.name) || FName.NAME_None : y).text
             this.structClass = x
             this.useClassProperties = true
         }

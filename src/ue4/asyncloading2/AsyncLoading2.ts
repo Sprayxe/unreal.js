@@ -336,7 +336,7 @@ export class FExportBundleEntry {
 
     constructor(Ar: FArchive) {
         this.localExportIndex = Ar.readInt32()
-        this.commandType = Object.values(EExportCommandType)[Ar.readInt32()] as number
+        this.commandType = Ar.readInt32()
     }
 }
 

@@ -13,6 +13,7 @@ import {
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
 import { FAssetArchiveWriter } from "../../assets/writer/FAssetArchiveWriter";
 import { IoPackage } from "../../assets/IoPackage";
+import { Lazy } from "../../../util/Lazy";
 
 export class FPackageIndex {
     index: number
@@ -121,7 +122,7 @@ export class FObjectExport extends FObjectResource {
     createBeforeSerializationDependencies: number
     serializationBeforeCreateDependencies: number
     createBeforeCreateDependencies: number
-    exportObject: UObject
+    exportObject: Lazy<UObject>
 
     constructor(Ar: FAssetArchive)
     constructor(

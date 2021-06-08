@@ -269,6 +269,12 @@ export class FRichCurve extends FRealCurve {
         return interpVal + cycleValueOffset
     }
 
+    toJson() {
+        const obj = this.toJson() as any
+        obj.keys = this.keys.map(k => k.toJson())
+        return obj
+    }
+
     private static evalForTwoKeys(key1: FRichCurveKey, key2: FRichCurveKey, inTime: number): number {
         const diff = key2.time - key1.time
 

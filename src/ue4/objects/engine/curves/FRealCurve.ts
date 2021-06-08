@@ -77,4 +77,12 @@ export class FRealCurve {
 
         cycleCount.element = Math.abs(cycleCount.element)
     }
+
+    toJson() {
+        return {
+            defaultValue: this.defaultValue,
+            preInfinityExtrap: Object.keys(ERichCurveExtrapolation)[this.preInfinityExtrap],
+            postInfinityExtrap: Object.keys(ERichCurveExtrapolation)[this.postInfinityExtrap]
+        }
+    }
 }
