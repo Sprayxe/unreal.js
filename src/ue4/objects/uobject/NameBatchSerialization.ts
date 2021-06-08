@@ -9,7 +9,11 @@ export function loadNameBatch(nameDataAr: FArchive, hashDataAr?: FArchive) {
         if (!Utils.isAligned(hashDataSize, 8))
             throw new Error(`Hashdatasize (${hashDataSize}) must be aligned to 8!`)
         const num = hashDataSize / 8 - 1
-        return new UnrealArray(num, () => loadNameHeader(nameDataAr))
+        const arr = []
+        for (let i = 0; i < num; ++i) {
+            arr[i] = loadNameHeader(nameDataAr)
+        }
+        return arr
     } else {
         const num = nameDataAr.readInt32()
         if (num === 0)

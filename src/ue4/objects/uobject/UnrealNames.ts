@@ -20,7 +20,7 @@ export class FSerializedNameHeader {
 export function loadNameHeader(inOutAr: FArchive) {
     const header = new FSerializedNameHeader(inOutAr)
     const len = header.len()
-    return header.isUtf16() ?
-        Buffer.from(inOutAr.readBuffer(len * 2)).toString("utf16le") :
-        Buffer.from(inOutAr.readBuffer(len)).toString("utf-8")
+    return header.isUtf16()
+        ? Buffer.from(inOutAr.readBuffer(len * 2)).toString("utf16le")
+        : Buffer.from(inOutAr.readBuffer(len)).toString()
 }
