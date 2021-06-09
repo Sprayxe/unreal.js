@@ -4,9 +4,9 @@ import { FSoftObjectPath } from "../../ue4/objects/uobject/SoftObjectPath";
 import { FortColorPalette } from "../objects/FortColorPalette";
 
 export class FortItemSeriesDefinition extends UPrimaryDataAsset {
-    public DisplayName: FText
-    public Colors: FortColorPalette
-    public BackgroundTexture: FSoftObjectPath
-    public ItemCardMaterial: FSoftObjectPath
-    public BackgroundMaterial: FSoftObjectPath
+    public DisplayName: FText = null
+    public Colors: FortColorPalette = null
+    public BackgroundTexture: FSoftObjectPath = null
+    public ItemCardMaterial: FSoftObjectPath = null
+    public BackgroundMaterial: FSoftObjectPath = null
 }

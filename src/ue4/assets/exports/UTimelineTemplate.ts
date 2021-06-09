@@ -8,47 +8,47 @@ import { UCurveFloat } from "../../objects/engine/curves/UCurveFloat";
 import { FBPVariableMetaDataEntry } from "../objects/FBPVariableMetaDataEntry";
 
 export class UTimelineTemplate extends UObject {
-    public TimelineLength: number;
-    public LengthMode: ETimelineLengthMode
-    public bAutoPlay: boolean
-    public bLoop: boolean
-    public bReplicated: boolean
-    public bIgnoreTimeDilation: boolean
-    public EventTracks: FTTEventTrack[]
-    public FloatTracks: FTTFloatTrack[]
-    public VectorTracks: FTTVectorTrack[]
-    public LinearColorTracks: FTTLinearColorTrack[]
-    public MetaDataArray: FBPVariableMetaDataEntry[]
-    public TimelineGuid: FGuid
-    public TimelineTickGroup: ETickingGroup
-    public VariableName: FName
-    public DirectionPropertyName: FName
-    public UpdateFunctionName: FName
-    public FinishedFunctionName: FName
+    public TimelineLength: number = null
+    public LengthMode: ETimelineLengthMode = null
+    public bAutoPlay: boolean = null
+    public bLoop: boolean = null
+    public bReplicated: boolean = null
+    public bIgnoreTimeDilation: boolean = null
+    public EventTracks: FTTEventTrack[] = null
+    public FloatTracks: FTTFloatTrack[] = null
+    public VectorTracks: FTTVectorTrack[] = null
+    public LinearColorTracks: FTTLinearColorTrack[] = null
+    public MetaDataArray: FBPVariableMetaDataEntry[] = null
+    public TimelineGuid: FGuid = null
+    public TimelineTickGroup: ETickingGroup = null
+    public VariableName: FName = null
+    public DirectionPropertyName: FName = null
+    public UpdateFunctionName: FName = null
+    public FinishedFunctionName: FName = null
 }
 
 export class FTTTrackBase {
-    public TrackName: FName
-    public bIsExternalCurve: boolean
+    public TrackName: FName = null
+    public bIsExternalCurve: boolean = null
 }
 
 export class FTTEventTrack extends FTTTrackBase {
-    public FunctionName: FName
-    public CurveKeys: UCurveFloat[]
+    public FunctionName: FName = null
+    public CurveKeys: UCurveFloat[] = null
 }
 
 export class FTTPropertyTrack extends FTTTrackBase {
-    public PropertyName: FName
+    public PropertyName: FName = null
 }
 
 export class FTTFloatTrack extends FTTPropertyTrack {
-    public CurveFloat: UCurveFloat
+    public CurveFloat: UCurveFloat = null
 }
 
 export class FTTVectorTrack extends FTTPropertyTrack {
-    public CurveVector: FPackageIndex
+    public CurveVector: FPackageIndex = null
 }
 
 export class FTTLinearColorTrack extends FTTPropertyTrack {
-    public CurveLinearColor: FPackageIndex
+    public CurveLinearColor: FPackageIndex = null
 }

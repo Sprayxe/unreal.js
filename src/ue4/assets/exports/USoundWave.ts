@@ -10,33 +10,34 @@ import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { ESoundWaveLoadingBehavior } from "../enums/ESoundWaveLoadingBehavior";
 import { FGuid } from "../../objects/core/misc/Guid";
 import { FFormatContainer } from "../../objects/uobject/serialization/FFormatContainer";
+import { UProperty } from "../../../util/decorators/UProperty";
 
 export class USoundWave extends USoundBase {
-    public CompressionQuality = 0
-    public StreamingPriority = 0
-    public SampleRateQuality: ESoundwaveSampleRateSettings = null
-    public SoundGroup: ESoundGroup = null
-    public bLooping = false
-    public bStreaming = false
-    public bSeekableStreaming = false
-    public LoadingBehavior: ESoundWaveLoadingBehavior = null
-    public bMature = false
-    public bManualWordWrap = false
-    public bSingleLine = false
-    public bIsAmbisonics = false
-    public FrequenciesToAnalyze: number[] = null
-    public CookedSpectralTimeData: FSoundWaveSpectralTimeData[] = null
-    public CookedEnvelopeTimeData: FSoundWaveEnvelopeTimeData[] = null
-    public InitialChunkSize = 0
-    public SpokenText: string = null
-    public SubtitlePriority = 0.0
-    public Volume = 0.0
-    public Pitch = 0.0
-    public NumChannels = 0
-    public SampleRate = 0
-    public Subtitles: FSubtitleCue[] = null
-    public Curves: FPackageIndex /*UCurveTable*/ = null
-    public InternalCurves: FPackageIndex /*UCurveTable*/ = null
+    @UProperty() public CompressionQuality = 0
+    @UProperty() public StreamingPriority = 0
+    @UProperty() public SampleRateQuality: ESoundwaveSampleRateSettings = null
+    @UProperty() public SoundGroup: ESoundGroup = null
+    @UProperty() public bLooping = false
+    @UProperty() public bStreaming = false
+    @UProperty() public bSeekableStreaming = false
+    @UProperty() public LoadingBehavior: ESoundWaveLoadingBehavior = null
+    @UProperty() public bMature = false
+    @UProperty() public bManualWordWrap = false
+    @UProperty() public bSingleLine = false
+    @UProperty() public bIsAmbisonics = false
+    @UProperty() public FrequenciesToAnalyze: number[] = null
+    @UProperty() public CookedSpectralTimeData: FSoundWaveSpectralTimeData[] = null
+    @UProperty() public CookedEnvelopeTimeData: FSoundWaveEnvelopeTimeData[] = null
+    @UProperty() public InitialChunkSize = 0
+    @UProperty() public SpokenText: string = null
+    @UProperty() public SubtitlePriority = 0.0
+    @UProperty() public Volume = 0.0
+    @UProperty() public Pitch = 0.0
+    @UProperty() public NumChannels = 0
+    @UProperty() public SampleRate = 0
+    @UProperty() public Subtitles: FSubtitleCue[] = null
+    @UProperty() public Curves: FPackageIndex /*UCurveTable*/ = null
+    @UProperty() public InternalCurves: FPackageIndex /*UCurveTable*/ = null
 
     public bCooked = false
     /** Uncompressed wav data 16 bit in mono or stereo - stereo not allowed for multichannel data */
@@ -126,22 +127,30 @@ enum ESoundGroup {
 
 
 class FSoundWaveSpectralTimeData {
+    @UProperty()
     public Data: FSoundWaveSpectralDataEntry[] = null
+    @UProperty()
     public TimeSec = 0.0
 }
 
 class FSoundWaveSpectralDataEntry {
+    @UProperty()
     public Magnitude = 0.0
+    @UProperty()
     public NormalizedMagnitude = 0.0
 }
 
 class FSoundWaveEnvelopeTimeData {
+    @UProperty()
     public Amplitude = 0.0
+    @UProperty()
     public TimeSec = 0.0
 }
 
 class FSubtitleCue {
+    @UProperty()
     public Text: FText = null
+    @UProperty()
     public Time = 0.0
 }
 

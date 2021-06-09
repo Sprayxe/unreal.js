@@ -6,8 +6,8 @@ export class PropertyInfo {
     type = new PropertyType()
     arrayDim = 1
 
-    constructor(name: string, type: PropertyType, arrayDim: number)
     constructor(json: any)
+    constructor(name: string, type: PropertyType, arrayDim: number)
     constructor(...params) {
         if (typeof params[0] === "string") {
             this.name = params[0]

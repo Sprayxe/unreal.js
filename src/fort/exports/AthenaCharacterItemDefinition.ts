@@ -11,13 +11,13 @@ import { MarshalledVFX_AuthoredDataConfig } from "./MarshalledVFX_AuthoredDataCo
 import { UProperty } from "../../util/decorators/UProperty";
 
 export class AthenaCharacterItemDefinition extends AthenaCosmeticItemDefinition {
-    public RequestedDataStores: UnrealMap<FName, UObject>
-    public AuthoredVFXData_ByPart: UnrealMap<EFortCustomPartType, MarshalledVFX_AuthoredDataConfig>
-    public HeroDefinition: FortHeroType
-    public DefaultBackpack: AthenaBackpackItemDefinition
-    public RequiredCosmeticItems: AthenaCosmeticItemDefinition[]
-    public Gender: EFortCustomGender
+    public RequestedDataStores: UnrealMap<FName, UObject> = null
+    public AuthoredVFXData_ByPart: UnrealMap<EFortCustomPartType, MarshalledVFX_AuthoredDataConfig> = null
+    public HeroDefinition: FortHeroType = null
+    public DefaultBackpack: AthenaBackpackItemDefinition = null
+    public RequiredCosmeticItems: AthenaCosmeticItemDefinition[] = null
+    public Gender: EFortCustomGender = null
     @UProperty({ skipNext: 1 })
-    public FeedbackBank: FSoftObjectPath
+    public FeedbackBank: FSoftObjectPath = null
     //public Map<GameplayTag, AthenaCharacterTaggedPartsList> TaggedPartsOverride;
 }

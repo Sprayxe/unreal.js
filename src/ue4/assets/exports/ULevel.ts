@@ -8,9 +8,9 @@ import { FVector2D } from "../../objects/core/math/FVector2D";
 import { FAssetArchive } from "../reader/FAssetArchive";
 
 export class FPrecomputedVisibilityCell {
-    public min: FVector
-    public chunkIndex: number
-    public dataOffset: number
+    public min: FVector = null
+    public chunkIndex: number = null
+    public dataOffset: number = null
 
     constructor(Ar: FArchive) {
         this.min = new FVector(Ar)

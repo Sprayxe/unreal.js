@@ -6,6 +6,7 @@ import { FLOAT_MAX_VALUE, FLOAT_MIN_VALUE } from "../../../../util/Const";
 import { isNearlyZero, lerp } from "../../core/math/UnrealMathUtility";
 import Bezier from "bezier-js"
 import { IStructType } from "../../../assets/objects/UScriptStruct";
+import { UProperty } from "../../../../util/decorators/UProperty";
 
 /** If using RCIM_Cubic, this enum describes how the tangents should be controlled in editor. */
 export enum ERichCurveTangentMode {
@@ -150,6 +151,7 @@ export class FRichCurveKey implements IStructType {
 /** A rich, editable float curve */
 export class FRichCurve extends FRealCurve {
     /** Sorted array of keys */
+    @UProperty({ name: "Keys" })
     public keys = new Array<FRichCurveKey>()
 
     /** Remap inTime based on pre and post infinity extrapolation values */

@@ -1,6 +1,7 @@
 /** Method of interpolation between this key and the next. */
 import { FloatRef, IntRef, ObjectRef } from "../../../../util/ObjectRef";
 import { FLOAT_MAX_VALUE } from "../../../../util/Const";
+import { UProperty } from "../../../../util/decorators/UProperty";
 
 export enum ERichCurveInterpMode {
     /** Use linear interpolation between values. */
@@ -32,10 +33,13 @@ export enum ERichCurveExtrapolation {
 /** A rich, editable float curve */
 export class FRealCurve {
     /** Default value */
+    @UProperty({ name: "DefaultValue" })
     defaultValue = FLOAT_MAX_VALUE
     /** Pre-infinity extrapolation state */
+    @UProperty({ name: "PreInfinityExtrap" })
     preInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
     /** Post-infinity extrapolation state */
+    @UProperty({ name: "PostInfinityExtrap" })
     postInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
 
     /** Get range of input time values. Outside this region curve continues constantly the start/end values. */

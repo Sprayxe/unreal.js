@@ -3,8 +3,11 @@ import { FName } from "../../../objects/uobject/FName";
 import { FGuid } from "../../../objects/core/misc/Guid";
 import { FPackageIndex } from "../../../objects/uobject/ObjectResource";
 import { FMulticastScriptDelegate } from "../../../objects/uobject/ScriptDelegates";
+import { UProperty } from "../../../../util/decorators/UProperty";
 
 export class UActorComponent extends UObject {
+    //public FActorComponentTickFunction PrimaryComponentTick;
+    @UProperty({ skipPrevious: 1 })
     public ComponentTags: FName[]
     public AssetUserData: FPackageIndex[]
     public UCSSerializationIndex: number

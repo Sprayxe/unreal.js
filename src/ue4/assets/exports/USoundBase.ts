@@ -3,28 +3,28 @@ import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { UProperty } from "../../../util/decorators/UProperty";
 
 export class USoundBase extends UObject {
-    public SoundClassObject: FPackageIndex /*USoundClass*/
-    public bDebug: boolean
-    public bOverrideConcurrency: boolean
-    public bOutputToBusOnly: boolean
-    public bHasDelayNode: boolean
-    public bHasConcatenatorNode: boolean
-    public bBypassVolumeScaleForPriority: boolean
-    public VirtualizationMode: EVirtualizationMode
-    public ConcurrencyOverrides: FSoundConcurrencySettings
-    public Duration: number
-    public MaxDistance: number
-    public TotalSamples: number
-    public Priority: number
-    public AttenuationSettings: FPackageIndex /*USoundAttenuation*/
-    public VolumeModulationDestination: FSoundModulationDestinationSettings
-    public PitchModulationDestination: FSoundModulationDestinationSettings
-    public HighpassModulationDestination: FSoundModulationDestinationSettings
-    public LowpassModulationDestination: FSoundModulationDestinationSettings
-    public SoundSubmixObject: FPackageIndex /*USoundSubmixBase*/
+    public SoundClassObject: FPackageIndex /*USoundClass*/ = null
+    public bDebug: boolean = null
+    public bOverrideConcurrency: boolean = null
+    public bOutputToBusOnly: boolean = null
+    public bHasDelayNode: boolean = null
+    public bHasConcatenatorNode: boolean = null
+    public bBypassVolumeScaleForPriority: boolean = null
+    public VirtualizationMode: EVirtualizationMode = null
+    public ConcurrencyOverrides: FSoundConcurrencySettings = null
+    public Duration: number = null
+    public MaxDistance: number = null
+    public TotalSamples: number = null
+    public Priority: number = null
+    public AttenuationSettings: FPackageIndex /*USoundAttenuation*/ = null
+    public VolumeModulationDestination: FSoundModulationDestinationSettings = null
+    public PitchModulationDestination: FSoundModulationDestinationSettings = null
+    public HighpassModulationDestination: FSoundModulationDestinationSettings = null
+    public LowpassModulationDestination: FSoundModulationDestinationSettings = null
+    public SoundSubmixObject: FPackageIndex /*USoundSubmixBase*/ = null
     //public List<FSoundSubmixSendInfo> SoundSubmixSends;
     @UProperty({ skipPrevious: 1, skipNext: 2 })
-    public SourceEffectChain: FPackageIndex /*USoundEffectSourcePresetChain*/
+    public SourceEffectChain: FPackageIndex /*USoundEffectSourcePresetChain*/ = null
     //public List<FSoundSourceBusSendInfo> BusSends;
     //public List<FSoundSourceBusSendInfo> PreEffectBusSends;
 }

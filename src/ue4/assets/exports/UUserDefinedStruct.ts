@@ -19,7 +19,7 @@ export enum EUserDefinedStructureStatus {
 
 export class UUserDefinedStruct extends UScriptStruct {
     public Status = EUserDefinedStructureStatus.UDSS_UpToDate
-    public Guid: FGuid
+    public Guid: FGuid = null
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos);

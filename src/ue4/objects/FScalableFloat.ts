@@ -1,10 +1,13 @@
 import { FCurveTableRowHandle } from "../assets/exports/UCurveTable";
 import { FRealCurve } from "./engine/curves/FRealCurve";
+import { UProperty } from "../../util/decorators/UProperty";
 
 export class FScalableFloat {
     /** Raw value, is multiplied by curve */
+    @UProperty({ name: "Value" })
     public value: number = 0
     /** Curve that is evaluated at a specific level. If found, it is multipled by Value */
+    @UProperty({ name: "Curve" })
     public curve?: FCurveTableRowHandle = null
     /** Cached direct pointer to the RealCurve we should evaluate */
     private finalCurve?: FRealCurve = null

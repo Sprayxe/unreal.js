@@ -42,7 +42,6 @@ export class FName {
             super([], -1)
             this.name = name
             this.num = num
-            super.num = num
         }
 
         get text(): string {

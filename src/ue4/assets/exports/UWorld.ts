@@ -3,9 +3,9 @@ import { ULevel } from "./ULevel";
 import { FAssetArchive } from "../reader/FAssetArchive";
 
 export class UWorld extends UObject {
-    public persistentLevel: ULevel
-    public extraReferencedObjects: UObject
-    public streamingLevels: UObject
+    public persistentLevel: ULevel = null
+    public extraReferencedObjects: UObject = null
+    public streamingLevels: UObject = null
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos);

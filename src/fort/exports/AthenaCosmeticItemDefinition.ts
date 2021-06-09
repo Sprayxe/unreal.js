@@ -13,45 +13,45 @@ import { UProperty } from "../../util/decorators/UProperty";
 
 export class AthenaCosmeticItemDefinition extends FortAccountItemDefinition {
     public bIsShuffleTile: boolean = false
-    public bIsOwnedByCampaignHero: boolean
-    public bHasMoreThanOneCharacterPartVariant: boolean
-    public bHideIfNotOwned: boolean
-    public bInitializedConfiguredDynamicInstallBundles: boolean
-    public bDynamicInstallBundlesError: boolean
-    public bDynamicInstallBundlesCancelled: boolean
-    public bDynamicInstallBundlesComplete: boolean
-    public DynamicInstallBundlesUpdateStartTime: number
-    public DynamicInstallBundleRequestRefCount: number
-    public DynamicInstallBundleRequestRetryCount: number
-    public VariantUnlockType: EVariantUnlockType
-    public PreviewPawnRotationOffset: FRotator
-    public FoleyLibraries: FPackageIndex[] /*FoleySoundLibrary[]*/
-    public DisallowedCosmeticTags: FGameplayTagContainer
-    public MetaTags: FGameplayTagContainer
-    public VariantChannelsToNeverSendToMCP: FGameplayTag[]
-    public ReactivePreviewDrivers: UnrealMap<CosmeticVariantInfo, FSoftObjectPath>
-    public MaterialOverrides: AthenaCosmeticMaterialOverride[]
-    public ObservedPlayerStats: FGameplayTagContainer
-    public BuiltInEmotes: FPackageIndex[] /*UFortMontageItemDefinitionBase[]*/
-    public ItemVariants: FortCosmeticVariant[]
-    public VariantChannelToUseForThumbnails: FGameplayTag
-    public ItemVariantPreviews: FortCosmeticVariantPreview[]
-    public DirectAquisitionStyleDisclaimerOverride: FText
+    public bIsOwnedByCampaignHero: boolean = null
+    public bHasMoreThanOneCharacterPartVariant: boolean = null
+    public bHideIfNotOwned: boolean = null
+    public bInitializedConfiguredDynamicInstallBundles: boolean = null
+    public bDynamicInstallBundlesError: boolean = null
+    public bDynamicInstallBundlesCancelled: boolean = null
+    public bDynamicInstallBundlesComplete: boolean = null
+    public DynamicInstallBundlesUpdateStartTime: number = null
+    public DynamicInstallBundleRequestRefCount: number = null
+    public DynamicInstallBundleRequestRetryCount: number = null
+    public VariantUnlockType: EVariantUnlockType = null
+    public PreviewPawnRotationOffset: FRotator = null
+    public FoleyLibraries: FPackageIndex[] /*FoleySoundLibrary[]*/ = null
+    public DisallowedCosmeticTags: FGameplayTagContainer = null
+    public MetaTags: FGameplayTagContainer = null
+    public VariantChannelsToNeverSendToMCP: FGameplayTag[] = null
+    public ReactivePreviewDrivers: UnrealMap<CosmeticVariantInfo, FSoftObjectPath> = null
+    public MaterialOverrides: AthenaCosmeticMaterialOverride[] = null
+    public ObservedPlayerStats: FGameplayTagContainer = null
+    public BuiltInEmotes: FPackageIndex[] /*UFortMontageItemDefinitionBase[]*/ = null
+    public ItemVariants: FortCosmeticVariant[] = null
+    public VariantChannelToUseForThumbnails: FGameplayTag = null
+    public ItemVariantPreviews: FortCosmeticVariantPreview[] = null
+    public DirectAquisitionStyleDisclaimerOverride: FText = null
     //public List<FortCosmeticAdaptiveStatPreview> ItemObservedStatPreviews
     @UProperty({ skipPrevious: 1 })
-    public UnlockRequirements: FText
-    public UnlockingItemDef: FSoftObjectPath
-    public ItemPreviewActorClass: FSoftObjectPath /*SoftClassPath*/
-    public ItemPreviewParticleSystem: FSoftObjectPath
-    public ItemPreviewMontage_Male: FSoftObjectPath
-    public ItemPreviewMontage_Female: FSoftObjectPath
-    public ItemPreviewHero: FSoftObjectPath
-    public ConfiguredDynamicInstallBundles: FName[]
-    public PendingDynamicInstallBundles: FName[]
-    public ExclusiveRequiresOutfitTags: FGameplayTagContainer
-    public CustomExclusiveCallout: FText
-    public ExclusiveDesciption: FText
-    public ExclusiveIcon: FSoftObjectPath
+    public UnlockRequirements: FText = null
+    public UnlockingItemDef: FSoftObjectPath = null
+    public ItemPreviewActorClass: FSoftObjectPath /*SoftClassPath*/ = null
+    public ItemPreviewParticleSystem: FSoftObjectPath = null
+    public ItemPreviewMontage_Male: FSoftObjectPath = null
+    public ItemPreviewMontage_Female: FSoftObjectPath = null
+    public ItemPreviewHero: FSoftObjectPath = null
+    public ConfiguredDynamicInstallBundles: FName[] = null
+    public PendingDynamicInstallBundles: FName[] = null
+    public ExclusiveRequiresOutfitTags: FGameplayTagContainer = null
+    public CustomExclusiveCallout: FText = null
+    public ExclusiveDesciption: FText = null
+    public ExclusiveIcon: FSoftObjectPath = null
 }
 
 export enum EVariantUnlockType {
@@ -60,30 +60,30 @@ export enum EVariantUnlockType {
 }
 
 export class WeirdVariantStruct {
-    public Unknown0: FGameplayTag
-    public Unknown1: FGameplayTag
+    public Unknown0: FGameplayTag = null
+    public Unknown1: FGameplayTag = null
 }
 
 export class AthenaCosmeticMaterialOverride {
-    public ComponentName: FName
-    public MaterialOverrideIndex: number
-    public OverrideMaterial: FSoftObjectPath
+    public ComponentName: FName = null
+    public MaterialOverrideIndex: number = null
+    public OverrideMaterial: FSoftObjectPath = null
 }
 
 export class FortCosmeticVariantPreview {
-    public UnlockCondition: FText
-    public PreviewTime: number
-    public VariantOptions: McpVariantChannelInfo[]
-    public AdditionalItems: FortCosmeticVariantPreviewElement[]
+    public UnlockCondition: FText = null
+    public PreviewTime: number = null
+    public VariantOptions: McpVariantChannelInfo[] = null
+    public AdditionalItems: FortCosmeticVariantPreviewElement[] = null
 }
 
 export class McpVariantChannelInfo extends CosmeticVariantInfo {
-    public OwnedVariantTags: FGameplayTagContainer
-    public ItemVariantIsUsedFor: FPackageIndex /*FortItemDefinition*/
-    public CustomData: string
+    public OwnedVariantTags: FGameplayTagContainer = null
+    public ItemVariantIsUsedFor: FPackageIndex /*FortItemDefinition*/ = null
+    public CustomData: string = null
 }
 
 export class FortCosmeticVariantPreviewElement {
-    public VariantOptions: McpVariantChannelInfo[]
-    public Item: FPackageIndex /*AthenaCosmeticItemDefinition*/
+    public VariantOptions: McpVariantChannelInfo[] = null
+    public Item: FPackageIndex /*AthenaCosmeticItemDefinition*/ = null
 }

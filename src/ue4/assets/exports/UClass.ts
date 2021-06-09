@@ -17,25 +17,25 @@ export class UClass extends UStruct {
     classFlags = 0
 
     /** The required type for the outer of instances of this class */
-    classWithin: FPackageIndex
+    classWithin: FPackageIndex = null
 
     /** This is the blueprint that caused the generation of this class, or null if it is a native compiled-in class */
-    classGeneratedBy: FPackageIndex
+    classGeneratedBy: FPackageIndex = null
 
     /** Which Name.ini file to load Config variables out of */
-    classConfigName: FName
+    classConfigName: FName = null
 
     /** The class default object; used for delta serialization and object initialization */
-    classDefaultObject: FPackageIndex
+    classDefaultObject: FPackageIndex = null
 
     /** Map of all functions by name contained in this class */
-    private funcMap: UnrealMap<FName, UFunction>
+    private funcMap: UnrealMap<FName, UFunction> = null
 
     /**
      * The list of interfaces which this class implements, along with the pointer property that is located at the offset of the interface's vtable.
      * If the interface class isn't native, the property will be null.
      */
-    interfaces: FImplementedInterface[]
+    interfaces: FImplementedInterface[] = []
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)

@@ -7,18 +7,18 @@ import { FAssetArchive } from "../reader/FAssetArchive";
 import { UProperty } from "../../../util/decorators/UProperty";
 
 export class UBlueprintGeneratedClass_Properties extends UObject {
-    public NumReplicatedProperties: number
-    public bHasNativizedParent: boolean
-    public bHasCookedComponentInstancingData: boolean
-    public DynamicBindingObjects: FPackageIndex[]
-    public ComponentTemplates: UActorComponent[]
-    public Timelines: UTimelineTemplate[]
+    public NumReplicatedProperties: number = null
+    public bHasNativizedParent: boolean = null
+    public bHasCookedComponentInstancingData: boolean = null
+    public DynamicBindingObjects: FPackageIndex[] = null
+    public ComponentTemplates: UActorComponent[] = null
+    public Timelines: UTimelineTemplate[] = null
     //public List<FBPComponentClassOverride> ComponentClassOverrides;
     @UProperty({ skipPrevious: 1 })
-    public SimpleConstructionScript: FPackageIndex
-    public InheritableComponentHandler: FPackageIndex
-    public UberGraphFramePointerProperty: FPackageIndex
+    public SimpleConstructionScript: FPackageIndex = null
+    public InheritableComponentHandler: FPackageIndex = null
+    public UberGraphFramePointerProperty: FPackageIndex = null
     @UProperty({ skipNext: 1 })
-    public UberGraphFunction: UFunction
+    public UberGraphFunction: UFunction = null
     //public Map<FName, FBlueprintCookedComponentInstancingData> CookedComponentInstancingData;
 }

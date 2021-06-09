@@ -4,7 +4,7 @@ import { FAssetArchive } from "../../../assets/reader/FAssetArchive";
 import { FPropertyTag } from "../../../assets/objects/FPropertyTag";
 import { FExportArchive } from "../../../assets/reader/FExportArchive";
 import { FName } from "../FName";
-import { UStruct } from "../../../assets/exports/UStruct";
+import { FPropertySerialized, UStruct } from "../../../assets/exports/UStruct";
 import { UScriptStruct } from "../../../assets/exports/UScriptStruct";
 import BitSet from "bitset";
 import { FArchive } from "../../../reader/FArchive";
@@ -12,7 +12,9 @@ import { INDEX_NONE } from "../../../../util/Const";
 import { ParserException, UnknownPropertyException } from "../../../../exceptions/Exceptions";
 import { UnrealMap } from "../../../../util/UnrealMap";
 import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../../Globals";
-import { UProperty } from "../../../../util/decorators/UProperty";
+import { getUProperty, IUProperty, UProperty } from "../../../../util/decorators/UProperty";
+import { FSimpleCurve } from "../../engine/curves/FSimpleCurve";
+import { PropertyType } from "../../../assets/objects/PropertyType";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo
@@ -54,14 +56,48 @@ export class FUnversionedStructSchema {
         let index = 0
         while (struct != null) {
             if (struct instanceof UScriptStruct && struct.useClassProperties) {
-                const clazz = struct.rawStructClass
+                const clazz = struct.structClass
                 if (!clazz)
                     throw new Error(`Missing schema for ${struct}`)
-                const fields = Object.keys(clazz.prototype)
-                for (const field of fields) {
-
+                const fields = Object.keys(clazz)
+                for (const fieldKey of fields) { // Reflection
+                    const ann = getUProperty(clazz, fieldKey) as IUProperty
+                    /*if (bOnlyAnnotated && ann == null) {
+                        continue
+                    }*/
+                    index += ann?.skipPrevious || 0
+                    const propertyInfo = new PropertyInfo(
+                        ann?.name || fieldKey,
+                        new PropertyType(),
+                        ann?.arrayDim || 1
+                    )
+                    for (let i = 0; i < propertyInfo.arrayDim; ++i) {
+                        if (GDebugProperties) console.log(`${index} = ${propertyInfo.name}`)
+                        this.serializers[index++] = new FUnversionedPropertySerializer(propertyInfo, i)
+                    }
+                    index += ann?.skipNext || 0
                 }
+            } else if (struct.childProperties.length) {
+                for (const prop0 of struct.childProperties) {
+                    const prop = prop0 as FPropertySerialized // Serialized in packages
+                    const propertyInfo = new PropertyInfo(prop.name.text, new PropertyType(prop), prop.arrayDim)
+                    for (let i = 0; i < prop.arrayDim; ++i) {
+                        if (GDebugProperties) console.log(`${index} = ${prop.name} [SERIALIZED]`)
+                        this.serializers[index++] = new FUnversionedPropertySerializer(propertyInfo, i)
+                    }
+                }
+            } else if (struct.childProperties2.length) {
+                const startIndex = index
+                for (const prop of struct.childProperties2) {
+                    index = startIndex + prop.index
+                    for (let i = 0; i < prop.arrayDim; ++i) {
+                        if (GDebugProperties) console.log(`${index} = ${prop.name}`)
+                        this.serializers[index++] = new FUnversionedPropertySerializer(prop, i)
+                    }
+                }
+                index = startIndex + struct.propertyCount
             }
+            struct = struct.superStruct
         }
     }
 }

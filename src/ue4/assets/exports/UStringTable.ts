@@ -6,9 +6,9 @@ import { UnrealMap } from "../../../util/UnrealMap";
 import { Locres } from "../../locres/Locres";
 
 export class UStringTable extends UObject {
-    tableNamespace: string
-    entries: UnrealMap<string, string>
-    keysToMetadata: UnrealMap<string, UnrealMap<FName, string>>
+    tableNamespace: string = null
+    entries: UnrealMap<string, string> = null
+    keysToMetadata: UnrealMap<string, UnrealMap<FName, string>> = null
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)

@@ -5,10 +5,10 @@ import { FAssetArchive } from "../reader/FAssetArchive";
 
 export class UEnum extends UObject {
     /** List of pairs of all enum names and values. */
-    names: Pair<FName, number>[]
+    names: Pair<FName, number>[] = null
 
     /** How the enum was originally defined. */
-    cppForm: ECppForm
+    cppForm: ECppForm = null
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)

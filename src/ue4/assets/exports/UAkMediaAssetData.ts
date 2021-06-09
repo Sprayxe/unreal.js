@@ -6,7 +6,7 @@ import { Locres } from "../../locres/Locres";
 export class UAkMediaAssetData extends UObject {
     public isStreamed = false
     public useDeviceMemory = false
-    public dataChunks: FAkMediaDataChunk[]
+    public dataChunks: FAkMediaDataChunk[] = null
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos);
