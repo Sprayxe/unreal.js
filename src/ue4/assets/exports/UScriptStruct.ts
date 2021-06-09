@@ -14,8 +14,8 @@ export class UScriptStruct extends UStruct {
         this.field0 = new value()
         if (this.superStruct)
             return
-        const superclass = value
-        if (superclass && !(superclass instanceof UObject)) {
+        const superclass = value.__proto__
+        if (superclass && superclass.name !== "UObject") {
             this.superStruct = new UScriptStruct(superclass)
         }
     }
