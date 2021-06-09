@@ -8,6 +8,7 @@ import { EFortCustomGender } from "../enums/EFortCustomGender";
 import { AthenaBackpackItemDefinition } from "./AthenaBackpackItemDefinition";
 import { FortHeroType } from "./FortHeroType";
 import { MarshalledVFX_AuthoredDataConfig } from "./MarshalledVFX_AuthoredDataConfig";
+import { UProperty } from "../../util/decorators/UProperty";
 
 export class AthenaCharacterItemDefinition extends AthenaCosmeticItemDefinition {
     public RequestedDataStores: UnrealMap<FName, UObject>
@@ -16,6 +17,7 @@ export class AthenaCharacterItemDefinition extends AthenaCosmeticItemDefinition 
     public DefaultBackpack: AthenaBackpackItemDefinition
     public RequiredCosmeticItems: AthenaCosmeticItemDefinition[]
     public Gender: EFortCustomGender
+    @UProperty({ skipNext: 1 })
     public FeedbackBank: FSoftObjectPath
     //public Map<GameplayTag, AthenaCharacterTaggedPartsList> TaggedPartsOverride;
 }

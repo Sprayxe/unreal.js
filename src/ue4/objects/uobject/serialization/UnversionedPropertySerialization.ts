@@ -12,6 +12,7 @@ import { INDEX_NONE } from "../../../../util/Const";
 import { ParserException, UnknownPropertyException } from "../../../../exceptions/Exceptions";
 import { UnrealMap } from "../../../../util/UnrealMap";
 import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../../Globals";
+import { UProperty } from "../../../../util/decorators/UProperty";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo
@@ -49,9 +50,19 @@ export class FUnversionedPropertySerializer {
 export class FUnversionedStructSchema {
     serializers: FUnversionedPropertySerializer[] = []
 
-    constructor(struct1: UStruct) {
+    constructor(struct: UStruct) {
         let index = 0
-        let struct: UStruct = struct1
+        while (struct != null) {
+            if (struct instanceof UScriptStruct && struct.useClassProperties) {
+                const clazz = struct.rawStructClass
+                if (!clazz)
+                    throw new Error(`Missing schema for ${struct}`)
+                const fields = Object.keys(clazz.prototype)
+                for (const field of fields) {
+
+                }
+            }
+        }
     }
 }
 
@@ -226,7 +237,6 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
             while (!it.bDone) {
                 const serializer = it.serializer
                 if (serializer) {
-                    if (GDebugProperties) console.info(`Val: ${it.schemaIt} (IsNonZero: ${it.isNonZero()})`)
                     if (it.isNonZero()) {
                         const element = serializer.deserialize(Ar, ReadType.NORMAL)
                         properties.push(element)
@@ -235,7 +245,7 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
                         const start = Ar.pos
                         properties.push(serializer.deserialize(Ar, ReadType.ZERO))
                         if (Ar.pos !== start)
-                            throw ParserException(`Zero property #${it.schemaIt} should not advance the archive's position`)
+                            throw ParserException(`Zero property ${it.schemaIt} should not advance the archive's position`)
                     }
                 } else {
                     if (it.isNonZero()) {

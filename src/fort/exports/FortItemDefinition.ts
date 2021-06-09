@@ -12,9 +12,11 @@ import { FRotator } from "../../ue4/objects/core/math/FRotator";
 import { FCurveTableRowHandle } from "../../ue4/assets/exports/UCurveTable";
 import { FScalableFloat } from "../../ue4/objects/FScalableFloat";
 import { FortItemSeriesDefinition } from "./FortItemSeriesDefinition";
+import { UProperty } from "../../util/decorators/UProperty";
 
 export class FortItemDefinition extends McpItemDefinitionBase {
     //public OnItemCountChanged: MulticastInlineDelegateProperty
+    @UProperty({ skipPrevious: 1 })
     public Rarity: EFortRarity = EFortRarity.Uncommon
     public ItemType: EFortItemType
     public PrimaryAssetIdItemTypeOverride: EFortItemType

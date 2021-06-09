@@ -8,14 +8,21 @@ import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { FTableRowBase } from "../../objects/FTableRowBase";
 import { mapToClass } from "../util/StructFallbackReflectionUtil";
 import { Locres } from "../../locres/Locres";
+import { UProperty } from "../../../util/decorators/UProperty";
 
 
 export class UDataTable extends UObject {
+    @UProperty()
     public RowStruct: UScriptStruct = null
+    @UProperty()
     public bStripFromClientBuilds?: boolean = null
+    @UProperty()
     public bIgnoreExtraFields?: boolean = null
+    @UProperty()
     public bIgnoreMissingFields?: boolean = null
+    @UProperty()
     public ImportKeyField?: string = null
+    @UProperty()
     public rows: UnrealMap<FName, UObject>
 
     constructor(rows: UnrealMap<FName, UObject> = new UnrealMap<FName, UObject>()) {

@@ -9,6 +9,7 @@ import { CosmeticVariantInfo } from "../objects/CosmeticVariantInfo"
 import { FRotator } from "../../ue4/objects/core/math/FRotator"
 import { UnrealMap } from "../../util/UnrealMap"
 import { FortCosmeticVariant } from "./variants/FortCosmeticVariant";
+import { UProperty } from "../../util/decorators/UProperty";
 
 export class AthenaCosmeticItemDefinition extends FortAccountItemDefinition {
     public bIsShuffleTile: boolean = false
@@ -37,6 +38,7 @@ export class AthenaCosmeticItemDefinition extends FortAccountItemDefinition {
     public ItemVariantPreviews: FortCosmeticVariantPreview[]
     public DirectAquisitionStyleDisclaimerOverride: FText
     //public List<FortCosmeticAdaptiveStatPreview> ItemObservedStatPreviews
+    @UProperty({ skipPrevious: 1 })
     public UnlockRequirements: FText
     public UnlockingItemDef: FSoftObjectPath
     public ItemPreviewActorClass: FSoftObjectPath /*SoftClassPath*/

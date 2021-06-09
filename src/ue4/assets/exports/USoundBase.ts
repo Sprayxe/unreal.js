@@ -1,5 +1,6 @@
 import { UObject } from "./UObject";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
+import { UProperty } from "../../../util/decorators/UProperty";
 
 export class USoundBase extends UObject {
     public SoundClassObject: FPackageIndex /*USoundClass*/
@@ -21,6 +22,11 @@ export class USoundBase extends UObject {
     public HighpassModulationDestination: FSoundModulationDestinationSettings
     public LowpassModulationDestination: FSoundModulationDestinationSettings
     public SoundSubmixObject: FPackageIndex /*USoundSubmixBase*/
+    //public List<FSoundSubmixSendInfo> SoundSubmixSends;
+    @UProperty({ skipPrevious: 1, skipNext: 2 })
+    public SourceEffectChain: FPackageIndex /*USoundEffectSourcePresetChain*/
+    //public List<FSoundSourceBusSendInfo> BusSends;
+    //public List<FSoundSourceBusSendInfo> PreEffectBusSends;
 }
 
 export enum EVirtualizationMode {

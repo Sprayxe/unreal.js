@@ -3,6 +3,7 @@ import { FGuid } from "../../objects/core/misc/Guid";
 import { FVector } from "../../objects/core/math/FVector";
 import { FIntVector } from "../../objects/core/math/FIntVector";
 import { UObject } from "./UObject";
+import { UProperty } from "../../../util/decorators/UProperty";
 
 export class ULevel_Properties extends UObject {
     public /*World*/ OwningWorld: FPackageIndex
@@ -27,6 +28,7 @@ export class ULevel_Properties extends UObject {
     public bStaticComponentsRegisteredInStreamingManager: boolean
     public bIsVisible: boolean
     public WorldSettings: FPackageIndex
+    @UProperty({ skipNext: 1 })
     public AssetUserData: FPackageIndex[]
     //public DestroyedReplicatedStaticActors: FReplicatedStaticActorDestructionInfo[]
 }

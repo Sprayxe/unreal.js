@@ -5,6 +5,7 @@ import { ERichCurveExtrapolation, ERichCurveInterpMode, FRealCurve } from "./FRe
 import { FloatRef, ObjectRef } from "../../../../util/ObjectRef";
 import { isNearlyZero, lerp } from "../../core/math/UnrealMathUtility";
 import { FLOAT_MAX_VALUE } from "../../../../util/Const";
+import { UProperty } from "../../../../util/decorators/UProperty";
 
 /** One key in a rich, editable float curve */
 export class FSimpleCurveKey implements IStructType {
@@ -41,8 +42,10 @@ export class FSimpleCurveKey implements IStructType {
 /** A rich, editable float curve */
 export class FSimpleCurve extends FRealCurve {
     /** Interpolation mode between this key and the next */
+    @UProperty({ name: "InterpMode" })
     public interpMode = ERichCurveInterpMode.RCIM_Linear
     /** Sorted array of keys */
+    @UProperty({ name: "Keys" })
     public keys = new Array<FSimpleCurveKey>()
 
     /** Get range of input time values. Outside this region curve continues constantly the start/end values. */

@@ -11,6 +11,7 @@ import { mapToClass } from "../util/StructFallbackReflectionUtil";
 import { UnrealMap } from "../../../util/UnrealMap";
 import { Locres } from "../../locres/Locres";
 import { FloatRef } from "../../../util/ObjectRef";
+import { UProperty } from "../../../util/decorators/UProperty";
 
 /**
  * - Whether the curve table contains simple, rich, or no curves
@@ -99,8 +100,10 @@ export class UCurveTable extends UObject {
  */
 export class FCurveTableRowHandle {
     /** Pointer to table we want a row from */
+    @UProperty({ name: "CurveTable" })
     public curveTable: UCurveTable = null
     /** Name of row in the table that we want */
+    @UProperty({ name: "RowName" })
     public rowName: FName = FName.NAME_None
 
     /** Get the curve straight from the row handle */
