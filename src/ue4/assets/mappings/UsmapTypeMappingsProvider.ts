@@ -46,7 +46,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
         }
 
         const compData = Ar.readBuffer(compSize)
-        const data = Ar.readBuffer(decompSize)
+        const data = Buffer.alloc(decompSize)
 
         const method = methodInt === 0 ? "None" : methodInt === 1 ? "Oodle" : methodInt === 2 ? "Brotli" : null
         if (!method)
@@ -85,7 +85,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
     }
 
     private parseData(Ar: FUsmapNameTableArchive) {
-        Ar.nameMap = Ar.readArray(() => String(Ar.readBuffer(Ar.readUInt8())))
+        Ar.nameMap = Ar.readArray(() => Ar.readBuffer(Ar.readUInt8()).toString())
         this.mappings.enums = Ar.readTMap(null, () => {
             const enumName = Ar.readFName().text
             const enumValues = []
@@ -94,7 +94,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
             }
             return { key: enumName, value: enumValues }
         })
-        Utils.repeat(Ar.readInt32(), () => {
+        for (let x = 0; x < Ar.readInt32(); ++x) {
             const struct = new UScriptStruct()
             struct.name = Ar.readFName().text
             const superStructName = Ar.readFName()
@@ -112,7 +112,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
                 arr.push(info)
             }
             this.mappings.types.set(struct.name, struct)
-        })
+        }
     }
 
 }
@@ -129,10 +129,11 @@ class FUsmapNameTableArchive extends FArchive {
         if (nameIndex === -1) {
             return FName.NAME_None
         }
-        if (!this.nameMap[nameIndex]) {
-            throw ParserException("FName could not be read, requested index $nameIndex, name map size ${nameMap.size}")
+        const entry = this.nameMap[nameIndex]
+        if (!entry) {
+            throw ParserException(`FName could not be read, requested index ${nameIndex}, name map size ${this.nameMap.length}`)
         }
-        return FName.dummy(this.nameMap[nameIndex])
+        return FName.dummy(entry)
     }
 }
 

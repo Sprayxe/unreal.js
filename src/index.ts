@@ -1,11 +1,17 @@
 import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
-import axios from "axios";
+//import axios from "axios";
+import { UsmapTypeMappingsProvider } from "./ue4/assets/mappings/UsmapTypeMappingsProvider";
+import { readFileSync } from "fs";
+import { Ue4Version } from "./ue4/versions/Game";
 //import { UnrealMap } from "./util/UnrealMap";
 //import { Game } from "./ue4/versions/Game";
 
 (async () => {
-    const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks")
+    const usmap = readFileSync("D:/Downloads/++Fortnite+Release-16.50-CL-16469788-Windows_oo.usmap")
+    const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks",
+        Ue4Version.GAME_UE4_LATEST, new UsmapTypeMappingsProvider(usmap))
+    provider.mappingsProvider.reload()
     //const provider = new FileProvider("C:\\Riot Games\\VALORANT\\live\\ShooterGame\\Content\\Paks", Game.GAME_VALORANT)
     provider.populateIoStoreFiles = true
     await provider.initialize()

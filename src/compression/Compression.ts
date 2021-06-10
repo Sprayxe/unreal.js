@@ -34,8 +34,7 @@ export class Compression {
         // Compression: Oodle
         class Oodle implements CompressionHandler {
             static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
-                const decomp = OodleLib.Oodle.decompress(src, dstLen, dst, dstOff, srcOff, srcLen)
-                decomp.copy(dst, dstOff, srcOff, srcOff + srcLen)
+                OodleLib.Oodle.decompress(src, dstLen, dst, dstOff, srcOff, srcLen)
             }
         }
         this.handlers.set("Oodle", Oodle)

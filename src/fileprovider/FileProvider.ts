@@ -64,6 +64,8 @@ export class FileProvider extends EventEmitter {
         this.folder = folder
         this.game = game
         this.mappingsProvider = mappingsProvider
+        if (this.game >= Game.GAME_UE4(26))
+            Oodle.ensureLib()
     }
 
     get files() {
@@ -504,7 +506,6 @@ export class FileProvider extends EventEmitter {
 
     protected loadGlobalData(path: string) {
         this.globalDataLoaded = true
-        Oodle.ensureLib()
         try {
             const ioStoreReader = new FIoStoreReader()
             ioStoreReader.initialize(new FIoStoreEnvironment(path), this._keys)

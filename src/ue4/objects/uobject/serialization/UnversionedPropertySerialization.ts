@@ -55,16 +55,16 @@ export class FUnversionedStructSchema {
     constructor(struct: UStruct) {
         let index = 0
         while (struct != null) {
-            if (struct instanceof UScriptStruct && struct.useClassProperties) {
+            /*if (struct instanceof UScriptStruct && struct.useClassProperties) {
                 const clazz = struct.structClass
                 if (!clazz)
                     throw new Error(`Missing schema for ${struct}`)
                 const fields = Object.keys(clazz)
                 for (const fieldKey of fields) { // Reflection
                     const ann = getUProperty(clazz, fieldKey) as IUProperty
-                    /*if (bOnlyAnnotated && ann == null) {
+                    if (bOnlyAnnotated && ann == null) {
                         continue
-                    }*/
+                    }
                     index += ann?.skipPrevious || 0
                     const propertyInfo = new PropertyInfo(
                         ann?.name || fieldKey,
@@ -77,7 +77,7 @@ export class FUnversionedStructSchema {
                     }
                     index += ann?.skipNext || 0
                 }
-            } else if (struct.childProperties.length) {
+            } else*/ if (struct.childProperties.length) {
                 for (const prop0 of struct.childProperties) {
                     const prop = prop0 as FPropertySerialized // Serialized in packages
                     const propertyInfo = new PropertyInfo(prop.name.text, new PropertyType(prop), prop.arrayDim)
