@@ -89,12 +89,14 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
         this.mappings.enums = Ar.readTMap(null, () => {
             const enumName = Ar.readFName().text
             const enumValues = []
-            for (let i = 0; i < Ar.readUInt8(); ++i) {
+            const limit = Ar.readUInt8()
+            for (let i = 0; i < limit; ++i) {
                 enumValues.push(Ar.readFName().text)
             }
             return { key: enumName, value: enumValues }
         })
-        for (let x = 0; x < Ar.readInt32(); ++x) {
+        const max = Ar.readInt32()
+        for (let x = 0; x < max; ++x) {
             const struct = new UScriptStruct()
             struct.name = Ar.readFName().text
             const superStructName = Ar.readFName()

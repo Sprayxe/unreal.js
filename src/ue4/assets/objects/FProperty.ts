@@ -1,6 +1,6 @@
 import { UScriptArray } from "./UScriptArray";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
-import { FName } from "../../objects/uobject/FName";
+import { FName, FNameDummy } from "../../objects/uobject/FName";
 import { FFieldPath } from "../../objects/FFieldPath";
 import { UInterfaceProperty } from "../../objects/uobject/UInterfaceProperty";
 import { FUniqueObjectGuid } from "../../objects/uobject/FUniqueObjectGuid";
@@ -400,7 +400,7 @@ export class FProperty {
         } else if (tag instanceof DoubleProperty) {
             Ar.writeDouble(tag.number)
         } else if (tag instanceof EnumProperty) {
-            if (!(tag.name instanceof FName.FNameDummy))
+            if (!(tag.name instanceof FNameDummy))
                 Ar.writeFName(tag.name)
         } else if (tag instanceof FloatProperty) {
             Ar.writeFloat32(tag.float)

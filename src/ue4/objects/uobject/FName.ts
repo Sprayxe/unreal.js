@@ -7,9 +7,9 @@ export class FName {
     num: number = 0
 
     constructor(nameMap?: any[], index?: number, num?: number) {
-        this.nameMap = nameMap
-        this.index = index
-        this.num = num
+        this.nameMap = nameMap || []
+        this.index = index || 0
+        this.num = num || 0
     }
 
     toString() {
@@ -34,28 +34,10 @@ export class FName {
         return this.text === "None"
     }
 
-    static FNameDummy = class extends FName {
-        name: string
-        num: number = 0
-
-        constructor(name: string, num: number) {
-            super([], -1)
-            this.name = name
-            this.num = num
-        }
-
-        get text(): string {
-            return this.num === 0 ? this.name : `${this.name}_${this.num - 1}`
-        }
-        set text(v) {
-            this.name = v
-        }
-    }
-
     static NAME_None = new FName()
 
     static dummy(text: string, num: number = 0) {
-        return new this.FNameDummy(text, num)
+        return new FNameDummy(text, num)
     }
 
     static getByNameMap(text: string, nameMap: FNameEntry[]): FName {
@@ -65,5 +47,23 @@ export class FName {
 
     static createFromDisplayId(text: string, num: number) {
         return this.dummy(text, num)
+    }
+}
+
+export class FNameDummy extends FName {
+    name: string
+    num: number = 0
+
+    constructor(name: string, num: number) {
+        super([], -1)
+        this.name = name
+        this.num = num
+    }
+
+    get text(): string {
+        return this.num === 0 ? this.name : `${this.name}_${this.num - 1}`
+    }
+    set text(v) {
+        this.name = v
     }
 }

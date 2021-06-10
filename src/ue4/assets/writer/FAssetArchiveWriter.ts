@@ -3,7 +3,7 @@ import { FNameEntry } from "../../objects/uobject/FNameEntry";
 import { FObjectExport, FObjectImport } from "../../objects/uobject/ObjectResource";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
-import { FName } from "../../objects/uobject/FName";
+import { FName, FNameDummy } from "../../objects/uobject/FName";
 import { WritableStreamBuffer } from "stream-buffers"
 import { UnrealMap } from "../../../util/UnrealMap";
 
@@ -57,7 +57,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
     }
 
     writeFName(name: FName) {
-        if (name instanceof FName.FNameDummy)
+        if (name instanceof FNameDummy)
             return
         if (this.nameMap[name.index]?.name !== name.text) {
             throw ParserException(`FName does not have a valid value, value in name map : ${this.nameMap[name.index].name}, value in fname : ${name.text}`)
