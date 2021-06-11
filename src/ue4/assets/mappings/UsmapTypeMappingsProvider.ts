@@ -79,7 +79,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
                 break
         }
         if (!type.structName.isNone()) {
-            type.structClass = new Lazy<any>(() => this.mappings.types.get(type.structName.text))
+            type.structClass = new Lazy<any>(() => this.mappings.types[type.structName.text])
         }
         return type
     }
@@ -113,7 +113,8 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
                 info.index = schemaIdx
                 arr.push(info)
             }
-            this.mappings.types.set(struct.name, struct)
+            struct.childProperties2 = arr
+            this.mappings.types[struct.name] = struct
         }
     }
 

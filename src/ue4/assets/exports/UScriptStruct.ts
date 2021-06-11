@@ -39,6 +39,8 @@ export class UScriptStruct extends UStruct {
             this.name = (!(y instanceof FName) ? FName.dummy(x.name) || FName.NAME_None : y).text
             this.structClass = x
             this.useClassProperties = true
+        } else {
+            this.name = FName.NAME_None.text
         }
     }
 }

@@ -1,15 +1,46 @@
-import { FNameEntry } from "./FNameEntry";
-import { Utils } from "../../../util/Utils";
+import { FArchive } from "../../reader/FArchive";
+
+export class FNameEntry {
+    name: string
+    nonCasePreservingHash: number
+    casePreservingHash: number
+
+    constructor(Ar: FArchive)
+    constructor(name: string, nonCasePreservingHash: number, casePreservingHash: number)
+    constructor(x: any, y?: any, z?: any) {
+        if (x instanceof FArchive) {
+            this.name = x.readString()
+            this.nonCasePreservingHash = x.readUInt16()
+            this.casePreservingHash = x.readUInt16()
+        } else {
+            this.name = x
+            this.nonCasePreservingHash = y
+            this.casePreservingHash = z
+        }
+    }
+
+    serialize(Ar: any) {
+        Ar.writeString(this.name)
+        Ar.writeUInt16(this.nonCasePreservingHash)
+        Ar.writeUInt16(this.casePreservingHash)
+    }
+
+    toString() {
+        return this.name
+    }
+}
 
 export class FName {
-    nameMap: FNameEntry[] = []
+    nameMap: FNameEntry[] = [new FNameEntry("None", 0, 0)]
     index: number = 0
     num: number = 0
 
     constructor(nameMap?: any[], index?: number, num?: number) {
-        this.nameMap = nameMap || []
-        this.index = index || 0
-        this.num = num || 0
+        if (index != null) {
+            this.nameMap = nameMap
+            this.index = index
+            this.num = num
+        }
     }
 
     toString() {
@@ -21,7 +52,7 @@ export class FName {
         return this.num === 0 ? name : `${name}_${this.num - 1}`
     }
     set text(v) {
-        this.nameMap[this.num].name = v
+        this.nameMap[this.index].name = v
     }
 
     equals(other: any): boolean {

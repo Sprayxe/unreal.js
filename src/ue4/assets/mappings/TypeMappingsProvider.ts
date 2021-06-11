@@ -9,7 +9,7 @@ export abstract class TypeMappingsProvider {
     abstract reload(): boolean
 
     getStruct(structName: FName): UStruct {
-        const struct = this.mappings.types.get(structName.text)
+        const struct = this.mappings.types[structName.text]
         if (!struct)
             return null
         if (!struct.structClass) {
@@ -19,7 +19,7 @@ export abstract class TypeMappingsProvider {
     }
 
     getEnum(enumName: FName) {
-        const Enum = this.mappings.enums.get(enumName.text)
+        const Enum = this.mappings.enums[enumName.text]
         if (!Enum)
             throw MissingSchemaException(`Unknown enum ${enumName}`)
         return Enum

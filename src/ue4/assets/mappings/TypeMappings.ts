@@ -2,8 +2,8 @@ import { UnrealMap } from "../../../util/UnrealMap";
 import { UScriptStruct } from "../exports/UScriptStruct";
 
 export class TypeMappings {
-    types: UnrealMap<string, UScriptStruct>
-    enums: UnrealMap<string, string[]>
+    types: {} // Map<string, UScriptStruct>
+    enums: {} // Map<string, string[]>
 
     constructor(
         types: UnrealMap<string, UScriptStruct> = new UnrealMap(),

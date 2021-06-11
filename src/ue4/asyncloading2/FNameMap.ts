@@ -24,7 +24,7 @@ export class FNameMap {
         this.load(nameBuffer, hashBuffer, FMappedName_EType.Global)
     }
 
-    size() {
+    get length() {
         return this.nameEntries.length
     }
 

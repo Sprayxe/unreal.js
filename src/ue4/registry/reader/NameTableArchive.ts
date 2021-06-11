@@ -1,8 +1,7 @@
 import { FAssetRegistryArchive } from "./AssetRegistryArchive";
-import { FNameEntry } from "../../objects/uobject/FNameEntry";
 import { FArchive } from "../../reader/FArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
-import { FName } from "../../objects/uobject/FName";
+import { FName, FNameEntry } from "../../objects/uobject/FName";
 import { FAssetData } from "../objects/FAssetData";
 import { FAssetBundleData } from "../objects/AssetBundleData";
 

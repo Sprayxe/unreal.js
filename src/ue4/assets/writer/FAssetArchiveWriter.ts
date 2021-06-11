@@ -1,9 +1,8 @@
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
-import { FNameEntry } from "../../objects/uobject/FNameEntry";
 import { FObjectExport, FObjectImport } from "../../objects/uobject/ObjectResource";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
-import { FName, FNameDummy } from "../../objects/uobject/FName";
+import { FName, FNameDummy, FNameEntry } from "../../objects/uobject/FName";
 import { WritableStreamBuffer } from "stream-buffers"
 import { UnrealMap } from "../../../util/UnrealMap";
 

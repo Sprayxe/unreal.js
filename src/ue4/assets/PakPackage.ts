@@ -1,6 +1,6 @@
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { Ue4Version } from "../versions/Game";
-import { FNameEntry } from "../objects/uobject/FNameEntry";
+import { FNameEntry } from "../objects/uobject/FName";
 import { IJson, Package } from "./Package";
 import { FPackageFileSummary } from "../objects/uobject/PackageFileSummary";
 import { FObjectExport, FObjectImport, FPackageIndex } from "../objects/uobject/ObjectResource";

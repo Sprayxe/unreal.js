@@ -70,11 +70,12 @@ export class FAssetArchive extends FByteArchive {
     }
 
     handleBadNameIndex(nameIndex: number) {
-        throw ParserException(`FName could not be read, requested index ${nameIndex}, name map size ${(this.owner as unknown as PakPackage).nameMap.length}`)
+        throw ParserException(
+            `FName could not be read, requested index ${nameIndex}, name map size ${(this.owner as PakPackage).nameMap.length}`)
     }
 
     readFName(): FName {
-        const owner = this.owner as unknown as PakPackage
+        const owner = this.owner as PakPackage
         const nameIndex = this.readInt32()
         const extraIndex = this.readInt32()
         if (nameIndex in owner.nameMap) {
