@@ -153,11 +153,11 @@ export class FUnversionedHeader {
     }
 
     protected loadZeroMaskData(Ar: FArchive, numBits: number) {
-        return new BitSet(Ar.readBuffer(
+        return new BitSet(Ar.readBuffer(Math.floor(
             numBits <= 8 ? 1 :
             numBits <= 16 ? 2 :
-            numBits / 32 * 4
-        ))
+            Math.floor(numBits / 32) * 4
+        )))
     }
 }
 

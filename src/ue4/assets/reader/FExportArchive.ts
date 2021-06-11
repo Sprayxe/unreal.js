@@ -13,7 +13,6 @@ export class FExportArchive extends FAssetArchive {
         this.data = data
         this.obj = obj
         this.pkg = pkg
-
         this.game = pkg.game.game
         this.ver = pkg.game.version
         this.owner = pkg

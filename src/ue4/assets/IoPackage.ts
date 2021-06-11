@@ -98,7 +98,9 @@ export class IoPackage extends Package {
         // Preload dependencies
         this.importedPackages = this.graphData.map(it => provider.loadGameFile(it.importedPackageId))
 
-        let currentExportDataOffset = this.summary.graphDataOffset + this.summary.graphDataSize
+        // Populate lazy exports
+        const allExportDataOffset = this.summary.graphDataOffset + this.summary.graphDataSize
+        let currentExportDataOffset = allExportDataOffset
         for (const exportBundle of this.exportBundleHeaders) {
             for (let i = 0; i < exportBundle.entryCount; ++i) {
                 const entry = this.exportBundleEntries[exportBundle.firstEntryIndex + i]
