@@ -86,17 +86,18 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
 
     private parseData(Ar: FUsmapNameTableArchive) {
         Ar.nameMap = Ar.readArray(() => Ar.readBuffer(Ar.readUInt8()).toString())
-        this.mappings.enums = Ar.readTMap(null, () => {
+        const max0 = Ar.readInt32()
+        for (let y = 0; y < max0; ++y) {
             const enumName = Ar.readFName().text
             const enumValues = []
             const limit = Ar.readUInt8()
             for (let i = 0; i < limit; ++i) {
                 enumValues.push(Ar.readFName().text)
             }
-            return { key: enumName, value: enumValues }
-        })
-        const max = Ar.readInt32()
-        for (let x = 0; x < max; ++x) {
+            this.mappings.enums[enumName] = enumValues
+        }
+        const max1 = Ar.readInt32()
+        for (let x = 0; x < max1; ++x) {
             const struct = new UScriptStruct()
             struct.name = Ar.readFName().text
             const superStructName = Ar.readFName()

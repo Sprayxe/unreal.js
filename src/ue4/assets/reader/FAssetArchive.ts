@@ -3,7 +3,7 @@ import { FileProvider } from "../../../fileprovider/FileProvider";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { PakPackage } from "../PakPackage";
-import { FName } from "../../objects/uobject/FName";
+import { FName, FNameEntry } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { Package } from "../Package";
 import { UnrealMap } from "../../../util/UnrealMap";
@@ -75,11 +75,15 @@ export class FAssetArchive extends FByteArchive {
     }
 
     readFName(): FName {
-        const owner = this.owner as PakPackage
         const nameIndex = this.readInt32()
         const extraIndex = this.readInt32()
-        if (nameIndex in owner.nameMap) {
-            return new FName(owner.nameMap, nameIndex, extraIndex)
+        const owner = this.owner as any
+        const asIoPackage = !!owner.nameMap.nameEntries
+        const nameMap = asIoPackage
+            ? owner.nameMap.nameEntries.map(n => new FNameEntry(n, 0, 0))
+            : owner.nameMap
+        if (nameIndex in nameMap) {
+            return new FName(nameMap, nameIndex, extraIndex)
         }
         this.handleBadNameIndex(nameIndex)
     }

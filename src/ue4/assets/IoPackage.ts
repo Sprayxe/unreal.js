@@ -41,7 +41,7 @@ export class IoPackage extends Package {
     exportBundleHeaders: FExportBundleHeader[]
     exportBundleEntries: FExportBundleEntry[]
     graphData: FImportedPackage[]
-    importedPackages: IoPackage[]
+    importedPackages: Lazy<IoPackage[]>
     exportsLazy: Lazy<UObject>[]
     bulkDataStartOffset = 0
 
@@ -96,7 +96,7 @@ export class IoPackage extends Package {
         this.graphData = Ar.readArray(() => new FImportedPackage(Ar))
 
         // Preload dependencies
-        this.importedPackages = this.graphData.map(it => provider.loadGameFile(it.importedPackageId))
+        this.importedPackages = new Lazy<IoPackage[]>(() => this.graphData.map(it => provider.loadGameFile(it.importedPackageId)))
 
         // Populate lazy exports
         const allExportDataOffset = this.summary.graphDataOffset + this.summary.graphDataSize
@@ -139,7 +139,7 @@ export class IoPackage extends Package {
                         }
                         return obj
                     })
-                    currentExportDataOffset = exp.cookedSerialSize
+                    currentExportDataOffset += exp.cookedSerialSize
                 }
             }
         }
@@ -156,7 +156,7 @@ export class IoPackage extends Package {
             const ent = this.globalPackageStore.scriptObjectEntriesMap.get(index)
             if (ent) return new ResolvedScriptObject(ent, this)
         } else if (index.isPackageImport()) {
-            for (const pkg of this.importedPackages) {
+            for (const pkg of this.importedPackages.value) {
                 pkg?.exportMap?.forEach((exportMapEntry, exportIndex) => {
                     if (exportMapEntry.globalImportIndex === index) {
                         return new ResolvedExportObject(exportIndex, pkg)

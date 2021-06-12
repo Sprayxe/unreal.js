@@ -82,6 +82,10 @@ export class FText {
         Ar.writeInt8(this.historyType)
         this.textHistory.serialize(Ar)
     }
+
+    toString() {
+        return this.text
+    }
 }
 
 export abstract class FTextHistory {

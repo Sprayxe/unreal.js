@@ -12,8 +12,6 @@ import { INDEX_NONE } from "../../../../util/Const";
 import { ParserException, UnknownPropertyException } from "../../../../exceptions/Exceptions";
 import { UnrealMap } from "../../../../util/UnrealMap";
 import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../../Globals";
-import { getUProperty, IUProperty, UProperty } from "../../../../util/decorators/UProperty";
-import { FSimpleCurve } from "../../engine/curves/FSimpleCurve";
 import { PropertyType } from "../../../assets/objects/PropertyType";
 
 export class FUnversionedPropertySerializer {
@@ -187,13 +185,13 @@ export class FFragment {
 }
 
 export class FIterator {
+    bDone: boolean
     header: FUnversionedHeader
     private schemas: FUnversionedPropertySerializer[]
     /*private*/ schemaIt = 0
-    private bDoneVar: boolean
-    private fragmentItNum = 0
-    private zeroMaskIndexNum = 0
-    private remainingFragmentValuesNum = 0
+    private fragmentIt = 0
+    private zeroMaskIndex = 0
+    private remainingFragmentValues = 0
 
     private get zeroMask() {
         return this.header.zeroMask
@@ -201,39 +199,26 @@ export class FIterator {
     private get fragments() {
         return this.header.fragments
     }
-    private get fragmentIt() {
-        return this.fragmentItNum
-    }
-    get bDone() {
-        return this.bDoneVar
-    }
-    private get zeroMaskIndex() {
-        return this.zeroMaskIndexNum
-    }
-    private get remainingFragmentValues() {
-        return this.remainingFragmentValuesNum
-    }
 
     constructor(header: FUnversionedHeader, schemas: FUnversionedPropertySerializer[]) {
         this.header = header
         this.schemas = schemas
-        this.bDoneVar = !this.header.hasValues()
+        this.bDone = !this.header.hasValues()
         if (!this.bDone)
             this.skip()
     }
 
     next() {
         ++this.schemaIt
-        --this.remainingFragmentValuesNum
+        --this.remainingFragmentValues
         if (this.fragments[this.fragmentIt].bHasAnyZeroes) {
-            ++this.zeroMaskIndexNum
+            ++this.zeroMaskIndex
         }
-
         if (this.remainingFragmentValues === 0) {
             if (this.fragments[this.fragmentIt].bIsLast) {
-                this.bDoneVar = true
+                this.bDone = true
             } else {
-                ++this.fragmentItNum
+                ++this.fragmentIt
                 this.skip()
             }
         }
@@ -253,11 +238,11 @@ export class FIterator {
         while (this.fragments[this.fragmentIt].valueNum === 0) {
             if (this.fragments[this.fragmentIt].bIsLast)
                 throw new Error("Cannot skip last fragment.")
-            ++this.fragmentItNum
+            ++this.fragmentIt
             this.schemaIt += this.fragments[this.fragmentIt].skipNum
         }
 
-        this.remainingFragmentValuesNum = this.fragments[this.fragmentIt].valueNum
+        this.remainingFragmentValues = this.fragments[this.fragmentIt].valueNum
     }
 }
 
@@ -273,6 +258,7 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
             while (!it.bDone) {
                 const serializer = it.serializer
                 if (serializer) {
+                    if (GDebugProperties) console.log(`Val: ${it.schemaIt} (IsNonZero: ${it.isNonZero()})`)
                     if (it.isNonZero()) {
                         const element = serializer.deserialize(Ar, ReadType.NORMAL)
                         properties.push(element)
@@ -281,7 +267,7 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
                         const start = Ar.pos
                         properties.push(serializer.deserialize(Ar, ReadType.ZERO))
                         if (Ar.pos !== start)
-                            throw ParserException(`Zero property ${it.schemaIt} should not advance the archive's position`)
+                            throw ParserException(`Zero property #${it.schemaIt} should not advance the archive's position`)
                     }
                 } else {
                     if (it.isNonZero()) {

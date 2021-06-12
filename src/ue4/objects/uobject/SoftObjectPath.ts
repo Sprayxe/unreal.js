@@ -43,10 +43,10 @@ export class FSoftObjectPath implements IStructType {
     }
 
     toString() {
-        if (this.subPathString) {
-            return this.assetPathName.isNone() ? "" : this.assetPathName.toString()
+        if (this.subPathString === "") {
+            return this.assetPathName.isNone() ? "" : this.assetPathName.text
         } else {
-            `${this.assetPathName}:${this.subPathString}`
+            return `${this.assetPathName.text}:${this.subPathString}`
         }
     }
 

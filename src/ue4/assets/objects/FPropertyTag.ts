@@ -165,7 +165,8 @@ export class FPropertyTag {
     }
 
     toString() {
-        return `${this.name.text}   -->   ${this.prop ? this.getTagTypeValue() : "Failed to parse"}`
+        const result = this.prop ? this.getTagTypeValue(): "Failed to parse"
+        return `${this.name.text}   -->   ${result.toString()}`
     }
 
     toJson() {
