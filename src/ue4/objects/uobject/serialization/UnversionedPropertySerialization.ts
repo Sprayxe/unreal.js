@@ -95,7 +95,7 @@ export class FUnversionedStructSchema {
                 }
                 index = startIndex + struct.propertyCount
             }
-            struct = struct.superStruct
+            struct = struct.superStruct?.value
         }
     }
 }
@@ -229,7 +229,7 @@ export class FIterator {
     }
 
     isNonZero() {
-        return (!this.fragments[this.fragmentIt].bHasAnyZeroes || !this.zeroMask[this.zeroMaskIndex])
+        return !this.fragments[this.fragmentIt].bHasAnyZeroes || !this.zeroMask.get(Math.floor(this.zeroMaskIndex))
     }
 
     private skip() {
@@ -250,7 +250,6 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
     if (GDebugProperties) console.info(`Load: ${struct.name}`)
     const header = new FUnversionedHeader()
     header.load(Ar)
-
     if (header.hasValues()) {
         const schemas = getOrCreateUnversionedSchema(struct).serializers
         if (header.bHasNonZeroValues) {

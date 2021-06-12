@@ -1,6 +1,7 @@
 import { UStruct } from "./UStruct";
 import { FName } from "../../objects/uobject/FName";
 import { UObject } from "./UObject";
+import { Lazy } from "../../../util/Lazy";
 
 export class UScriptStruct extends UStruct {
     useClassProperties = false
@@ -15,8 +16,8 @@ export class UScriptStruct extends UStruct {
         if (this.superStruct)
             return
         const superclass = value.__proto__
-        if (superclass && superclass.name !== "UObject") {
-            this.superStruct = new UScriptStruct(superclass)
+        if (superclass && superclass.toString() !== "function () { [native code] }" && superclass.name !== "UObject") {
+            this.superStruct = new Lazy<UStruct>(() => new UScriptStruct(superclass))
         }
     }
 

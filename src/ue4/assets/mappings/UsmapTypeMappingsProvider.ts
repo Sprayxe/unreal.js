@@ -8,6 +8,7 @@ import { Lazy } from "../../../util/Lazy";
 import { Utils } from "../../../util/Utils";
 import { UScriptStruct } from "../exports/UScriptStruct";
 import { PropertyInfo } from "../objects/PropertyInfo";
+import { UStruct } from "../exports/UStruct";
 
 export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
     static FILE_MAGIC = 0x30C4
@@ -101,7 +102,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
             const struct = new UScriptStruct()
             struct.name = Ar.readFName().text
             const superStructName = Ar.readFName()
-            struct.superStruct = !superStructName.isNone() ? this.getStruct(superStructName) : null
+            struct.superStruct = !superStructName.isNone() ? new Lazy<UStruct>(() => this.getStruct(superStructName)) : null
             struct.propertyCount = Ar.readUInt16()
             const serializablePropCount = Ar.readUInt16()
             const arr = []

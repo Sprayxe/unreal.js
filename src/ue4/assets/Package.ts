@@ -34,7 +34,7 @@ export abstract class Package extends UObject {
                 nc.clazz = struct
                 return nc
             }
-            current = current.superStruct
+            current = current.superStruct?.value
         }
         const u = new UObject()
         u.clazz = struct

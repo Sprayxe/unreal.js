@@ -5,9 +5,10 @@ import { ParserException } from "../../../exceptions/Exceptions";
 import { UObject } from "./UObject";
 import { PropertyInfo } from "../objects/PropertyInfo";
 import { GDebugProperties } from "../../../Globals";
+import { Lazy } from "../../../util/Lazy";
 
 export class UStruct extends UObject {
-    superStruct: UStruct = null
+    superStruct: Lazy<UStruct> = null
     children: FPackageIndex[] = []
     childProperties: FField[] = []
     childProperties2: PropertyInfo[] = []
