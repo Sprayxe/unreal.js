@@ -133,7 +133,7 @@ reader.extract(reader.files.first()) // Gets the first file and extracts it as B
 ```
 Replace:
 - `PATH`: Path to the pak file
-- `GAME`: Game version you are using (e.g `Game.GAME_VALORANT`)\
+- `GAME`: Game version you are using (e.g `Game.GAME_VALORANT`, `Ue4Version.GAME_UE4_26`)\
   You can leave it out if you want to use the latest version
 - `KEY`: Aes key used for decrypting the pak\
   **WARNING** Using a wrong aes key will throw an exception! You can use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
