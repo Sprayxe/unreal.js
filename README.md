@@ -7,6 +7,8 @@
 [![TWITTER1](https://img.shields.io/badge/amrsatrio-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/amrsatrio)
 [![DISCORD1](https://img.shields.io/badge/tb24%235219-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
 
+![LOGO](https://media.discordapp.net/attachments/833965731279929365/853704599798284328/image0.png)
+
 # unreal.js
 ## A pak reader for games like [VALORANT](https://playvalorant.com) & [Fortnite](https://fortnite.com) written in Node.JS
 
