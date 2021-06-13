@@ -176,24 +176,5 @@ Replace:
 - Inspired by [CUE4Parse](https://github.com/FabianFG/CUE4Parse)
   
 ## Donate
-- Sprayxe:
-  - ![BTC](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
-  - ![PP](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white) [PayPal.Me](https://paypal.me/aimdiscord)
-- AmrSatrio
-  - ![BTC](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
-  - ![PP](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white) [PayPal.Me](https://paypal.me/aimdiscord)
-
-
-## Dependencies
-- [typescript](https://npmjs.com/typescript)
-- [lodash](https://npmjs.com/lodash)  
-- [sprintf-js](https://npmjs.com/sprintf-js)
-- [ref-napi](https://npmjs.com/ref-napi)
-- [ffi-napi](https://npmjs.com/ffi-napi)
-- [long](https://npmjs.com/long)
-- [aes-js](https://npmjs.com/aes-js)
-- [bitset](https://npmjs.com/bitset)  
-- [stream-buffers](https://npmjs.com/stream-buffers)
-- [os-locale](https://npmjs.com/os-locale)
-- [bezier-js](https://npmjs.com/bezier-js)  
-- [@discordjs/collection](https://npmjs.com/@discordjs/collection)
+- [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/aimdiscord)
+- ![Bitcoin](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
