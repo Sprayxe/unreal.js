@@ -1,6 +1,10 @@
 [![LICENCE](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
 [![TYPESCRIPT](https://img.shields.io/badge/typescript-%23007ACC.svg?&style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![NODEJS](https://img.shields.io/badge/node.js-%2343853D.svg?&style=for-the-badge&logo=node.js&logoColor=white)](https://www.nodejs.org)
+[![TWITTER](https://img.shields.io/badge/Sprayxe_-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/Sprayxe_)
+[![DISCORD](https://img.shields.io/badge/MarcelWRLD%230999-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
+[![TWITTER](https://img.shields.io/badge/amrsatrio-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/amrsatrio)
+[![DISCORD](https://img.shields.io/badge/tb24%235219-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
 
 # unreal.js
 ## A pak reader for games like [VALORANT](https://playvalorant.com) & [Fortnite](https://fortnite.com) written in Node.JS
@@ -166,14 +170,19 @@ Replace:
   - [AmrSatrio](https://twitter.com/@AmrSatrio)
 
 ## Contributors
-- [Sprayxe](https://twitter.com/@Sprayxe_)
+- [Sprayxe](https://twitter.com/@Sprayxe_) (Main Contributor)
 - [AmrSatrio](https://twitter.com/@AmrSatrio)
 - Inspired by [JFortniteParse](https://github.com/FabianFG/JFortniteParse)
 - Inspired by [CUE4Parse](https://github.com/FabianFG/CUE4Parse)
   
 ## Donate
-- [PayPal] TODO: PUT LINK HERE     > prob some fancy readme badge :bonk:
-- [Bitcoin] TODO: PUT ADDRESS HERE ^
+- Sprayxe:
+  - ![BTC](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
+  - ![PP](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white) [PayPal.Me](https://paypal.me/aimdiscord)
+- AmrSatrio
+  - ![BTC](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
+  - ![PP](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white) [PayPal.Me](https://paypal.me/aimdiscord)
+
 
 ## Dependencies
 - [typescript](https://npmjs.com/typescript)
