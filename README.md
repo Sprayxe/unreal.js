@@ -12,7 +12,7 @@
 - Supports loading of .locres files
 - Supports loading of AssetRegistry.bin  
 - Supports exporting of UE4 textures as image (TODO) 
-- Supports exporting of UE4 sounds files (TODO)
+- Supports exporting of UE4 sounds files
 
 ### Prerequisites 
 - Node.JS installed
@@ -25,11 +25,12 @@
 #### Basics: FileProvider
 The file provider is basically the heart of the library and from there you control basically all features.
 - **Usage with Fortnite**\
-  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory.
+  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory. You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version. 
     ```js
-    // Require library and create new instance
-    const { FileProvider, FGuid } = require("unreal.js")
-    const provider = new FileProvider("GAMEPATH")
+    // Create new instance
+    const usmap = new UsmapTypeMappingsProvider(readFileSync("USMAPPATH"))
+    const provider = new FileProvider("GAMEPATH", VERSION, usmap)
+    provider.mappings.reload() // Loads .usmap
     // 'start' the provider
     provider.populateIoStoreFiles = true
     await provider.initialize()
@@ -37,14 +38,15 @@ The file provider is basically the heart of the library and from there you contr
     await provider.submitKey(FGuid.mainGuid, "KEY")
     ```
     Replace:
+    - `USMAPPATH`: Path to your .usmap file (doesn't need to be in working dir)
+    - `VERSION`: Version you want to use (e.g `Ue4Version.GAME_UE4_26`, pass `null` for latest)
     - `GAMEPATH`: Path to fortnite's paks
-    - `KEY`: Current main [aes key](https://benbot.app/api/v1/aes)
+    - `KEY`: An corresponding to your version [aes key](https://benbot.app/api/v1/aes)
    
 
 - **Usage with VALORANT**
    ```js
-    // Require library and create new instance
-    const { FileProvider, FGuid, Game } = require("unreal.js")
+    // Create new instance 
     const provider = new FileProvider("GAMEPATH", Game.GAME_VALORANT)
     // 'start' the provider
     await provider.initialize()
@@ -118,15 +120,13 @@ The file provider is basically the heart of the library and from there you contr
 
 - **Loading by enum**
   ```js
-  const { FnLanguage } = require("unreal.js") // requires the language enum
   const locres = provider.loadLocres(FnLanguage.DE) // loads using enum
   console.log(locres.toJson()) // turns locres into json format 
   ```  
   
 #### Advanced: Loading a pak file manually
 ```js
-const { PakFileReader } = require("unreal.js") // Require the reader
-const reader = new PakFileReader("PATH", "GAME") // Create a new instance
+const reader = new PakFileReader("PATH", GAME) // Create a new instance
 reader.aesKey = "KEY" // Set an aes key (can be left out if pak is not encrypted)
 reader.readIndex() // Read the index
 reader.extract(reader.files.first()) // Gets the first file and extracts it as Buffer
@@ -140,7 +140,6 @@ Replace:
 
 #### Advanced: Loading a package manually
 ```js
-const { PakPackage, IoPackage } = require("unreal.js") // require package classes
 // load a pak package (e.g valorant)
 const pkg = new PakPackage(UASSETBUFFER, UEXPBUFFER, UBULKBUFFER, NAME, PROVIDER, GAME)
 // load an io package (mostly used in fortnite)
