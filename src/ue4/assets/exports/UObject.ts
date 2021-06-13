@@ -11,12 +11,13 @@ import { deserializeUnversionedProperties } from "../../objects/uobject/serializ
 import { Locres } from "../../locres/Locres";
 import { StringBuilder } from "../../../util/StringBuilder";
 import { camelCase } from "lodash"
+import { Lazy } from "../../../util/Lazy";
 
 export class UObject implements IPropertyHolder {
     name: string = ""
     outer: UObject = null
     clazz: any = null
-    template: UObject = null
+    template: Lazy<UObject> = null
     properties: FPropertyTag[] = []
     objectGuid: FGuid = null
     flags = 0

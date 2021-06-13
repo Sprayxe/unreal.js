@@ -4,9 +4,12 @@ export class ObjectTypeRegistry {
     static registry = {}
 
     static async init() {
+        const s = Date.now()
         await this.registerEngine()
         await this.registerValorant()
         await this.registerFortnite()
+        const e = Date.now()
+        console.log(`Registered ${Object.keys(this.registry).length} classes in ${e - s}ms.`)
     }
 
     private static async registerEngine() {
@@ -20,9 +23,17 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerFortnite() {
+        const dir0 = (await fs.readdir("./dist/fort/exports/variants")).filter(f => f.endsWith(".js"))
         const dir = (await fs.readdir("./dist/fort/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir) {
             const clazz = (await import(`../../fort/exports/${file}`))[file.split(".").shift()]
+            if (clazz.ObjectRegistryIgnore)
+                continue;
+            this.registerClass(clazz)
+        }
+        // variants
+        for (const file of dir0) {
+            const clazz = (await import(`../../fort/exports/variants/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
             this.registerClass(clazz)

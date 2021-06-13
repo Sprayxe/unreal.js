@@ -500,7 +500,7 @@ export class ClassProperty extends FProperty {
     }
 
     toJsonValue(): any {
-        return null // TODO load the object
+        return this.index.name
     }
 }
 
@@ -544,10 +544,7 @@ export class EnumProperty extends FProperty {
     }
 
     toJsonValue(): any {
-        return {
-            name: this.name.text,
-            enumConstant: this.enumConstant
-        }
+        return this.name.text
     }
 }
 
@@ -711,7 +708,7 @@ export class ObjectProperty extends FProperty {
     }
 
     toJsonValue(): any {
-        return null // TODO load the object
+        return this.index.name?.text
     }
 }
 
@@ -847,7 +844,7 @@ export class WeakObjectProperty extends FProperty {
     }
 
     toJsonValue() {
-        return null
+        return this.index.name?.text
     }
 }
 

@@ -20,13 +20,13 @@ export class FPackageIndex {
     owner: Package = null
 
     get name(): FName {
+        let name;
         if (this.owner instanceof PakPackage) {
-            return (this.owner as PakPackage).getResource(this).objectName
-        } else if (typeof this.owner === "object") {
-            return (this.owner as IoPackage).findObjectMinimal(this)?.getName()
-        } else {
-            return null
+            name = (this.owner as PakPackage).getResource(this).objectName
+        } else if (this.owner instanceof IoPackage) {
+            name = (this.owner as IoPackage).findObjectMinimal(this)?.getName()
         }
+        return name || FName.NAME_None
     }
 
     constructor()

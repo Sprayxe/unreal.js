@@ -22,7 +22,7 @@ import { Ue4Version } from "./ue4/versions/Game";
     const path = "FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA"
     //const path = "ShooterGame/Content/WwiseAudio/Media/329781885"
 
-    const pkg = provider.loadGameFile(path)
+    const pkg = provider.loadObject(path)
     console.log(pkg.toJson())
 })()
 

@@ -8,13 +8,13 @@ export class FExportArchive extends FAssetArchive {
     obj: UObject
     pkg: IoPackage
 
-    constructor(data: Buffer, obj: UObject, pkg: any) {
+    constructor(data: Buffer, obj: UObject, pkg: IoPackage) {
         super(data, pkg.provider, pkg.fileName)
         this.data = data
         this.obj = obj
         this.pkg = pkg
-        this.game = pkg.game.game
-        this.ver = pkg.game.version
+        this.game = pkg.game
+        this.ver = pkg.game
         this.owner = pkg
     }
 

@@ -277,7 +277,7 @@ export class FPackageSummary {
     constructor(Ar: FArchive) {
         this.name = new FMappedName(Ar)
         this.sourceName = new FMappedName(Ar)
-        this.packageFlags = Ar.readUInt32()
+        this.packageFlags = -~Ar.readUInt32() - 1 // TODO is this right? following original code this gives inaccurate output
         this.cookedHeaderSize = Ar.readUInt32()
         this.nameMapNamesOffset = Ar.readInt32()
         this.nameMapNamesSize = Ar.readInt32()

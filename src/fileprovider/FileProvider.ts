@@ -59,11 +59,11 @@ export class FileProvider extends EventEmitter {
     localFiles = new Set<string>()
     populateIoStoreFiles = false
 
-    constructor(folder: string, game: number = Ue4Version.GAME_UE4_LATEST, mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()) {
+    constructor(folder: string, game?: number, mappingsProvider?: TypeMappingsProvider) {
         super()
         this.folder = folder
-        this.game = game
-        this.mappingsProvider = mappingsProvider
+        this.game = game || Ue4Version.GAME_UE4_LATEST
+        this.mappingsProvider = mappingsProvider || new ReflectionTypeMappingsProvider()
         if (this.game >= Game.GAME_UE4(26))
             Oodle.ensureLib()
     }

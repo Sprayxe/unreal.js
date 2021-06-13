@@ -115,16 +115,16 @@ export class IoPackage extends Package {
                         obj.name = objectName.text
                         // TODO remove 'false' param, fix the issue
                         obj.outer = (this.resolveObjectIndex(exp.outerIndex, false) as ResolvedExportObject)?.exportObject?.value || this
-                        obj.template = (this.resolveObjectIndex(exp.templateIndex, false) as ResolvedExportObject)?.exportObject?.value
-                        obj.flags = exp.objectFlags
+                        obj.template = (this.resolveObjectIndex(exp.templateIndex, false) as ResolvedExportObject)?.exportObject
+                        obj.flags = Math.floor(exp.objectFlags)
 
                         // Serialize
                         const Ar = new FExportArchive(uasset, obj, this)
                         Ar.useUnversionedPropertySerialization = (this.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0
-                        Ar.uassetSize = exp.cookedSerialOffset - localExportDataOffset
+                        Ar.uassetSize = Math.floor(exp.cookedSerialOffset) - localExportDataOffset
                         Ar.bulkDataStartOffset = this.bulkDataStartOffset
                         Ar.pos = localExportDataOffset
-                        const validPos = Ar.pos + exp.cookedSerialSize
+                        const validPos = Ar.pos + Math.floor(exp.cookedSerialSize)
                         try {
                             obj.deserialize(Ar, validPos)
                             if (validPos !== Ar.pos) {
@@ -139,7 +139,7 @@ export class IoPackage extends Package {
                         }
                         return obj
                     })
-                    currentExportDataOffset += exp.cookedSerialSize
+                    currentExportDataOffset += Math.floor(exp.cookedSerialSize)
                 }
             }
         }
@@ -151,17 +151,18 @@ export class IoPackage extends Package {
             return null
 
         if (index.isExport()) {
-            return new ResolvedExportObject(index.toExport().toNumber(), this)
+            return new ResolvedExportObject(index.toExport().toInt(), this)
         } else if (index.isScriptImport()) {
             const ent = this.globalPackageStore.scriptObjectEntriesMap.get(index)
             if (ent) return new ResolvedScriptObject(ent, this)
         } else if (index.isPackageImport()) {
             for (const pkg of this.importedPackages.value) {
-                pkg?.exportMap?.forEach((exportMapEntry, exportIndex) => {
+                for (const exportIndex in pkg?.exportMap) {
+                    const exportMapEntry = pkg?.exportMap[exportIndex]
                     if (exportMapEntry.globalImportIndex === index) {
-                        return new ResolvedExportObject(exportIndex, pkg)
+                        return new ResolvedExportObject(parseInt(exportIndex), pkg)
                     }
-                })
+                }
             }
         } else if (index.isNull()) {
             return null
