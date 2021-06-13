@@ -41,7 +41,7 @@ The file provider is basically the heart of the library and from there you contr
     - `USMAPPATH`: Path to your .usmap file (doesn't need to be in working dir)
     - `VERSION`: Version you want to use (e.g `Ue4Version.GAME_UE4_26`, pass `null` for latest)
     - `GAMEPATH`: Path to fortnite's paks
-    - `KEY`: An corresponding to your version [aes key](https://benbot.app/api/v1/aes)
+    - `KEY`: An [aes key](https://benbot.app/api/v1/aes) corresponding to your version
    
 
 - **Usage with VALORANT**
