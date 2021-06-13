@@ -7,7 +7,7 @@
 [![TWITTER1](https://img.shields.io/badge/amrsatrio-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/amrsatrio)
 [![DISCORD1](https://img.shields.io/badge/tb24%235219-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
 
-![LOGO](https://media.discordapp.net/attachments/833965731279929365/853704599798284328/image0.png)
+![LOGO_0](https://media.discordapp.net/attachments/833965731279929365/853716847203844106/image0.png)
 
 # unreal.js
 ## A pak reader for games like [VALORANT](https://playvalorant.com) & [Fortnite](https://fortnite.com) written in Node.JS
@@ -181,3 +181,5 @@ Replace:
 ## Donate
 - [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/aimdiscord)
 - ![Bitcoin](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
+
+![LOGO_1](https://media.discordapp.net/attachments/833965731279929365/853716847430074368/image1.png)
