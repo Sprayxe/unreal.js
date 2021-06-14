@@ -1,6 +1,13 @@
 [![LICENCE](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
 [![TYPESCRIPT](https://img.shields.io/badge/typescript-%23007ACC.svg?&style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![NODEJS](https://img.shields.io/badge/node.js-%2343853D.svg?&style=for-the-badge&logo=node.js&logoColor=white)](https://www.nodejs.org)
+[![DISCORD0](https://img.shields.io/badge/AK47%20Server-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/akbot)
+[![TWITTER0](https://img.shields.io/badge/Sprayxe_-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/Sprayxe_)
+[![DISCORD0](https://img.shields.io/badge/MarcelWRLD%230999-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
+[![TWITTER1](https://img.shields.io/badge/amrsatrio-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/amrsatrio)
+[![DISCORD1](https://img.shields.io/badge/tb24%235219-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
+
+![LOGO_0](https://media.discordapp.net/attachments/833965731279929365/853716847203844106/image0.png)
 
 # unreal.js
 ## A pak reader for games like [VALORANT](https://playvalorant.com) & [Fortnite](https://fortnite.com) written in Node.JS
@@ -12,7 +19,7 @@
 - Supports loading of .locres files
 - Supports loading of AssetRegistry.bin  
 - Supports exporting of UE4 textures as image (TODO) 
-- Supports exporting of UE4 sounds files (TODO)
+- Supports exporting of UE4 sounds files
 
 ### Prerequisites 
 - Node.JS installed
@@ -25,11 +32,12 @@
 #### Basics: FileProvider
 The file provider is basically the heart of the library and from there you control basically all features.
 - **Usage with Fortnite**\
-  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory.
+  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory. You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version. 
     ```js
-    // Require library and create new instance
-    const { FileProvider, FGuid } = require("unreal.js")
-    const provider = new FileProvider("GAMEPATH")
+    // Create new instance
+    const usmap = new UsmapTypeMappingsProvider(readFileSync("USMAPPATH"))
+    const provider = new FileProvider("GAMEPATH", VERSION, usmap)
+    provider.mappings.reload() // Loads .usmap
     // 'start' the provider
     provider.populateIoStoreFiles = true
     await provider.initialize()
@@ -37,14 +45,15 @@ The file provider is basically the heart of the library and from there you contr
     await provider.submitKey(FGuid.mainGuid, "KEY")
     ```
     Replace:
+    - `USMAPPATH`: Path to your .usmap file (doesn't need to be in working dir)
+    - `VERSION`: Version you want to use (e.g `Ue4Version.GAME_UE4_26`, pass `null` for latest)
     - `GAMEPATH`: Path to fortnite's paks
-    - `KEY`: Current main [aes key](https://benbot.app/api/v1/aes)
+    - `KEY`: An [aes key](https://benbot.app/api/v1/aes) corresponding to your version
    
 
 - **Usage with VALORANT**
    ```js
-    // Require library and create new instance
-    const { FileProvider, FGuid, Game } = require("unreal.js")
+    // Create new instance 
     const provider = new FileProvider("GAMEPATH", Game.GAME_VALORANT)
     // 'start' the provider
     await provider.initialize()
@@ -118,29 +127,26 @@ The file provider is basically the heart of the library and from there you contr
 
 - **Loading by enum**
   ```js
-  const { FnLanguage } = require("unreal.js") // requires the language enum
   const locres = provider.loadLocres(FnLanguage.DE) // loads using enum
   console.log(locres.toJson()) // turns locres into json format 
   ```  
   
 #### Advanced: Loading a pak file manually
 ```js
-const { PakFileReader } = require("unreal.js") // Require the reader
-const reader = new PakFileReader("PATH", "GAME") // Create a new instance
+const reader = new PakFileReader("PATH", GAME) // Create a new instance
 reader.aesKey = "KEY" // Set an aes key (can be left out if pak is not encrypted)
 reader.readIndex() // Read the index
 reader.extract(reader.files.first()) // Gets the first file and extracts it as Buffer
 ```
 Replace:
 - `PATH`: Path to the pak file
-- `GAME`: Game version you are using (e.g `Game.GAME_VALORANT`)\
+- `GAME`: Game version you are using (e.g `Game.GAME_VALORANT`, `Ue4Version.GAME_UE4_26`)\
   You can leave it out if you want to use the latest version
 - `KEY`: Aes key used for decrypting the pak\
   **WARNING** Using a wrong aes key will throw an exception! You can use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
 
 #### Advanced: Loading a package manually
 ```js
-const { PakPackage, IoPackage } = require("unreal.js") // require package classes
 // load a pak package (e.g valorant)
 const pkg = new PakPackage(UASSETBUFFER, UEXPBUFFER, UBULKBUFFER, NAME, PROVIDER, GAME)
 // load an io package (mostly used in fortnite)
@@ -161,31 +167,19 @@ Replace:
 - Discord
   - `@MarcelWRLD#0999` 
   - `@tb24#5219`
-  - AK47 Server Invite?
+  - [AK47 Server](https://discord.gg/akbot)
 - Twitter
   - [Sprayxe](https://twitter.com/@Sprayxe_)
   - [AmrSatrio](https://twitter.com/@AmrSatrio)
 
 ## Contributors
-- [Sprayxe](https://twitter.com/@Sprayxe_)
+- [Sprayxe](https://twitter.com/@Sprayxe_) (Main Contributor)
 - [AmrSatrio](https://twitter.com/@AmrSatrio)
 - Inspired by [JFortniteParse](https://github.com/FabianFG/JFortniteParse)
 - Inspired by [CUE4Parse](https://github.com/FabianFG/CUE4Parse)
   
 ## Donate
-- [PayPal] TODO: PUT LINK HERE     > prob some fancy readme badge :bonk:
-- [Bitcoin] TODO: PUT ADDRESS HERE ^
+- [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/aimdiscord)
+- ![Bitcoin](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
 
-## Dependencies
-- [typescript](https://npmjs.com/typescript)
-- [lodash](https://npmjs.com/lodash)  
-- [sprintf-js](https://npmjs.com/sprintf-js)
-- [ref-napi](https://npmjs.com/ref-napi)
-- [ffi-napi](https://npmjs.com/ffi-napi)
-- [long](https://npmjs.com/long)
-- [aes-js](https://npmjs.com/aes-js)
-- [bitset](https://npmjs.com/bitset)  
-- [stream-buffers](https://npmjs.com/stream-buffers)
-- [os-locale](https://npmjs.com/os-locale)
-- [bezier-js](https://npmjs.com/bezier-js)  
-- [@discordjs/collection](https://npmjs.com/@discordjs/collection)
+![LOGO_1](https://media.discordapp.net/attachments/833965731279929365/853716847430074368/image1.png)
