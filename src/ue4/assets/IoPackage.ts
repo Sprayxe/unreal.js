@@ -154,12 +154,12 @@ export class IoPackage extends Package {
             return new ResolvedExportObject(index.toExport().toInt(), this)
         } else if (index.isScriptImport()) {
             const ent = this.globalPackageStore.scriptObjectEntriesMap.get(index)
-            if (ent) return new ResolvedScriptObject(ent, this)
+            return ent ? new ResolvedScriptObject(ent, this) : null
         } else if (index.isPackageImport()) {
             for (const pkg of this.importedPackages.value) {
                 for (const exportIndex in pkg?.exportMap) {
                     const exportMapEntry = pkg?.exportMap[exportIndex]
-                    if (exportMapEntry.globalImportIndex === index) {
+                    if (exportMapEntry.globalImportIndex.equals(index)) {
                         return new ResolvedExportObject(parseInt(exportIndex), pkg)
                     }
                 }
@@ -188,14 +188,14 @@ export class IoPackage extends Package {
             return this.exportsLazy[index.toExport()] as unknown as T
         } else {
             const imp = this.importMap[index.toImport()]
-            return (imp ? this.resolveObjectIndex(imp, false)?.getObject() : null )as unknown as T
+            return (imp ? this.resolveObjectIndex(imp, false)?.getObject() : null) as unknown as T
         }
     }
 
     findObjectByName(objectName:string, className?:string) {
         let exportIndex = -1
         this.exportMap.find((it, k) => {
-            const is = this.nameMap.getName(it.objectName).text === objectName && (className == null || this.resolveObjectIndex(it.classIndex)?.getName()?.text === className)
+            const is = this.nameMap.getName(it.objectName).text === objectName && (className == null || this.resolveObjectIndex(it.classIndex)?.name?.text === className)
             if (is) exportIndex = k
             return is
         })
@@ -223,7 +223,7 @@ export class IoPackage extends Package {
             return new ResolvedExportObject(index.toExport(), this)
         } else {
             const imp = this.importMap[index.toImport()]
-            return imp ? this.resolveObjectIndex(imp, false) : null
+            return this.resolveObjectIndex(imp, false)
         }
     }
 }
@@ -255,7 +255,7 @@ export abstract class ResolvedObject {
         this.pkg = pkg
     }
 
-    abstract getName(): FName
+    abstract get name(): FName
     getOuter(): ResolvedObject { return null }
     getSuper(): ResolvedObject { return null }
     getObject(): Lazy<UObject> { return null }
@@ -273,7 +273,7 @@ export class ResolvedExportObject extends ResolvedObject {
         this.exportObject = pkg.exportsLazy[exportIndex]
     }
 
-    getName() { return this.pkg.nameMap.getName(this.exportMapEntry.objectName) }
+    get name() { return this.pkg.nameMap.getName(this.exportMapEntry.objectName) }
     getOuter() { return this.pkg.resolveObjectIndex(this.exportMapEntry.outerIndex) }
     getSuper() { return this.pkg.resolveObjectIndex(this.exportMapEntry.superIndex) }
     getObject() { return this.exportObject }
@@ -287,11 +287,11 @@ export class ResolvedScriptObject extends ResolvedObject {
         this.scriptImport = scriptImport
     }
 
-    getName(): FName { return this.scriptImport.objectName.toName() }
+    get name(): FName { return this.scriptImport.objectName.toName() }
     getOuter() { return this.pkg.resolveObjectIndex(this.scriptImport.outerIndex) }
     getObject(): Lazy<UObject> {
         return new Lazy<UObject>(() => {
-            const name = this.getName()
+            const name = this.name
             if (name.text[0] === "E") {
                 let enumValues = this.pkg.provider?.mappingsProvider?.getEnum(name)
                 if (!enumValues) {

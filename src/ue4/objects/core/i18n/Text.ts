@@ -86,11 +86,23 @@ export class FText {
     toString() {
         return this.text
     }
+
+    toJson() {
+        const enums = Object.keys(ETextHistoryType)
+            .splice(13)
+            .filter(e => e !== "-1") // Lol this is so dumb
+        return {
+            historyType: enums[this.historyType + 1],
+            finalText: this.text,
+            value: this.textHistory.toJson()
+        }
+    }
 }
 
 export abstract class FTextHistory {
     abstract serialize(Ar: FArchiveWriter)
     abstract text: string
+    abstract toJson(): any
 
     OrderedFormat = class {
         sourceFmt: FText
@@ -123,6 +135,10 @@ export class FTextHistoryNone extends FTextHistory {
             Ar.writeString(this.cultureInvariantString)
         }
     }
+
+    toJson() {
+        return { cultureInvariantString: this.cultureInvariantString }
+    }
 }
 
 export class FTextHistoryBase extends FTextHistory {
@@ -154,6 +170,14 @@ export class FTextHistoryBase extends FTextHistory {
         Ar.writeString(this.key)
         Ar.writeString(this.sourceString)
     }
+
+    toJson(): any {
+        return {
+            namespace: this.namespace,
+            key: this.key,
+            sourceString: this.sourceString
+        }
+    }
 }
 
 export class FTextHistoryDateTime extends FTextHistory {
@@ -180,8 +204,8 @@ export class FTextHistoryDateTime extends FTextHistory {
         const x = params[0]
         if (x instanceof FArchive) {
             this.sourceDateTime = new FDateTime(x)
-            this.dateStyle = EDateTimeStyle[Object.keys(EDateTimeStyle)[x.readInt8()]]
-            this.timeStyle = EDateTimeStyle[Object.keys(EDateTimeStyle)[x.readInt8()]]
+            this.dateStyle = x.readInt8()
+            this.timeStyle = x.readInt8()
             this.timeZone = x.readString()
             this.targetCulture = x.readString()
         } else {
@@ -199,6 +223,17 @@ export class FTextHistoryDateTime extends FTextHistory {
         Ar.writeInt8(this.timeStyle)
         Ar.writeString(this.timeZone)
         Ar.writeString(this.targetCulture)
+    }
+
+    toJson(): any {
+        const obj = Object.keys(EDateTimeStyle)
+        return {
+            sourceDateTime: this.sourceDateTime.toJson(),
+            dateStyle: obj[this.dateStyle],
+            timeStyle: obj[this.timeStyle],
+            timeZone: this.timeZone,
+            targetCulture: this.targetCulture
+        }
     }
 }
 
@@ -226,6 +261,13 @@ export class FTextHistoryOrderedFormat extends FTextHistory {
     serialize(Ar: FArchiveWriter) {
         this.sourceFmt.serialize(Ar)
         Ar.writeTArray(this.args, (it) => it.serialize(Ar))
+    }
+
+    toJson(): any {
+        return {
+            sourceFmt: this.sourceFmt.toJson(),
+            args: this.args.map(a => a.toJson())
+        }
     }
 }
 
@@ -259,6 +301,14 @@ export class FTextHistoryFormatNumber extends FTextHistory {
         this.sourceValue.serialize(Ar)
         Ar.writeString(this.timeZone)
         Ar.writeString(this.targetCulture)
+    }
+
+    toJson(): any {
+        return {
+            sourceValue: this.sourceValue.toJson(),
+            timeZone: this.timeZone,
+            targetCulture: this.targetCulture
+        }
     }
 }
 
@@ -295,6 +345,14 @@ export class FTextHistoryStringTableEntry extends FTextHistory {
             Ar.writeString(this.key)
         } else {
             throw ParserException("Tried to save a string table entry with wrong archive type")
+        }
+    }
+
+    toJson(): any {
+        return {
+            tableId: this.tableId.text,
+            key: this.key,
+            text: this.text
         }
     }
 }
@@ -346,5 +404,11 @@ export class FFormatArgumentValue {
 
     toString() {
         return `[Object FFormatArgumentValue]`
+    }
+
+    toJson() {
+        return this.value.toJson
+            ? this.value.toJson()
+            : this.value.toString()
     }
 }

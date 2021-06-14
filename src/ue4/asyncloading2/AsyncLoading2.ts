@@ -129,7 +129,7 @@ export class FPackageObjectIndex {
             if (x instanceof FArchive) {
                 this.typeAndId = Long.fromString(x.readUInt64().toString())
             } else {
-                this.typeAndId = Long.fromNumber(Object.values(FPackageObjectIndex_EType)[x << TYPE_SHIFT] as number).or(y)
+                this.typeAndId = Long.fromNumber(x << TYPE_SHIFT).or(y)
             }
         }
     }
@@ -166,7 +166,7 @@ export class FPackageObjectIndex {
     }
 
     isExport() {
-        return this.typeAndId.shiftRight(_TYPE_SHIFT).equals(FPackageObjectIndex_EType.Export)
+        return this.typeAndId.shru(_TYPE_SHIFT).toInt() === FPackageObjectIndex_EType.Export
     }
 
     isImport() {
@@ -174,11 +174,11 @@ export class FPackageObjectIndex {
     }
 
     isScriptImport() {
-        return this.typeAndId.shiftRight(_TYPE_SHIFT).equals(FPackageObjectIndex_EType.ScriptImport)
+        return this.typeAndId.shru(_TYPE_SHIFT).toInt() === FPackageObjectIndex_EType.ScriptImport
     }
 
     isPackageImport() {
-        return this.typeAndId.shiftRight(_TYPE_SHIFT).equals(FPackageObjectIndex_EType.PackageImport)
+        return this.typeAndId.shru(_TYPE_SHIFT).toInt() === FPackageObjectIndex_EType.PackageImport
     }
 
     toExport() {
@@ -188,7 +188,7 @@ export class FPackageObjectIndex {
     }
 
     type() {
-        return Object.values(FPackageObjectIndex_EType)[this.typeAndId.shiftRight(TYPE_SHIFT).toNumber()] // custom
+        return this.typeAndId.shiftRight(TYPE_SHIFT).toNumber() // custom
     }
 
     value() {
@@ -198,10 +198,8 @@ export class FPackageObjectIndex {
     equals(other?: any): boolean {
         if (this === other) return true
         if (!(other instanceof FPackageObjectIndex)) return false
-
         other as FPackageObjectIndex
-
-        return this.typeAndId.equals(other.typeAndId)
+        return this.value().toString() === other.value().toString()
     }
 }
 

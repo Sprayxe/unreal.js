@@ -791,8 +791,8 @@ export class TextProperty extends FProperty {
         this.text = text
     }
 
-    toJsonValue(): string {
-        return this.text.text
+    toJsonValue(): any {
+        return this.text.toJson()
     }
 }
 

@@ -24,7 +24,8 @@ export class FPackageIndex {
         if (this.owner instanceof PakPackage) {
             name = (this.owner as PakPackage).getResource(this).objectName
         } else if (this.owner instanceof IoPackage) {
-            name = (this.owner as IoPackage).findObjectMinimal(this)?.getName()
+            const n = (this.owner as IoPackage).findObjectMinimal(this)
+            name = n?.name
         }
         return name || FName.NAME_None
     }

@@ -2,13 +2,13 @@ import { FileProvider } from "./fileprovider/FileProvider";
 import { FGuid } from "./ue4/objects/core/misc/Guid";
 //import axios from "axios";
 import { UsmapTypeMappingsProvider } from "./ue4/assets/mappings/UsmapTypeMappingsProvider";
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { Ue4Version } from "./ue4/versions/Game";
 //import { UnrealMap } from "./util/UnrealMap";
 //import { Game } from "./ue4/versions/Game";
 
 (async () => {
-    const usmap = readFileSync("D:/Downloads/++Fortnite+Release-16.50-CL-16469788-Windows_oo.usmap")
+    const usmap = readFileSync("D:/Downloads/FortniteRelease-17.00-CL-16555138-Windows_oo.usmap")
     const provider = new FileProvider("C:/Program Files/Epic Games/Fortnite/FortniteGame/Content/Paks",
         Ue4Version.GAME_UE4_LATEST, new UsmapTypeMappingsProvider(usmap))
     provider.mappingsProvider.reload()
@@ -28,7 +28,7 @@ import { Ue4Version } from "./ue4/versions/Game";
 
 async function submitFortniteAesKeys(provider: FileProvider) {
     //const { data } = await axios.get("https://benbot.app/api/v1/aes")
-    await provider.submitKey(FGuid.mainGuid, "0x7412E4B98E3CEB374FBF9EB5654A5D7B785B18E3A997FAF8D22EFEEA00DF851E")
+    await provider.submitKey(FGuid.mainGuid, "0x840a3c61b7ba7fdc58eab092ac9f29d23229da63c417f2f0add69f30f1b6980d")
     /*const keys = new UnrealMap<FGuid, string>()
     for (const key in data.dynamicKeys) {
         const value = data.dynamicKeys[key]
