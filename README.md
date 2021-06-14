@@ -1,11 +1,9 @@
 [![LICENCE](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
 [![TYPESCRIPT](https://img.shields.io/badge/typescript-%23007ACC.svg?&style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![JAVASCRIPT](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![NODEJS](https://img.shields.io/badge/node.js-%2343853D.svg?&style=for-the-badge&logo=node.js&logoColor=white)](https://www.nodejs.org)
-[![DISCORD0](https://img.shields.io/badge/AK47%20Server-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/akbot)
-[![TWITTER0](https://img.shields.io/badge/Sprayxe_-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/Sprayxe_)
-[![DISCORD0](https://img.shields.io/badge/MarcelWRLD%230999-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
-[![TWITTER1](https://img.shields.io/badge/amrsatrio-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/amrsatrio)
-[![DISCORD1](https://img.shields.io/badge/tb24%235219-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
+[![DISCORD0](https://img.shields.io/badge/AK47%20Server-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/akbot)\
+[![NPM](https://nodei.co/npm/unreal.js.png)](https://npmjs.com/package/unreal.js)
 
 ![LOGO_0](https://media.discordapp.net/attachments/833965731279929365/853716847203844106/image0.png)
 
@@ -164,13 +162,12 @@ Replace:
 - `GLOBALPACKAGESTORE`: The file provider's `FPackageStore` object
 
 ## Support, Feedback, Contact
-- Discord
-  - `@MarcelWRLD#0999` 
-  - `@tb24#5219`
-  - [AK47 Server](https://discord.gg/akbot)
 - Twitter
-  - [Sprayxe](https://twitter.com/@Sprayxe_)
-  - [AmrSatrio](https://twitter.com/@AmrSatrio)
+  - [![TWITTER0](https://img.shields.io/badge/Sprayxe_-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/Sprayxe_)
+  - [![TWITTER1](https://img.shields.io/badge/amrsatrio-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/amrsatrio)
+- Discord
+  - [![DISCORD0](https://img.shields.io/badge/MarcelWRLD%230999-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
+  - [![DISCORD1](https://img.shields.io/badge/tb24%235219-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
 
 ## Contributors
 - [Sprayxe](https://twitter.com/@Sprayxe_) (Main Contributor)
