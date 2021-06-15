@@ -1,5 +1,5 @@
-import { USoundWave } from "../assets/exports/USoundWave";
-import { ParserException } from "../../exceptions/Exceptions";
+import { USoundWave } from "../../assets/exports/USoundWave";
+import { ParserException } from "../../../exceptions/Exceptions";
 import { sum } from "lodash"
 
 export class SoundWave {

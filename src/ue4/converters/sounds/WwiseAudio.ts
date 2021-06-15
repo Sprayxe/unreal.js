@@ -1,8 +1,8 @@
-import { UAkMediaAssetData } from "../assets/exports/UAkMediaAssetData";
+import { UAkMediaAssetData } from "../../assets/exports/UAkMediaAssetData";
 import { sum } from "lodash";
 import { execFileSync } from "child_process"
 import { writeFileSync, unlinkSync, existsSync } from "fs";
-import { ParserException } from "../../exceptions/Exceptions";
+import { ParserException } from "../../../exceptions/Exceptions";
 
 export class WwiseAudio {
     public name: string
