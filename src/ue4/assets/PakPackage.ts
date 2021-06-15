@@ -24,7 +24,7 @@ export class PakPackage extends Package {
     ubulk?: Buffer = null
     fileName: string
     provider?: FileProvider = null
-    game: number = Ue4Version.GAME_UE4_LATEST
+    game: Ue4Version = Ue4Version.GAME_UE4_LATEST
     version: number
 
     info: FPackageFileSummary
@@ -36,7 +36,7 @@ export class PakPackage extends Package {
         return this.exportMap.map(it => it.exportObject)
     }
 
-    constructor(uasset: Buffer, uexp: Buffer = null, ubulk: Buffer = null, name: string, provider: FileProvider = null, game: number = Ue4Version.GAME_UE4_LATEST) {
+    constructor(uasset: Buffer, uexp: Buffer = null, ubulk: Buffer = null, name: string, provider: FileProvider = null, game: Ue4Version = Ue4Version.GAME_UE4_LATEST) {
         super(name, provider, game)
         this.uasset = uasset
         this.uexp = uexp
@@ -44,21 +44,21 @@ export class PakPackage extends Package {
         this.fileName = name
         this.provider = provider
         this.game = game
-        this.version = new Ue4Version(this.game).version
+        this.version = this.game.version
         // init
         this.name = provider?.compactFilePath(this.fileName)?.substring(0, this.fileName.lastIndexOf(".")) || this.fileName
         const uassetAr = new FAssetArchive(this.uasset, this.provider, this.fileName)
         const uexpAr = this.uexp ? new FAssetArchive(this.uexp, this.provider, this.fileName) : uassetAr
         const ubulkAr = this.ubulk ? new FAssetArchive(this.ubulk, this.provider, this.fileName) : null
 
-        uassetAr.game = this.game
+        uassetAr.game = this.game.game
         uassetAr.ver = this.version
         uassetAr.owner = this as Package
-        uexpAr.game = this.game
+        uexpAr.game = this.game.game
         uexpAr.ver = this.version
         uexpAr.owner = this as Package
         if (ubulkAr) {
-            ubulkAr.game = this.game
+            ubulkAr.game = this.game.game
             ubulkAr.ver = this.version
             ubulkAr.owner = this as Package
         }
@@ -217,7 +217,7 @@ export class PakPackage extends Package {
 
     updateHeader() {
         const uassetWriter = new FByteArchiveWriter()
-        uassetWriter.game = this.game
+        uassetWriter.game = this.game.game
         uassetWriter.ver = this.version
         uassetWriter.nameMap = this.nameMap
         uassetWriter.importMap = this.importMap
@@ -250,7 +250,7 @@ export class PakPackage extends Package {
         this.updateHeader()
 
         const uexpWriter = this.writer(uexpOutputStream)
-        uexpWriter.game = this.game
+        uexpWriter.game = this.game.game
         uexpWriter.ver = this.version
         uexpWriter.uassetSize = this.info.totalHeaderSize
         this.exports.forEach((it) => {
@@ -265,7 +265,7 @@ export class PakPackage extends Package {
 
         uexpWriter.writeUInt32(this.packageMagic)
         const uassetWriter = this.writer(uassetOutputStream)
-        uassetWriter.game = this.game
+        uassetWriter.game = this.game.game
         uassetWriter.ver = this.version
         this.info.serialize(uassetWriter)
 

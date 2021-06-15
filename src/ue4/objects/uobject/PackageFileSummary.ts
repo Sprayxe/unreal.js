@@ -154,7 +154,7 @@ export class FPackageFileSummary {
             this.softPackageReferencesOffset = Ar.readInt32()
             this.searchableNamesOffset = Ar.readInt32()
             this.thumbnailTableOffset = Ar.readInt32()
-            if (Ar.game === Ue4Version.GAME_VALORANT) Ar.pos += 8
+            if (Ar.game === Ue4Version.GAME_VALORANT.game) Ar.pos += 8
             this.guid = new FGuid(Ar)
             if (!Ar.isFilterEditorOnly) {
                 if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_OWNER) {

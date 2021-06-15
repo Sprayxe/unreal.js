@@ -39,7 +39,7 @@ import { Oodle } from "../oodle/Oodle";
 export class FileProvider extends EventEmitter {
     folder: string
     protected globalDataLoaded = false
-    game: number
+    game: Ue4Version
     mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()
     protected _files = new Collection<string, GameFile>()
     protected _unloadedPaks = new Array<PakFileReader>()
@@ -59,12 +59,12 @@ export class FileProvider extends EventEmitter {
     localFiles = new Set<string>()
     populateIoStoreFiles = false
 
-    constructor(folder: string, game?: number, mappingsProvider?: TypeMappingsProvider) {
+    constructor(folder: string, game?: Ue4Version, mappingsProvider?: TypeMappingsProvider) {
         super()
         this.folder = folder
         this.game = game || Ue4Version.GAME_UE4_LATEST
         this.mappingsProvider = mappingsProvider || new ReflectionTypeMappingsProvider()
-        if (this.game >= Game.GAME_UE4(26))
+        if (this.game.game >= Game.GAME_UE4(26))
             Oodle.ensureLib()
     }
 
@@ -469,7 +469,7 @@ export class FileProvider extends EventEmitter {
         if (!fs.existsSync(this.folder))
             throw ParserException(`Path '${this.folder}' does not exist!`)
 
-        if (this.game >= Game.GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
+        if (this.game.game >= Game.GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
             const file = this.folder + "global"
             if (fs.existsSync(file + ".utoc")) {
                 this.loadGlobalData(file)
@@ -481,7 +481,7 @@ export class FileProvider extends EventEmitter {
             const path = this.folder + dirEntry
             if (path.endsWith(".pak")) {
                 try {
-                    const reader = new PakFileReader(path, this.game)
+                    const reader = new PakFileReader(path, this.game.game)
                     if (!reader.isEncrypted()) {
                         this.mount(reader)
                     } else {

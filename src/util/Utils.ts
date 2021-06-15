@@ -1,4 +1,6 @@
 import { StringBuilder } from "./StringBuilder";
+import BitSet from "bitset";
+import { INDEX_NONE } from "./Const";
 
 export class Utils {
     static clamp(self: number, min: number, max: number) {
@@ -42,5 +44,15 @@ export class Utils {
 
     static toRadians(angdeg: number) {
         return angdeg * 0.017453292519943295 // DEGREES_TO_RADIANS
+    }
+
+    static bitSetIndex(bitSet: BitSet, value: boolean) {
+        const size = bitSet.toArray().length
+        for (let i = 0; i < size; ++i) {
+            if (bitSet.get(i) === Number(value)) {
+                return i
+            }
+        }
+        return INDEX_NONE
     }
 }

@@ -191,7 +191,7 @@ export class UScriptStruct {
                     break
                 default:
                     console.debug(`Using property serialization for struct ${this.structName}`)
-                    this.structType = new FStructFallback(x, y.structClass, z)
+                    this.structType = new FStructFallback(x, y.structClass, this.structName)
             }
         } else {
             this.structName = x

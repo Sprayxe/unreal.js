@@ -30,6 +30,7 @@ import { Locres } from "../locres/Locres";
 import { GSuppressMissingSchemaErrors } from "../../Globals";
 import { UnrealArray } from "../../util/UnrealArray";
 import { Lazy } from "../../util/Lazy";
+import { Ue4Version } from "../versions/Game";
 
 export class IoPackage extends Package {
     packageId: bigint
@@ -50,7 +51,7 @@ export class IoPackage extends Package {
                 storeEntry: FPackageStoreEntry,
                 globalPackageStore: FPackageStore,
                 provider: FileProvider,
-                game: number = provider.game
+                game: Ue4Version = provider.game
     ) {
         super("", provider, game)
         this.packageId = packageId

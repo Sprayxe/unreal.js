@@ -13,6 +13,7 @@ import { ParserException, UnknownPropertyException } from "../../../../exception
 import { UnrealMap } from "../../../../util/UnrealMap";
 import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../../Globals";
 import { PropertyType } from "../../../assets/objects/PropertyType";
+import { Utils } from "../../../../util/Utils";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo
@@ -139,7 +140,7 @@ export class FUnversionedHeader {
 
         if (zeroMaskNum > 0) {
             this.zeroMask = this.loadZeroMaskData(Ar, zeroMaskNum)
-            this.bHasNonZeroValues = unmaskedNum > 0 || this.zeroMask.toArray().indexOf(Number(false)) !== INDEX_NONE
+            this.bHasNonZeroValues = unmaskedNum > 0 || Utils.bitSetIndex(this.zeroMask, false) !== INDEX_NONE
         } else {
             this.zeroMask = new BitSet(0)
             this.bHasNonZeroValues = unmaskedNum > 0

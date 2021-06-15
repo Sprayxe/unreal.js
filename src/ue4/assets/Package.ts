@@ -10,9 +10,9 @@ import { Lazy } from "../../util/Lazy";
 export abstract class Package extends UObject {
     fileName: string
     provider?: FileProvider = null
-    game: number = this.provider?.game || Ue4Version.GAME_UE4_LATEST
+    game: Ue4Version = this.provider?.game || Ue4Version.GAME_UE4_LATEST
 
-    protected constructor(fileName: string, provider: FileProvider, game: number) {
+    protected constructor(fileName: string, provider: FileProvider, game: Ue4Version) {
         super()
         this.fileName = fileName
         this.provider = provider
