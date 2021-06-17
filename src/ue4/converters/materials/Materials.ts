@@ -3,7 +3,9 @@ import { FLinearColor } from "../../objects/core/math/FColor";
 import { ETextureChannel } from "../../assets/enums/ETextureChannel";
 import { EMobileSpecularMask } from "../../assets/enums/EMobileSpecularMask";
 import AdmZip from "adm-zip";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+import Collection from "@discordjs/collection";
+import { UTexture2D } from "../../assets/exports/tex/UTexture2D";
 
 export class CMaterialParams {
 // textures
@@ -104,13 +106,13 @@ export class CMaterialParams {
 export class MaterialExport {
     public matFileName: string
     public matFile: string
-    public textures: {} // Map<string, BufferedImage>
+    public textures: Collection<string, Buffer>
     public parentExport?: MaterialExport
 
     constructor(
         matFileName: string,
         matFile: string,
-        textures: object, // Map<string, BufferedImage>
+        textures: Collection<string, Buffer>,
         parentExport?: MaterialExport
     ) {
         this.matFileName = matFileName
@@ -120,21 +122,83 @@ export class MaterialExport {
     }
 
     writeToDir(dir: string): void {
+        dir += !dir.endsWith("/") ? "/" : ""
         if (!existsSync(dir))
             mkdirSync(dir)
-
+        writeFileSync(dir + this.matFileName, this.matFile)
+        this.textures.forEach((img, name) => {
+            const path = dir + name + ".png"
+            writeFileSync(path, img)
+        })
+        this.parentExport?.writeToDir(dir)
     }
 
     appendToZip(zos: AdmZip): void {
-
+        zos.addFile(this.matFileName, Buffer.from(this.matFile))
+        this.textures.forEach((value, key) => {
+            zos.addFile(key + ".png", value)
+        })
+        this.parentExport?.appendToZip(zos)
     }
 
-    toZip(): /*Buffer*/ void {
-
+    toZip(): Buffer {
+        const zos = new AdmZip()
+        this.appendToZip(zos)
+        return zos.toBuffer()
     }
 
     static export(material: UUnrealMaterial) {
+        const allTextures = []
+        material.appendReferencedTextures(allTextures, false)
 
+        const params = new CMaterialParams()
+        material.getParams(params)
+        if ((params.isNull || params.diffuse === material) && allTextures.length === 0) {
+            // empty/unknown material, or material itself is a texture
+            return new MaterialExport("", "", new Collection(), null)
+        }
+
+        const toExport = []
+        let sb = ""
+        function proc(name: string, arg?: UUnrealMaterial) {
+            if (arg != null) {
+                sb += `\n${name}=${arg.getName()}`
+                toExport.push(arg)
+            }
+        }
+
+        proc("Diffuse", params.diffuse)
+        proc("Normal", params.normal)
+        proc("Specular", params.specular)
+        proc("SpecPower", params.specPower)
+        proc("Opacity", params.opacity)
+        proc("Emissive", params.emissive)
+        proc("Cube", params.cube)
+        proc("Mask", params.mask)
+
+        const matFile = sb
+
+        // TODO create a props file like umodel?
+
+        const textures = new Collection<string, Buffer>()
+        for (const obj of toExport) {
+            if (obj instanceof UTexture2D && obj !== material) { //TODO might also work with non-textures, not sure whether that can happen
+                try {
+                    // TODO textures.set(obj.name, obj.toBufferedImage())
+                } catch (e) {
+                    console.warn(`Conversion of texture ${obj.name} failed`)
+                }
+            } else {
+                console.warn("Material Export contained an toExport that was not an texture, please report this")
+            }
+        }
+
+        // TODO val parentExport = if (this is UMaterialInstanceConstant) {
+        //         Parent?.value?.export()
+        //     } else null
+        // TODO TextureCube3 ???
+
+        return new MaterialExport(`${material.getName()}.mat`, matFile, textures/* TODO, parentExport*/)
     }
 }
 

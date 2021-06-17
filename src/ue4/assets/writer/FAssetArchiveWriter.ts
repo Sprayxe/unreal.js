@@ -103,6 +103,6 @@ export class FByteArchiveWriter extends FAssetArchiveWriter {
     }
 
     toByteArray() {
-        return this.bos.getContents()
+        return this.bos.getContents() as Buffer
     }
 }
