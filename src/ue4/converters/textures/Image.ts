@@ -210,7 +210,7 @@ function rgbBufferToImage(rgb: Buffer, width: number, height: number) {
         imageData.data[i]     = rgb[t]
         imageData.data[i + 1] = rgb[t + 1]
         imageData.data[i + 2] = rgb[t + 2]
-        imageData[i + 3] = 255
+        imageData.data[i + 3] = 255
         t += 3
     }
     ctx.putImageData(imageData, 0, 0)
