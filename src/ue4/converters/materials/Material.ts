@@ -1,4 +1,4 @@
-import { UUnrealMaterial } from "../../assets/exports/mats/UUnrealMaterial";
+import { UUnrealMaterial } from "../../assets/exports/mats/interfaces/UUnrealMaterial";
 import { FLinearColor } from "../../objects/core/math/FColor";
 import { ETextureChannel } from "../../assets/enums/ETextureChannel";
 import { EMobileSpecularMask } from "../../assets/enums/EMobileSpecularMask";
@@ -6,6 +6,7 @@ import AdmZip from "adm-zip";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import Collection from "@discordjs/collection";
 import { UTexture2D } from "../../assets/exports/tex/UTexture2D";
+import { UMaterialInstanceConstant } from "../../assets/exports/mats/UMaterialInstanceConstant";
 
 export class CMaterialParams {
 // textures
@@ -103,17 +104,17 @@ export class CMaterialParams {
     }
 }
 
-export class MaterialExport {
+export class Material {
     public matFileName: string
     public matFile: string
     public textures: Collection<string, Buffer>
-    public parentExport?: MaterialExport
+    public parentExport?: Material
 
     constructor(
         matFileName: string,
         matFile: string,
         textures: Collection<string, Buffer>,
-        parentExport?: MaterialExport
+        parentExport?: Material
     ) {
         this.matFileName = matFileName
         this.matFile = matFile
@@ -147,7 +148,7 @@ export class MaterialExport {
         return zos.toBuffer()
     }
 
-    static export(material: UUnrealMaterial) {
+    static convert(material: UUnrealMaterial) {
         const allTextures = []
         material.appendReferencedTextures(allTextures, false)
 
@@ -155,7 +156,7 @@ export class MaterialExport {
         material.getParams(params)
         if ((params.isNull || params.diffuse === material) && allTextures.length === 0) {
             // empty/unknown material, or material itself is a texture
-            return new MaterialExport("", "", new Collection(), null)
+            return new Material("", "", new Collection(), null)
         }
 
         const toExport = []
@@ -182,7 +183,7 @@ export class MaterialExport {
 
         const textures = new Collection<string, Buffer>()
         for (const obj of toExport) {
-            if (obj instanceof UTexture2D && obj !== material) { //TODO might also work with non-textures, not sure whether that can happen
+            if (obj instanceof UTexture2D && obj !== material) { // TODO might also work with non-textures, not sure whether that can happen
                 try {
                     // TODO textures.set(obj.name, obj.toBufferedImage())
                 } catch (e) {
@@ -193,12 +194,12 @@ export class MaterialExport {
             }
         }
 
-        // TODO val parentExport = if (this is UMaterialInstanceConstant) {
-        //         Parent?.value?.export()
-        //     } else null
+        const parentExport = this instanceof UMaterialInstanceConstant
+             ? this.convert(this.Parent?.value)
+            : null
         // TODO TextureCube3 ???
 
-        return new MaterialExport(`${material.getName()}.mat`, matFile, textures/* TODO, parentExport*/)
+        return new Material(`${material.getName()}.mat`, matFile, textures, parentExport)
     }
 }
 

@@ -7,6 +7,7 @@ import { FName, FNameEntry } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { Package } from "../Package";
 import { UnrealMap } from "../../../util/UnrealMap";
+import { FArchive } from "../../reader/FArchive";
 
 export class FAssetArchive extends FByteArchive {
     data: Buffer
@@ -21,12 +22,12 @@ export class FAssetArchive extends FByteArchive {
     }
 
     owner: Package
-    protected payloads: UnrealMap<PayloadType, FAssetArchive> = new UnrealMap<PayloadType, FAssetArchive>()
+    protected payloads = new Map<PayloadType, FAssetArchive>()
     uassetSize = 0
     uexpSize = 0
     bulkDataStartOffset = 0
 
-    getPayload(type: PayloadType) {
+    getPayload(type: PayloadType): FArchive {
         const p = this.payloads.get(type)
         return p ? p : new FByteArchive(Buffer.alloc(0))
     }

@@ -1,9 +1,9 @@
 import { UStreamableRenderAsset } from "../UStreamableRenderAsset";
-import { UUnrealMaterial } from "../mats/UUnrealMaterial";
+import { UUnrealMaterial } from "../mats/interfaces/UUnrealMaterial";
 import { FGuid } from "../../../objects/core/misc/Guid";
 import { FPerPlatformFloat } from "../../../objects/engine/PerPlatformProperties";
 import { FPackageIndex } from "../../../objects/uobject/ObjectResource";
-import { CMaterialParams } from "../../../converters/materials/Materials";
+import { CMaterialParams } from "../../../converters/materials/Material";
 
 export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial {
     public LightingGuid: FGuid

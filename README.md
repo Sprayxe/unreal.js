@@ -10,17 +10,21 @@
 # unreal.js
 ## A pak reader for games like [VALORANT](https://playvalorant.com) & [Fortnite](https://fortnite.com) written in Node.JS
 
+### Notice
+This library is in VERY early development so it might be unstable. Please also keep in mind that JavaScript is not really made for this kind of stuff so the usage of this library is **experimental**. We still try fixing most issues though so report if you experience any!\
+(We **recommend** a minimum of around 3-4GB RAM for this library.)
+
 ### Features
 - Easy2use file provider for fast interaction with pak/asset files
 - Supports loading of UE4 pak files
 - Supports loading of UE4 asset files (.uasset, .umap, .uexp, .ubulk)
 - Supports loading of .locres files
 - Supports loading of AssetRegistry.bin  
-- Supports exporting of UE4 textures as image (TODO) 
+- Supports exporting of UE4 textures as image
 - Supports exporting of UE4 sounds files
 
 ### Prerequisites 
-- Node.JS installed
+- Node.JS/NPM installed
 - **Experience with JavaScript or TypeScript**
 
 ### Installation 
@@ -88,7 +92,7 @@ The file provider is basically the heart of the library and from there you contr
   const sound = pkg.getExportOfType(USoundWave)
   // use 'pkg.getExportOfTypeOrNull(USoundWave)' if you check for undefined/null manually
   const wave = SoundWave.convert(sound) // converts USoundWave to a usable file
-  // writes it it a file
+  // writes it to a file
   writeFileSync(`MySoundFile.${wave.format}`, wave.data)
   ```
 
@@ -111,7 +115,16 @@ The file provider is basically the heart of the library and from there you contr
   // converts and exports it as playable .wav file
   wwise.export() // you can pass an output path (must include whole path with filename and extension)
   ```
-  TODO: Textures, ItemDefinitions
+
+#### Basics: Exporting textures
+```js
+  // this will find an export which matches the class 'UTexture2D'
+  const tex = pkg.getExportOfType(UTexture2D)
+  // use 'pkg.getExportOfTypeOrNull(UTexture2D)' if you check for undefined/null manually
+  const image = Image.convert(sound) // converts texture to image (import Image class from unreal.js)
+  // writes it it a file
+  writeFileSync("image.png", image)
+  ```
 
 #### Basics: Loading locres
 - **Loading by file path**   

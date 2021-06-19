@@ -13,9 +13,23 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerEngine() {
+        const dir0 = (await fs.readdir("./dist/ue4/assets/exports/mats")).filter(f => f.endsWith(".js"))
+        const dir1 = (await fs.readdir("./dist/ue4/assets/exports/tex")).filter(f => f.endsWith(".js"))
         const dir = (await fs.readdir("./dist/ue4/assets/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir) {
             const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
+            if (clazz.ObjectRegistryIgnore)
+                continue;
+            this.registerClass(clazz)
+        }
+        for (const file of dir0) {
+            const clazz = (await import(`./exports/mats/${file}`))[file.split(".").shift()]
+            if (clazz.ObjectRegistryIgnore)
+                continue;
+            this.registerClass(clazz)
+        }
+        for (const file of dir1) {
+            const clazz = (await import(`./exports/tex/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
             this.registerClass(clazz)

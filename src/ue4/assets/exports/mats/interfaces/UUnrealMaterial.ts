@@ -1,4 +1,4 @@
-import { CMaterialParams } from "../../../converters/materials/Materials";
+import { CMaterialParams } from "../../../../converters/materials/Material";
 
 export interface UUnrealMaterial {
     getParams(params: CMaterialParams): void

@@ -43,6 +43,16 @@ export class UTexture2D extends UTexture {
         }
     }
 
+    getFirstMip() {
+        return this.getFirstTexture().getFirstMip()
+    }
+
+    getFirstTexture() {
+        const tex = this.textures.firstKey()
+        if (!tex) throw new Error("No textures found in this UTexture2D")
+        return tex
+    }
+
     serialize(Ar: FAssetArchiveWriter) {
         super.serialize(Ar)
         this.flag1.serialize(Ar)
