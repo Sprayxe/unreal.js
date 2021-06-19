@@ -1,8 +1,8 @@
 export class BufferStream {
     protected buf: Buffer
-    protected pos: number
-    protected count: number
-    protected mark: number
+    protected pos: number = 0
+    protected count: number = 0
+    protected mark: number = 0
 
     constructor(buf: Buffer, offset?: number, length?: number) {
         this.buf = buf
@@ -16,21 +16,22 @@ export class BufferStream {
         }
     }
 
+    // this is messy
     read(): number
     read(amount: number): number
     read(b: Buffer, off?: number, len?: number): number
     read(x?: any, y?: any, z?: any): number {
         if (x) {
             if (Buffer.isBuffer(x)) {
+                if (y == null) y = 0
+                if (z == null) z = x.length
                 if (this.pos > this.count)
                     return -1
-
                 const avail = this.count - this.pos
                 if (z > avail)
                     z = avail
                 if (z < 0)
                     return 0
-
                 this.buf.copy(x, y, this.pos, this.pos += z)
                 return z
             }

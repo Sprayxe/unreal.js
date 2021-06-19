@@ -4,6 +4,8 @@ import { FGuid } from "./ue4/objects/core/misc/Guid";
 import { UsmapTypeMappingsProvider } from "./ue4/assets/mappings/UsmapTypeMappingsProvider";
 import { readFileSync, writeFileSync } from "fs";
 import { Ue4Version } from "./ue4/versions/Game";
+import { UTexture2D } from "./ue4/assets/exports/tex/UTexture2D";
+import { Image } from "./ue4/converters/textures/Image";
 //import { UnrealMap } from "./util/UnrealMap";
 //import { Game } from "./ue4/versions/Game";
 
@@ -19,11 +21,13 @@ import { Ue4Version } from "./ue4/versions/Game";
     await submitFortniteAesKeys(provider)
     //await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
 
-    const path = "FortniteGame/Content/Athena/Items/Cosmetics/Characters/CID_144_Athena_Commando_M_SoccerDudeA"
+    const path = "FortniteGame/Content/Abilities/Player/Constructor/Actives/Decoy/Textures/Constr_Decoy_N"
     //const path = "ShooterGame/Content/WwiseAudio/Media/329781885"
 
-    const pkg = provider.loadObject(path)
-    console.log(pkg.toJson())
+    const pkg = provider.loadGameFile(path)
+    const tex = pkg.getExportOfTypeOrNull(UTexture2D) as UTexture2D
+    const img = Image.convert(tex)
+    writeFileSync("test.png", img)
 })()
 
 async function submitFortniteAesKeys(provider: FileProvider) {

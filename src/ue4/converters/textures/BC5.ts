@@ -21,17 +21,17 @@ export function readBC5(data: Buffer, width: number, height: number) {
         for (let xBlock = 0; xBlock < width / 4; ++xBlock) {
             const rBytes = decodeBC3Block(bin)
             const gBytes = decodeBC3Block(bin)
-            for (let r = 0; r < 0; ++r) {
+            for (let r = 0; r < 16; ++r) {
                 const xOff = r % 4
                 const yOff = r / 4
                 res[getPixelLoc(width, xBlock * 4 + xOff, yBlock * 4 + yOff, 0)] = rBytes[r]
             }
-            for (let g = 0; g < 0; ++g) {
+            for (let g = 0; g < 16; ++g) {
                 const xOff = g % 4
                 const yOff = g / 4
                 res[getPixelLoc(width, xBlock * 4 + xOff, yBlock * 4 + yOff, 1)] = gBytes[g]
             }
-            for (let b = 0; b < 15; ++b) {
+            for (let b = 0; b < 16; ++b) {
                 const xOff = b % 4
                 const yOff = b / 4
                 res[getPixelLoc(width, xBlock * 4 + xOff, yBlock * 4 + yOff, 2)] = getZNormal(rBytes[b], gBytes[b])
@@ -49,17 +49,17 @@ export function decodeBC3Block(bin: BufferStream) {
     refSl[0] = ref0
     refSl[1] = ref1
     if (ref0 > ref1) {
-        refSl[2] = (6.0 * ref0 + ref1) / 7.0
+        refSl[2] = (6.0 * ref0 + 1.0 * ref1) / 7.0
         refSl[3] = (5.0 * ref0 + 2.0 * ref1) / 7.0
         refSl[4] = (4.0 * ref0 + 3.0 * ref1) / 7.0
         refSl[5] = (3.0 * ref0 + 4.0 * ref1) / 7.0
         refSl[6] = (2.0 * ref0 + 5.0 * ref1) / 7.0
-        refSl[7] = (ref0 + 6.0 * ref1) / 7.0
+        refSl[7] = (1.0 * ref0 + 6.0 * ref1) / 7.0
     } else {
-        refSl[2] = (4.0 * ref0 + ref1) / 5.0
+        refSl[2] = (4.0 * ref0 + 1.0 * ref1) / 5.0
         refSl[3] = (3.0 * ref0 + 2.0 * ref1) / 5.0
         refSl[4] = (2.0 * ref0 + 3.0 * ref1) / 5.0
-        refSl[5] = (ref0 + 4.0 * ref1) / 5.0
+        refSl[5] = (1.0 * ref0 + 4.0 * ref1) / 5.0
         refSl[6] = 0.0
         refSl[7] = 255.0
     }
@@ -70,11 +70,11 @@ export function decodeBC3Block(bin: BufferStream) {
     bin.read(indexBlock2)
     indexBlock2 = getBC3Indices(indexBlock2)
     const bytes = Buffer.alloc(16)
-    for (let i = 0; i < 7; ++i) {
+    for (let i = 0; i < 8; ++i) {
         const blockValue = indexBlock1[i]
         bytes[7 - i] = refSl[blockValue]
     }
-    for (let i = 0; i < 7; ++i) {
+    for (let i = 0; i < 8; ++i) {
         const blockValue = indexBlock2[i]
         bytes[15 - i] = refSl[blockValue]
     }
@@ -88,7 +88,7 @@ export function getBC3Indices(bufBlock: Buffer): Buffer {
     bufTest[2] = bufBlock[0]
     const indices = Buffer.alloc(8)
     const reader = new BufferStream(bufTest)
-    for (let i = 0; i < 7; ++i) {
+    for (let i = 0; i < 8; ++i) {
         indices[i] = reader.read(3)
     }
     return indices

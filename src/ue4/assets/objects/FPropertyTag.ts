@@ -115,7 +115,7 @@ export class FPropertyTag {
 
     getTagTypeValue(): any {
         const tag = this.prop?.getTagTypeValue()
-        if (!tag)
+        if (tag == null)
             throw new Error("This tag was read without data")
         return tag
     }

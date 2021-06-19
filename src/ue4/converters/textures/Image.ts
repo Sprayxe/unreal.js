@@ -4,7 +4,7 @@ import * as dxt from "dxt-js"
 import { readBC5 } from "./BC5";
 
 export class Image {
-    static convert(tex: UTexture2D, texture?: FTexturePlatformData, mip?: FTexture2DMipMap) {
+    static convert(tex: UTexture2D, texture?: FTexturePlatformData, mip?: FTexture2DMipMap): Buffer {
         if (!texture) {
             texture = tex.getFirstTexture()
             return this.convert(tex, texture, mip || texture.getFirstLoadedMip())
@@ -206,10 +206,11 @@ function rgbBufferToImage(rgb: Buffer, width: number, height: number) {
     const imageData = ctx.createImageData(width, height)
     const len = imageData.data.length
     let t = 0
-    for (let i = 0; i < len; i += 3) {
+    for (let i = 0; i < len; i += 4) {
         imageData.data[i]     = rgb[t]
         imageData.data[i + 1] = rgb[t + 1]
         imageData.data[i + 2] = rgb[t + 2]
+        imageData[i + 3] = 255
         t += 3
     }
     ctx.putImageData(imageData, 0, 0)
