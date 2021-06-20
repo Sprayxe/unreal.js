@@ -21,7 +21,7 @@ import { Image } from "./ue4/converters/textures/Image";
     await submitFortniteAesKeys(provider)
     //await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
 
-    const path = "FortniteGame/Content/Abilities/Player/Constructor/Actives/Decoy/Textures/Constr_Decoy_N"
+    const path = "FortniteGame/Content/Accessories/FORT_Backpacks/F_MED_Biker_Backpack/DEMO/Textures/F_MED_Biker_Backpack_N"
     //const path = "ShooterGame/Content/WwiseAudio/Media/329781885"
 
     const pkg = provider.loadGameFile(path)

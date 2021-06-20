@@ -1,10 +1,10 @@
-import { createCanvas } from "canvas"
+import { createCanvas, NodeCanvasRenderingContext2D } from "canvas"
 import { FTexture2DMipMap, FTexturePlatformData, UTexture2D } from "../../assets/exports/tex/UTexture2D";
 import * as dxt from "dxt-js"
 import { readBC5 } from "./BC5";
 
 export class Image {
-    static convert(tex: UTexture2D, texture?: FTexturePlatformData, mip?: FTexture2DMipMap): Buffer {
+    static convert(tex: UTexture2D, texture?: FTexturePlatformData, mip?: FTexture2DMipMap, config?: ImageConfig): Buffer {
         if (!texture) {
             texture = tex.getFirstTexture()
             return this.convert(tex, texture, mip || texture.getFirstLoadedMip())
@@ -121,13 +121,12 @@ export class Image {
                 const decompressed = Buffer.from(dxtRes)
                 decompressed.copy(dst, 0, 0, width * height * 4)
                 break
-            // WARNING: THIS IS NOT TESTED lol, most likely broke xd
             case "PF_BC5":
                 const rgb = readBC5(data, width, height)
-                return rgbBufferToImage(rgb, width, height)
+                return rgbBufferToImage(rgb, width, height, config)
         }
 
-        return rgbaBufferToImage(dst, width, height)
+        return rgbaBufferToImage(dst, width, height, config)
     }
 }
 
@@ -182,13 +181,14 @@ export class PixelFormatInfo {
     // static PF_ASTC_12x12  = new PixelFormatInfo(12, 12, 16, 0, 0, false)
 }
 
-// kinda yeeted from stackoverflow
-function rgbaBufferToImage(rgba: Buffer, width: number, height: number) {
+function rgbaBufferToImage(rgba: Buffer, width: number, height: number, config?: ImageConfig) {
     const img = createCanvas(width, height)
     const ctx = img.getContext("2d")
+    applyConfig(ctx, config)
     const imageData = ctx.createImageData(width, height)
     const len = imageData.data.length
     let t = 0
+    // TODO might impact performance
     for (let i = 0; i < len; i += 4) {
         imageData.data[i]     = rgba[t]
         imageData.data[i + 1] = rgba[t + 1]
@@ -197,15 +197,17 @@ function rgbaBufferToImage(rgba: Buffer, width: number, height: number) {
         t += 4
     }
     ctx.putImageData(imageData, 0, 0)
-    return img.toBuffer()
+    return img.toBuffer("image/png", { compressionLevel: 3 })
 }
 
-function rgbBufferToImage(rgb: Buffer, width: number, height: number) {
+function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: ImageConfig) {
     const img = createCanvas(width, height)
     const ctx = img.getContext("2d")
+    applyConfig(ctx, config)
     const imageData = ctx.createImageData(width, height)
     const len = imageData.data.length
     let t = 0
+    // TODO might impact performance
     for (let i = 0; i < len; i += 4) {
         imageData.data[i]     = rgb[t]
         imageData.data[i + 1] = rgb[t + 1]
@@ -214,5 +216,30 @@ function rgbBufferToImage(rgb: Buffer, width: number, height: number) {
         t += 3
     }
     ctx.putImageData(imageData, 0, 0)
-    return img.toBuffer()
+    return img.toBuffer("image/png", { compressionLevel: 3 })
+}
+
+export interface ImageConfig {
+    /**
+     * - Wether to use image smoothing for canvas image or not
+     * @default false
+     */
+    imageSmoothingEnabled?: boolean,
+    /**
+     * - Quality of image smoothing
+     * - Only takes effect when 'imageSmoothingEnabled' was set to true
+     * @default medium
+     */
+    imageSmoothingQuality?: ImageSmoothingQuality,
+    /**
+     * - Overall quality of the image
+     * @default good
+     */
+    quality?: "fast" | "good" | "best" | "nearest" | "bilinear"
+}
+
+function applyConfig(ctx: NodeCanvasRenderingContext2D, config?: ImageConfig) {
+    ctx.imageSmoothingEnabled = config?.imageSmoothingEnabled || false
+    ctx.imageSmoothingQuality = config?.imageSmoothingQuality || "medium"
+    ctx.quality = config?.quality || "good"
 }

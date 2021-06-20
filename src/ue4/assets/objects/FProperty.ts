@@ -28,6 +28,7 @@ export class FProperty {
             this instanceof EnumProperty ? this.name :
             this instanceof FieldPathProperty ? this.fieldPath :
             this instanceof FloatProperty ? this.float :
+            this instanceof IntProperty ? this.number :
             this instanceof Int16Property ? this.number :
             this instanceof Int64Property ? this.number :
             this instanceof Int8Property ? this.number :

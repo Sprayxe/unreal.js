@@ -11,7 +11,7 @@ function getZNormal(x: number, y: number): number {
         Math.sqrt(Math.max(1.0 - xf * xf - yf * yf, 0.0)),
         1.0
     )
-    return zval * 127.0 + 128.0
+    return Math.floor(zval * 127.0 + 128.0)
 }
 
 export function readBC5(data: Buffer, width: number, height: number) {
@@ -23,18 +23,19 @@ export function readBC5(data: Buffer, width: number, height: number) {
             const gBytes = decodeBC3Block(bin)
             for (let r = 0; r < 16; ++r) {
                 const xOff = r % 4
-                const yOff = r / 4
+                const yOff = Math.floor(r / 4)
                 res[getPixelLoc(width, xBlock * 4 + xOff, yBlock * 4 + yOff, 0)] = rBytes[r]
             }
             for (let g = 0; g < 16; ++g) {
                 const xOff = g % 4
-                const yOff = g / 4
+                const yOff = Math.floor(g / 4)
                 res[getPixelLoc(width, xBlock * 4 + xOff, yBlock * 4 + yOff, 1)] = gBytes[g]
             }
             for (let b = 0; b < 16; ++b) {
                 const xOff = b % 4
-                const yOff = b / 4
-                res[getPixelLoc(width, xBlock * 4 + xOff, yBlock * 4 + yOff, 2)] = getZNormal(rBytes[b], gBytes[b])
+                const yOff = Math.floor(b / 4)
+                const bVal = getZNormal(rBytes[b], gBytes[b])
+                res[getPixelLoc(width, xBlock * 4 + xOff, yBlock * 4 + yOff, 2)] = bVal
             }
         }
     }
