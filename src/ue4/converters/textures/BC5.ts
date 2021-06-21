@@ -43,7 +43,7 @@ export function readBC5(data: Buffer, width: number, height: number) {
     return res
 }
 
-export function decodeBC3Block(bin: BufferStream) {
+function decodeBC3Block(bin: BufferStream) {
     const ref0 = bin.read()
     const ref1 = bin.read()
     const refSl = new Float32Array(8)
@@ -82,7 +82,7 @@ export function decodeBC3Block(bin: BufferStream) {
     return bytes
 }
 
-export function getBC3Indices(bufBlock: Buffer): Buffer {
+function getBC3Indices(bufBlock: Buffer): Buffer {
     return Buffer.from([
         ((bufBlock[2] & 0b1110_0000) >> 5),
         ((bufBlock[2] & 0b0001_1100) >> 2),
