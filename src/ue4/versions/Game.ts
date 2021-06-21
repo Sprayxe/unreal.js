@@ -13,7 +13,7 @@ export class Game {
 
     static LATEST_SUPPORTED_UE4_VERSION = 27
 
-    static GAME_VALORANT = Game.GAME_UE4(26) + 1
+    static GAME_VALORANT = Game.GAME_UE4(22) + 1
 
     static GAME_UE4(x: number) {
         return this.GAME_UE4_BASE + (x << 4)
@@ -34,7 +34,7 @@ export class Ue4Version {
 
     constructor(game: number) {
         this.game = game
-        this.version = Game.GAME_UE4_GET_AR_VER(game)
+        this.version = Game.ue4Versions[Game.GAME_UE4_GET_MINOR(game)]
     }
 
     static GAME_UE4_0 = new Ue4Version(Game.GAME_UE4(0))
