@@ -82,16 +82,15 @@ export function decodeBC3Block(bin: BufferStream) {
     return bytes
 }
 
-// yeeted from CUE4Parse
 export function getBC3Indices(bufBlock: Buffer): Buffer {
-    return Buffer.from([
-        ((bufBlock[2] & 0b1110_0000) >> 5),
-        ((bufBlock[2] & 0b0001_1100) >> 2),
-        (((bufBlock[2] & 0b0000_0011) << 1) | ((bufBlock[1] & 0b1 << 7) >> 7)),
-        ((bufBlock[1] & 0b0111_0000) >> 4),
-        ((bufBlock[1] & 0b0000_1110) >> 1),
-        (((bufBlock[1] & 0b0000_0001) << 2) | ((bufBlock[0] & 0b11 << 6) >> 6)),
-        ((bufBlock[0] & 0b0011_1000) >> 3),
-        (bufBlock[0] & 0b0000_0111)
-    ])
+    const bufTest = Buffer.alloc(3)
+    bufTest[0] = bufBlock[2]
+    bufTest[1] = bufBlock[1]
+    bufTest[2] = bufBlock[0]
+    const indices = Buffer.alloc(8)
+    const reader = new BufferStream(bufTest)
+    for (let i = 0; i < 8; ++i) {
+        indices[i] = reader.read(3)
+    }
+    return indices
 }
