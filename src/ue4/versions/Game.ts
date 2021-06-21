@@ -13,9 +13,7 @@ export class Game {
 
     static LATEST_SUPPORTED_UE4_VERSION = 27
 
-    static get GAME_VALORANT() {
-        return this.GAME_UE4(22) + 1
-    }
+    static GAME_VALORANT = Game.GAME_UE4(22) + 1
 
     static GAME_UE4(x: number) {
         return this.GAME_UE4_BASE + (x << 4)
@@ -68,6 +66,8 @@ export class Ue4Version {
     static GAME_UE4_26 = new Ue4Version(Game.GAME_UE4(26))
     static GAME_UE4_27 = new Ue4Version(Game.GAME_UE4(27))
 
+    // bytes: 01.00.0N.NX : 01=UE4, 00=masked by GAME_ENGINE, NN=UE4 subversion, X=game (4 bits, 0=base engine)
+    // const val GAME_Borderlands3 = GAME_UE4(20) + 2
     static GAME_VALORANT = new Ue4Version(Game.GAME_VALORANT)
 
     static GAME_UE4_LATEST = new Ue4Version(Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION))

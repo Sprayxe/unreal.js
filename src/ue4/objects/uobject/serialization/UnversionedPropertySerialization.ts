@@ -76,7 +76,7 @@ export class FUnversionedStructSchema {
                     }
                     index += ann?.skipNext || 0
                 }
-            } else*/ if (struct.childProperties.length) {
+            } else*/ if (struct.childProperties?.length) {
                 for (const prop0 of struct.childProperties) {
                     const prop = prop0 as FPropertySerialized // Serialized in packages
                     const propertyInfo = new PropertyInfo(prop.name.text, new PropertyType(prop), prop.arrayDim)
@@ -85,7 +85,7 @@ export class FUnversionedStructSchema {
                         this.serializers[index++] = new FUnversionedPropertySerializer(propertyInfo, i)
                     }
                 }
-            } else if (struct.childProperties2.length) {
+            } else if (struct.childProperties2?.length) {
                 const startIndex = index
                 for (const prop of struct.childProperties2) {
                     index = startIndex + prop.index
@@ -96,7 +96,7 @@ export class FUnversionedStructSchema {
                 }
                 index = startIndex + struct.propertyCount
             }
-            struct = struct.superStruct?.value
+            struct = struct?.superStruct?.value
         }
     }
 }

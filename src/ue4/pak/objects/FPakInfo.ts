@@ -4,6 +4,7 @@ import { FArchive } from "../../reader/FArchive";
 import { FGuid } from "../../objects/core/misc/Guid";
 import { FFileArchive } from "../../reader/FFileArchive";
 import { EPakVersion } from "../enums/PakVersion";
+import { Utils } from "../../../util/Utils";
 
 export const PAK_MAGIC = 0x5A6F12E1
 
@@ -85,7 +86,7 @@ export class FPakInfo {
             this.compressionMethods.push("None")
             for (let i = 0; i < maxNumCompressionMethods; ++i) {
                 const d = Ar.readBuffer(32)
-                const str = Buffer.from(d.filter(it => it !== 0)).toString("utf8")
+                const str = Buffer.from(Utils.takeWhile(d, (it) => it !== 0)).toString("utf8")
                 if (/\s/g.test(str))
                     return
                 this.compressionMethods.push(str)

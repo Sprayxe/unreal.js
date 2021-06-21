@@ -55,4 +55,15 @@ export class Utils {
         }
         return INDEX_NONE
     }
+
+    static takeWhile(buf: Buffer, filter: (byte: number) => boolean) {
+        const bytes = []
+        for (let b = 0; b < buf.length; ++b) {
+            const byte = buf[b]
+            if (!filter(byte))
+                break
+            bytes.push(byte)
+        }
+        return Buffer.from(bytes)
+    }
 }

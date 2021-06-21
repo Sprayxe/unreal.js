@@ -12,7 +12,7 @@ export class UFunction extends UStruct {
         this.functionFlags = Ar.readUInt32()
 
         // Replication info
-        if (this.functionFlags && EFunctionFlags.FUNC_Net !== 0) {
+        if ((this.functionFlags & EFunctionFlags.FUNC_Net) !== 0) {
             // Unused.
             const repOffset = Ar.readInt16()
         }

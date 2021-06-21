@@ -56,7 +56,7 @@ The file provider is basically the heart of the library and from there you contr
 - **Usage with VALORANT**
    ```js
     // Create new instance 
-    const provider = new FileProvider("GAMEPATH", Game.GAME_VALORANT)
+    const provider = new FileProvider("GAMEPATH", Ue4Version.GAME_VALORANT)
     // 'start' the provider
     await provider.initialize()
     // submit aes key to decrypt paks
@@ -92,7 +92,7 @@ The file provider is basically the heart of the library and from there you contr
   const sound = pkg.getExportOfType(USoundWave)
   // use 'pkg.getExportOfTypeOrNull(USoundWave)' if you check for undefined/null manually
   const wave = SoundWave.convert(sound) // converts USoundWave to a usable file
-  // writes it to a file
+  // write it to a file
   writeFileSync(`MySoundFile.${wave.format}`, wave.data)
   ```
 
@@ -102,7 +102,7 @@ The file provider is basically the heart of the library and from there you contr
   // this will find an export which matches the class 'UAkMediaAssetData'
   const mediaData = pkg.getExportOfType(UAkMediaAssetData)
   const wwise = WwiseAudio.convert(mediaData) // Converts it to a .wem file
-  // writes it to a file
+  // write it to a file
   writeFileSync(`MySoundFile.${wwise.format}`, wwise.data)
   ```
   **IMPORTANT**: `.wem` are not playable by windows, you have to convert it to a `.wav` file first!\
@@ -151,7 +151,7 @@ reader.extract(reader.files.first()) // Gets the first file and extracts it as B
 ```
 Replace:
 - `PATH`: Path to the pak file
-- `GAME`: Game version you are using (e.g `Game.GAME_VALORANT`, `Ue4Version.GAME_UE4_26`)\
+- `GAME`: Game version you are using (e.g `Ue4Version.GAME_UE4_26`)\
   You can leave it out if you want to use the latest version
 - `KEY`: Aes key used for decrypting the pak\
   **WARNING** Using a wrong aes key will throw an exception! You can use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
@@ -169,7 +169,7 @@ Replace:
 - `UBULKBUFFER`: Buffer of the .ubulk file (pass `null` if it doesn't exist)
 - `NAME`: Name of the package
 - `PROVIDER`: Instance of a fileprovider (optional in `PakPackage`)
-- `GAME`: Version of the game you are using (e.g `Game.GAME_VALORANT`, optional in both)
+- `GAME`: Version of the game you are using (e.g `Ue4Version.GAME_VALORANT`, optional in both)
 - `PACKAGEID`: The id of the io package
 - `STOREENTRY`: Instance of the io package's `FPackageStoreEntry`
 - `GLOBALPACKAGESTORE`: The file provider's `FPackageStore` object

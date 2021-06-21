@@ -5,8 +5,8 @@ import { EMobileSpecularMask } from "../../assets/enums/EMobileSpecularMask";
 import AdmZip from "adm-zip";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import Collection from "@discordjs/collection";
-import { UTexture2D } from "../../assets/exports/tex/UTexture2D";
 import { UMaterialInstanceConstant } from "../../assets/exports/mats/UMaterialInstanceConstant";
+import { Image } from "../textures/Image";
 
 export class CMaterialParams {
 // textures
@@ -183,9 +183,11 @@ export class Material {
 
         const textures = new Collection<string, Buffer>()
         for (const obj of toExport) {
-            if (obj instanceof UTexture2D && obj !== material) { // TODO might also work with non-textures, not sure whether that can happen
+            // gotta use this to prevent circular import error
+            const prop: string = Object.getPrototypeOf(obj).constructor?.name
+            if (prop === "UTexture2D" && obj !== material) { // TODO might also work with non-textures, not sure whether that can happen
                 try {
-                    // TODO textures.set(obj.name, obj.toBufferedImage())
+                    textures.set(obj.name, Image.convert(obj))
                 } catch (e) {
                     console.warn(`Conversion of texture ${obj.name} failed`)
                 }
