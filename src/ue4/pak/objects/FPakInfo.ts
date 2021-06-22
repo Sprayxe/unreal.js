@@ -6,51 +6,75 @@ import { FFileArchive } from "../../reader/FFileArchive";
 import { EPakVersion } from "../enums/PakVersion";
 import { Utils } from "../../../util/Utils";
 
-export const PAK_MAGIC = 0x5A6F12E1
+// source 'https://github.com/FabianFG/CUE4Parse/blob/master/CUE4Parse/UE4/Pak/Objects/FPakInfo.cs'
+// thanks cue4parse <3
+enum OffsetsToTry
+{
+    size = /*sizeof(int)*/ 4 * 2 + /*sizeof(long)*/ 8 * 2 + 20 + /* new fields */ 1 + 16, // sizeof(FGuid)
+    // Just to be sure
+    size8_1 = size + 32,
+    size8_2 = size8_1 + 32,
+    size8_3 = size8_2 + 32,
+    size8 = size8_3 + 32, // added size of CompressionMethods as char[32]
+    size8a = size8 + 32, // UE4.23 - also has version 8 (like 4.22) but different pak file structure
+    size9 = size8a + 1, // UE4.25
 
-export const size = 4 * 2 + 8 * 2 + 20 + 1 + 16
-export const size8 = size + 4 * 32
-export const size8a = size8 + 32
-export const size9 = size8a + 1
+    //Size10 = Size8a
 
-export const offsetsToTry = [size, size8, size8a, size9]
-export const maxNumCompressionMethods = [0, 4, 5, 5]
+    sizeLast,
+    sizeMax = sizeLast - 1
+}
+
+function getMaxNumCompressionMethods(offset: OffsetsToTry) {
+    if (offset === OffsetsToTry.size8a)
+        return 5
+    if (offset === OffsetsToTry.size8)
+        return 4
+    if (offset === OffsetsToTry.size8_1)
+        return 1
+    if (offset === OffsetsToTry.size8_2)
+        return 2
+    if (offset === OffsetsToTry.size8_3)
+        return 3
+    return 4
+}
 
 export class FPakInfo {
+    public static readonly PAK_MAGIC = 0x5A6F12E1
+
+    private static readonly _offsetsToTry: OffsetsToTry[] = [
+        OffsetsToTry.size8a,
+        OffsetsToTry.size8,
+        OffsetsToTry.size,
+        OffsetsToTry.size9,
+
+        OffsetsToTry.size8_1,
+        OffsetsToTry.size8_2,
+        OffsetsToTry.size8_3
+    ]
+
     static readPakInfo(Ar: FArchive) {
         const path = Ar instanceof FFileArchive ? Ar.path : "UNKNOWN"
-        const pakSize = Ar.size
-        let maxSize = -1
-        let maxOffsetToTryIndex = -1
+        const size = Ar.size
+        const maxOffset = OffsetsToTry.sizeMax
+        if (size < maxOffset)
+            throw ParserException(`File '${path}' is too small to be a pak file`)
 
-        for (let i = offsetsToTry.length - 1; i >= 0; --i) {
-            if (pakSize - offsetsToTry[i] >= 0) {
-                maxSize = offsetsToTry[i]
-                maxOffsetToTryIndex = i
-                break
-            }
+        Ar.pos = size - maxOffset
+        const buffer = Ar.readBuffer(maxOffset)
+        const reader = new FByteArchive(buffer)
+
+        for (const offset of this._offsetsToTry) {
+            reader.pos = reader.size - offset
+            const info = new FPakInfo(reader, offset)
+            if (info.magic === this.PAK_MAGIC)
+                return info
         }
 
-        if (maxSize < 0)
-            throw ParserException(`File '${path}' has an unknown format`)
-        Ar.pos = pakSize - maxSize
-
-        const tempAr = new FByteArchive(Ar.readBuffer(maxSize))
-        let x = 0
-        while (x < maxOffsetToTryIndex) {
-            tempAr.pos = maxSize - offsetsToTry[x]
-            try {
-                return new FPakInfo(tempAr, maxNumCompressionMethods[x], path)
-            } catch (e) {
-                if (!e.message.includes("boolean") && !e.message.includes("magic")) {
-                    console.error(e)
-                }
-            }
-            ++x
-        }
         throw ParserException(`File '${path}' has an unknown format`)
     }
 
+    magic: number
     encryptionKeyGuid: FGuid
     encryptedIndex: boolean
     version: EPakVersion
@@ -60,36 +84,47 @@ export class FPakInfo {
     compressionMethods: string[]
     indexIsFrozen: boolean = false
 
-    constructor(Ar: FArchive, maxNumCompressionMethods: number = 4, fileName?: string) {
+    constructor(Ar: FArchive, offsetToTry: OffsetsToTry) {
         // New FPakInfo fields
-        this.encryptionKeyGuid = new FGuid(Ar)
-        this.encryptedIndex = Ar.readFlag()
+        this.encryptionKeyGuid = new FGuid(Ar) // PakFile_Version_EncryptionKeyGuid
+        this.encryptedIndex = !!Ar.readUInt8() // Do not replace by readFlag
 
         // Old FPakInfoFields
-        const magic = Ar.readUInt32()
-        if (magic !== PAK_MAGIC)
-            throw ParserException(`Invalid pak file magic '${magic}'${fileName ? ` (${fileName})` : ""}`)
+        this.magic = Ar.readUInt32()
+        if (this.magic !== FPakInfo.PAK_MAGIC)
+            return // since the pak magic is not valid, return
 
         this.version = Ar.readInt32()
         this.indexOffset = Number(Ar.readInt64())
         this.indexSize = Number(Ar.readInt64())
         this.indexHash = Ar.readBuffer(20)
 
-        if (this.version >= EPakVersion.PakVersion_FrozenIndex && this.version < EPakVersion.PakVersion_PathHashIndex) {
-            this.indexIsFrozen = Ar.readBoolean()
-            if (this.indexIsFrozen)
-                console.warn("Frozen PakFile Index")
+        if (this.version === EPakVersion.PakVersion_FrozenIndex) {
+            const bIndexIsFrozen = Ar.readFlag();
+            // used just for 4.25, so don't do any support unless it's really needed
+            if (bIndexIsFrozen)
+                throw ParserException("Pak index is frozen")
         }
 
-        this.compressionMethods = []
-        if (this.version >= EPakVersion.PakVersion_FNameBasedCompressionMethod) {
-            this.compressionMethods.push("None")
-            for (let i = 0; i < maxNumCompressionMethods; ++i) {
-                const d = Ar.readBuffer(32)
-                const str = Buffer.from(Utils.takeWhile(d, (it) => it !== 0)).toString("utf8")
-                if (/\s/g.test(str))
-                    return
-                this.compressionMethods.push(str)
+        if (this.version < EPakVersion.PakVersion_FNameBasedCompressionMethod) {
+            this.compressionMethods = [
+                "None",
+                "Zlib",
+                "Gzip",
+                "Oodle",
+                "LZ4" // TODO add support
+            ]
+        } else {
+            const maxNumCompressionMethods = getMaxNumCompressionMethods(offsetToTry)
+            this.compressionMethods = ["None"]
+            if (this.version >= EPakVersion.PakVersion_FNameBasedCompressionMethod) {
+                for (let i = 0; i < maxNumCompressionMethods; ++i) {
+                    const d = Ar.readBuffer(32)
+                    const str = Buffer.from(Utils.takeWhile(d, (it) => it !== 0)).toString("utf8")
+                    if (/\s/g.test(str))
+                        return
+                    this.compressionMethods.push(str)
+                }
             }
         }
     }
