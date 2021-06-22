@@ -186,7 +186,7 @@ export class PakPackage extends Package {
     }
 
     getExportObject(imp: FPackageIndex) {
-        return imp.isExport() ? this.importMap[imp.toExport()] : null
+        return imp.isExport() ? this.exportMap[imp.toExport()] : null
     }
 
     getResource(imp: FPackageIndex) {
