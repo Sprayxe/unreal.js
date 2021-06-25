@@ -5,45 +5,86 @@ import { ParserException } from "../../../exceptions/Exceptions";
 import { Compression } from "../../../compression/Compression";
 import { PropertyType } from "../objects/PropertyType";
 import { Lazy } from "../../../util/Lazy";
-import { Utils } from "../../../util/Utils";
 import { UScriptStruct } from "../exports/UScriptStruct";
 import { PropertyInfo } from "../objects/PropertyInfo";
 import { UStruct } from "../exports/UStruct";
 
+/**
+ * Type mappings provider which uses usmap
+ * @extends {TypeMappingsProvider}
+ */
 export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
-    static FILE_MAGIC = 0x30C4
+    /**
+     * File magic
+     * @type {number}
+     * @static
+     * @readonly
+     * @public
+     */
+    static readonly FILE_MAGIC = 0x30C4
 
+    /**
+     * Loads a farchive instance
+     * @private
+     * @readonly
+     */
     private readonly load: () => FArchive
 
+    /**
+     * Creates an instance using a buffer
+     * @param {Buffer} file
+     * @constructor
+     * @public
+     */
     constructor(file: Buffer)
+
+    /**
+     * Creates an instnace using an farchive method
+     * @param {() => FArchive} load
+     * @constructor
+     * @public
+     */
     constructor(load: () => FArchive)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any) {
         super()
         this.load = x instanceof Buffer ? () => new FArchive(x) : x
     }
 
+    /**
+     * Reloads mappings
+     * @returns {boolean} Wether if it was successful or not
+     * @public
+     */
     reload(): boolean {
         const data = this.readCompressedUsmap(this.load())
         this.parseData(new FUsmapNameTableArchive(data))
         return true
     }
 
+    /**
+     * Reads compressed usmap
+     * @param {FArchive} Ar FArchive to use
+     * @returns {Buffer}
+     * @protected
+     */
     protected readCompressedUsmap(Ar: FArchive): Buffer {
         const magic = Ar.readInt16()
         if (magic !== UsmapTypeMappingsProvider.FILE_MAGIC) {
-            throw ParserException(".usmap file has an invalid magic constant")
+            throw new ParserException(".usmap file has an invalid magic constant", Ar)
         }
 
         const version = Ar.readUInt8()
         if (version !== EUsmapVersion.latest()) {
-            throw ParserException(`.usmap file has invalid version ${version}`)
+            throw new ParserException(`.usmap file has invalid version ${version}`, Ar)
         }
 
         const methodInt = Ar.readUInt8()
         const compSize = Ar.readInt32()
         const decompSize = Ar.readInt32()
         if (Ar.size - Ar.pos < compSize) {
-            throw ParserException("There is not enough data in the .usmap file")
+            throw new ParserException("There is not enough data in the .usmap file", Ar)
         }
 
         const compData = Ar.readBuffer(compSize)
@@ -57,6 +98,12 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
         return data
     }
 
+    /**
+     * Deserializes property data
+     * @param {FUsmapNameTableArchive} FArchive to use
+     * @returns {PropertyType}
+     * @private
+     */
     private deserializePropData(Ar: FUsmapNameTableArchive): PropertyType {
         const propType = EUsmapPropertyType[Ar.readUInt8()]
         const type = new PropertyType(FName.dummy(propType))
@@ -85,6 +132,12 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
         return type
     }
 
+    /**
+     * Parses data
+     * @param {FUsmapNameTableArchive} FArchive to use
+     * @returns {void}
+     * @private
+     */
     private parseData(Ar: FUsmapNameTableArchive) {
         Ar.nameMap = Ar.readArray(() => Ar.readBuffer(Ar.readUInt8()).toString())
         const max0 = Ar.readInt32()
@@ -122,13 +175,33 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
 
 }
 
+/**
+ * FUsmapNameTableArchive
+ * @extends {FArchive}
+ */
 class FUsmapNameTableArchive extends FArchive {
+    /**
+     * Stores (f)names
+     * @type {Array<string>}
+     * @public
+     */
     public nameMap: string[]
 
+    /**
+     * Creates an instance using a Buffer
+     * @param {Buffer} data
+     * @constructor
+     * @public
+     */
     constructor(data: Buffer) {
         super(data)
     }
 
+    /**
+     * Reads FName
+     * @returns {FName} Result of reading
+     * @public
+     */
     readFName(): FName {
         const nameIndex = this.readInt32()
         if (nameIndex === -1) {
@@ -136,15 +209,29 @@ class FUsmapNameTableArchive extends FArchive {
         }
         const entry = this.nameMap[nameIndex]
         if (!entry) {
-            throw ParserException(`FName could not be read, requested index ${nameIndex}, name map size ${this.nameMap.length}`)
+            throw new ParserException(`FName could not be read, requested index ${nameIndex}, name map size ${this.nameMap.length}`, this)
         }
         return FName.dummy(entry)
     }
 }
 
+/**
+ * Stores usmap version
+ */
 class EUsmapVersion {
+    /**
+     * Initial value
+     * @type {number}
+     * @public
+     */
     public Initial = 0
-    static latest() {
+
+    /**
+     * Gets the latest usmap version
+     * @returns {number} Latest version
+     * @public
+     */
+    static latest(): number {
         return Object.values(new EUsmapVersion()).pop()
     }
 }

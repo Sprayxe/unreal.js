@@ -7,7 +7,7 @@ import { UProperty } from "../../../../util/decorators/UProperty";
 
 export class UActorComponent extends UObject {
     //public FActorComponentTickFunction PrimaryComponentTick;
-    @UProperty({ skipPrevious: 1 })
+    @UProperty({skipPrevious: 1})
     public ComponentTags: FName[]
     public AssetUserData: FPackageIndex[]
     public UCSSerializationIndex: number

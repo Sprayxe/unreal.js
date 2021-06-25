@@ -14,7 +14,7 @@ export class UEnum extends UObject {
         super.deserialize(Ar, validPos)
         this.names = Ar.readArray(() => {
             return {
-                key: Ar.readFName() ,
+                key: Ar.readFName(),
                 value: Number(Ar.readInt64())
             }
         })

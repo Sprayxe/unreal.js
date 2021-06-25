@@ -32,7 +32,7 @@ export class UScriptMap {
                     const value = FProperty.readPropertyValue(x, y.valueType, ReadType.MAP)
                     this.mapData.set(key, value)
                 } catch (e) {
-                    throw ParserException(`Failed to read ${isReadingValue ? "value" : "key"} for index ${i} in map`)
+                    throw new ParserException(`Failed to read ${isReadingValue ? "value" : "key"} for index ${i} in map`, x)
                 }
                 ++i
             }

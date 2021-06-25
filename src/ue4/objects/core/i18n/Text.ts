@@ -9,7 +9,6 @@ import { ParserException } from "../../../../exceptions/Exceptions";
 import { UStringTable } from "../../../assets/exports/UStringTable";
 import { FAssetArchiveWriter } from "../../../assets/writer/FAssetArchiveWriter";
 import { Locres } from "../../../locres/Locres";
-import { Utils } from "../../../../util/Utils";
 
 export enum EFormatArgumentType {
     Int,
@@ -32,16 +31,16 @@ export class FText {
     constructor(namespace: string, key: string, sourceString: string, flags: number, historyType: ETextHistoryType)
     constructor(flags: number, historyType: number, textHistory: FTextHistory)
     constructor(...params) {
-        const x =  params[0]
+        const x = params[0]
         if (x instanceof FArchive) {
             this.flags = x.readUInt32()
             this.historyType = x.readInt8()
             this.textHistory = this.historyType === ETextHistoryType.None ? new FTextHistoryNone(x) :
                 this.historyType === ETextHistoryType.Base ? new FTextHistoryBase(x) :
-                this.historyType === ETextHistoryType.OrderedFormat ? new FTextHistoryOrderedFormat(x) :
-                this.historyType === ETextHistoryType.AsCurrency ? new FTextHistoryFormatNumber(x) :
-                this.historyType === ETextHistoryType.StringTableEntry ? new FTextHistoryStringTableEntry(x) :
-                null;
+                    this.historyType === ETextHistoryType.OrderedFormat ? new FTextHistoryOrderedFormat(x) :
+                        this.historyType === ETextHistoryType.AsCurrency ? new FTextHistoryFormatNumber(x) :
+                            this.historyType === ETextHistoryType.StringTableEntry ? new FTextHistoryStringTableEntry(x) :
+                                null;
             this.text = this.textHistory.text
         } else if (typeof x === "string" && params.length === 1) {
             this.flags = 0
@@ -101,7 +100,9 @@ export class FText {
 
 export abstract class FTextHistory {
     abstract serialize(Ar: FArchiveWriter)
+
     abstract text: string
+
     abstract toJson(): any
 
     OrderedFormat = class {
@@ -112,6 +113,7 @@ export abstract class FTextHistory {
 
 export class FTextHistoryNone extends FTextHistory {
     cultureInvariantString: string = null
+
     get text(): string {
         return this.cultureInvariantString || ""
     }
@@ -137,7 +139,7 @@ export class FTextHistoryNone extends FTextHistory {
     }
 
     toJson() {
-        return { cultureInvariantString: this.cultureInvariantString }
+        return {cultureInvariantString: this.cultureInvariantString}
     }
 }
 
@@ -145,6 +147,7 @@ export class FTextHistoryBase extends FTextHistory {
     namespace: string
     key: string
     sourceString: string
+
     get text() {
         return this.sourceString
     }
@@ -284,7 +287,7 @@ export class FTextHistoryFormatNumber extends FTextHistory {
 
     constructor(Ar: FArchive)
     constructor(sourceValue: FFormatArgumentValue, timeZone: string, targetCulture: string)
-    constructor(x?: any, y?: any, z?:any) {
+    constructor(x?: any, y?: any, z?: any) {
         super()
         if (x instanceof FArchive) {
             this.sourceValue = new FFormatArgumentValue(x)
@@ -328,13 +331,13 @@ export class FTextHistoryStringTableEntry extends FTextHistory {
 
                 const table = x.provider?.loadObject<UStringTable>(this.tableId.text)
                 if (!table)
-                    throw ParserException(`Failed to load string table '${this.tableId}'`)
+                    throw new ParserException(`Failed to load string table '${this.tableId}'`, x)
 
                 this.text = table.entries.get(this.key)
                 if (!this.text)
-                    throw ParserException("Didn't find needed in key in string table")
+                    throw new ParserException("Didn't find needed in key in string table", x)
             } else {
-                throw ParserException("Tried to load a string table entry with wrong archive type")
+                throw new ParserException("Tried to load a string table entry with wrong archive type", x)
             }
         }
     }
@@ -344,7 +347,7 @@ export class FTextHistoryStringTableEntry extends FTextHistory {
             Ar.writeFName(this.tableId)
             Ar.writeString(this.key)
         } else {
-            throw ParserException("Tried to save a string table entry with wrong archive type")
+            throw new ParserException("Tried to save a string table entry with wrong archive type", Ar)
         }
     }
 
@@ -368,10 +371,10 @@ export class FFormatArgumentValue {
             this.type = EDateTimeStyle[Object.keys(EDateTimeStyle)[x.readInt8()]]
             this.value = this.type === EFormatArgumentType.Int ? Number(x.readInt64()) :
                 this.type === EFormatArgumentType.UInt ? Number(x.readInt64()) :
-                this.type === EFormatArgumentType.Float ? x.readFloat32() :
-                this.type === EFormatArgumentType.Double ? x.readDouble() :
-                this.type === EFormatArgumentType.Text ? new FText(x) :
-                null // this.type === EFormatArgumentType.Gender
+                    this.type === EFormatArgumentType.Float ? x.readFloat32() :
+                        this.type === EFormatArgumentType.Double ? x.readDouble() :
+                            this.type === EFormatArgumentType.Text ? new FText(x) :
+                                null // this.type === EFormatArgumentType.Gender
         } else {
             this.type = x
             this.value = y

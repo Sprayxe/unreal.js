@@ -53,7 +53,7 @@ export class FPackageStore extends FOnContainerMountedListener {
             const obj = new FScriptObjectEntry(initialLoadArchive, this.globalNameMap.nameEntries)
             const mappedName = FMappedName.fromMinimalName(obj.objectName)
             if (!mappedName.isGlobal())
-                throw ParserException("FMappedName must be global")
+                throw new ParserException("FMappedName must be global", initialLoadArchive)
             obj.objectName = this.globalNameMap.getMinimalName(mappedName)
             this.scriptObjectEntriesMap.set(obj.globalIndex, obj)
             this.scriptObjectEntries.push(obj)

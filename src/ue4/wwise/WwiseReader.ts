@@ -30,7 +30,7 @@ export class WwiseReader {
             switch (sectionIdentifier) {
                 case ESectionIdentifier.AKPK:
                     if (!Ar.readBoolean())
-                        throw ParserException(`FArchive reader has unsupported endianness.`);
+                        throw new ParserException(`FArchive reader has unsupported endianness.`, Ar)
                     Ar.pos += 16
                     this.folders = Ar.readArray(() => new AkFolder(Ar))
                     this.folders.forEach((folder) => folder.populateName(Ar))
@@ -123,7 +123,9 @@ export class WwiseReader {
                 }
             }),
             hierarchy: this.hierarchy.map(h => h.toJson()),
-            idToString: this.idToString.map((v, k) => { return { key: k, value: v } }),
+            idToString: this.idToString.map((v, k) => {
+                return {key: k, value: v}
+            }),
             platform: this.platform
         }
     }

@@ -1,11 +1,7 @@
 import { FPakCompressedBlock } from "./FPakCompressedBlock";
 import { FPakInfo } from "./FPakInfo";
-import { FByteArchive } from "../../reader/FByteArchive";
-import { Utils } from "../../../util/Utils";
-import { Aes } from "../../../encryption/aes/Aes";
 import { FArchive } from "../../reader/FArchive";
 import { EPakVersion } from "../enums/PakVersion";
-import { UnrealArray } from "../../../util/UnrealArray";
 import { Game } from "../../versions/Game";
 
 export class FPakEntry {

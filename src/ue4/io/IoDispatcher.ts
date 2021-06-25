@@ -94,6 +94,7 @@ export abstract class FOnContainerMountedListener {
 
 export class FIoDirectoryIndexHandle {
     handle: number
+
     private constructor(handle: number) {
         this.handle = handle
     }
@@ -101,11 +102,21 @@ export class FIoDirectoryIndexHandle {
     static INVALID_HANDLE = ~0
     static ROOT_HANDLE = 0
 
-    static fromIndex(index: number) { return new FIoDirectoryIndexHandle(index) }
-    static rootDirectory() { return new FIoDirectoryIndexHandle(FIoDirectoryIndexHandle.ROOT_HANDLE) }
-    static invalid() { return new FIoDirectoryIndexHandle(FIoDirectoryIndexHandle.INVALID_HANDLE) }
+    static fromIndex(index: number) {
+        return new FIoDirectoryIndexHandle(index)
+    }
 
-    isValid() { return this.handle !== FIoDirectoryIndexHandle.INVALID_HANDLE }
+    static rootDirectory() {
+        return new FIoDirectoryIndexHandle(FIoDirectoryIndexHandle.ROOT_HANDLE)
+    }
+
+    static invalid() {
+        return new FIoDirectoryIndexHandle(FIoDirectoryIndexHandle.INVALID_HANDLE)
+    }
+
+    isValid() {
+        return this.handle !== FIoDirectoryIndexHandle.INVALID_HANDLE
+    }
 
     equals(other: any) {
         if (this === other) return true
@@ -113,5 +124,7 @@ export class FIoDirectoryIndexHandle {
         return this.handle === other.handle
     }
 
-    toIndex() { return this.handle }
+    toIndex() {
+        return this.handle
+    }
 }

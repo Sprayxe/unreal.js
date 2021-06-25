@@ -57,6 +57,7 @@ export class UMaterialInterface extends UObject implements UUnrealMaterial {
     isTextureCube(): boolean {
         return false
     }
+
     appendReferencedTextures(outTextures: UUnrealMaterial[], onlyRendered: boolean) {
     }
 }

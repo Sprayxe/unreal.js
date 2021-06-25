@@ -35,101 +35,207 @@ import { UObject } from "../ue4/assets/exports/UObject";
 import { FSoftObjectPath } from "../ue4/objects/uobject/SoftObjectPath";
 import { createFPackageId } from "../ue4/objects/uobject/FPackageId";
 import { Oodle } from "../oodle/Oodle";
+import { Config, IConfig } from "../Config";
 
+/**
+ * The main hub for interacting with ue4 assets
+ * @extends {EventEmitter}
+ */
 export class FileProvider extends EventEmitter {
+    /**
+     * Path to paks folder
+     * @type {string}
+     * @public
+     */
     folder: string
+
+    /**
+     * Wether global data is loaded or not
+     * @type {boolean}
+     * @protected
+     */
     protected globalDataLoaded = false
+
+    /**
+     * Game which is being used
+     * @type {Ue4Version}
+     * @public
+     */
     game: Ue4Version
+
+    /**
+     * Type mappings to use
+     * @type {TypeMappingsProvider}
+     * @public
+     */
     mappingsProvider: TypeMappingsProvider = new ReflectionTypeMappingsProvider()
-    protected _files = new Collection<string, GameFile>()
-    protected _unloadedPaks = new Array<PakFileReader>()
-    protected _mountedPaks = new Array<PakFileReader>()
-    protected _mountedIoStoreReaders = new Array<FIoStoreReader>()
-    protected _requiredKeys = new Array<FGuid>()
-    protected _keys = new UnrealMap<FGuid, Buffer>()
+
+    /**
+     * Non I/O store files in current instance
+     * @type {Collection<string, GameFile>}
+     * @public
+     */
+    files = new Collection<string, GameFile>()
+
+    /**
+     * Non mounted paks
+     * @type {Array<PakFileReader>}
+     * @public
+     */
+    unloadedPaks = new Array<PakFileReader>()
+
+    /**
+     * Mounted paks
+     * @type {Array<PakFileReader>}
+     * @public
+     */
+    mountedPaks = new Array<PakFileReader>()
+
+    /**
+     * Mounted I/O store readers
+     * @type {Array<FIoStoreReader>}
+     * @public
+     */
+    mountedIoStoreReaders = new Array<FIoStoreReader>()
+
+    /**
+     * AES keys required for readers
+     * @see {unloadedPaks}
+     * @type {Array<FGuid>}
+     * @public
+     */
+    requiredKeys = new Array<FGuid>()
+
+    /**
+     * Stored AES keys
+     * @type {UnrealMap<FGuid, Buffer>}
+     * @public
+     */
+    keys = new UnrealMap<FGuid, Buffer>()
+
+    /**
+     * Global package store (used in e.g fortnite, handles I/O file entries)
+     * @type {Lazy<FPackageStore>}
+     * @public
+     */
     globalPackageStore = new Lazy(() => {
         const globalNameMap = new FNameMap()
         const globalPackageStore = new FPackageStore(this, globalNameMap)
         globalNameMap.loadGlobal(this)
         globalPackageStore.setupInitialLoadData()
         globalPackageStore.setupCulture()
-        globalPackageStore.loadContainers(this.mountedIoStoreReaders().map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
+        globalPackageStore.loadContainers(this.mountedIoStoreReaders.map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
         return globalPackageStore
     })
+
+    /**
+     * Local files
+     * @type {Set<string>}
+     * @public
+     */
     localFiles = new Set<string>()
+
+    /**
+     * Wether to populate I/O store files
+     * @type {boolean}
+     * @see {globalPackageStore}
+     * @public
+     */
     populateIoStoreFiles = false
 
-    constructor(folder: string, game?: Ue4Version, mappingsProvider?: TypeMappingsProvider) {
+    /**
+     * Creates a new instance of the file provider
+     * @param {string} folder Path to pak folder
+     * @param {?Ue4Version} game Used game
+     * @param {?TypeMappingsProvider} mappingsProvider Type mappings provider to use
+     * @param {?Config} config Configurations for the lib
+     * @public
+     */
+    constructor(folder: string, game?: Ue4Version, mappingsProvider?: TypeMappingsProvider, config?: IConfig) {
         super()
         this.folder = folder
         this.game = game || Ue4Version.GAME_UE4_LATEST
         this.mappingsProvider = mappingsProvider || new ReflectionTypeMappingsProvider()
         if (this.game.game >= Game.GAME_UE4(26))
             Oodle.ensureLib()
+        if (config) {
+            Config.GDebugProperties = config.GDebugProperties
+            Config.GExportArchiveCheckDummyName = config.GExportArchiveCheckDummyName
+            Config.GFatalUnknownProperty = config.GFatalUnknownProperty
+            Config.GSuppressMissingSchemaErrors = config.GSuppressMissingSchemaErrors
+        }
     }
 
-    get files() {
-        return this._files
+    /**
+     * Gets stored AES keys as strings
+     * @type {UnrealMap<FGuid, string>}
+     * @public
+     */
+    get keysStr(): UnrealMap<FGuid, string> {
+        return this.keys.mapValues(it => "0x" + it.toString("hex"))
     }
 
-    keys(): UnrealMap<FGuid, Buffer> {
-        return this._keys
-    }
-
-    keysStr(): UnrealMap<FGuid, string> {
-        return this.keys().mapValues(it => "0x" + it.toString("hex"))
-    }
-
-    requiredKeys(): FGuid[] {
-        return this._requiredKeys
-    }
-
-    unloadedPaks(): PakFileReader[] {
-        return this._unloadedPaks
-    }
-
-    mountedPaks(): PakFileReader[] {
-        return this._mountedPaks
-    }
-
-    mountedIoStoreReaders(): FIoStoreReader[] {
-        return this._mountedIoStoreReaders
-    }
-
+    /**
+     * Submits an aes key to mount
+     * @param {FGuid} guid
+     * @param {Buffer} key
+     * @returns {Promise<void>}
+     * @public
+     */
     submitKey(guid: FGuid, key: Buffer | string) {
         return Buffer.isBuffer(key) ?
             this.submitKeys(new UnrealMap<FGuid, Buffer>().set(guid, key)) :
             this.submitKeysStr(new UnrealMap<FGuid, string>().set(guid, key))
     }
 
+    /**
+     * Submits aes key strings to mount
+     * @param {UnrealMap<FGuid, string>} keys
+     * @returns {Promise<void>}
+     * @public
+     */
     submitKeysStr(keys: UnrealMap<FGuid, string>) {
         return this.submitKeys(keys.mapValues(it => Aes.parseKey(it)))
     }
 
+    /**
+     * Submits aes key strings to mount
+     * @param {UnrealMap<FGuid, string>} keys
+     * @returns {Promise<void>}
+     * @public
+     */
     async submitKeys(keys: UnrealMap<FGuid, Buffer>) {
         return await this.submitKeysAsync(keys)
     }
 
+    /**
+     * Filters unloaded paks that match the provided guid
+     * @param {FGuid} guid Guid to look for
+     * @returns {Array<PakFileReader>} Readers that matched the guid
+     * @public
+     */
     unloadedPaksByGuid(guid: FGuid) {
-        return this.unloadedPaks().filter(it => it.pakInfo.encryptionKeyGuid.equals(guid))
+        return this.unloadedPaks.filter(it => it.pakInfo.encryptionKeyGuid.equals(guid))
     }
 
     /**
-     * - Submits keys asynchronously
-     * @param newKeys Keys to submit
+     * Submits keys asynchronously
+     * @param {UnrealMap<FGuid, Buffer>} newKeys Keys to submit
+     * @returns {Promise<void>}
+     * @public
      */
     async submitKeysAsync(newKeys: UnrealMap<FGuid, Buffer>) {
         for (const [guid, key] of newKeys) {
-            this._keys.set(guid, key)
+            this.keys.set(guid, key)
             for (const reader of this.unloadedPaksByGuid(guid)) {
                 try {
                     reader.aesKey = key
                     this.mount(reader)
-                    this._unloadedPaks = this._unloadedPaks.filter(v => v !== reader)
-                    this._requiredKeys = this._requiredKeys.filter(v => !v.equals(guid))
+                    this.unloadedPaks = this.unloadedPaks.filter(v => v !== reader)
+                    this.requiredKeys = this.requiredKeys.filter(v => !v.equals(guid))
                 } catch (e) {
                     if (e instanceof InvalidAesKeyException) {
-                        this._keys.delete(guid)
+                        this.keys.delete(guid)
                     } else {
                         console.warn(`Uncaught error while loading pak file ${reader.path.substring(reader.path.lastIndexOf("/") + 1)}`, e)
                     }
@@ -139,7 +245,9 @@ export class FileProvider extends EventEmitter {
     }
 
     /**
-     * - the name of the game that is loaded by the provider
+     * Name of the game that is loaded by the provider
+     * @type {string}
+     * @public
      */
     get gameName(): string {
         const first = this.files.keyArray()[0]
@@ -149,33 +257,39 @@ export class FileProvider extends EventEmitter {
 
     /**
      * Searches for a game file by its path
-     * @param filePath the path to search for
-     * @returns the game file or null if it wasn't found
+     * @param {string} filePath The path to search for
+     * @returns {?GameFile} The game file or null if it wasn't found
+     * @public
      */
     findGameFile(filePath: string): GameFile {
-        return this._files.get(this.fixPath(filePath))
+        return this.files.get(this.fixPath(filePath))
     }
 
     /**
      * Loads a UE4 package
-     * @param file the game file to load
-     * @returns the parsed package or null if the file was not an ue4 package (.uasset)
+     * @param {GameFile} file The game file to load
+     * @returns {?Package} The parsed package or null if the file was not an ue4 package (.uasset)
+     * @public
      */
     loadGameFile(file: GameFile): Package
 
     /**
-     * Loads a UE4 package from I/O Store by package ID.
-     * @param packageId the package ID to load.
-     * @returns the parsed package
+     * Loads a UE4 package from I/O Store by package ID
+     * @param {bigint} packageId The package ID to load
+     * @returns {?IoPackage} The parsed package or null if not found
+     * @public
      */
     loadGameFile(packageId: bigint): IoPackage
 
     /**
      * Searches for the game file and then load its contained package
-     * @param filePath the path to search for
-     * @returns the parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
+     * @param {string} filePath The path to search for
+     * @returns {?Package} The parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
+     * @public
      */
     loadGameFile(filePath: string): Package
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     loadGameFile(x?: any) {
         try {
             if (x instanceof GameFile) {
@@ -229,6 +343,13 @@ export class FileProvider extends EventEmitter {
         }
     }
 
+    /**
+     * Loads an ue4 object
+     * @param {string} objectPath Path to the object
+     * @param {?string} objectName Name of the object (could be left out)
+     * @returns {?UObject} The object that matched your args or null
+     * @public
+     */
     loadObject<T extends UObject>(objectPath: string | FSoftObjectPath, objectName?: string): T {
         if (objectPath == null || objectPath === "None") return null;
         let packagePath: string = objectPath as any
@@ -250,17 +371,21 @@ export class FileProvider extends EventEmitter {
 
     /**
      * Searches for the game file and then load its contained locres
-     * @param filePath the path to search for
-     * @returns the parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
+     * @param {string} filePath The path to search for
+     * @returns {?Locres} The parsed package or null if the path was not found or the found game file was not an ue4 package (.uasset)
+     * @public
      */
     loadLocres(filePath: string): Locres
 
     /**
      * Loads a UE4 Locres file
-     * @param file the game file to load
-     * @returns the parsed locres or null if the file was not an ue4 locres (.locres)
+     * @param {string} file The game file to load
+     * @returns {?Locres} The parsed locres or null if the file was not an ue4 locres (.locres)
+     * @public
      */
     loadLocres(file: GameFile): Locres
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     loadLocres(x?: any) {
         try {
             if (x instanceof GameFile) {
@@ -286,23 +411,33 @@ export class FileProvider extends EventEmitter {
         }
     }
 
+    /**
+     * Gets a locres language by path
+     * @param {string} filePath Path to the locres file
+     * @returns {FnLanguage} The locres language
+     * @public
+     */
     getLocresLanguageByPath(filePath: string): FnLanguage {
         return valueOfLanguageCode(filePath.split(new RegExp("Localization/(.*?)/"))[1])
     }
 
     /**
      * Searches for the game file and then loads a UE4 AssetRegistry file
-     * @param filePath the path to search for
-     * @return the parsed asset registry
+     * @param {string} filePath The path to search for
+     * @returns {?AssetRegistry} The parsed asset registry or null
+     * @public
      */
     loadAssetRegistry(filePath: string): AssetRegistry
 
     /**
      * Loads a UE4 AssetRegistry file
-     * @param file the game file to load
-     * @returns the parsed asset registry
+     * @param {string} file The game file to load
+     * @returns {?AssetRegistry} The parsed asset registry or null
+     * @public
      */
-    loadAssetRegistry(file: any): AssetRegistry
+    loadAssetRegistry(file: GameFile): AssetRegistry
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     loadAssetRegistry(x: any) {
         try {
             if (x instanceof GameFile) {
@@ -327,20 +462,23 @@ export class FileProvider extends EventEmitter {
 
     /**
      * Searches for the game file and then saves all parts of this package
-     * @param filePath the path to search for
-     * @returns a map with the files name as key and data as value
+     * @param {string} filePath The path to search for
+     * @returns {?Collection<string, Buffer>} A map with the files name as key and data as value or null
+     * @public
      */
-    savePackage(filePath: string): UnrealMap<string, Buffer>
+    savePackage(filePath: string): Collection<string, Buffer>
 
     /**
      * Saves all parts of this package
-     * @param file the game file to save
-     * @returns a map with the files name as key and data as value
+     * @param {GameFile} file The game file to save
+     * @returns {?Collection<string, Buffer>} A map with the files name as key and data as value
      */
-    savePackage(file: any): UnrealMap<string, Buffer>
+    savePackage(file: GameFile): Collection<string, Buffer>
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     savePackage(x: any) {
         if (x instanceof GameFile) {
-            const map = new UnrealMap<string, Buffer>()
+            const map = new Collection<string, Buffer>()
             try {
                 if (!x.isUE4Package() || !x.hasUexp()) {
                     const data = this.saveGameFile(x)
@@ -363,7 +501,7 @@ export class FileProvider extends EventEmitter {
             const gameFile = this.findGameFile(path)
             if (gameFile)
                 return this.savePackage(gameFile)
-            const map = new UnrealMap<string, Buffer>()
+            const map = new Collection<string, Buffer>()
             try {
                 if (path.endsWith(".uasset") || path.endsWith(".umap")) {
                     const uasset = this.saveGameFile(path)
@@ -393,22 +531,24 @@ export class FileProvider extends EventEmitter {
 
     /**
      * Searches for the game file and then saves the it
-     * @param filePath the game file to save
-     * @returns the files data
+     * @param {string} filePath Path to the file to save
+     * @returns {?Buffer} The files data or null
      */
     saveGameFile(filePath: string): Buffer
 
     /**
      * Saves the game file
-     * @param file the game file to save
-     * @returns the files data
+     * @param {GameFile} file The game file to save
+     * @returns {?Buffer} The files data or null
      */
     saveGameFile(file: GameFile): Buffer
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     saveGameFile(x: any) {
         if (x instanceof GameFile) {
             if (x.ioPackageId)
                 return this.saveChunk(createIoChunkId(x.ioPackageId, 0, EIoChunkType.ExportBundleData))
-            const reader = this._mountedPaks.find(it => it.path === x.pakFileName)
+            const reader = this.mountedPaks.find(it => it.path === x.pakFileName)
             if (!reader)
                 throw new Error("Couldn't find any possible pak file readers")
             return reader.extract(x)
@@ -421,11 +561,12 @@ export class FileProvider extends EventEmitter {
 
     /**
      * Saves a I/O Store chunk by its ID
-     * @param chunkId the chunk ID
-     * @returns the chunk data
+     * @param {FIoChunkId} chunkId The chunk ID
+     * @returns {Buffer} The chunk data
+     * @throws {Error}
      */
     saveChunk(chunkId: FIoChunkId): Buffer {
-        for (const reader of this._mountedIoStoreReaders) {
+        for (const reader of this.mountedIoStoreReaders) {
             try {
                 return reader.read(chunkId)
             } catch (e) {
@@ -437,21 +578,27 @@ export class FileProvider extends EventEmitter {
         throw new Error("Couldn't find any possible I/O store readers")
     }
 
+    /**
+     * Mounts a pak file reader
+     * @param {PakFileReader} reader Reader to mount
+     * @returns {Promise<void>}
+     * @protected
+     */
     protected mount(reader: PakFileReader) {
         reader.readIndex()
-        reader.files.forEach((it) => this._files.set(it.path.toLowerCase(), it))
-        this._mountedPaks.push(reader)
+        reader.files.forEach((it) => this.files.set(it.path.toLowerCase(), it))
+        this.mountedPaks.push(reader)
 
         if (this.globalDataLoaded && reader.Ar instanceof FFileArchive) {
             const absolutePath = reader.path.substring(0, reader.path.lastIndexOf("."))
             const ioStoreEnvironment = new FIoStoreEnvironment(absolutePath)
             try {
                 const ioStoreReader = new FIoStoreReader()
-                ioStoreReader.initialize(ioStoreEnvironment, this.keys())
+                ioStoreReader.initialize(ioStoreEnvironment, this.keys)
                 if (this.populateIoStoreFiles) {
-                    ioStoreReader.getFiles().forEach((it) => this._files.set(it.path.toLowerCase(), it))
+                    ioStoreReader.getFiles().forEach((it) => this.files.set(it.path.toLowerCase(), it))
                 }
-                this._mountedIoStoreReaders.push(ioStoreReader)
+                this.mountedIoStoreReaders.push(ioStoreReader)
                 if (this.globalPackageStore.isInitialized) {
                     this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
                 }
@@ -463,11 +610,16 @@ export class FileProvider extends EventEmitter {
         this.emit("mounted:reader", reader)
     }
 
+    /**
+     * Initializes the file provider
+     * @returns {Promise<void>}
+     * @public
+     */
     async initialize() {
         await ObjectTypeRegistry.init()
         this.folder = this.folder.endsWith("/") ? this.folder : this.folder + "/"
         if (!fs.existsSync(this.folder))
-            throw ParserException(`Path '${this.folder}' does not exist!`)
+            throw new ParserException(`Path '${this.folder}' does not exist!`)
 
         if (this.game.game >= Game.GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
             const file = this.folder + "global"
@@ -485,8 +637,8 @@ export class FileProvider extends EventEmitter {
                     if (!reader.isEncrypted()) {
                         this.mount(reader)
                     } else {
-                        this._unloadedPaks.push(reader)
-                        this._requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
+                        this.unloadedPaks.push(reader)
+                        this.requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
                     }
                 } catch (e) {
                     console.error(e)
@@ -504,12 +656,18 @@ export class FileProvider extends EventEmitter {
         this.emit("ready")
     }
 
+    /**
+     * Loads the global data
+     * @param {string} path Path to the global data file
+     * @returns {void}
+     * @protected
+     */
     protected loadGlobalData(path: string) {
         this.globalDataLoaded = true
         try {
             const ioStoreReader = new FIoStoreReader()
-            ioStoreReader.initialize(new FIoStoreEnvironment(path), this._keys)
-            this._mountedIoStoreReaders.push(ioStoreReader)
+            ioStoreReader.initialize(new FIoStoreEnvironment(path), this.keys)
+            this.mountedIoStoreReaders.push(ioStoreReader)
             console.log("Initialized I/O store")
             this.emit("mounted:iostore", ioStoreReader)
         } catch (e) {
@@ -518,8 +676,10 @@ export class FileProvider extends EventEmitter {
     }
 
     /**
-     * @param filePath the file path to be fixed
-     * @returns the file path translated into the correct format
+     * Fixes a file path
+     * @param {string} filePath File path to fix
+     * @returns {string} File path translated into the correct format
+     * @public
      */
     fixPath(filePath: string): string {
         const gameName = this.gameName
@@ -535,24 +695,26 @@ export class FileProvider extends EventEmitter {
         if (path.startsWith("game/")) {
             path =
                 path.startsWith("game/content/") ? path.replace("game/content/", gameName + "game/content/") :
-                    path.startsWith("game/config/") ? path.replace("game/config/", gameName + "game/config/") :
-                        path.startsWith("game/plugins/") ? path.replace("game/plugins/", gameName + "game/plugins/") :
-                            (path.includes("assetregistry") || path.endsWith(".uproject")) ? path.replace("game/", `${gameName}game/`) :
-                                path.replace("game/", gameName + "game/content/")
+                path.startsWith("game/config/") ? path.replace("game/config/", gameName + "game/config/") :
+                path.startsWith("game/plugins/") ? path.replace("game/plugins/", gameName + "game/plugins/") :
+                (path.includes("assetregistry") || path.endsWith(".uproject")) ? path.replace("game/", `${gameName}game/`) :
+                path.replace("game/", gameName + "game/content/")
         } else if (path.startsWith("engine/")) {
             path =
                 path.startsWith("engine/content/") ? path :
-                    path.startsWith("engine/config/") ? path :
-                        path.startsWith("engine/plugins") ? path :
-                            path.replace("engine/", "engine/content/")
+                path.startsWith("engine/config/") ? path :
+                path.startsWith("engine/plugins") ? path :
+                path.replace("engine/", "engine/content/")
         }
         return path.toLowerCase()
     }
 
     /**
      * Compacts a file path
-     * @param path Path to compact
+     * @param {string} path Path to compact
      * @warning This does convert FortniteGame/Plugins/GameFeatures/GameFeatureName/Content/Package into /GameFeatureName/Package
+     * @returns {string}
+     * @public
      */
     compactFilePath(path: string): string {
         path = path.toLowerCase()

@@ -174,7 +174,7 @@ class FStreamedAudioChunk {
                 this.dataSize = arg.readInt32()
                 this.audioDataSize = arg.readInt32()
             } else
-                throw ParserException("StreamedAudioChunks must be cooked")
+                throw new ParserException("StreamedAudioChunks must be cooked", arg)
         } else {
             this.bCooked = arg
             this.data = args[1]
@@ -190,7 +190,7 @@ class FStreamedAudioChunk {
             Ar.writeInt32(this.dataSize)
             Ar.writeInt32(this.audioDataSize)
         } else
-            throw ParserException("StreamedAudioChunks must be cooked")
+            throw new ParserException("StreamedAudioChunks must be cooked", Ar)
     }
 }
 

@@ -160,7 +160,10 @@ export class FGuid implements IStructType {
      * @see isValid
      */
     invalidate() {
-        this.a = 0; this.b = 0; this.c = 0; this.d = 0
+        this.a = 0;
+        this.b = 0;
+        this.c = 0;
+        this.d = 0
     }
 
     /**
@@ -222,7 +225,7 @@ export class FGuid implements IStructType {
                 (this.d >> 16) & 0xFF,
                 (this.d >> 8) & 0xFF,
                 this.d >> 0xFF
-        )
+            )
         } else if (format === EGuidFormats.UniqueObjectGuid) {
             return sprintf("%08X-%08X-%08X-%08X",
                 this.a,

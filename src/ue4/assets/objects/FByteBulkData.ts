@@ -5,15 +5,51 @@ import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 
+/**
+ * FByteBulkData
+ */
 export class FByteBulkData {
+    /**
+     * Header of this FByteBulkData
+     * @type {FByteBulkDataHeader}
+     * @public
+     */
     public header: FByteBulkDataHeader
+
+    /**
+     * Data of this FByteBulkData
+     * @type {Buffer}
+     * @public
+     */
     public data: Buffer
+
+    /**
+     * Wether bulk data is loaded
+     * @type {boolean}
+     * @public
+     */
     get isBulkDataLoaded() {
         return this.data != null
     }
 
+    /**
+     * Creates an instance using FAssetArchive
+     * @param {FAssetArchive} Ar FAssetArchive to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive)
+
+    /**
+     * Creates an instance using FByteBulkDataHeader and Buffer
+     * @param {FByteBulkDataHeader} header
+     * @param {Buffer} data
+     * @constructor
+     * @public
+     */
     constructor(header: FByteBulkDataHeader, data: Buffer)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(arg1: any, arg2?: any) {
         if (arg1 instanceof FAssetArchive) {
             this.header = new FByteBulkDataHeader(arg1)
@@ -50,7 +86,7 @@ export class FByteBulkData {
                     arg1.pos = this.header.offsetInFile
                     arg1.readToBuffer(this.data)
                 } else {
-                    throw ParserException(`Failed to read PayloadAtEndOfFile, ${this.header.offsetInFile} is out of range`)
+                    throw new ParserException(`Failed to read PayloadAtEndOfFile, ${this.header.offsetInFile} is out of range`, arg1)
                 }
                 arg1.pos = savePos
             }
@@ -60,14 +96,20 @@ export class FByteBulkData {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar FAssetArchiveWriter to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FAssetArchiveWriter) {
         const bulkDataFlags = this.header.bulkDataFlags
         if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_Unused, bulkDataFlags)) {
             this.header.serialize(Ar)
         } else if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_ForceInlinePayload, bulkDataFlags)) {
             this.header.offsetInFile = Ar.relativePos() + 28
-            this.header.elementCount =  this.data.length
-            this.header.sizeOnDisk =  this.data.length
+            this.header.elementCount = this.data.length
+            this.header.sizeOnDisk = this.data.length
             this.header.serialize(Ar)
             Ar.write(this.data)
         } else if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_PayloadInSeperateFile, bulkDataFlags)) {
@@ -85,7 +127,7 @@ export class FByteBulkData {
             this.header.serialize(Ar)
             ubulkAr.write(this.data)
         } else {
-            throw ParserException(`Unsupported BulkData type ${bulkDataFlags}`)
+            throw new ParserException(`Unsupported BulkData type ${bulkDataFlags}`, Ar)
         }
     }
 }

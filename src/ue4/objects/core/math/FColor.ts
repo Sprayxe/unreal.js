@@ -61,8 +61,8 @@ export class FLinearColor implements IStructType {
 
         if (srgb) {
             floatR = floatR <= 0.0031308 ? floatR * 12.92 : Math.pow(floatR, 1.0 / 2.4) * 1.055 - 0.055
-            floatG = floatG  <= 0.0031308 ? floatG * 12.92 : Math.pow(floatG, 1.0 / 2.4) * 1.055 - 0.055
-            floatB = floatB  <= 0.0031308 ? floatB * 12.92 : Math.pow(floatB, 1.0 / 2.4) * 1.055 - 0.055
+            floatG = floatG <= 0.0031308 ? floatG * 12.92 : Math.pow(floatG, 1.0 / 2.4) * 1.055 - 0.055
+            floatB = floatB <= 0.0031308 ? floatB * 12.92 : Math.pow(floatB, 1.0 / 2.4) * 1.055 - 0.055
         }
 
         return new FColor(

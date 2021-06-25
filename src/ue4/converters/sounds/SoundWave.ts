@@ -26,9 +26,9 @@ export class SoundWave {
                 console.debug("Found cooked sound data, exporting...")
                 const compressedFormatData = soundWave.compressedFormatData?.formats
                 if (!compressedFormatData)
-                    throw ParserException("Cooked sounds need compressed format data")
+                    throw new ParserException("Cooked sounds need compressed format data")
                 if (!compressedFormatData.size)
-                    throw ParserException("Compressed format data may not be empty.")
+                    throw new ParserException("Compressed format data may not be empty.")
                 console.debug("Done.")
                 const firstKey = compressedFormatData.firstKey()
                 const firstValue = compressedFormatData.first()
@@ -40,14 +40,14 @@ export class SoundWave {
                 console.debug("Found non-cooked sound data, exporting...")
                 const rawData = soundWave.rawData
                 if (!rawData)
-                    throw ParserException("Non-cooked sounds need raw data")
+                    throw new ParserException("Non-cooked sounds need raw data")
                 console.debug("Done.")
                 return new SoundWave(rawData.data, "ogg")
             }
         } else {
             const runningPlatformData = soundWave.runningPlatformData
             if (!runningPlatformData)
-                throw ParserException("Streamed sounds need streamed audio chunks")
+                throw new ParserException("Streamed sounds need streamed audio chunks")
             const streamedChunks = runningPlatformData.chunks
             console.debug("Found streamed sound data, exporting...")
             const data = Buffer.alloc(sum(streamedChunks.map(it => it.audioDataSize)))

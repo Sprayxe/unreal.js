@@ -23,6 +23,7 @@ export class UObject implements IPropertyHolder {
     flags = 0
 
     export: FObjectExport
+
     get owner(): Package {
         let current = this.outer
         let next = current?.outer
@@ -64,9 +65,9 @@ export class UObject implements IPropertyHolder {
 
     deserialize(Ar: FAssetArchive, validPos: number) {
         this.properties = []
-        if (typeof((this as any).interfaces) === "undefined") {
+        if (typeof ((this as any).interfaces) === "undefined") {
             if (Ar.useUnversionedPropertySerialization) {
-                if (this.clazz == null) throw ParserException("Found unversioned properties but object does not have a class.");
+                if (this.clazz == null) throw new ParserException("Found unversioned properties but object does not have a class.", Ar);
                 deserializeUnversionedProperties(this.properties, this.clazz, Ar)
             } else {
                 deserializeVersionedTaggedProperties(this.properties, Ar)
@@ -162,7 +163,7 @@ export function serializeProperties(Ar: FAssetArchiveWriter, properties: FProper
     properties.forEach((it) => it.serialize(Ar, true))
     const nameMap = FName.getByNameMap("None", Ar.nameMap)
     if (!nameMap)
-        throw ParserException("NameMap must contain \"None\"")
+        throw new ParserException("NameMap must contain \"None\"", Ar)
     Ar.writeFName(nameMap)
 }
 

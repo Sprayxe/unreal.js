@@ -30,40 +30,56 @@ export const COMPRESSION_LEVEL_OPTIMAL3 = 7
 export const COMPRESSION_LEVEL_OPTIMAL4 = 8
 export const COMPRESSION_LEVEL_OPTIMAL5 = 9
 
+/**
+ * Oodle class which handles oodle de-/compression
+ */
 export class Oodle {
+    /**
+     * Stores the loaded .dll library
+     * @type {OodleLibrary}
+     * @public
+     * @static
+     */
     static oodleLib: OodleLibrary = null
 
     /**
      * Decompresses an Oodle compressed array
-     * @param src the compressed source data
-     * @param dstLen the uncompressed length
-     * @return the decompressed data
-     * @throws {DecompressException} when the decompression fails
+     * @param {Buffer} src The compressed source data
+     * @param {number} dstLen The uncompressed length
+     * @returns {Buffer} The decompressed data
+     * @throws {DecompressException} When the decompression fails
+     * @public
+     * @static
      */
     static decompress(src: Buffer, dstLen: number): Buffer
 
     /**
      * Decompresses an Oodle compressed array
-     * @param src the compressed source data
-     * @param dst the destination buffer
-     * @throws DecompressException when the decompression fails
-     * @throws {Error} when the library could not be loaded
+     * @param {Buffer} src The compressed source data
+     * @param {Buffer} dst The destination buffer
+     * @throws DecompressException When the decompression fails
+     * @throws {Error} When the library could not be loaded
+     * @public
+     * @static
      */
     static decompress(src: Buffer, dst: Buffer): Buffer
 
     /**
      * Decompresses an Oodle compressed array
-     * @param src the compressed source data
-     * @param srcOff the offset into `src`
-     * @param srcLen the compressed length
-     * @param dst the destination buffer
-     * @param dstOff the offset into `dst`
-     * @param dstLen the uncompressed length
-     * @throws {DecompressException} when the decompression fails
-     * @throws {SyntaxError} when the library could not be loaded
+     * @param {Buffer} src The compressed source data
+     * @param {number} srcOff The offset into `src`
+     * @param {number} srcLen The compressed length
+     * @param {Buffer} dst The destination buffer
+     * @param {number} dstOff The offset into `dst`
+     * @param {number} dstLen The uncompressed length
+     * @throws {DecompressException} When the decompression fails
+     * @throws {SyntaxError} When the library could not be loaded
+     * @public
+     * @static
      */
     static decompress(src: Buffer, dstLen?: number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): Buffer
 
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     static decompress(src: Buffer, dstLen?: Buffer | number, dst?: Buffer, dstOff?: number, srcOff?: number, srcLen?: number): Buffer {
         this.ensureLib()
         if (typeof dstLen === "number" && !dst) {
@@ -93,12 +109,14 @@ export class Oodle {
 
     /**
      * Compresses a byte array
-     * @param uncompressed the uncompressed source data
-     * @param compressor the compressor to use
-     * @param compressionLevel the compression level to use
-     * @return the compressed data
-     * @throws CompressException when the compression fails
-     * @throws IllegalStateException when the library could not be loaded
+     * @param {Buffer} uncompressed The uncompressed source data
+     * @param {number} compressor The compressor to use
+     * @param {number} compressionLevel The compression level to use
+     * @returns {Buffer} The compressed data
+     * @throws {CompressException} When the compression fails
+     * @throws {SyntaxError} When the library could not be loaded
+     * @public
+     * @static
      */
     static compress(uncompressed: Buffer, compressor: number, compressionLevel: number) {
         this.ensureLib()
@@ -122,6 +140,11 @@ export class Oodle {
         return dst
     }
 
+    /**
+     * Loads the .dll library
+     * @public
+     * @static
+     */
     static ensureLib() {
         try {
             if (!this.oodleLib) {
@@ -139,7 +162,29 @@ export class Oodle {
     }
 }
 
+/**
+ * Structure of oodle library
+ */
 interface OodleLibrary {
+    /**
+     * Decompresses a byte array
+     * @param {Buffer} src_buf
+     * @param {number} src_len
+     * @param {Buffer} dst
+     * @param {number} dst_size
+     * @param {number} fuzz
+     * @param {number} crc
+     * @param {number} verbose
+     * @param {?Buffer} dst_base
+     * @param {number} e
+     * @param {?Buffer} cb
+     * @param {?Buffer} cb_ctx
+     * @param {?Buffer} scratch
+     * @param {number} scratch_size
+     * @param {number} threadPhase
+     * @returns {number}
+     * @public
+     */
     OodleLZ_Decompress(
         src_buf: Buffer,
         src_len: number,
@@ -157,6 +202,21 @@ interface OodleLibrary {
         threadPhase: number
     ): number
 
+    /**
+     * Compresses a byte array
+     * @param {number} codec
+     * @param {Buffer} src_buf
+     * @param {number} src_len
+     * @param {Buffer} dst_buf
+     * @param {number} level
+     * @param {?Buffer} opts
+     * @param {number} offs
+     * @param {number} unused
+     * @param {?Buffer} scratch
+     * @param {number} scratch_size
+     * @returns {number}
+     * @public
+     */
     OodleLZ_Compress(
         codec: number,
         src_buf: Buffer,

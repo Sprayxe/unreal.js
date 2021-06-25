@@ -1,4 +1,4 @@
-export enum ETextureChannel{
+export enum ETextureChannel {
     TC_NONE,
     TC_R,
     TC_G,

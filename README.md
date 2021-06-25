@@ -12,7 +12,7 @@
 
 ### Notice
 This library is in VERY early development so it might be unstable. Please also keep in mind that JavaScript is not really made for this kind of stuff so the usage of this library is **experimental**. We still try fixing most issues though so report if you experience any!\
-(We **recommend** a minimum of around 3-4GB RAM for this library.)
+(We **recommend** a minimum of around 2-4GB RAM for this library.)
 
 ### Features
 - Easy2use file provider for fast interaction with pak/asset files
@@ -26,9 +26,13 @@ This library is in VERY early development so it might be unstable. Please also k
 ### Prerequisites 
 - Node.JS/NPM installed
 - **Experience with JavaScript or TypeScript**
+- Python, Visual C++ Build Tools (node-gyp dependencies)
 
 ### Installation 
 `npm i unreal.js --save`
+
+### Documentation
+SOON...
 
 ### Usage
 #### Basics: FileProvider

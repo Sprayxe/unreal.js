@@ -4,13 +4,54 @@ import { FArchiveWriter } from "../../writer/FArchiveWriter";
 import { VER_UE4_BULKDATA_AT_LARGE_OFFSETS } from "../../versions/Versions";
 
 export class FByteBulkDataHeader {
+    /**
+     * Bulk data flags
+     * @type {number}
+     * @public
+     */
     public bulkDataFlags: number
+
+    /**
+     * Element count
+     * @type {number}
+     * @public
+     */
     public elementCount: number
+
+    /**
+     * Size on disk
+     * @type {number}
+     * @public
+     */
     public sizeOnDisk: number
+
+    /**
+     * Offset in file
+     * @type {number}
+     * @public
+     */
     public offsetInFile: number
 
+    /**
+     * Creates an instance using FAssetArchive
+     * @param {FAssetArchive} Ar
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive)
+
+    /**
+     * Creates an instance using bulkDataFlags, elementCount, sizeOnDisk & offsetInFile
+     * @param {number} bulkDataFlags
+     * @param {number} elementCount
+     * @param {number} sizeOnDisk
+     * @param {number} offsetInFile
+     * @constructor
+     * @public
+     */
     constructor(bulkDataFlags: number, elementCount: number, sizeOnDisk: number, offsetInFile: number)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg = args[0]
         if (arg instanceof FAssetArchive) {
@@ -23,7 +64,7 @@ export class FByteBulkDataHeader {
                 this.sizeOnDisk = arg.readInt32()
             }
             this.offsetInFile = arg.ver >= VER_UE4_BULKDATA_AT_LARGE_OFFSETS ? Number(arg.readInt64()) : arg.readInt32()
-             if (!EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_NoOffsetFixUp, this.bulkDataFlags)) {
+            if (!EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_NoOffsetFixUp, this.bulkDataFlags)) {
                 this.offsetInFile += arg.bulkDataStartOffset
             }
             if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_BadDataVersion, this.bulkDataFlags)) {
@@ -38,6 +79,11 @@ export class FByteBulkDataHeader {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar FArchiveWriter to use
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeInt32(this.bulkDataFlags)
         if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_Size64Bit, this.bulkDataFlags)) {
@@ -50,6 +96,11 @@ export class FByteBulkDataHeader {
         Ar.writeInt64(this.offsetInFile)
     }
 
+    /**
+     * Converts this to json
+     * @returns {object} json
+     * @public
+     */
     toJson() {
         const bulkDataFlag = Object.keys(EBulkDataFlags).find(e => EBulkDataFlags[e] === this.bulkDataFlags)
         return {

@@ -51,6 +51,7 @@ export class FMatrix {
     }
 
     /** Apply Scale to this matrix **/
+
     // TODO applyScale(scale: number)
 
     /** @return the origin of the co-ordinate system */

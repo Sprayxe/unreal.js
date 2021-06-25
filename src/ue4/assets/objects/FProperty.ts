@@ -18,38 +18,52 @@ import { ParserException } from "../../../exceptions/Exceptions";
 import { FExportArchive } from "../reader/FExportArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
 
+/**
+ * Represents a property
+ */
 export class FProperty {
+    /**
+     * Gets the current instance's value
+     * @returns {any} Current value
+     * @public
+     */
     getTagTypeValue() {
         return this instanceof ArrayProperty ? this.array :
             this instanceof BoolProperty ? this.bool :
-            this instanceof ByteProperty ? this.byte :
-            this instanceof DelegateProperty ? this.delegate :
-            this instanceof DoubleProperty ? this.number :
-            this instanceof EnumProperty ? this.name :
-            this instanceof FieldPathProperty ? this.fieldPath :
-            this instanceof FloatProperty ? this.float :
-            this instanceof IntProperty ? this.number :
-            this instanceof Int16Property ? this.number :
-            this instanceof Int64Property ? this.number :
-            this instanceof Int8Property ? this.number :
-            this instanceof InterfaceProperty ? this.interfaceProperty :
-            this instanceof LazyObjectProperty ? this.guid :
-            this instanceof MapProperty ? this.map :
-            this instanceof MulticastDelegateProperty ? this.delegate :
-            this instanceof NameProperty ? this.name :
-            this instanceof ObjectProperty ? this.index :
-            this instanceof SetProperty ? this.array :
-            this instanceof SoftClassProperty ? this.object :
-            this instanceof SoftObjectProperty ? this.object :
-            this instanceof StrProperty ? this.str :
-            this instanceof StructProperty ? this.struct.structType :
-            this instanceof TextProperty ? this.text :
-            this instanceof UInt16Property ? this.number :
-            this instanceof UInt32Property ? this.number :
-            this instanceof UInt64Property ? this.number :
-            null
+                this instanceof ByteProperty ? this.byte :
+                    this instanceof DelegateProperty ? this.delegate :
+                        this instanceof DoubleProperty ? this.number :
+                            this instanceof EnumProperty ? this.name :
+                                this instanceof FieldPathProperty ? this.fieldPath :
+                                    this instanceof FloatProperty ? this.float :
+                                        this instanceof IntProperty ? this.number :
+                                            this instanceof Int16Property ? this.number :
+                                                this instanceof Int64Property ? this.number :
+                                                    this instanceof Int8Property ? this.number :
+                                                        this instanceof InterfaceProperty ? this.interfaceProperty :
+                                                            this instanceof LazyObjectProperty ? this.guid :
+                                                                this instanceof MapProperty ? this.map :
+                                                                    this instanceof MulticastDelegateProperty ? this.delegate :
+                                                                        this instanceof NameProperty ? this.name :
+                                                                            this instanceof ObjectProperty ? this.index :
+                                                                                this instanceof SetProperty ? this.array :
+                                                                                    this instanceof SoftClassProperty ? this.object :
+                                                                                        this instanceof SoftObjectProperty ? this.object :
+                                                                                            this instanceof StrProperty ? this.str :
+                                                                                                this instanceof StructProperty ? this.struct.structType :
+                                                                                                    this instanceof TextProperty ? this.text :
+                                                                                                        this instanceof UInt16Property ? this.number :
+                                                                                                            this instanceof UInt32Property ? this.number :
+                                                                                                                this instanceof UInt64Property ? this.number :
+                                                                                                                    null
     }
 
+    /**
+     * Sets a value for this instance
+     * @param {any} value Value to set
+     * @returns {void}
+     * @public
+     */
     setTagTypeValue(value?: any) {
         if (!value)
             return
@@ -114,10 +128,24 @@ export class FProperty {
         }
     }
 
+    /**
+     * Turns this instance's value for json
+     * @returns {any}
+     * @public
+     */
     toJsonValue() {
         return null
     }
 
+    /**
+     * Reads a property's value
+     * @param {FAssetArchive} Ar FAssetArchive to use
+     * @param {PropertyType} typeData The property's type
+     * @param {ReadType} type Read type to use
+     * @returns {any} The property's value
+     * @public
+     * @static
+     */
     static readPropertyValue(Ar: FAssetArchive, typeData: PropertyType, type: ReadType) {
         const propertyType = typeData.type.text
         if (propertyType === "BoolProperty") {
@@ -281,7 +309,7 @@ export class FProperty {
                 if (enumClass) {
                     const enumValue = enumClass[Object.keys(enumClass)[ordinal]]
                     if (!enumValue) {
-                        throw ParserException(`Failed to get enum index ${ordinal} for enum ${enumClass.simpleName}`)
+                        throw new ParserException(`Failed to get enum index ${ordinal} for enum ${enumClass.simpleName}`, Ar)
                     }
                     const fakeName = (typeData.enumName.text + "::" + enumValue)
                     if (Ar instanceof FExportArchive)
@@ -290,7 +318,7 @@ export class FProperty {
                 } else {
                     const enumValue = Ar.provider.mappingsProvider.getEnum(typeData.enumName)[ordinal]
                     if (!enumValue)
-                        throw ParserException(`Failed to get enum index $ordinal for enum ${typeData.enumName}`)
+                        throw new ParserException(`Failed to get enum index $ordinal for enum ${typeData.enumName}`, Ar)
                     const fakeName = (typeData.enumName.text + "::" + enumValue)
                     if (Ar instanceof FExportArchive)
                         Ar.checkDummyName(fakeName)
@@ -377,6 +405,15 @@ export class FProperty {
         }
     }
 
+    /**
+     * Serializes a property's value
+     * @param {FAssetArchive} Ar FAssetArchive to use
+     * @param {FProperty} tag The property
+     * @param {ReadType} type Read type to use
+     * @returns {void}
+     * @public
+     * @static
+     */
     static writePropertyValue(Ar: FAssetArchiveWriter, tag: FProperty, type: ReadType) {
         if (tag instanceof ArrayProperty) {
             tag.array.serialize(Ar)
@@ -447,12 +484,30 @@ export class FProperty {
         }
     }
 
+    /**
+     * Returns a value referring to read type
+     * @param {() => any} valueIfNonZero
+     * @param {() =>  any} valueIfZero
+     * @param {ReadType} type
+     * @returns {any}
+     * @public
+     * @static
+     */
     static valueOr<T>(valueIfNonZero: () => T, valueIfZero: () => T, type: ReadType) {
         return type !== ReadType.ZERO ? valueIfNonZero() : valueIfZero()
     }
 }
 
+/**
+ * Represents an array property
+ * @extends {FProperty}
+ */
 export class ArrayProperty extends FProperty {
+    /**
+     * Content
+     * @type {UScriptArray}
+     * @public
+     */
     array: UScriptArray
 
     constructor(array: UScriptArray) {
@@ -460,13 +515,27 @@ export class ArrayProperty extends FProperty {
         this.array = array
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {Array<any>}
+     * @public
+     */
     toJsonValue(): any[] {
         return this.array.contents
             .map(c => c.toJsonValue())
     }
 }
 
+/**
+ * Represents a bool property
+ * @extends {FProperty}
+ */
 export class BoolProperty extends FProperty {
+    /**
+     * Content
+     * @type {boolean}
+     * @public
+     */
     bool: boolean
 
     constructor(bool: boolean) {
@@ -474,12 +543,26 @@ export class BoolProperty extends FProperty {
         this.bool = bool
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {boolean}
+     * @public
+     */
     toJsonValue(): boolean {
         return this.bool
     }
 }
 
+/**
+ * Represents a byte property
+ * @extends {FProperty}
+ */
 export class ByteProperty extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     byte: number
 
     constructor(byte: number) {
@@ -487,12 +570,26 @@ export class ByteProperty extends FProperty {
         this.byte = byte
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.byte
     }
 }
 
+/**
+ * Represents a class property
+ * @extends {FProperty}
+ */
 export class ClassProperty extends FProperty {
+    /**
+     * Content
+     * @type {FPackageIndex}
+     * @public
+     */
     index: FPackageIndex
 
     constructor(index: FPackageIndex) {
@@ -500,12 +597,26 @@ export class ClassProperty extends FProperty {
         this.index = index
     }
 
-    toJsonValue(): any {
-        return this.index.name
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
+    toJsonValue(): string {
+        return this.index.name?.text
     }
 }
 
+/**
+ * Represents a delegate property
+ * @extends {FProperty}
+ */
 export class DelegateProperty extends FProperty {
+    /**
+     * Content
+     * @type {FScriptDelegate}
+     * @public
+     */
     delegate: FScriptDelegate
 
     constructor(delegate: FScriptDelegate) {
@@ -513,6 +624,11 @@ export class DelegateProperty extends FProperty {
         this.delegate = delegate
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): any {
         return {
             functionName: this.delegate.functionName.text,
@@ -521,7 +637,16 @@ export class DelegateProperty extends FProperty {
     }
 }
 
+/**
+ * Represents a double property
+ * @extends {FProperty}
+ */
 export class DoubleProperty extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -529,13 +654,33 @@ export class DoubleProperty extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents an enum property
+ * @extends {FProperty}
+ */
 export class EnumProperty extends FProperty {
+    /**
+     * Content
+     * @type {FName}
+     * @public
+     */
     name: FName
+
+    /**
+     * Enum constant
+     * @type {any}
+     * @public
+     */
     enumConstant: any
 
     constructor(name: FName, enumConstant: any) {
@@ -544,12 +689,26 @@ export class EnumProperty extends FProperty {
         this.enumConstant = enumConstant
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
     toJsonValue(): any {
         return this.name.text
     }
 }
 
+/**
+ * Represents a field path property
+ * @extends {FProperty}
+ */
 export class FieldPathProperty extends FProperty {
+    /**
+     * Content
+     * @type {FFieldPath}
+     * @public
+     */
     fieldPath: FFieldPath
 
     constructor(fieldPath: FFieldPath) {
@@ -557,6 +716,11 @@ export class FieldPathProperty extends FProperty {
         this.fieldPath = fieldPath
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): any {
         return {
             path: this.fieldPath.path.map(f => f.text),
@@ -565,7 +729,16 @@ export class FieldPathProperty extends FProperty {
     }
 }
 
+/**
+ * Represents a float property
+ * @extends {FProperty}
+ */
 export class FloatProperty extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     float: number
 
     constructor(float: number) {
@@ -573,12 +746,26 @@ export class FloatProperty extends FProperty {
         this.float = float
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.float
     }
 }
 
+/**
+ * Represents an int16 property
+ * @extends {FProperty}
+ */
 export class Int16Property extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -586,12 +773,26 @@ export class Int16Property extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents an int64 property
+ * @extends {FProperty}
+ */
 export class Int64Property extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -599,12 +800,26 @@ export class Int64Property extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents an int8 property
+ * @extends {FProperty}
+ */
 export class Int8Property extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -612,12 +827,26 @@ export class Int8Property extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents an int(32) property
+ * @extends {FProperty}
+ */
 export class IntProperty extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -625,12 +854,26 @@ export class IntProperty extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents an interface property
+ * @extends {FProperty}
+ */
 export class InterfaceProperty extends FProperty {
+    /**
+     * Content
+     * @type {UInterfaceProperty}
+     * @public
+     */
     interfaceProperty: UInterfaceProperty
 
     constructor(interfaceProperty: UInterfaceProperty) {
@@ -638,12 +881,26 @@ export class InterfaceProperty extends FProperty {
         this.interfaceProperty = interfaceProperty
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.interfaceProperty.interfaceNumber
     }
 }
 
+/**
+ * Represents a lazy object property
+ * @extends {FProperty}
+ */
 export class LazyObjectProperty extends FProperty {
+    /**
+     * Content
+     * @type {FUniqueObjectGuid}
+     * @public
+     */
     guid: FUniqueObjectGuid
 
     constructor(guid: FUniqueObjectGuid) {
@@ -651,12 +908,26 @@ export class LazyObjectProperty extends FProperty {
         this.guid = guid
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
     toJsonValue(): string {
         return this.guid.guid.toString(EGuidFormats.DigitsWithHyphens)
     }
 }
 
+/**
+ * Represents a map property
+ * @extends {FProperty}
+ */
 export class MapProperty extends FProperty {
+    /**
+     * Content
+     * @type {UScriptMap}
+     * @public
+     */
     map: UScriptMap
 
     constructor(map: UScriptMap) {
@@ -664,16 +935,31 @@ export class MapProperty extends FProperty {
         this.map = map
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): any {
         return {
             numKeysToRemove: this.map.numKeysToRemove,
             mapData: this.map.mapData.map((v, k) => {
-                return { key: k.toJsonValue(), value: v.toJsonValue() } })
+                return {key: k.toJsonValue(), value: v.toJsonValue()}
+            })
         }
     }
 }
 
+/**
+ * Represents a multicast delegate property
+ * @extends {FProperty}
+ */
 export class MulticastDelegateProperty extends FProperty {
+    /**
+     * Content
+     * @type {FMulticastScriptDelegate}
+     * @public
+     */
     delegate: FMulticastScriptDelegate
 
     constructor(delegate: FMulticastScriptDelegate) {
@@ -681,13 +967,29 @@ export class MulticastDelegateProperty extends FProperty {
         this.delegate = delegate
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): { functionName: string, object: any }[] {
         return this.delegate.invocationList
-            .map(d => { return { functionName: d.functionName.text, object: d.object.load() || null } })
+            .map(d => {
+                return {functionName: d.functionName.text, object: d.object.load() || null}
+            })
     }
 }
 
+/**
+ * Represents a name property
+ * @extends {FProperty}
+ */
 export class NameProperty extends FProperty {
+    /**
+     * Content
+     * @type {FName}
+     * @public
+     */
     name: FName
 
     constructor(name: FName) {
@@ -695,12 +997,26 @@ export class NameProperty extends FProperty {
         this.name = name
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
     toJsonValue(): string {
         return this.name.text
     }
 }
 
+/**
+ * Represents an object property
+ * @extends {FProperty}
+ */
 export class ObjectProperty extends FProperty {
+    /**
+     * Content
+     * @type {FPackageIndex}
+     * @public
+     */
     index: FPackageIndex
 
     constructor(index: FPackageIndex) {
@@ -708,12 +1024,26 @@ export class ObjectProperty extends FProperty {
         this.index = index
     }
 
-    toJsonValue(): any {
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
+    toJsonValue(): string {
         return this.index.name?.text
     }
 }
 
+/**
+ * Represents a set property
+ * @extends {FProperty}
+ */
 export class SetProperty extends FProperty {
+    /**
+     * Content
+     * @type {UScriptArray}
+     * @public
+     */
     array: UScriptArray
 
     constructor(array: UScriptArray) {
@@ -721,6 +1051,11 @@ export class SetProperty extends FProperty {
         this.array = array
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): any {
         return {
             contents: this.array.contents.map(c => c.toJsonValue()),
@@ -729,7 +1064,16 @@ export class SetProperty extends FProperty {
     }
 }
 
+/**
+ * Represents a soft class property
+ * @extends {FProperty}
+ */
 export class SoftClassProperty extends FProperty {
+    /**
+     * Content
+     * @type {FSoftClassPath}
+     * @public
+     */
     object: FSoftClassPath
 
     constructor(object: FSoftClassPath) {
@@ -737,6 +1081,11 @@ export class SoftClassProperty extends FProperty {
         this.object = object
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): any {
         return {
             assetPathName: this.object.assetPathName.text,
@@ -745,7 +1094,16 @@ export class SoftClassProperty extends FProperty {
     }
 }
 
+/**
+ * Represents a soft object property
+ * @extends {FProperty}
+ */
 export class SoftObjectProperty extends FProperty {
+    /**
+     * Content
+     * @type {FSoftObjectPath}
+     * @public
+     */
     object: FSoftObjectPath
 
     constructor(object: FSoftObjectPath) {
@@ -753,12 +1111,26 @@ export class SoftObjectProperty extends FProperty {
         this.object = object
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): any {
         return this.object.toJson()
     }
 }
 
+/**
+ * Represents a string property
+ * @extends {FProperty}
+ */
 export class StrProperty extends FProperty {
+    /**
+     * Content
+     * @type {string}
+     * @public
+     */
     str: string
 
     constructor(str: string) {
@@ -766,12 +1138,26 @@ export class StrProperty extends FProperty {
         this.str = str
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
     toJsonValue(): string {
         return this.str
     }
 }
 
+/**
+ * Represents a struct property
+ * @extends {FProperty}
+ */
 export class StructProperty extends FProperty {
+    /**
+     * Content
+     * @type {UScriptStruct}
+     * @public
+     */
     struct: UScriptStruct
 
     constructor(struct: UScriptStruct) {
@@ -779,12 +1165,26 @@ export class StructProperty extends FProperty {
         this.struct = struct
     }
 
-    toJsonValue(): string {
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
+    toJsonValue(): any {
         return this.struct.structType.toJson()
     }
 }
 
+/**
+ * Represents a text property
+ * @extends {FProperty}
+ */
 export class TextProperty extends FProperty {
+    /**
+     * Content
+     * @type {FText}
+     * @public
+     */
     text: FText
 
     constructor(text: FText) {
@@ -792,12 +1192,26 @@ export class TextProperty extends FProperty {
         this.text = text
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {any}
+     * @public
+     */
     toJsonValue(): any {
         return this.text.toJson()
     }
 }
 
+/**
+ * Represents an uint16 property
+ * @extends {FProperty}
+ */
 export class UInt16Property extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -805,12 +1219,26 @@ export class UInt16Property extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents an uint32 property
+ * @extends {FProperty}
+ */
 export class UInt32Property extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -818,12 +1246,26 @@ export class UInt32Property extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents an uint64 property
+ * @extends {FProperty}
+ */
 export class UInt64Property extends FProperty {
+    /**
+     * Content
+     * @type {number}
+     * @public
+     */
     number: number
 
     constructor(number: number) {
@@ -831,12 +1273,26 @@ export class UInt64Property extends FProperty {
         this.number = number
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {number}
+     * @public
+     */
     toJsonValue(): number {
         return this.number
     }
 }
 
+/**
+ * Represents a weak object property
+ * @extends {FProperty}
+ */
 export class WeakObjectProperty extends FProperty {
+    /**
+     * Content
+     * @type {FPackageIndex}
+     * @public
+     */
     index: FPackageIndex
 
     constructor(index: FPackageIndex) {
@@ -844,6 +1300,11 @@ export class WeakObjectProperty extends FProperty {
         this.index = index
     }
 
+    /**
+     * Turns this to a json value
+     * @returns {string}
+     * @public
+     */
     toJsonValue() {
         return this.index.name?.text
     }

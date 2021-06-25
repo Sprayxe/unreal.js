@@ -4,8 +4,8 @@ import { FAssetArchive } from "../reader/FAssetArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { UObject } from "./UObject";
 import { PropertyInfo } from "../objects/PropertyInfo";
-import { GDebugProperties } from "../../../Globals";
 import { Lazy } from "../../../util/Lazy";
+import { Config } from "../../../Config";
 
 export class UStruct extends UObject {
     superStruct: Lazy<UStruct> = null
@@ -33,9 +33,9 @@ export class UStruct extends UObject {
             const propertyTypeName = Ar.readFName()
             const prop = FField.construct(propertyTypeName)
             if (!prop)
-                throw ParserException(`Unsupported serialized property type ${propertyTypeName}`)
+                throw new ParserException(`Unsupported serialized property type ${propertyTypeName}`, Ar)
             prop.deserialize(Ar)
-            if (GDebugProperties)
+            if (Config.GDebugProperties)
                 console.info(`${it} = ${propertyTypeName} ${prop.name}`)
             return prop
         })
@@ -341,7 +341,7 @@ export function serializeSingleField(Ar: FAssetArchive): FField {
     if (propertyTypeName !== FName.NAME_None) {
         const field = FField.construct(propertyTypeName)
         if (!field)
-            throw ParserException(`Unsupported serialized property type ${propertyTypeName}`)
+            throw new ParserException(`Unsupported serialized property type ${propertyTypeName}`, Ar)
         field.deserialize(Ar)
         return field
     } else {

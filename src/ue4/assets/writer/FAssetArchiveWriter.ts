@@ -9,7 +9,7 @@ import { UnrealMap } from "../../../util/UnrealMap";
 export class FAssetArchiveWriter extends FArchiveWriter {
     littleEndian = true
     outputStream: WritableStreamBuffer
-    pos1 = 0
+    private _pos = 0
 
     constructor(outputStream: WritableStreamBuffer) {
         super()
@@ -17,7 +17,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
     }
 
     pos() {
-        return this.pos1
+        return this._pos
     }
 
     // Asset Specific Fields
@@ -30,13 +30,13 @@ export class FAssetArchiveWriter extends FArchiveWriter {
     getPayload(type: PayloadType) {
         const p = this.payloads.get(type)
         if (!p)
-            throw ParserException(`${type} is needed to write the current package`)
+            throw new ParserException(`${type} is needed to write the current package`)
         return p
     }
 
     addPayload(type: PayloadType, payload: FAssetArchiveWriter) {
         if (this.payloads.has(type))
-            throw ParserException(`Can't add a payload that is already attached of type ${type}`)
+            throw new ParserException(`Can't add a payload that is already attached of type ${type}`)
         this.payloads.set(type, payload)
     }
 
@@ -59,7 +59,8 @@ export class FAssetArchiveWriter extends FArchiveWriter {
         if (name instanceof FNameDummy)
             return
         if (this.nameMap[name.index]?.name !== name.text) {
-            throw ParserException(`FName does not have a valid value, value in name map : ${this.nameMap[name.index].name}, value in fname : ${name.text}`)
+            throw new ParserException(
+                `FName does not have a valid value, value in name map : ${this.nameMap[name.index].name}, value in fname : ${name.text}`, this)
         }
         this.writeInt32(name.index)
         this.writeInt32(name.num)
@@ -72,7 +73,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
             this.write(Buffer.from(new Array(b)))
         } else {
             this.outputStream.write(b)
-            this.pos1 += b.length
+            this._pos += b.length
         }
     }
 
@@ -88,7 +89,7 @@ export class FAssetArchiveWriter extends FArchiveWriter {
         ar.nameMap = this.nameMap
         ar.importMap = this.importMap
         ar.exportMap = this.exportMap
-        ar.pos1 = this.pos()
+        ar._pos = this._pos
         return ar
     }
 }
@@ -104,5 +105,9 @@ export class FByteArchiveWriter extends FAssetArchiveWriter {
 
     toByteArray() {
         return this.bos.getContents() as Buffer
+    }
+
+    printError(): string {
+        return super.printError()
     }
 }

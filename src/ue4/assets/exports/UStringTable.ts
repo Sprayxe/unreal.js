@@ -66,5 +66,6 @@ export class UStringTable extends UObject {
 export interface IUStringTable {
     tableNamespace: string
     entries: any,
-    keysToMetadata; any
+    keysToMetadata;
+    any
 }

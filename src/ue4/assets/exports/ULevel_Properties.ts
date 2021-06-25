@@ -28,7 +28,7 @@ export class ULevel_Properties extends UObject {
     public bStaticComponentsRegisteredInStreamingManager: boolean = null
     public bIsVisible: boolean = null
     public WorldSettings: FPackageIndex = null
-    @UProperty({ skipNext: 1 })
+    @UProperty({skipNext: 1})
     public AssetUserData: FPackageIndex[] = null
     //public DestroyedReplicatedStaticActors: FReplicatedStaticActorDestructionInfo[]
 }

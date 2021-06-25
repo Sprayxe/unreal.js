@@ -11,9 +11,9 @@ import { FArchive } from "../../../reader/FArchive";
 import { INDEX_NONE } from "../../../../util/Const";
 import { ParserException, UnknownPropertyException } from "../../../../exceptions/Exceptions";
 import { UnrealMap } from "../../../../util/UnrealMap";
-import { GDebugProperties, GExportArchiveCheckDummyName, GFatalUnknownProperty } from "../../../../Globals";
 import { PropertyType } from "../../../assets/objects/PropertyType";
 import { Utils } from "../../../../util/Utils";
+import { Config } from "../../../../Config";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo
@@ -25,7 +25,7 @@ export class FUnversionedPropertySerializer {
     }
 
     deserialize(Ar: FAssetArchive, type: ReadType): FPropertyTag {
-        if (GExportArchiveCheckDummyName && Ar instanceof FExportArchive) {
+        if (Config.GExportArchiveCheckDummyName && Ar instanceof FExportArchive) {
             Ar.checkDummyName(this.info.name)
             const typeInfo = this.info.type
             const arr = [
@@ -81,7 +81,7 @@ export class FUnversionedStructSchema {
                     const prop = prop0 as FPropertySerialized // Serialized in packages
                     const propertyInfo = new PropertyInfo(prop.name.text, new PropertyType(prop), prop.arrayDim)
                     for (let i = 0; i < prop.arrayDim; ++i) {
-                        if (GDebugProperties) console.log(`${index} = ${prop.name} [SERIALIZED]`)
+                        if (Config.GDebugProperties) console.log(`${index} = ${prop.name} [SERIALIZED]`)
                         this.serializers[index++] = new FUnversionedPropertySerializer(propertyInfo, i)
                     }
                 }
@@ -90,7 +90,7 @@ export class FUnversionedStructSchema {
                 for (const prop of struct.childProperties2) {
                     index = startIndex + prop.index
                     for (let i = 0; i < prop.arrayDim; ++i) {
-                        if (GDebugProperties) console.log(`${index} = ${prop.name}`)
+                        if (Config.GDebugProperties) console.log(`${index} = ${prop.name}`)
                         this.serializers[index++] = new FUnversionedPropertySerializer(prop, i)
                     }
                 }
@@ -248,7 +248,7 @@ export class FIterator {
 }
 
 export function deserializeUnversionedProperties(properties: FPropertyTag[], struct: UStruct, Ar: FAssetArchive) {
-    if (GDebugProperties) console.info(`Load: ${struct.name}`)
+    if (Config.GDebugProperties) console.info(`Load: ${struct.name}`)
     const header = new FUnversionedHeader()
     header.load(Ar)
     if (header.hasValues()) {
@@ -258,24 +258,26 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
             while (!it.bDone) {
                 const serializer = it.serializer
                 if (serializer) {
-                    if (GDebugProperties) console.log(`Val: ${it.schemaIt} (IsNonZero: ${it.isNonZero()})`)
+                    if (Config.GDebugProperties) console.log(`Val: ${it.schemaIt} (IsNonZero: ${it.isNonZero()})`)
                     if (it.isNonZero()) {
                         const element = serializer.deserialize(Ar, ReadType.NORMAL)
                         properties.push(element)
-                        if (GDebugProperties) console.info(element.toString())
+                        if (Config.GDebugProperties) console.info(element.toString())
                     } else {
                         const start = Ar.pos
                         properties.push(serializer.deserialize(Ar, ReadType.ZERO))
                         if (Ar.pos !== start)
-                            throw ParserException(`Zero property #${it.schemaIt} should not advance the archive's position`)
+                            throw new ParserException(
+                                `Zero property #${it.schemaIt} should not advance the archive's position`, Ar)
                     }
                 } else {
                     if (it.isNonZero()) {
-                        if (GFatalUnknownProperty) {
+                        if (Config.GFatalUnknownProperty) {
                             console.warn(`Unknown property for ${struct.name} with index ${it.schemaIt}, cannot proceed with serialization. Serialized ${properties.length} until now.`)
                             return
                         } else {
-                            throw UnknownPropertyException(`Unknown property for ${struct.name} with index ${it.schemaIt}, cannot proceed with serialization`)
+                            throw new UnknownPropertyException(
+                                `Unknown property for ${struct.name} with index ${it.schemaIt}, cannot proceed with serialization`, Ar)
                         }
                     }
                     console.warn(`Unknown property for ${struct.name} with index ${it.schemaIt}, but it's zero so we're good`)

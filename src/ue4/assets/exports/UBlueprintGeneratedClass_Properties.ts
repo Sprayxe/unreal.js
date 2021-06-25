@@ -3,7 +3,6 @@ import { UActorComponent } from "./components/UActorComponent";
 import { UTimelineTemplate } from "./UTimelineTemplate";
 import { UFunction } from "./UFunction";
 import { UObject } from "./UObject";
-import { FAssetArchive } from "../reader/FAssetArchive";
 import { UProperty } from "../../../util/decorators/UProperty";
 
 export class UBlueprintGeneratedClass_Properties extends UObject {
@@ -14,11 +13,11 @@ export class UBlueprintGeneratedClass_Properties extends UObject {
     public ComponentTemplates: UActorComponent[] = null
     public Timelines: UTimelineTemplate[] = null
     //public List<FBPComponentClassOverride> ComponentClassOverrides;
-    @UProperty({ skipPrevious: 1 })
+    @UProperty({skipPrevious: 1})
     public SimpleConstructionScript: FPackageIndex = null
     public InheritableComponentHandler: FPackageIndex = null
     public UberGraphFramePointerProperty: FPackageIndex = null
-    @UProperty({ skipNext: 1 })
+    @UProperty({skipNext: 1})
     public UberGraphFunction: UFunction = null
     //public Map<FName, FBlueprintCookedComponentInstancingData> CookedComponentInstancingData;
 }

@@ -22,14 +22,15 @@ export class FNameTableArchiveReader extends FAssetRegistryArchive {
     private serializeNameMap(): FNameEntry[] {
         const nameOffset = this.wrappedAr.readInt64()
         if (nameOffset > this.wrappedAr.size)
-            throw ParserException(`This Name Table was corrupted. Name Offset $nameOffset > Size ${this.size}`)
+            throw new ParserException(
+                `This Name Table was corrupted. Name Offset ${nameOffset} > Size ${this.size}`, this)
         if (nameOffset > 0) {
             const originalOffset = this.wrappedAr.pos
             // We already verified that nameOffset isn't bigger than our archive so it's safe to cast to int
             this.wrappedAr.pos = Number(nameOffset)
             const nameCount = this.wrappedAr.readInt32()
             if (nameCount < 0)
-                throw ParserException(`Negative name count offset in name table: ${nameCount}`)
+                throw new ParserException(`Negative name count offset in name table: ${nameCount}`, this)
 
             const minFNameEntrySize = 4 // sizeof(int32)
             const maxReservation = this.size - this.pos / minFNameEntrySize
@@ -51,7 +52,8 @@ export class FNameTableArchiveReader extends FAssetRegistryArchive {
         if (this.nameMap[nameIndex])
             return new FName(this.nameMap, nameIndex, extraIndex)
         else
-            throw ParserException(`FName could not be read, requested index $nameIndex, name map size ${this.nameMap.length}`)
+            throw new ParserException(
+                `FName could not be read, requested index $nameIndex, name map size ${this.nameMap.length}`, this)
     }
 
     serializeTagsAndBundles(out: FAssetData) {

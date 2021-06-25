@@ -26,7 +26,7 @@ export class WwiseAudio {
     export(outputPath?: string) {
         const cwd = process.cwd()
         if (!existsSync(cwd + "\\vgm\\test.exe"))
-            throw ParserException("Converting .wem files requires vgmstream. Please check the ReadMe of the lib for further information!")
+            throw new ParserException("Converting .wem files requires vgmstream. Please check the ReadMe of the lib for further information!")
         const path = cwd + "\\" + this.name
         const src = path + "." + this.format
         writeFileSync(src, this.data) // write .wem file

@@ -47,7 +47,8 @@ export class FAssetRegistryReader extends FAssetRegistryArchive {
         if (index >= 0 && index < this.names.length) {
             return FName.dummy(this.names[index], number)
         } else {
-            throw ParserException(`FName could not be read, requested index ${index}, name map size ${this.names.length}`)
+            throw new ParserException(
+                `FName could not be read, requested index ${index}, name map size ${this.names.length}`, this)
         }
     }
 

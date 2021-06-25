@@ -12,7 +12,7 @@ export class FFieldPath {
     constructor(x?: any, y?: any) {
         if (x) {
             if (x instanceof FAssetArchive) {
-                this.path = x.readArray((ar) => ar.readFName())
+                this.path = x.readArray(() => x.readFName())
                 if (this.path.length === 1 && this.path[0] === FName.NAME_None) {
                     this.path = []
                 }

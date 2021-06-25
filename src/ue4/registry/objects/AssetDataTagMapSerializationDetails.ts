@@ -28,7 +28,7 @@ export class FStore {
         const initialMagic = Ar.readUInt32()
         const order = this.getLoadOrder(initialMagic)
         if (!order)
-            throw ParserException("Bad init magic")
+            throw new ParserException("Bad init magic", Ar)
 
         const nums = new UnrealArray(11, () => Ar.readInt32())
 

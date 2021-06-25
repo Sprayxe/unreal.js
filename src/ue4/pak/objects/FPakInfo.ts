@@ -8,8 +8,7 @@ import { Utils } from "../../../util/Utils";
 
 // source 'https://github.com/FabianFG/CUE4Parse/blob/master/CUE4Parse/UE4/Pak/Objects/FPakInfo.cs'
 // thanks cue4parse <3
-enum OffsetsToTry
-{
+enum OffsetsToTry {
     size = /*sizeof(int)*/ 4 * 2 + /*sizeof(long)*/ 8 * 2 + 20 + /* new fields */ 1 + 16, // sizeof(FGuid)
     // Just to be sure
     size8_1 = size + 32,
@@ -58,7 +57,7 @@ export class FPakInfo {
         const size = Ar.size
         const maxOffset = OffsetsToTry.sizeMax
         if (size < maxOffset)
-            throw ParserException(`File '${path}' is too small to be a pak file`)
+            throw new ParserException(`File '${path}' is too small to be a pak file`, Ar)
 
         Ar.pos = size - maxOffset
         const buffer = Ar.readBuffer(maxOffset)
@@ -71,7 +70,7 @@ export class FPakInfo {
                 return info
         }
 
-        throw ParserException(`File '${path}' has an unknown format`)
+        throw new ParserException(`File '${path}' has an unknown format`, Ar)
     }
 
     magic: number
@@ -100,10 +99,10 @@ export class FPakInfo {
         this.indexHash = Ar.readBuffer(20)
 
         if (this.version === EPakVersion.PakVersion_FrozenIndex) {
-            const bIndexIsFrozen = Ar.readFlag();
+            const bIndexIsFrozen = Ar.readFlag()
             // used just for 4.25, so don't do any support unless it's really needed
             if (bIndexIsFrozen)
-                throw ParserException("Pak index is frozen")
+                throw new ParserException("Pak index is frozen", Ar)
         }
 
         if (this.version < EPakVersion.PakVersion_FNameBasedCompressionMethod) {

@@ -16,8 +16,8 @@ export class TRangeBound<T> implements IStructType {
     constructor(boundType: ERangeBoundTypes, value: T)
     constructor(x: any, y: any) {
         if (x instanceof FArchive) {
-           this.type = x.readInt8()
-           this.value = y()
+            this.type = x.readInt8()
+            this.value = y()
         } else {
             this.type = x
             this.value = y

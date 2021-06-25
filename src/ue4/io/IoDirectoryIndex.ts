@@ -41,11 +41,12 @@ export class FIoDirectoryIndexResource {
         this.mountPoint = s.substring(s.indexOf("../../../") + "../../../".length)
         this.directoryEntries = Ar.readArray(() => new FIoDirectoryIndexEntry(Ar))
         this.fileEntries = Ar.readArray(() => new FIoFileIndexEntry(Ar))
-        this.stringTable = Ar.readArray(() =>  Ar.readString())
+        this.stringTable = Ar.readArray(() => Ar.readString())
     }
 }
 
 type FDirectoryIndexVisitorFunction = (filename: string, tocEntryIndex: number) => boolean
+
 export class FIoDirectoryIndexReader {
     buffer: Buffer
     decryptionKey: Buffer

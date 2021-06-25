@@ -11,6 +11,7 @@ import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 
 /** Allowed error for a normalized vector (against squared magnitude) */
 const THRESH_VECTOR_NORMALIZED = 0.01
+
 export class FVector implements IStructType {
     /** Vector's X component. */
     public x: number
@@ -592,5 +593,5 @@ export class FVector implements IStructType {
 
         return distSquared
     }
- }
+}
 

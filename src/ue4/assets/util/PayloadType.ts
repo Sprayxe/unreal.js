@@ -1,5 +1,5 @@
 export enum PayloadType {
-    UBULK ,
-    M_UBULK ,
+    UBULK,
+    M_UBULK,
     UPTNL
 }

@@ -110,7 +110,7 @@ export class FDependsNode {
             while (i < num) {
                 const index = Ar.readInt32()
                 if (index < 0 || index >= numDependsNodes) {
-                    throw ParserException("Invalid DependencyType index")
+                    throw new ParserException("Invalid DependencyType index", Ar)
                 }
                 const dependsNode = preallocatedDependsNodeDataBuffer[index]
                 outNodes.element.splice(index, 0, dependsNode)

@@ -2,6 +2,7 @@
 
 import { FPropertyTag } from "../objects/FPropertyTag";
 
+/* DON'T USE THIS */
 export function mapToClass<T>(properties: FPropertyTag[], clazz: Function, obj: T) {
     if (!properties.length)
         return obj

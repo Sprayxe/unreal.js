@@ -26,7 +26,7 @@ export class FCompressedVisibilityChunk {
 
     constructor(Ar: FArchive) {
         this.bCompressed = Ar.readBoolean()
-        this.uncompressedSize  = Ar.readInt32()
+        this.uncompressedSize = Ar.readInt32()
         this.data = Ar.readBuffer(Ar.readInt32())
     }
 }

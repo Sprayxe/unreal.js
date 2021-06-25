@@ -13,37 +13,135 @@ import { PropertyType } from "./PropertyType";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { ParserException } from "../../../exceptions/Exceptions";
 
+/**
+ * Represents a property tag
+ */
 export class FPropertyTag {
+    /**
+     * Property
+     * @type {FProperty}
+     * @public
+     */
     prop: FProperty = null
 
-    /** Type of property */
+    /**
+     * Type of property
+     * @type {FName}
+     * @public
+     */
     type: FName
-    /** A boolean property's value (never need to serialize data for bool properties except here) */
+
+    /**
+     * A boolean property's value (never need to serialize data for bool properties except here)
+     * @type {boolean}
+     * @public
+     */
     boolVal: boolean = false
-    /** Name of property. */
+
+    /**
+     * Name of property.
+     * @type {FName}
+     * @public
+     */
     name: FName
-    /** Struct name if FStructProperty. */
+
+    /**
+     * Struct name if FStructProperty
+     * @type {FName}
+     * @public
+     */
     structName = FName.NAME_None
-    /** Enum name if FByteProperty or FEnumProperty */
+
+    /**
+     * Enum name if FByteProperty or FEnumProperty
+     * @type {FName}
+     * @public
+     */
     enumName = FName.NAME_None
-    /** Inner type if FArrayProperty, FSetProperty, or FMapProperty */
+
+    /**
+     * Inner type if FArrayProperty, FSetProperty, or FMapProperty
+     * @type {FName}
+     * @public
+     */
     innerType = FName.NAME_None
-    /** Value type if UMapProperty */
+
+    /**
+     * Value type if UMapProperty
+     * @type {FName}
+     * @public
+     */
     valueType = FName.NAME_None
-    /** Property size. */
+
+    /**
+     * Property size
+     * @type {number}
+     * @public
+     */
     size: number = 0
-    /** Index if an array; else 0. */
+
+    /**
+     * Index if an array; else 0
+     * @type {number}
+     * @public
+     */
     arrayIndex = INDEX_NONE
-    /** Location in stream of tag size member */
+
+    /**
+     * Location in stream of tag size member
+     * @type {number}
+     * @public
+     */
     sizeOffset = -1
+
+    /**
+     * Struct guid
+     * @type {?FGuid}
+     * @public
+     */
     structGuid?: FGuid = null
+
+    /**
+     * Wether if the property has a guid or not
+     * @type {boolean}
+     * @public
+     * @see {propertyGuid}
+     */
     hasPropertyGuid: boolean = false
+
+    /**
+     * Property guid
+     * @type {?FGuid}
+     * @public
+     * @see {hasPropertyGuid}
+     */
     propertyGuid?: FGuid = null
 
+    /**
+     * Type data
+     * @type {PropertyType}
+     * @public
+     */
     typeData: PropertyType = null
 
+    /**
+     * Creates an instance using FName
+     * @param {FName} name FName to use
+     * @constructor
+     * @public
+     */
     constructor(name: FName)
+
+    /**
+     * Creates an instance using FAssetArchive and readData
+     * @param {FAssetArchive} Ar FAssetArchive to use
+     * @param {boolean} readData Wether to read data or no
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive, readData: boolean)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any, y?: any) {
         if (!(x instanceof FAssetArchive)) {
             this.name = x
@@ -113,6 +211,12 @@ export class FPropertyTag {
         }
     }
 
+    /**
+     * Gets current tag type value
+     * @returns {any} Value
+     * @throws {Error}
+     * @public
+     */
     getTagTypeValue(): any {
         const tag = this.prop?.getTagTypeValue()
         if (tag == null)
@@ -120,10 +224,22 @@ export class FPropertyTag {
         return tag
     }
 
+    /**
+     * Sets current tag type value
+     * @param {any} value
+     * @returns {void}
+     * @public
+     */
     setTagTypeValue(value: any) {
         return this.prop?.setTagTypeValue(value)
     }
 
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar FAssetArchiveWriter to use
+     * @param {boolean} writeData Wether to write data or not
+     * @public
+     */
     serialize(Ar: FAssetArchiveWriter, writeData: boolean) {
         Ar.writeFName(this.name)
         if (this.name.text !== "None") {
@@ -133,7 +249,7 @@ export class FPropertyTag {
                 const tempAr = Ar.setupByteArrayWriter()
                 try {
                     if (!this.prop)
-                        throw ParserException("FPropertyTagType is needed when trying to write it")
+                        throw new ParserException("FPropertyTagType is needed when trying to write it", Ar)
                     FProperty.writePropertyValue(
                         tempAr,
                         this.prop,
@@ -143,7 +259,7 @@ export class FPropertyTag {
                     tagTypeData = tempAr.toByteArray()
                 } catch (e) {
                     console.error(e)
-                    throw ParserException(`^^^\nError occurred while writing the FPropertyTagType ${this.name} (${this.type})`)
+                    throw new ParserException(`^^^\nError occurred while writing the FPropertyTagType ${this.name} (${this.type})`, Ar)
                 }
             } else {
                 Ar.writeInt32(this.size)
@@ -164,11 +280,21 @@ export class FPropertyTag {
         }
     }
 
+    /**
+     * Turns this into a string
+     * @returns {string} string
+     * @public
+     */
     toString() {
-        const result = this.prop ? this.getTagTypeValue(): "Failed to parse"
+        const result = this.prop ? this.getTagTypeValue() : "Failed to parse"
         return `${this.name.text}   -->   ${result.toString()}`
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} json
+     * @public
+     */
     toJson() {
         return {
             prop: this.prop.toJsonValue(),

@@ -41,7 +41,7 @@ export class UDataTable extends UObject {
                 deserializeVersionedTaggedProperties(rowProperties, Ar)
             }
             const value = new UObject(rowProperties)
-            return { key, value }
+            return {key, value}
         })
     }
 
@@ -67,7 +67,7 @@ export class UDataTable extends UObject {
 
     toJson(locres: Locres = null): any {
         return this.rows.map((v, k) => {
-            return { key: k.text, value: v.toJson(locres) }
+            return {key: k.text, value: v.toJson(locres)}
         })
     }
 }

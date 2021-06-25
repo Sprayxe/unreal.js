@@ -4,7 +4,18 @@ import { PropertyInfo } from "../objects/PropertyInfo";
 import { UStruct } from "../exports/UStruct";
 import { Lazy } from "../../../util/Lazy";
 
+/**
+ * Type mappings provider which uses json data
+ * @abstract
+ * @extends {TypeMappingsProvider}
+ */
 export abstract class JsonTypeMappingsProvider extends TypeMappingsProvider {
+    /**
+     * Adds a struct
+     * @param {object} json JSON data
+     * @returns {boolean} Wether if it was successful or not
+     * @protected
+     */
     protected addStructs(json: any): boolean {
         if (!Array.isArray(json)) return false
         for (const entry of json) {
@@ -20,6 +31,12 @@ export abstract class JsonTypeMappingsProvider extends TypeMappingsProvider {
         return true
     }
 
+    /**
+     * Adds an enum
+     * @param {object} json JSON data
+     * @returns {boolean} Wether if it was successful or not
+     * @protected
+     */
     protected addEnums(json: any): boolean {
         if (!Array.isArray(json)) return false
         for (const entry of json) {

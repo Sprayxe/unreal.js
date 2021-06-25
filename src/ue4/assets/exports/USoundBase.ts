@@ -23,7 +23,7 @@ export class USoundBase extends UObject {
     public LowpassModulationDestination: FSoundModulationDestinationSettings = null
     public SoundSubmixObject: FPackageIndex /*USoundSubmixBase*/ = null
     //public List<FSoundSubmixSendInfo> SoundSubmixSends;
-    @UProperty({ skipPrevious: 1, skipNext: 2 })
+    @UProperty({skipPrevious: 1, skipNext: 2})
     public SourceEffectChain: FPackageIndex /*USoundEffectSourcePresetChain*/ = null
     //public List<FSoundSourceBusSendInfo> BusSends;
     //public List<FSoundSourceBusSendInfo> PreEffectBusSends;

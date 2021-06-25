@@ -4,7 +4,7 @@ export enum EBulkDataFlags {
     /** If set, payload is stored at the end of the file and not inline. */
     BULKDATA_PayloadAtEndOfFile = 1 << 0,
     /** If set, payload should be [un]compressed using ZLIB during serialization. */
-    BULKDATA_SerializeCompressedZLIB= 1 << 1,
+    BULKDATA_SerializeCompressedZLIB = 1 << 1,
     /** Force usage of SerializeElement over bulk serialization. */
     BULKDATA_ForceSingleElementSerialization = 1 << 2,
     /** Bulk data is only used once at runtime in the game. */

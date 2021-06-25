@@ -4,11 +4,11 @@ import { FArchive } from "../../../reader/FArchive";
 import { UProperty } from "../../../../util/decorators/UProperty";
 
 export class FTransform {
-    @UProperty({ name: "rotation" })
+    @UProperty({name: "rotation"})
     public rotation: FQuat
-    @UProperty({ name: "translation" })
+    @UProperty({name: "translation"})
     public translation: FVector
-    @UProperty({ name: "Scale3D" })
+    @UProperty({name: "Scale3D"})
     public scale3D: FVector
 
     constructor()

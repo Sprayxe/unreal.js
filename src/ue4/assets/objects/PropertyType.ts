@@ -10,22 +10,113 @@ import {
 } from "../exports/UStruct";
 import { Lazy } from "../../../util/Lazy";
 
+/**
+ * Property type
+ */
 export class PropertyType {
+    /**
+     * Type of property
+     * @type {FName}
+     * @public
+     */
     type: FName
+
+    /**
+     * Name of struct
+     * @type {FName}
+     * @public
+     */
     structName = FName.NAME_None
+
+    /**
+     * Wether if its a bool
+     * @type {boolean}
+     * @public
+     */
     bool: boolean = false
+
+    /**
+     * Name of enum
+     * @type {FName}
+     * @public
+     */
     enumName = FName.NAME_None
+
+    /**
+     * Wether it is an enum as byte
+     * @type {boolean}
+     * @public
+     */
     isEnumAsByte: boolean = true
+
+    /**
+     * Inner type of this property
+     * @type {?PropertyType}
+     * @public
+     */
     innerType: PropertyType = null
+
+    /**
+     * Value type of this property
+     * @type {?PropertyType}
+     * @public
+     */
     valueType: PropertyType = null
+
+    /**
+     * Struct class of this property
+     * @type {?Lazy<any>}
+     * @public
+     */
     structClass: Lazy<any> = null
+
+    /**
+     * Enum class
+     * @type {?any}
+     * @public
+     */
     enumClass: any = null
 
+    /**
+     * Creates an instance with no info
+     * @constructor
+     * @public
+     */
     constructor()
+
+    /**
+     * Creates an instance with a defined type
+     * @param {FName} type Type of the property
+     * @constructor
+     * @public
+     */
     constructor(type: FName)
-    constructor(JsonObject: any)
+
+    /**
+     * Creates an instance using json data
+     * @param {any} jsonObject Json data to use
+     * @constructor
+     * @public
+     */
+    constructor(jsonObject: any)
+
+    /**
+     * Creates an instance using FPropertyTag
+     * @param {FPropertyTag} tag Tag to use
+     * @constructor
+     * @public
+     */
     constructor(tag: FPropertyTag)
+
+    /**
+     * Creates an instance using FPropertySerialized
+     * @param {FPropertySerialized} prop Serialized property to use
+     * @constructor
+     * @public
+     */
     constructor(prop: FPropertySerialized)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any) {
         if (!x) {
             this.type = FName.NAME_None
@@ -56,6 +147,11 @@ export class PropertyType {
         }
     }
 
+    /**
+     * Turns this into a string
+     * @returns {string}
+     * @public
+     */
     toString() {
         return this.type.text
     }

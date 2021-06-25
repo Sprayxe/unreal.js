@@ -68,7 +68,7 @@ export class UTexture2D extends UTexture {
         })
         const name = FName.getByNameMap("None", Ar.nameMap)
         if (!name)
-            throw ParserException("NameMap must contain \"None\"")
+            throw new ParserException("NameMap must contain \"None\"", Ar)
         Ar.writeFName(name)
     }
 }
@@ -99,12 +99,12 @@ export class FTexturePlatformData {
             this.pixelFormat = arg.readString()
             this.firstMip = arg.readInt32()
             const mipCount = arg.readInt32()
-            this.mips = new UnrealArray(mipCount, () => new FTexture2DMipMap(arg) )
+            this.mips = new UnrealArray(mipCount, () => new FTexture2DMipMap(arg))
 
             if (arg.game >= Game.GAME_UE4(23)) {
                 this.isVirtual = arg.readBoolean()
                 if (this.isVirtual) {
-                    throw ParserException("Texture is virtual, not implemented")
+                    throw new ParserException("Texture is virtual, not implemented")
                 }
             }
         } else {
@@ -136,7 +136,7 @@ export class FTexturePlatformData {
         if (Ar.game >= Game.GAME_UE4(23)) {
             Ar.writeBoolean(this.isVirtual)
             if (this.isVirtual)
-                throw ParserException("Texture is virtual, not implemented")
+                throw new ParserException("Texture is virtual, not implemented")
         }
     }
 }

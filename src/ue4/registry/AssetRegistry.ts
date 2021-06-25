@@ -26,7 +26,7 @@ export class AssetRegistry {
         const version = new FAssetRegistryVersion(this.originalAr)
         let Ar: FAssetRegistryArchive = null
         if (version.version < Type.RemovedMD5Hash) {
-            throw ParserException("Cannot read states before this version")
+            throw new ParserException("Cannot read states before this version")
         } else if (version.version < Type.FixedTags) {
             Ar = new FNameTableArchiveReader(this.originalAr)
         } else {

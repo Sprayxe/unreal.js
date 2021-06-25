@@ -16,7 +16,7 @@ import { UProperty } from "../../../util/decorators/UProperty";
 /**
  * - Whether the curve table contains simple, rich, or no curves
  */
- export enum ECurveTableMode {
+export enum ECurveTableMode {
     Empty,
     SimpleCurves,
     RichCurves
@@ -42,7 +42,7 @@ export class UCurveTable extends UObject {
         this.curveTableMode = Ar.readUInt8()
         let rowStruct: UScriptStruct
         if (this.curveTableMode === ECurveTableMode.Empty) {
-            throw ParserException("CurveTableMode == ECurveTableMode::Empty, unsupported")
+            throw new ParserException("CurveTableMode == ECurveTableMode::Empty, unsupported")
         } else if (this.curveTableMode === ECurveTableMode.SimpleCurves) {
             rowStruct = new UScriptStruct(FSimpleCurve)
         } else if (this.curveTableMode === ECurveTableMode.RichCurves) {
@@ -53,7 +53,7 @@ export class UCurveTable extends UObject {
             let clazz: Function
             let value: FRealCurve
             if (this.curveTableMode === ECurveTableMode.Empty) {
-                throw ParserException("CurveTableMode == ECurveTableMode::Empty, unsupported")
+                throw new ParserException("CurveTableMode == ECurveTableMode::Empty, unsupported")
             } else if (this.curveTableMode === ECurveTableMode.SimpleCurves) {
                 value = new FSimpleCurve()
                 clazz = FSimpleCurve
@@ -68,7 +68,7 @@ export class UCurveTable extends UObject {
                 deserializeVersionedTaggedProperties(properties, Ar)
             }
             (value as any) = mapToClass(properties, clazz, value)
-            return { key, value }
+            return {key, value}
         })
     }
 
@@ -90,7 +90,7 @@ export class UCurveTable extends UObject {
 
     toJson(locres: Locres = null): any {
         return this.rowMap.map((v, k) => {
-            return { key: k.text, value: v.toJson() }
+            return {key: k.text, value: v.toJson()}
         })
     }
 }
@@ -100,10 +100,10 @@ export class UCurveTable extends UObject {
  */
 export class FCurveTableRowHandle {
     /** Pointer to table we want a row from */
-    @UProperty({ name: "CurveTable" })
+    @UProperty({name: "CurveTable"})
     public curveTable: UCurveTable = null
     /** Name of row in the table that we want */
-    @UProperty({ name: "RowName" })
+    @UProperty({name: "RowName"})
     public rowName: FName = FName.NAME_None
 
     /** Get the curve straight from the row handle */

@@ -200,6 +200,14 @@ export class UScriptStruct {
     }
 }
 
+/**
+ * Represents a struct type
+ */
 export interface IStructType {
+    /**
+     * Turns this into json
+     * @returns {any}
+     * @public
+     */
     toJson(): any
 }

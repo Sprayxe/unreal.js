@@ -71,7 +71,7 @@ export class FBox implements IStructType {
      */
     plusAssign0(other: FBox): void {
         if (this.isValid) {
-            const min = (x, y) =>  Math.min(x, y)
+            const min = (x, y) => Math.min(x, y)
             // min
             this.min.x = min(this.min.x, other.min.x)
             this.min.y = min(this.min.y, other.min.y)
@@ -95,7 +95,7 @@ export class FBox implements IStructType {
      */
     plusAssign1(other: FVector): void {
         if (this.isValid) {
-            const min = (x, y) =>  Math.min(x, y)
+            const min = (x, y) => Math.min(x, y)
             // min
             this.min.x = min(this.min.x, other.x)
             this.min.y = min(this.min.y, other.y)
@@ -165,7 +165,7 @@ export class FBox implements IStructType {
      * @param v The size to increase the volume by.
      * @return A new bounding box.
      */
-    expandBy0(v: FVector): FBox  {
+    expandBy0(v: FVector): FBox {
         return new FBox(this.min.minus0(v), this.max.plus0(v))
     }
 
@@ -175,7 +175,7 @@ export class FBox implements IStructType {
      * @param w The size to increase the volume by.
      * @return A new bounding box.
      */
-    expandBy1(w: number): FBox  {
+    expandBy1(w: number): FBox {
         const v = new FVector(w, w, w)
         return new FBox(this.min.minus0(v), this.max.plus0(v))
     }
@@ -187,7 +187,7 @@ export class FBox implements IStructType {
      * @param pos The size to increase the volume by in the positive direction (positive values move the bounds outwards)
      * @return A new bounding box.
      */
-    expandBy2(neg: FVector, pos: FVector): FBox  {
+    expandBy2(neg: FVector, pos: FVector): FBox {
         return new FBox(this.min.minus0(neg), this.max.plus0(pos))
     }
 

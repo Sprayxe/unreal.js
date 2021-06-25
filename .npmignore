@@ -1,12 +1,13 @@
 # ujs internal
+src/
+.github/
+.vscode/
+.idea/
+docs/
 src/test.ts
 oo2core_8_win64.dll
 vgm/
 docs.json
-
-# IDEA
-.idea
-.gradle
 
 # Logs
 logs
@@ -52,7 +53,7 @@ node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files
-typings/
+# ? typings/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -62,6 +63,7 @@ typings/
 
 # Optional eslint cache
 .eslintcache
+
 
 # Microbundle cache
 .rpt2_cache/

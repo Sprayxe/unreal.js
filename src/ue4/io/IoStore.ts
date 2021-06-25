@@ -358,11 +358,17 @@ export class FIoStoreReader {
             this.toc.header.version)
     }
 
-    get containerId() { return this.toc.header.containerId }
+    get containerId() {
+        return this.toc.header.containerId
+    }
 
-    get containerFlags() { return this.toc.header.containerFlags }
+    get containerFlags() {
+        return this.toc.header.containerFlags
+    }
 
-    get encryptionKeyGuid() { return this.toc.header.encryptionKeyGuid }
+    get encryptionKeyGuid() {
+        return this.toc.header.encryptionKeyGuid
+    }
 
     read(chunkId: FIoChunkId/*, options: FIoReadOptions = FIoReadOptions()*/): Buffer {
         const offsetAndLength = this.toc.getOffsetAndLength(chunkId)

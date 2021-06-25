@@ -15,28 +15,105 @@ import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { UnrealArray } from "../../util/UnrealArray";
 import Collection from "@discordjs/collection";
 
+/**
+ * UE4 Pak File Reader
+ */
 export class PakFileReader {
+    /**
+     * Path to file
+     * @type {string}
+     * @public
+     */
     path: string
+
+    /**
+     * UE4 Reader
+     * @type {FArchive}
+     * @public
+     */
     Ar: FArchive
+
+    /**
+     * Game that is used
+     * @type {number}
+     * @public
+     */
     game: number
+
+    /**
+     * Info about pak
+     * @type {FPakInfo}
+     * @public
+     */
     pakInfo: FPakInfo
+
+    /**
+     * Aes key for pak
+     * @type {?Buffer}
+     * @public
+     */
     aesKey: Buffer = null
+
+    /**
+     * Mount point for pak
+     * @type {string}
+     * @public
+     */
     mountPoint: string
+
+    /**
+     * Amount of encrypted files
+     * @type {number}
+     * @public
+     */
     encryptedFileCount = 0
+
+    /**
+     * Files in this pak
+     * @type {Collection<string, GameFile>}
+     * @public
+     */
     files: Collection<string, GameFile>
 
+    /**
+     * Creates an instance
+     * @param {string} path Path to file
+     * @param {?number} game Game that is used
+     * @constructor
+     * @public
+     */
     constructor(path: string, game?: number) {
         this.path = path
         this.Ar = new FFileArchive(path)
         this.Ar.game = this.game = game || Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
-        this.Ar.ver = Game. GAME_UE4_GET_AR_VER(this.game)
+        this.Ar.ver = Game.GAME_UE4_GET_AR_VER(this.game)
         this.pakInfo = FPakInfo.readPakInfo(this.Ar)
     }
 
-    toString() { return this.path }
+    /**
+     * Turns this into a string
+     * @returns {string}
+     * @public
+     */
+    toString() {
+        return this.path
+    }
 
-    isEncrypted() { return this.pakInfo.encryptedIndex }
+    /**
+     * Wether if it is encrypted or not
+     * @returns {boolean}
+     * @public
+     */
+    isEncrypted() {
+        return this.pakInfo.encryptedIndex
+    }
 
+    /**
+     * Extracts a file
+     * @param {GameFile} gameFile File to extract
+     * @returns {Buffer}
+     * @public
+     */
     extract(gameFile: GameFile): Buffer {
         if (gameFile.pakFileName !== this.path)
             throw new Error(`Wrong pak file reader, required ${gameFile.pakFileName}, this is ${this.path}`)
@@ -77,6 +154,11 @@ export class PakFileReader {
         }
     }
 
+    /**
+     * Reads index of pak
+     * @returns {Map<string, GameFile>} Files
+     * @public
+     */
     readIndex(): Map<string, GameFile> {
         this.encryptedFileCount = 0
         this.Ar.pos = this.pakInfo.indexOffset
@@ -85,7 +167,8 @@ export class PakFileReader {
         try {
             mountPoint = indexAr.readString()
         } catch (e) {
-            throw InvalidAesKeyException(`Given encryption key '0x${this.aesKey.toString("hex")}' is not working with '${this.path}'`)
+            throw new InvalidAesKeyException(
+                `Given encryption key '0x${this.aesKey.toString("hex")}' is not working with '${this.path}'`)
         }
 
         this.mountPoint = this.fixMountPoint(mountPoint)
@@ -102,6 +185,11 @@ export class PakFileReader {
         return files
     }
 
+    /**
+     * Reads index of old pak
+     * @returns {Map<string, GameFile>} Files
+     * @public
+     */
     private readIndexLegacy(indexAr: FByteArchive): Map<string, GameFile> {
         const fileCount = indexAr.readInt32()
 
@@ -121,7 +209,7 @@ export class PakFileReader {
                 if (uexp != null) it.uexp = uexp;
                 const ubulk = tempMap.get(PakFileReader.extension(k, ".ubulk"))
                 if (ubulk != null) it.uexp = ubulk;
-                files.set(k , it)
+                files.set(k, it)
             } else {
                 if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
                     files.set(k, it)
@@ -131,17 +219,22 @@ export class PakFileReader {
         return this.files = files
     }
 
+    /**
+     * Reads index of new pak
+     * @returns {Map<string, GameFile>} Files
+     * @public
+     */
     private readIndexUpdated(primaryIndexAr: FByteArchive): Map<string, GameFile> {
         const fileCount = primaryIndexAr.readInt32()
         primaryIndexAr.pos += 8 // PathHashSeed
 
         if (!primaryIndexAr.readBoolean())
-            throw ParserException("No path hash index")
+            throw new ParserException("No path hash index", primaryIndexAr)
 
         primaryIndexAr.pos += 36 // PathHashIndexOffset (long) + PathHashIndexSize (long) + PathHashIndexHash (20 bytes)
 
         if (!primaryIndexAr.readBoolean())
-            throw ParserException("No directory index")
+            throw new ParserException("No directory index", primaryIndexAr)
 
         const directoryIndexOffset = Number(primaryIndexAr.readInt64())
         const directoryIndexSize = Number(primaryIndexAr.readInt64())
@@ -152,7 +245,7 @@ export class PakFileReader {
         const encodedPakEntriesAr = new FByteArchive(encodedPakEntries)
 
         if (primaryIndexAr.readInt32() < 0)
-            throw ParserException("Corrupt pak PrimaryIndex detected!")
+            throw new ParserException("Corrupt pak PrimaryIndex detected!", primaryIndexAr)
 
         this.Ar.pos = directoryIndexOffset
         const directoryIndexAr = new FByteArchive(this.readAndDecrypt(directoryIndexSize))
@@ -180,7 +273,7 @@ export class PakFileReader {
                 if (uexp != null) it.uexp = uexp;
                 const ubulk = tempMap.get(PakFileReader.extension(k, ".ubulk"))
                 if (ubulk != null) it.uexp = ubulk;
-                files.set(k , it)
+                files.set(k, it)
             } else {
                 if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
                     files.set(k, it)
@@ -190,6 +283,12 @@ export class PakFileReader {
         return this.files = files
     }
 
+    /**
+     * Reads bit entry
+     * @param {FByteArchive} Ar Reader to use
+     * @returns {FPakEntry} Entry
+     * @private
+     */
     private readBitEntry(Ar: FByteArchive) {
         // Grab the big bitfield value:
         // Bit 31 = Offset 32-bit safe?
@@ -306,23 +405,44 @@ export class PakFileReader {
         return entry
     }
 
+    /**
+     * Replaces a file extension
+     * @param {string} k Source
+     * @param {string} v Replacement
+     * @returns {string}
+     * @private
+     * @static
+     */
     private static extension(k: string, v: string): string {
         return k.endsWith(".uasset")
             ? k.replace(".uasset", v)
             : k.replace(".umap", v);
     }
 
+    /**
+     * Reads and decrypts data
+     * @param {number} num Amount of bytes to read
+     * @param {boolean} isEncrypted Wether if those are encrypted
+     * @returns {Buffer} Bytes
+     * @private
+     */
     private readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted()): Buffer {
         let data = this.Ar.readBuffer(num)
         if (isEncrypted) {
             const key = this.aesKey
             if (!key)
-                throw ParserException("Reading this pak requires an encryption key")
+                throw new ParserException("Reading this pak requires an encryption key")
             data = Aes.decrypt(data, key)
         }
         return data
     }
 
+    /**
+     * Fixes a mount point
+     * @param {string} mountPoint Current mount point
+     * @returns {string}
+     * @private
+     */
     private fixMountPoint(mountPoint: string) {
         let badMountPoint = false
         if (!mountPoint.startsWith("../../.."))
@@ -340,14 +460,42 @@ export class PakFileReader {
         return mountPoint;
     }
 
+    /**
+     * Checks index bytes
+     * @returns {Buffer} Index bytes
+     * @public
+     */
     indexCheckBytes(): Buffer {
         this.Ar.pos = this.pakInfo.indexOffset
         return this.Ar.readBuffer(128)
     }
 
+    /**
+     * Tests if an aes key works
+     * @param {string} key Aes key to test
+     * @returns {boolean}
+     * @public
+     */
     testAesKey(key: string)
+
+    /**
+     * Tests if an aes key works
+     * @param {Buffer} key Aes key to test
+     * @returns {boolean}
+     * @public
+     */
     testAesKey(key: Buffer)
+
+    /**
+     * Tests if an aes key works with specified bytes
+     * @param {Buffer} bytes Bytes to test
+     * @param {Buffer} key Key to test
+     * @returns {boolean}
+     * @public
+     */
     testAesKey(bytes: Buffer, key: Buffer)
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     testAesKey(x?: any, y?: any) {
         if (!y) {
             if (Buffer.isBuffer(x)) {
@@ -363,6 +511,12 @@ export class PakFileReader {
         }
     }
 
+    /**
+     * Wether if pak has valid index
+     * @param {Buffer} bytes Bytes to read from
+     * @returns {boolean}
+     * @param
+     */
     isValidIndex(bytes: Buffer): boolean {
         const testAr = new FByteArchive(bytes)
         const stringLength = testAr.readUInt32()

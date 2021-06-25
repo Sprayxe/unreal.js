@@ -17,25 +17,115 @@ import { WritableStreamBuffer } from "stream-buffers";
 import { sum } from "lodash"
 import { Lazy } from "../../util/Lazy";
 
+/**
+ * UE4 Pak Package
+ * @extends {Package}
+ */
 export class PakPackage extends Package {
+    /**
+     * Pak magic
+     * @type {number}
+     * @protected
+     */
     protected packageMagic = 0x9E2A83C1
+
+    /**
+     * UASSET data
+     * @type {Buffer}
+     * @public
+     */
     uasset: Buffer
+
+    /**
+     * UEXP data
+     * @type {?Buffer}
+     * @public
+     */
     uexp?: Buffer = null
+
+    /**
+     * UBULK data
+     * @type {?Buffer}
+     * @public
+     */
     ubulk?: Buffer = null
+
+    /**
+     * Name of package file
+     * @type {string}
+     * @public
+     */
     fileName: string
+
+    /**
+     * File provider
+     * @type {?FileProvider}
+     * @public
+     */
     provider?: FileProvider = null
+
+    /**
+     * Game that is used
+     * @type {Ue4Version}
+     * @public
+     */
     game: Ue4Version = Ue4Version.GAME_UE4_LATEST
+
+    /**
+     * Version that is used
+     * @type {number}
+     * @public
+     */
     version: number
 
+    /**
+     * Information about package
+     * @type {FPackageFileSummary}
+     * @public
+     */
     info: FPackageFileSummary
+
+    /**
+     * Name map
+     * @type {Array<FNameEntry>}
+     * @public
+     */
     nameMap: FNameEntry[]
+
+    /**
+     * Import map
+     * @type {Array<FObjectImport>}
+     * @public
+     */
     importMap: FObjectImport[]
+
+    /**
+     * Export map
+     * @type {Array<FObjectExport>}
+     * @public
+     */
     exportMap: FObjectExport[]
 
+    /**
+     * Stores lazy exports
+     * @type {Array<Lazy<UObject>>}
+     * @public
+     */
     get exportsLazy() {
         return this.exportMap.map(it => it.exportObject)
     }
 
+    /**
+     * Creates an instance
+     * @param {Buffer} uasset Uasset data
+     * @param {?Buffer} uexp Uexp data
+     * @param {?Buffer} ubulk Ubulk data
+     * @param {string} name Name of package file
+     * @param {?FileProvider} provider File provider
+     * @param {?Ue4Version} game Game that is used
+     * @constructor
+     * @public
+     */
     constructor(uasset: Buffer, uexp: Buffer = null, ubulk: Buffer = null, name: string, provider: FileProvider = null, game: Ue4Version = Ue4Version.GAME_UE4_LATEST) {
         super(name, provider, game)
         this.uasset = uasset
@@ -69,7 +159,7 @@ export class PakPackage extends Package {
 
         this.info = new FPackageFileSummary(uassetAr)
         if (this.info.tag !== this.packageMagic)
-            throw ParserException(`Invalid uasset magic, ${this.info.tag} != ${this.packageMagic}`)
+            throw new ParserException(`Invalid uasset magic, ${this.info.tag} !== ${this.packageMagic}`, uassetAr)
 
         const ver = this.info.fileVersionUE4
         if (ver > 0) {
@@ -136,18 +226,36 @@ export class PakPackage extends Package {
         })
     }
 
+    /**
+     * Finds an object by index
+     * @param {?FPackageIndex} index Index to find
+     * @returns {?any} Object or null
+     * @public
+     */
     findObject<T>(index?: FPackageIndex): T {
         return (index === null || index.isNull()) ? null :
             index.isImport() ? this.findImport(this.importMap[index.toImport()]) as unknown as T :
-            index.isExport() ? this.exportMap[index.toExport()]?.exportObject as unknown as T :
-            null
+                index.isExport() ? this.exportMap[index.toExport()]?.exportObject as unknown as T :
+                    null
     }
 
+    /**
+     * Loads an import
+     * @param {?FObjectImport} imp Import to load
+     * @returns {?UObject} Object or null
+     * @public
+     */
     loadImport(imp?: FObjectImport) {
         if (!imp) return null
         return this.findImport(imp) || null
     }
 
+    /**
+     * Finds an import
+     * @param {?FObjectImport} imp Import to load
+     * @returns {?UObject} Object or null
+     * @public
+     */
     findImport(imp?: FObjectImport): UObject {
         if (!imp) return null
         if (imp.className.text === "Class") {
@@ -156,7 +264,7 @@ export class PakPackage extends Package {
                 let struct = this.provider?.mappingsProvider?.getStruct(structName)
                 if (!struct) {
                     if ((this.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0) {
-                        throw MissingSchemaException(`Unknown struct ${structName}`)
+                        throw new MissingSchemaException(`Unknown struct ${structName}`)
                     }
                     struct = new UScriptStruct(ObjectTypeRegistry.get(structName.text), structName)
                 }
@@ -173,6 +281,13 @@ export class PakPackage extends Package {
         return null
     }
 
+    /**
+     * Finds an object by name
+     * @param {string} objectName Name of object
+     * @param {?string} className Class name of object
+     * @returns {?UObject} Object or null
+     * @public
+     */
     findObjectByName(objectName: string, className?: string) {
         const exp = this.exportMap.find(it => {
             return it.objectName.text === objectName
@@ -181,18 +296,42 @@ export class PakPackage extends Package {
         return exp?.exportObject?.value
     }
 
-    getImportObject(imp: FPackageIndex) {
+    /**
+     * Gets an import object
+     * @param {FPackageIndex} imp Import to find
+     * @returns {?FObjectImport} Import or null
+     * @public
+     */
+    getImportObject(imp: FPackageIndex): FObjectImport {
         return imp.isImport() ? this.importMap[imp.toImport()] : null
     }
 
-    getExportObject(imp: FPackageIndex) {
+    /**
+     * Gets an export object
+     * @param {FPackageIndex} imp Export to find
+     * @returns {?FObjectExport} Export or null
+     * @public
+     */
+    getExportObject(imp: FPackageIndex): FObjectExport {
         return imp.isExport() ? this.exportMap[imp.toExport()] : null
     }
 
+    /**
+     * Gets either export or import object
+     * @param {FPackageIndex} imp Index to find
+     * @returns {FObjectImport | FObjectExport | null} Object or null
+     * @public
+     */
     getResource(imp: FPackageIndex) {
         return this.getImportObject(imp) || this.getExportObject(imp)
     }
 
+    /**
+     * Turns this into json
+     * @param {?Locres} locres Locres to use
+     * @returns {Array<IJson>} Json
+     * @public
+     */
     toJson(locres?: Locres): IJson[] {
         const object = []
         for (const it of this.exports) {
@@ -207,6 +346,12 @@ export class PakPackage extends Package {
         return object
     }
 
+    /**
+     * Gets a package from index
+     * @param {FPackageIndex} imp Package to get
+     * @returns {?Package} Package or null
+     * @private
+     */
     private getPackage(imp: FPackageIndex) {
         const obj = this.getImportObject(imp)
         if (obj) {
@@ -215,6 +360,7 @@ export class PakPackage extends Package {
         return null
     }
 
+    /* DON'T USE THIS */
     updateHeader() {
         const uassetWriter = new FByteArchiveWriter()
         uassetWriter.game = this.game.game
@@ -226,18 +372,21 @@ export class PakPackage extends Package {
 
         const nameMapOffset = uassetWriter.pos()
         if (this.info.nameCount !== this.nameMap.length) {
-            throw ParserException(`Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`)
+            throw new ParserException(
+                `Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`, uassetWriter)
         }
 
         this.nameMap.forEach((it) => it.serialize(uassetWriter))
         const importMapOffset = uassetWriter.pos()
         if (this.info.importCount !== this.importMap.length)
-            throw ParserException(`Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`)
+            throw new ParserException(
+                `Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`, uassetWriter)
         this.importMap.forEach((it) => it.serialize(uassetWriter))
 
         const exportMapOffset = uassetWriter.pos()
         if (this.info.exportCount !== this.exportMap.length)
-            throw ParserException("Invalid export count, summary says ${info.exportCount} exports but export map is ${exportMap.size} entries long")
+            throw new ParserException(
+                `Invalid export count, summary says ${this.info.exportCount} exports but export map is ${this.exportMap.length} entries long`, uassetWriter)
         this.exportMap.forEach((it) => it.serialize(uassetWriter))
 
         this.info.totalHeaderSize = uassetWriter.pos()
@@ -246,6 +395,7 @@ export class PakPackage extends Package {
         this.info.exportOffset = exportMapOffset
     }
 
+    /* DON'T USE THIS */
     write(uassetOutputStream: WritableStreamBuffer, uexpOutputStream: WritableStreamBuffer, ubulkOutputStream?: WritableStreamBuffer) {
         this.updateHeader()
 
@@ -273,26 +423,30 @@ export class PakPackage extends Package {
         if (nameMapPadding > 0)
             uassetWriter.write(nameMapPadding)
         if (this.info.nameCount !== this.nameMap.length)
-            throw ParserException(`Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`)
+            throw new ParserException(
+                `Invalid name count, summary says ${this.info.nameCount} names but name map is ${this.nameMap.length} entries long`, uassetWriter)
         this.nameMap.forEach((it) => it.serialize(uassetWriter))
 
         const importMapPadding = this.info.importOffset - uassetWriter.pos()
         if (importMapPadding > 0)
             uassetWriter.write(importMapPadding)
         if (this.info.importCount !== this.nameMap.length)
-            throw ParserException(`Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`)
+            throw new ParserException(
+                `Invalid import count, summary says ${this.info.importCount} imports but import map is ${this.importMap.length} entries long`, uassetWriter)
         this.importMap.forEach((it) => it.serialize(uassetWriter))
 
         const exportMapPadding = this.info.exportOffset - uassetWriter.pos()
         if (exportMapPadding > 0)
             uassetWriter.write(exportMapPadding)
         if (this.info.exportCount !== this.exportMap.length)
-            throw ParserException(`Invalid export count, summary says ${this.info.exportCount} exports but export map is ${this.exportMap.length} entries long`)
+            throw new ParserException(
+                `Invalid export count, summary says ${this.info.exportCount} exports but export map is ${this.exportMap.length} entries long`, uassetWriter)
         this.exportMap.forEach((it) => it.serialize(uassetWriter))
 
         ubulkOutputStream?.destroy()
     }
 
+    /* DON'T USE THIS */
     writer(outputStream: WritableStreamBuffer) {
         const obj = new FAssetArchiveWriter(outputStream)
         obj.nameMap = this.nameMap
