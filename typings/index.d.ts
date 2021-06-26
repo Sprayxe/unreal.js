@@ -1,4 +1,4 @@
-declare module 'Config' {
+declare module 'unreal.js/Config' {
 	export class Config implements IConfig {
 	    static GExportArchiveCheckDummyName: boolean;
 	    static GDebugProperties: boolean;
@@ -33,7 +33,7 @@ declare module 'Config' {
 	}
 
 }
-declare module 'Types' {
+declare module 'unreal.js/Types' {
 	export type int32 = number;
 	export type uint8 = number;
 	export type uint16 = number;
@@ -41,7 +41,7 @@ declare module 'Types' {
 	export type uint64 = bigint;
 
 }
-declare module 'ue4/versions/Versions' {
+declare module 'unreal.js/ue4/versions/Versions' {
 	export const VER_UE4_ASSET_REGISTRY_TAGS = 112;
 	export const VER_UE4_TEXTURE_DERIVED_DATA2 = 124;
 	export const VER_UE4_ADD_COOKED_TO_TEXTURE2D = 125;
@@ -132,7 +132,7 @@ declare module 'ue4/versions/Versions' {
 	export const VER_UE4_27 = 523;
 
 }
-declare module 'ue4/versions/Game' {
+declare module 'unreal.js/ue4/versions/Game' {
 	export class Game {
 	    static ue4Versions: number[];
 	    static GAME_UE4_BASE: number;
@@ -179,8 +179,8 @@ declare module 'ue4/versions/Game' {
 	}
 
 }
-declare module 'ue4/objects/uobject/FName' {
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/objects/uobject/FName' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class FNameEntry {
 	    name: string;
 	    nonCasePreservingHash: number;
@@ -214,7 +214,7 @@ declare module 'ue4/objects/uobject/FName' {
 	}
 
 }
-declare module 'util/UnrealMap' {
+declare module 'unreal.js/util/UnrealMap' {
 	import Collection from '@discordjs/collection';
 	export class UnrealMap<K, V> extends Collection<K, V> {
 	    get(key: K): V | undefined;
@@ -222,11 +222,9 @@ declare module 'util/UnrealMap' {
 	}
 
 }
-declare module 'ue4/writer/FArchiveWriter' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UnrealMap } from 'util/UnrealMap';
+declare module 'unreal.js/ue4/writer/FArchiveWriter' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
 	export abstract class FArchiveWriter {
 	    game: number;
 	    ver: number;
@@ -256,9 +254,9 @@ declare module 'ue4/writer/FArchiveWriter' {
 	}
 
 }
-declare module 'exceptions/Exceptions' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/exceptions/Exceptions' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	/**
 	 * Creates a parser exception
 	 */
@@ -311,11 +309,9 @@ declare module 'exceptions/Exceptions' {
 	}
 
 }
-declare module 'ue4/reader/FArchive' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UnrealMap } from 'util/UnrealMap';
+declare module 'unreal.js/ue4/reader/FArchive' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
 	/**
 	 * UE4 Reader
 	 */
@@ -532,9 +528,9 @@ declare module 'ue4/reader/FArchive' {
 	}
 
 }
-declare module 'ue4/pak/objects/FPakCompressedBlock' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/pak/objects/FPakCompressedBlock' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FPakCompressedBlock {
 	    compressedStart: number;
 	    compressedEnd: number;
@@ -544,10 +540,8 @@ declare module 'ue4/pak/objects/FPakCompressedBlock' {
 	}
 
 }
-declare module 'ue4/reader/FByteArchive' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/reader/FByteArchive' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	/**
 	 * Byte Reader for UE4
 	 * @extends {FArchive}
@@ -575,7 +569,7 @@ declare module 'ue4/reader/FByteArchive' {
 	}
 
 }
-declare module 'util/StringBuilder' {
+declare module 'unreal.js/util/StringBuilder' {
 	export class StringBuilder {
 	    value: any[];
 	    constructor(value?: any);
@@ -585,7 +579,7 @@ declare module 'util/StringBuilder' {
 	}
 
 }
-declare module 'util/Const' {
+declare module 'unreal.js/util/Const' {
 	export const INDEX_NONE = -1;
 	export const KINDA_SMALL_NUMBER = 0.0001;
 	export const FLOAT_MAX_VALUE = 3.402823466e+38;
@@ -593,9 +587,7 @@ declare module 'util/Const' {
 	export const INTEGER_MAX_VALUE = 2147483647;
 
 }
-declare module 'util/Utils' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
+declare module 'unreal.js/util/Utils' {
 	import BitSet from 'bitset';
 	export class Utils {
 	    static clamp(self: number, min: number, max: number): number;
@@ -610,7 +602,7 @@ declare module 'util/Utils' {
 	}
 
 }
-declare module 'ue4/assets/util/PayloadType' {
+declare module 'unreal.js/ue4/assets/util/PayloadType' {
 	export enum PayloadType {
 	    UBULK = 0,
 	    M_UBULK = 1,
@@ -618,8 +610,8 @@ declare module 'ue4/assets/util/PayloadType' {
 	}
 
 }
-declare module 'ue4/assets/objects/PropertyInfo' {
-	import { PropertyType } from 'ue4/assets/objects/PropertyType';
+declare module 'unreal.js/ue4/assets/objects/PropertyInfo' {
+	import { PropertyType } from 'unreal.js/ue4/assets/objects/PropertyType';
 	/**
 	 * Property info
 	 */
@@ -673,7 +665,7 @@ declare module 'ue4/assets/objects/PropertyInfo' {
 	}
 
 }
-declare module 'util/Lazy' {
+declare module 'unreal.js/util/Lazy' {
 	export class Lazy<T> {
 	    private initializer;
 	    private _value;
@@ -683,13 +675,13 @@ declare module 'util/Lazy' {
 	}
 
 }
-declare module 'ue4/assets/exports/UStruct' {
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { PropertyInfo } from 'ue4/assets/objects/PropertyInfo';
-	import { Lazy } from 'util/Lazy';
+declare module 'unreal.js/ue4/assets/exports/UStruct' {
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { PropertyInfo } from 'unreal.js/ue4/assets/objects/PropertyInfo';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	export class UStruct extends UObject {
 	    superStruct: Lazy<UStruct>;
 	    children: FPackageIndex[];
@@ -806,11 +798,11 @@ declare module 'ue4/assets/exports/UStruct' {
 	export function serializeSingleField(Ar: FAssetArchive): FField;
 
 }
-declare module 'ue4/assets/objects/PropertyType' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPropertyTag } from 'ue4/assets/objects/FPropertyTag';
-	import { FPropertySerialized } from 'ue4/assets/exports/UStruct';
-	import { Lazy } from 'util/Lazy';
+declare module 'unreal.js/ue4/assets/objects/PropertyType' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPropertyTag } from 'unreal.js/ue4/assets/objects/FPropertyTag';
+	import { FPropertySerialized } from 'unreal.js/ue4/assets/exports/UStruct';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	/**
 	 * Property type
 	 */
@@ -912,13 +904,11 @@ declare module 'ue4/assets/objects/PropertyType' {
 	}
 
 }
-declare module 'ue4/assets/writer/FAssetArchiveWriter' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { FObjectExport, FObjectImport } from 'ue4/objects/uobject/ObjectResource';
-	import { PayloadType } from 'ue4/assets/util/PayloadType';
-	import { FName, FNameEntry } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/ue4/assets/writer/FAssetArchiveWriter' {
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { FObjectExport, FObjectImport } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { PayloadType } from 'unreal.js/ue4/assets/util/PayloadType';
+	import { FName, FNameEntry } from 'unreal.js/ue4/objects/uobject/FName';
 	import { WritableStreamBuffer } from 'stream-buffers';
 	export class FAssetArchiveWriter extends FArchiveWriter {
 	    littleEndian: boolean;
@@ -951,12 +941,12 @@ declare module 'ue4/assets/writer/FAssetArchiveWriter' {
 	}
 
 }
-declare module 'ue4/assets/objects/UScriptArray' {
-	import { FPropertyTag } from 'ue4/assets/objects/FPropertyTag';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { PropertyType } from 'ue4/assets/objects/PropertyType';
-	import { FProperty } from 'ue4/assets/objects/FProperty';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/assets/objects/UScriptArray' {
+	import { FPropertyTag } from 'unreal.js/ue4/assets/objects/FPropertyTag';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { PropertyType } from 'unreal.js/ue4/assets/objects/PropertyType';
+	import { FProperty } from 'unreal.js/ue4/assets/objects/FProperty';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	/**
 	 * Script Array
 	 */
@@ -1003,10 +993,10 @@ declare module 'ue4/assets/objects/UScriptArray' {
 	}
 
 }
-declare module 'ue4/objects/FFieldPath' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/ue4/objects/FFieldPath' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export class FFieldPath {
 	    path: FName[];
 	    resolvedOwner: FPackageIndex;
@@ -1016,9 +1006,9 @@ declare module 'ue4/objects/FFieldPath' {
 	}
 
 }
-declare module 'ue4/objects/uobject/UInterfaceProperty' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/uobject/UInterfaceProperty' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class UInterfaceProperty {
 	    interfaceNumber: number;
 	    constructor(Ar: FArchive);
@@ -1027,10 +1017,10 @@ declare module 'ue4/objects/uobject/UInterfaceProperty' {
 	}
 
 }
-declare module 'ue4/objects/uobject/FUniqueObjectGuid' {
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/uobject/FUniqueObjectGuid' {
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FUniqueObjectGuid {
 	    guid: FGuid;
 	    constructor(Ar: FArchive);
@@ -1039,7 +1029,7 @@ declare module 'ue4/objects/uobject/FUniqueObjectGuid' {
 	}
 
 }
-declare module 'ue4/assets/enums/ETextHistoryType' {
+declare module 'unreal.js/ue4/assets/enums/ETextHistoryType' {
 	export enum ETextHistoryType {
 	    None = -1,
 	    Base = 0,
@@ -1058,10 +1048,10 @@ declare module 'ue4/assets/enums/ETextHistoryType' {
 	}
 
 }
-declare module 'ue4/objects/core/misc/DateTime' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/misc/DateTime' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FDateTime implements IStructType {
 	    date: number;
 	    constructor();
@@ -1073,7 +1063,7 @@ declare module 'ue4/objects/core/misc/DateTime' {
 	}
 
 }
-declare module 'ue4/assets/enums/EDateTimeStyle' {
+declare module 'unreal.js/ue4/assets/enums/EDateTimeStyle' {
 	export enum EDateTimeStyle {
 	    Default = 0,
 	    Short = 1,
@@ -1083,7 +1073,7 @@ declare module 'ue4/assets/enums/EDateTimeStyle' {
 	}
 
 }
-declare module 'ue4/locres/FnLanguage' {
+declare module 'unreal.js/ue4/locres/FnLanguage' {
 	export function valueOfLanguageCode(lang: string): FnLanguage;
 	export enum FnLanguage {
 	    AR = "ar",
@@ -1105,11 +1095,11 @@ declare module 'ue4/locres/FnLanguage' {
 	}
 
 }
-declare module 'ue4/objects/core/i18n/FTextLocalizationResource' {
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { UnrealMap } from 'util/UnrealMap';
+declare module 'unreal.js/ue4/objects/core/i18n/FTextLocalizationResource' {
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
 	export class FTextLocalizationResource {
 	    locResMagic: FGuid;
 	    indexNone: number;
@@ -1134,11 +1124,9 @@ declare module 'ue4/objects/core/i18n/FTextLocalizationResource' {
 	}
 
 }
-declare module 'ue4/locres/Locres' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FnLanguage } from 'ue4/locres/FnLanguage';
-	import { FTextLocalizationResource } from 'ue4/objects/core/i18n/FTextLocalizationResource';
+declare module 'unreal.js/ue4/locres/Locres' {
+	import { FnLanguage } from 'unreal.js/ue4/locres/FnLanguage';
+	import { FTextLocalizationResource } from 'unreal.js/ue4/objects/core/i18n/FTextLocalizationResource';
 	/**
 	 * UE4 Text Localization (.locres)
 	 */
@@ -1192,13 +1180,13 @@ declare module 'ue4/locres/Locres' {
 	}
 
 }
-declare module 'ue4/assets/exports/UStringTable' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { Locres } from 'ue4/locres/Locres';
+declare module 'unreal.js/ue4/assets/exports/UStringTable' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
 	export class UStringTable extends UObject {
 	    tableNamespace: string;
 	    entries: UnrealMap<string, string>;
@@ -1215,14 +1203,14 @@ declare module 'ue4/assets/exports/UStringTable' {
 	}
 
 }
-declare module 'ue4/objects/core/i18n/Text' {
-	import { ETextHistoryType } from 'ue4/assets/enums/ETextHistoryType';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FDateTime } from 'ue4/objects/core/misc/DateTime';
-	import { EDateTimeStyle } from 'ue4/assets/enums/EDateTimeStyle';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { Locres } from 'ue4/locres/Locres';
+declare module 'unreal.js/ue4/objects/core/i18n/Text' {
+	import { ETextHistoryType } from 'unreal.js/ue4/assets/enums/ETextHistoryType';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FDateTime } from 'unreal.js/ue4/objects/core/misc/DateTime';
+	import { EDateTimeStyle } from 'unreal.js/ue4/assets/enums/EDateTimeStyle';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
 	export enum EFormatArgumentType {
 	    Int = 0,
 	    UInt = 1,
@@ -1335,12 +1323,12 @@ declare module 'ue4/objects/core/i18n/Text' {
 	}
 
 }
-declare module 'ue4/objects/uobject/UScriptMap' {
-	import { FProperty } from 'ue4/assets/objects/FProperty';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { PropertyType } from 'ue4/assets/objects/PropertyType';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { UnrealMap } from 'util/UnrealMap';
+declare module 'unreal.js/ue4/objects/uobject/UScriptMap' {
+	import { FProperty } from 'unreal.js/ue4/assets/objects/FProperty';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { PropertyType } from 'unreal.js/ue4/assets/objects/PropertyType';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
 	export class UScriptMap {
 	    numKeysToRemove: number;
 	    mapData: UnrealMap<FProperty, FProperty>;
@@ -1350,11 +1338,11 @@ declare module 'ue4/objects/uobject/UScriptMap' {
 	}
 
 }
-declare module 'ue4/objects/uobject/ScriptDelegates' {
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/objects/uobject/ScriptDelegates' {
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	export class FScriptDelegate {
 	    object: FPackageIndex;
 	    functionName: FName;
@@ -1370,13 +1358,13 @@ declare module 'ue4/objects/uobject/ScriptDelegates' {
 	}
 
 }
-declare module 'ue4/objects/uobject/SoftObjectPath' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { Package } from 'ue4/assets/Package';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/uobject/SoftObjectPath' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { Package } from 'unreal.js/ue4/assets/Package';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	/**
 	 * A struct that contains a string reference to an object, either a top level asset or a subobject.
 	 * This can be used to make soft references to assets that are loaded on demand.
@@ -1404,11 +1392,9 @@ declare module 'ue4/objects/uobject/SoftObjectPath' {
 	}
 
 }
-declare module 'ue4/io/IoDispatcher' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { int32, uint16 } from 'Types';
+declare module 'unreal.js/ue4/io/IoDispatcher' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { int32, uint16 } from 'unreal.js/Types';
 	/**
 	 * Helper used to manage creation of I/O store file handles etc
 	 */
@@ -1481,9 +1467,9 @@ declare module 'ue4/io/IoDispatcher' {
 	}
 
 }
-declare module 'ue4/objects/uobject/NameTypes' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FNameDummy } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/ue4/objects/uobject/NameTypes' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FNameDummy } from 'unreal.js/ue4/objects/uobject/FName';
 	export const NAME_NO_NUMBER_INTERNAL = 0;
 	export class FNameEntryId {
 	    value: number;
@@ -1502,8 +1488,8 @@ declare module 'ue4/objects/uobject/NameTypes' {
 	}
 
 }
-declare module 'ue4/io/IoContainerId' {
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/io/IoContainerId' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export function createFIoContainerId(source?: bigint | FArchive): bigint;
 	/**
 	 * - Container ID:
@@ -1521,7 +1507,7 @@ declare module 'ue4/io/IoContainerId' {
 	}
 
 }
-declare module 'util/Pair' {
+declare module 'unreal.js/util/Pair' {
 	export class Pair<K, V> {
 	    key: K;
 	    value: V;
@@ -1529,9 +1515,7 @@ declare module 'util/Pair' {
 	}
 
 }
-declare module 'util/CityHash' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
+declare module 'unreal.js/util/CityHash' {
 	import * as Long from 'long';
 	export type long = Long.Long;
 	/**
@@ -1599,18 +1583,16 @@ declare module 'util/CityHash' {
 	}
 
 }
-declare module 'util/UnrealArray' {
+declare module 'unreal.js/util/UnrealArray' {
 	export class UnrealArray<T> extends Array<T> {
 	    constructor(length: number, init: (index: number) => T);
 	}
 
 }
-declare module 'ue4/asyncloading2/AsyncLoading2' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FMinimalName } from 'ue4/objects/uobject/NameTypes';
-	import { Pair } from 'util/Pair';
+declare module 'unreal.js/ue4/asyncloading2/AsyncLoading2' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FMinimalName } from 'unreal.js/ue4/objects/uobject/NameTypes';
+	import { Pair } from 'unreal.js/util/Pair';
 	import Long from 'long';
 	import Collection from '@discordjs/collection';
 	export type FSourceToLocalizedPackageIdMap = Pair<bigint, bigint>[];
@@ -1742,10 +1724,8 @@ declare module 'ue4/asyncloading2/AsyncLoading2' {
 	}
 
 }
-declare module 'ue4/objects/uobject/UnrealNames' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/objects/uobject/UnrealNames' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class FSerializedNameHeader {
 	    data: Buffer;
 	    constructor(Ar?: FArchive);
@@ -1755,19 +1735,17 @@ declare module 'ue4/objects/uobject/UnrealNames' {
 	export function loadNameHeader(inOutAr: FArchive): string;
 
 }
-declare module 'ue4/objects/uobject/NameBatchSerialization' {
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/objects/uobject/NameBatchSerialization' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export function loadNameBatch(nameDataAr: FArchive, hashDataAr?: FArchive): any[];
 
 }
-declare module 'ue4/asyncloading2/FNameMap' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FMappedName_EType, FMappedName } from 'ue4/asyncloading2/AsyncLoading2';
-	import { FileProvider } from 'fileprovider/FileProvider';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FMinimalName } from 'ue4/objects/uobject/NameTypes';
+declare module 'unreal.js/ue4/asyncloading2/FNameMap' {
+	import { FMappedName_EType, FMappedName } from 'unreal.js/ue4/asyncloading2/AsyncLoading2';
+	import { FileProvider } from 'unreal.js/fileprovider/FileProvider';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FMinimalName } from 'unreal.js/ue4/objects/uobject/NameTypes';
 	export class FNameMap {
 	    nameEntries: string[];
 	    nameMapType: FMappedName_EType;
@@ -1781,12 +1759,12 @@ declare module 'ue4/asyncloading2/FNameMap' {
 	}
 
 }
-declare module 'ue4/asyncloading2/FPackageStore' {
-	import { FIoDispatcherMountedContainer, FOnContainerMountedListener } from 'ue4/io/IoDispatcher';
-	import { FileProvider } from 'fileprovider/FileProvider';
-	import { FNameMap } from 'ue4/asyncloading2/FNameMap';
-	import { FPackageObjectIndex, FPackageStoreEntry, FScriptObjectEntry } from 'ue4/asyncloading2/AsyncLoading2';
-	import { UnrealMap } from 'util/UnrealMap';
+declare module 'unreal.js/ue4/asyncloading2/FPackageStore' {
+	import { FIoDispatcherMountedContainer, FOnContainerMountedListener } from 'unreal.js/ue4/io/IoDispatcher';
+	import { FileProvider } from 'unreal.js/fileprovider/FileProvider';
+	import { FNameMap } from 'unreal.js/ue4/asyncloading2/FNameMap';
+	import { FPackageObjectIndex, FPackageStoreEntry, FScriptObjectEntry } from 'unreal.js/ue4/asyncloading2/AsyncLoading2';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
 	export class FPackageStore extends FOnContainerMountedListener {
 	    provider: FileProvider;
 	    globalNameMap: FNameMap;
@@ -1814,7 +1792,7 @@ declare module 'ue4/asyncloading2/FPackageStore' {
 	}
 
 }
-declare module 'ue4/objects/uobject/EPackageFlags' {
+declare module 'unreal.js/ue4/objects/uobject/EPackageFlags' {
 	export enum EPackageFlags {
 	    PKG_None = 0,
 	    PKG_NewlyCreated = 1,
@@ -1840,9 +1818,9 @@ declare module 'ue4/objects/uobject/EPackageFlags' {
 	}
 
 }
-declare module 'ue4/assets/exports/UScriptStruct' {
-	import { UStruct } from 'ue4/assets/exports/UStruct';
-	import { FName } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/ue4/assets/exports/UScriptStruct' {
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
 	export class UScriptStruct extends UStruct {
 	    useClassProperties: boolean;
 	    private field0;
@@ -1856,11 +1834,11 @@ declare module 'ue4/assets/exports/UScriptStruct' {
 	}
 
 }
-declare module 'ue4/assets/exports/UEnum' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { Pair } from 'util/Pair';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/ue4/assets/exports/UEnum' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { Pair } from 'unreal.js/util/Pair';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export class UEnum extends UObject {
 	    /** List of pairs of all enum names and values. */
 	    names: Pair<FName, number>[];
@@ -1876,21 +1854,19 @@ declare module 'ue4/assets/exports/UEnum' {
 	}
 
 }
-declare module 'ue4/assets/IoPackage' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { IJson, Package } from 'ue4/assets/Package';
-	import { FPackageStore } from 'ue4/asyncloading2/FPackageStore';
-	import { FExportBundleEntry, FExportBundleHeader, FExportMapEntry, FPackageObjectIndex, FPackageStoreEntry, FPackageSummary, FScriptObjectEntry } from 'ue4/asyncloading2/AsyncLoading2';
-	import { FNameMap } from 'ue4/asyncloading2/FNameMap';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FileProvider } from 'fileprovider/FileProvider';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { Locres } from 'ue4/locres/Locres';
-	import { Lazy } from 'util/Lazy';
-	import { Ue4Version } from 'ue4/versions/Game';
+declare module 'unreal.js/ue4/assets/IoPackage' {
+	import { IJson, Package } from 'unreal.js/ue4/assets/Package';
+	import { FPackageStore } from 'unreal.js/ue4/asyncloading2/FPackageStore';
+	import { FExportBundleEntry, FExportBundleHeader, FExportMapEntry, FPackageObjectIndex, FPackageStoreEntry, FPackageSummary, FScriptObjectEntry } from 'unreal.js/ue4/asyncloading2/AsyncLoading2';
+	import { FNameMap } from 'unreal.js/ue4/asyncloading2/FNameMap';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FileProvider } from 'unreal.js/fileprovider/FileProvider';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
+	import { Lazy } from 'unreal.js/util/Lazy';
+	import { Ue4Version } from 'unreal.js/ue4/versions/Game';
 	/**
 	 * UE4 I/O Package
 	 * @extends {Package}
@@ -2053,13 +2029,11 @@ declare module 'ue4/assets/IoPackage' {
 	}
 
 }
-declare module 'ue4/assets/reader/FExportArchive' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { IoPackage } from 'ue4/assets/IoPackage';
-	import { PayloadType } from 'ue4/assets/util/PayloadType';
+declare module 'unreal.js/ue4/assets/reader/FExportArchive' {
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { IoPackage } from 'unreal.js/ue4/assets/IoPackage';
+	import { PayloadType } from 'unreal.js/ue4/assets/util/PayloadType';
 	/**
 	 * UE4 Export Reader
 	 * @extends {FAssetArchive}
@@ -2115,21 +2089,21 @@ declare module 'ue4/assets/reader/FExportArchive' {
 	}
 
 }
-declare module 'ue4/assets/objects/FProperty' {
-	import { UScriptArray } from 'ue4/assets/objects/UScriptArray';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FFieldPath } from 'ue4/objects/FFieldPath';
-	import { UInterfaceProperty } from 'ue4/objects/uobject/UInterfaceProperty';
-	import { FUniqueObjectGuid } from 'ue4/objects/uobject/FUniqueObjectGuid';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { PropertyType } from 'ue4/assets/objects/PropertyType';
-	import { UScriptStruct } from 'ue4/assets/objects/UScriptStruct';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { UScriptMap } from 'ue4/objects/uobject/UScriptMap';
-	import { FMulticastScriptDelegate, FScriptDelegate } from 'ue4/objects/uobject/ScriptDelegates';
-	import { FSoftClassPath, FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/ue4/assets/objects/FProperty' {
+	import { UScriptArray } from 'unreal.js/ue4/assets/objects/UScriptArray';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FFieldPath } from 'unreal.js/ue4/objects/FFieldPath';
+	import { UInterfaceProperty } from 'unreal.js/ue4/objects/uobject/UInterfaceProperty';
+	import { FUniqueObjectGuid } from 'unreal.js/ue4/objects/uobject/FUniqueObjectGuid';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { PropertyType } from 'unreal.js/ue4/assets/objects/PropertyType';
+	import { UScriptStruct } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { UScriptMap } from 'unreal.js/ue4/objects/uobject/UScriptMap';
+	import { FMulticastScriptDelegate, FScriptDelegate } from 'unreal.js/ue4/objects/uobject/ScriptDelegates';
+	import { FSoftClassPath, FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	/**
 	 * Represents a property
 	 */
@@ -2752,13 +2726,13 @@ declare module 'ue4/assets/objects/FProperty' {
 	}
 
 }
-declare module 'ue4/assets/objects/FPropertyTag' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FProperty } from 'ue4/assets/objects/FProperty';
-	import { PropertyType } from 'ue4/assets/objects/PropertyType';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/assets/objects/FPropertyTag' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FProperty } from 'unreal.js/ue4/assets/objects/FProperty';
+	import { PropertyType } from 'unreal.js/ue4/assets/objects/PropertyType';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	/**
 	 * Represents a property tag
 	 */
@@ -2922,8 +2896,8 @@ declare module 'ue4/assets/objects/FPropertyTag' {
 	}
 
 }
-declare module 'ue4/assets/objects/IPropertyHolder' {
-	import { FPropertyTag } from 'ue4/assets/objects/FPropertyTag';
+declare module 'unreal.js/ue4/assets/objects/IPropertyHolder' {
+	import { FPropertyTag } from 'unreal.js/ue4/assets/objects/FPropertyTag';
 	/**
 	 * Holds properties in an array
 	 */
@@ -2937,15 +2911,15 @@ declare module 'ue4/assets/objects/IPropertyHolder' {
 	}
 
 }
-declare module 'ue4/objects/uobject/serialization/UnversionedPropertySerialization' {
-	import { PropertyInfo } from 'ue4/assets/objects/PropertyInfo';
-	import { ReadType } from 'ue4/assets/objects/FProperty';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FPropertyTag } from 'ue4/assets/objects/FPropertyTag';
-	import { UStruct } from 'ue4/assets/exports/UStruct';
+declare module 'unreal.js/ue4/objects/uobject/serialization/UnversionedPropertySerialization' {
+	import { PropertyInfo } from 'unreal.js/ue4/assets/objects/PropertyInfo';
+	import { ReadType } from 'unreal.js/ue4/assets/objects/FProperty';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FPropertyTag } from 'unreal.js/ue4/assets/objects/FPropertyTag';
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
 	import BitSet from 'bitset';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { UnrealMap } from 'util/UnrealMap';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
 	export class FUnversionedPropertySerializer {
 	    info: PropertyInfo;
 	    arrayIndex: number;
@@ -3002,17 +2976,17 @@ declare module 'ue4/objects/uobject/serialization/UnversionedPropertySerializati
 	export function deserializeUnversionedProperties(properties: FPropertyTag[], struct: UStruct, Ar: FAssetArchive): void;
 
 }
-declare module 'ue4/assets/exports/UObject' {
-	import { IPropertyHolder } from 'ue4/assets/objects/IPropertyHolder';
-	import { FPropertyTag } from 'ue4/assets/objects/FPropertyTag';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FObjectExport } from 'ue4/objects/uobject/ObjectResource';
-	import { Package } from 'ue4/assets/Package';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { Locres } from 'ue4/locres/Locres';
-	import { StringBuilder } from 'util/StringBuilder';
-	import { Lazy } from 'util/Lazy';
+declare module 'unreal.js/ue4/assets/exports/UObject' {
+	import { IPropertyHolder } from 'unreal.js/ue4/assets/objects/IPropertyHolder';
+	import { FPropertyTag } from 'unreal.js/ue4/assets/objects/FPropertyTag';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FObjectExport } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { Package } from 'unreal.js/ue4/assets/Package';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
+	import { StringBuilder } from 'unreal.js/util/StringBuilder';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	export class UObject implements IPropertyHolder {
 	    name: string;
 	    outer: UObject;
@@ -3044,15 +3018,15 @@ declare module 'ue4/assets/exports/UObject' {
 	export function serializeProperties(Ar: FAssetArchiveWriter, properties: FPropertyTag[]): void;
 
 }
-declare module 'ue4/objects/uobject/ObjectResource' {
-	import { Package } from 'ue4/assets/Package';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { Lazy } from 'util/Lazy';
+declare module 'unreal.js/ue4/objects/uobject/ObjectResource' {
+	import { Package } from 'unreal.js/ue4/assets/Package';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	export class FPackageIndex {
 	    index: number;
 	    owner: Package;
@@ -3109,14 +3083,14 @@ declare module 'ue4/objects/uobject/ObjectResource' {
 	}
 
 }
-declare module 'ue4/assets/Package' {
-	import { FileProvider } from 'fileprovider/FileProvider';
-	import { Ue4Version } from 'ue4/versions/Game';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { UStruct } from 'ue4/assets/exports/UStruct';
-	import { Locres } from 'ue4/locres/Locres';
-	import { Lazy } from 'util/Lazy';
+declare module 'unreal.js/ue4/assets/Package' {
+	import { FileProvider } from 'unreal.js/fileprovider/FileProvider';
+	import { Ue4Version } from 'unreal.js/ue4/versions/Game';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	/**
 	 * UE4 Package
 	 * @abstract
@@ -3243,7 +3217,7 @@ declare module 'ue4/assets/Package' {
 	}
 
 }
-declare module 'ue4/objects/core/misc/EngineVersionBase' {
+declare module 'unreal.js/ue4/objects/core/misc/EngineVersionBase' {
 	export enum EVersionComponent {
 	    /** Major version increments introduce breaking API changes. */
 	    Major = "Major",
@@ -3277,10 +3251,10 @@ declare module 'ue4/objects/core/misc/EngineVersionBase' {
 	}
 
 }
-declare module 'ue4/objects/core/misc/EngineVersion' {
-	import { EVersionComponent, FEngineVersionBase } from 'ue4/objects/core/misc/EngineVersionBase';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/core/misc/EngineVersion' {
+	import { EVersionComponent, FEngineVersionBase } from 'unreal.js/ue4/objects/core/misc/EngineVersionBase';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FEngineVersion extends FEngineVersionBase {
 	    branch: string;
 	    constructor(Ar: FArchive);
@@ -3291,9 +3265,9 @@ declare module 'ue4/objects/core/misc/EngineVersion' {
 	}
 
 }
-declare module 'ue4/assets/objects/FCompressedChunk' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/assets/objects/FCompressedChunk' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FCompressedChunk {
 	    /**
 	     * Uncompressed offset
@@ -3346,10 +3320,10 @@ declare module 'ue4/assets/objects/FCompressedChunk' {
 	}
 
 }
-declare module 'ue4/objects/core/serialization/CustomVersion' {
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/core/serialization/CustomVersion' {
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FCustomVersion {
 	    key: FGuid;
 	    version: number;
@@ -3359,13 +3333,13 @@ declare module 'ue4/objects/core/serialization/CustomVersion' {
 	}
 
 }
-declare module 'ue4/objects/uobject/PackageFileSummary' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FEngineVersion } from 'ue4/objects/core/misc/EngineVersion';
-	import { FCompressedChunk } from 'ue4/assets/objects/FCompressedChunk';
-	import { FCustomVersion } from 'ue4/objects/core/serialization/CustomVersion';
+declare module 'unreal.js/ue4/objects/uobject/PackageFileSummary' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FEngineVersion } from 'unreal.js/ue4/objects/core/misc/EngineVersion';
+	import { FCompressedChunk } from 'unreal.js/ue4/assets/objects/FCompressedChunk';
+	import { FCustomVersion } from 'unreal.js/ue4/objects/core/serialization/CustomVersion';
 	export class FGenerationInfo {
 	    /**
 	     * Number of exports in the linker's ExportMap for this generation.
@@ -3425,7 +3399,7 @@ declare module 'ue4/objects/uobject/PackageFileSummary' {
 	}
 
 }
-declare module 'ue4/assets/ObjectTypeRegistry' {
+declare module 'unreal.js/ue4/assets/ObjectTypeRegistry' {
 	export class ObjectTypeRegistry {
 	    static registry: {};
 	    static init(): Promise<void>;
@@ -3438,20 +3412,18 @@ declare module 'ue4/assets/ObjectTypeRegistry' {
 	}
 
 }
-declare module 'ue4/assets/PakPackage' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FileProvider } from 'fileprovider/FileProvider';
-	import { Ue4Version } from 'ue4/versions/Game';
-	import { FNameEntry } from 'ue4/objects/uobject/FName';
-	import { IJson, Package } from 'ue4/assets/Package';
-	import { FPackageFileSummary } from 'ue4/objects/uobject/PackageFileSummary';
-	import { FObjectExport, FObjectImport, FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { Locres } from 'ue4/locres/Locres';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/assets/PakPackage' {
+	import { FileProvider } from 'unreal.js/fileprovider/FileProvider';
+	import { Ue4Version } from 'unreal.js/ue4/versions/Game';
+	import { FNameEntry } from 'unreal.js/ue4/objects/uobject/FName';
+	import { IJson, Package } from 'unreal.js/ue4/assets/Package';
+	import { FPackageFileSummary } from 'unreal.js/ue4/objects/uobject/PackageFileSummary';
+	import { FObjectExport, FObjectImport, FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	import { WritableStreamBuffer } from 'stream-buffers';
-	import { Lazy } from 'util/Lazy';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	/**
 	 * UE4 Pak Package
 	 * @extends {Package}
@@ -3617,15 +3589,13 @@ declare module 'ue4/assets/PakPackage' {
 	}
 
 }
-declare module 'ue4/assets/reader/FAssetArchive' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FByteArchive } from 'ue4/reader/FByteArchive';
-	import { FileProvider } from 'fileprovider/FileProvider';
-	import { PayloadType } from 'ue4/assets/util/PayloadType';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { Package } from 'ue4/assets/Package';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/assets/reader/FAssetArchive' {
+	import { FByteArchive } from 'unreal.js/ue4/reader/FByteArchive';
+	import { FileProvider } from 'unreal.js/fileprovider/FileProvider';
+	import { PayloadType } from 'unreal.js/ue4/assets/util/PayloadType';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { Package } from 'unreal.js/ue4/assets/Package';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	/**
 	 * UE4 Asset Reader
 	 * @extends {FByteArchive}
@@ -3764,10 +3734,10 @@ declare module 'ue4/assets/reader/FAssetArchive' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FColor' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/math/FColor' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FLinearColor implements IStructType {
 	    r: number;
 	    g: number;
@@ -3839,10 +3809,10 @@ declare module 'ue4/objects/core/math/FColor' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FIntPoint' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/math/FIntPoint' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FIntPoint implements IStructType {
 	    x: number;
 	    y: number;
@@ -3854,10 +3824,10 @@ declare module 'ue4/objects/core/math/FIntPoint' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FIntVector' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/math/FIntVector' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FIntVector implements IStructType {
 	    x: number;
 	    y: number;
@@ -3869,13 +3839,13 @@ declare module 'ue4/objects/core/math/FIntVector' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FVector2D' {
+declare module 'unreal.js/ue4/objects/core/math/FVector2D' {
 	/**
 	 * A vector in 2-D space composed of components (X, Y) with floating point precision.
 	 */
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FVector2D implements IStructType {
 	    /** Vector's X component. */
 	    x: number;
@@ -3902,12 +3872,12 @@ declare module 'ue4/objects/core/math/FVector2D' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FVector4' {
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { FVector2D } from 'ue4/objects/core/math/FVector2D';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FLinearColor } from 'ue4/objects/core/math/FColor';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/math/FVector4' {
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { FVector2D } from 'unreal.js/ue4/objects/core/math/FVector2D';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FLinearColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FVector4 implements IStructType {
 	    /** The vector's X-component. */
 	    x: number;
@@ -3958,7 +3928,7 @@ declare module 'ue4/objects/core/math/FVector4' {
 	}
 
 }
-declare module 'ue4/objects/core/math/UnrealMathUtility' {
+declare module 'unreal.js/ue4/objects/core/math/UnrealMathUtility' {
 	export const SMALL_NUMBER = 1e-8;
 	export const KINDA_SMALL_NUMBER = 0.0001;
 	/** Multiples value by itself */
@@ -3974,15 +3944,15 @@ declare module 'ue4/objects/core/math/UnrealMathUtility' {
 	export function lerp(a: number, b: number, alpha: number): number;
 
 }
-declare module 'ue4/objects/core/math/FVector' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FVector2D } from 'ue4/objects/core/math/FVector2D';
-	import { FVector4 } from 'ue4/objects/core/math/FVector4';
-	import { FLinearColor } from 'ue4/objects/core/math/FColor';
-	import { FIntVector } from 'ue4/objects/core/math/FIntVector';
-	import { FIntPoint } from 'ue4/objects/core/math/FIntPoint';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/core/math/FVector' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FVector2D } from 'unreal.js/ue4/objects/core/math/FVector2D';
+	import { FVector4 } from 'unreal.js/ue4/objects/core/math/FVector4';
+	import { FLinearColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { FIntVector } from 'unreal.js/ue4/objects/core/math/FIntVector';
+	import { FIntPoint } from 'unreal.js/ue4/objects/core/math/FIntPoint';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FVector implements IStructType {
 	    /** Vector's X component. */
 	    x: number;
@@ -4310,15 +4280,15 @@ declare module 'ue4/objects/core/math/FVector' {
 	}
 
 }
-declare module 'ue4/assets/objects/FStructFallback' {
-	import { IPropertyHolder } from 'ue4/assets/objects/IPropertyHolder';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { Lazy } from 'util/Lazy';
-	import { UStruct } from 'ue4/assets/exports/UStruct';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPropertyTag } from 'ue4/assets/objects/FPropertyTag';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/assets/objects/FStructFallback' {
+	import { IPropertyHolder } from 'unreal.js/ue4/assets/objects/IPropertyHolder';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { Lazy } from 'unreal.js/util/Lazy';
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPropertyTag } from 'unreal.js/ue4/assets/objects/FPropertyTag';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	/**
 	 * Fallback for UScriptStruct
 	 * @implements {IStructType}
@@ -4394,11 +4364,11 @@ declare module 'ue4/assets/objects/FStructFallback' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FBox' {
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/core/math/FBox' {
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	/**
 	 * Implements an axis-aligned box.
 	 *
@@ -4636,11 +4606,11 @@ declare module 'ue4/objects/core/math/FBox' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FBox2D' {
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { FVector2D } from 'ue4/objects/core/math/FVector2D';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/core/math/FBox2D' {
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FVector2D } from 'unreal.js/ue4/objects/core/math/FVector2D';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	/**
 	 * Implements a rectangular 2D Box.
 	 */
@@ -4681,14 +4651,14 @@ declare module 'ue4/objects/core/math/FBox2D' {
 	}
 
 }
-declare module 'ue4/objects/engine/MaterialExpressionIO' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FColor } from 'ue4/objects/core/math/FColor';
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { FVector2D } from 'ue4/objects/core/math/FVector2D';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/engine/MaterialExpressionIO' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { FVector2D } from 'unreal.js/ue4/objects/core/math/FVector2D';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FExpressionInput implements IStructType {
 	    /** Index into Expression's outputs array that this input is connected to. */
 	    outputIndex: number;
@@ -4742,10 +4712,10 @@ declare module 'ue4/objects/engine/MaterialExpressionIO' {
 	}
 
 }
-declare module 'ue4/objects/core/misc/FFrameNumber' {
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/core/misc/FFrameNumber' {
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FFrameNumber implements IStructType {
 	    value: number;
 	    constructor(arg: FArchive | number);
@@ -4754,11 +4724,11 @@ declare module 'ue4/objects/core/misc/FFrameNumber' {
 	}
 
 }
-declare module 'ue4/objects/gameplaytags/FGameplayTagContainer' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/gameplaytags/FGameplayTagContainer' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FGameplayTagContainer implements Iterable<FName>, IStructType {
 	    gameplayTags: FName[];
 	    constructor();
@@ -4771,11 +4741,11 @@ declare module 'ue4/objects/gameplaytags/FGameplayTagContainer' {
 	}
 
 }
-declare module 'ue4/objects/levelsequence/FLevelSequenceLegacyObjectReference' {
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/levelsequence/FLevelSequenceLegacyObjectReference' {
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FLevelSequenceLegacyObjectReference implements IStructType {
 	    keyGuid: FGuid;
 	    objectId: FGuid;
@@ -4793,10 +4763,10 @@ declare module 'ue4/objects/levelsequence/FLevelSequenceLegacyObjectReference' {
 	}
 
 }
-declare module 'ue4/objects/moviescene/evaluation/FMovieSceneEvaluationKey' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/moviescene/evaluation/FMovieSceneEvaluationKey' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FMovieSceneEvaluationKey implements IStructType {
 	    sequenceId: number;
 	    trackId: number;
@@ -4808,10 +4778,10 @@ declare module 'ue4/objects/moviescene/evaluation/FMovieSceneEvaluationKey' {
 	}
 
 }
-declare module 'ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTemplate' {
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTemplate' {
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FMovieSceneEvaluationTemplate implements IStructType {
 	    /** The internal value of the serial number */
 	    value: number;
@@ -4821,13 +4791,13 @@ declare module 'ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTemplate'
 	}
 
 }
-declare module 'ue4/objects/core/math/TRangeBound' {
+declare module 'unreal.js/ue4/objects/core/math/TRangeBound' {
 	/**
 	 * Template for range bounds.
 	 */
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class TRangeBound<T> implements IStructType {
 	    /** Holds the type of the bound. */
 	    type: ERangeBoundTypes;
@@ -4848,11 +4818,11 @@ declare module 'ue4/objects/core/math/TRangeBound' {
 	export {};
 
 }
-declare module 'ue4/objects/core/math/TRange' {
-	import { TRangeBound } from 'ue4/objects/core/math/TRangeBound';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/math/TRange' {
+	import { TRangeBound } from 'unreal.js/ue4/objects/core/math/TRangeBound';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class TRange<T> implements IStructType {
 	    /** Holds the range's lower bound. */
 	    lowerBound: TRangeBound<T>;
@@ -4865,11 +4835,11 @@ declare module 'ue4/objects/core/math/TRange' {
 	}
 
 }
-declare module 'ue4/objects/moviescene/FMovieSceneFrameRange' {
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { TRange } from 'ue4/objects/core/math/TRange';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/moviescene/FMovieSceneFrameRange' {
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { TRange } from 'unreal.js/ue4/objects/core/math/TRange';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FMovieSceneFrameRange implements IStructType {
 	    value: TRange<number>;
 	    constructor(arg: FArchive | TRange<number>);
@@ -4878,14 +4848,14 @@ declare module 'ue4/objects/moviescene/FMovieSceneFrameRange' {
 	}
 
 }
-declare module 'ue4/objects/moviescene/evaluation/FMovieSceneSegment' {
+declare module 'unreal.js/ue4/objects/moviescene/evaluation/FMovieSceneSegment' {
 	/** Enumeration specifying how to evaluate a particular section when inside a segment */
-	import { FFrameNumber } from 'ue4/objects/core/misc/FFrameNumber';
-	import { TRange } from 'ue4/objects/core/math/TRange';
-	import { FStructFallback } from 'ue4/assets/objects/FStructFallback';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct'; enum ESectionEvaluationFlags {
+	import { FFrameNumber } from 'unreal.js/ue4/objects/core/misc/FFrameNumber';
+	import { TRange } from 'unreal.js/ue4/objects/core/math/TRange';
+	import { FStructFallback } from 'unreal.js/ue4/assets/objects/FStructFallback';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct'; enum ESectionEvaluationFlags {
 	    /** No special flags - normal evaluation */
 	    None = 0,
 	    /** Segment resides inside the 'pre-roll' time for the section */
@@ -4924,10 +4894,10 @@ declare module 'ue4/objects/moviescene/evaluation/FMovieSceneSegment' {
 	export {};
 
 }
-declare module 'ue4/objects/ai/navigation/FNavAgentSelector' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/ai/navigation/FNavAgentSelector' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FNavAgentSelector implements IStructType {
 	    packedBits: number;
 	    constructor(arg: FArchive | number);
@@ -4936,12 +4906,12 @@ declare module 'ue4/objects/ai/navigation/FNavAgentSelector' {
 	}
 
 }
-declare module 'ue4/objects/niagara/FNiagaraVariableBase' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FStructFallback } from 'ue4/assets/objects/FStructFallback';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/niagara/FNiagaraVariableBase' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FStructFallback } from 'unreal.js/ue4/assets/objects/FStructFallback';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FNiagaraVariableBase implements IStructType {
 	    name: FName;
 	    typeDef: FStructFallback;
@@ -4952,14 +4922,12 @@ declare module 'ue4/objects/niagara/FNiagaraVariableBase' {
 	}
 
 }
-declare module 'ue4/objects/niagara/FNiagaraVariable' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FNiagaraVariableBase } from 'ue4/objects/niagara/FNiagaraVariableBase';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FStructFallback } from 'ue4/assets/objects/FStructFallback';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/objects/niagara/FNiagaraVariable' {
+	import { FNiagaraVariableBase } from 'unreal.js/ue4/objects/niagara/FNiagaraVariableBase';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FStructFallback } from 'unreal.js/ue4/assets/objects/FStructFallback';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	export class FNiagaraVariable extends FNiagaraVariableBase {
 	    varData: Buffer;
 	    constructor(Ar: FAssetArchive);
@@ -4968,12 +4936,12 @@ declare module 'ue4/objects/niagara/FNiagaraVariable' {
 	}
 
 }
-declare module 'ue4/objects/niagara/FNiagaraVariableWithOffset' {
-	import { FNiagaraVariableBase } from 'ue4/objects/niagara/FNiagaraVariableBase';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FStructFallback } from 'ue4/assets/objects/FStructFallback';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/objects/niagara/FNiagaraVariableWithOffset' {
+	import { FNiagaraVariableBase } from 'unreal.js/ue4/objects/niagara/FNiagaraVariableBase';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FStructFallback } from 'unreal.js/ue4/assets/objects/FStructFallback';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	export class FNiagaraVariableWithOffset extends FNiagaraVariableBase {
 	    offset: number;
 	    constructor(Ar: FAssetArchive);
@@ -4983,10 +4951,10 @@ declare module 'ue4/objects/niagara/FNiagaraVariableWithOffset' {
 	}
 
 }
-declare module 'ue4/objects/engine/PerPlatformProperties' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/engine/PerPlatformProperties' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FPerPlatformInt implements IStructType {
 	    cooked: boolean;
 	    value: number;
@@ -5013,10 +4981,10 @@ declare module 'ue4/objects/engine/PerPlatformProperties' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FQuat' {
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/core/math/FQuat' {
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FQuat implements IStructType {
 	    x: number;
 	    y: number;
@@ -5029,9 +4997,9 @@ declare module 'ue4/objects/core/math/FQuat' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FMatrix' {
-	import { FVector4 } from 'ue4/objects/core/math/FVector4';
-	import { FVector } from 'ue4/objects/core/math/FVector';
+declare module 'unreal.js/ue4/objects/core/math/FMatrix' {
+	import { FVector4 } from 'unreal.js/ue4/objects/core/math/FVector4';
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
 	export class FMatrix {
 	    m: number[][];
 	    /** Homogeneous transform. */
@@ -5055,10 +5023,10 @@ declare module 'ue4/objects/core/math/FMatrix' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FRotationTranslationMatrix' {
-	import { FMatrix } from 'ue4/objects/core/math/FMatrix';
-	import { FRotator } from 'ue4/objects/core/math/FRotator';
-	import { FVector } from 'ue4/objects/core/math/FVector';
+declare module 'unreal.js/ue4/objects/core/math/FRotationTranslationMatrix' {
+	import { FMatrix } from 'unreal.js/ue4/objects/core/math/FMatrix';
+	import { FRotator } from 'unreal.js/ue4/objects/core/math/FRotator';
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
 	export class FRotationTranslationMatrix extends FMatrix {
 	    /**
 	     * Constructor.
@@ -5070,10 +5038,10 @@ declare module 'ue4/objects/core/math/FRotationTranslationMatrix' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FRotationMatrix' {
-	import { FRotationTranslationMatrix } from 'ue4/objects/core/math/FRotationTranslationMatrix';
-	import { FRotator } from 'ue4/objects/core/math/FRotator';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/math/FRotationMatrix' {
+	import { FRotationTranslationMatrix } from 'unreal.js/ue4/objects/core/math/FRotationTranslationMatrix';
+	import { FRotator } from 'unreal.js/ue4/objects/core/math/FRotator';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FRotationMatrix extends FRotationTranslationMatrix implements IStructType {
 	    /**
 	     * Constructor.
@@ -5085,16 +5053,16 @@ declare module 'ue4/objects/core/math/FRotationMatrix' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FRotator' {
+declare module 'unreal.js/ue4/objects/core/math/FRotator' {
 	/**
 	 * Implements a container for rotation information.
 	 *
 	 * All rotation values are stored in degrees.
 	 */
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FRotator implements IStructType {
 	    /** Rotation around the right axis (around Y axis), Looking up and down (0=Straight Ahead, +Up, -Down) */
 	    pitch: number;
@@ -5179,11 +5147,11 @@ declare module 'ue4/objects/core/math/FRotator' {
 	}
 
 }
-declare module 'ue4/objects/engine/animation/FSmartName' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/engine/animation/FSmartName' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FSmartName implements IStructType {
 	    displayName: FName;
 	    constructor(arg: FArchive | FName);
@@ -5192,10 +5160,10 @@ declare module 'ue4/objects/engine/animation/FSmartName' {
 	}
 
 }
-declare module 'ue4/objects/engine/FWeightedRandomSampler' {
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/engine/FWeightedRandomSampler' {
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FWeightedRandomSampler implements IStructType {
 	    prob: number[];
 	    alias: number[];
@@ -5207,11 +5175,11 @@ declare module 'ue4/objects/engine/FWeightedRandomSampler' {
 	}
 
 }
-declare module 'ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTree' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { TRange } from 'ue4/objects/core/math/TRange';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTree' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { TRange } from 'unreal.js/ue4/objects/core/math/TRange';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FEvaluationTreeEntryHandle {
 	    entryIndex: number;
 	    constructor(arg: FArchive | number);
@@ -5268,12 +5236,12 @@ declare module 'ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTree' {
 	export {};
 
 }
-declare module 'ue4/objects/moviescene/evaluation/FSectionEvaluationDataTree' {
-	import { TMovieSceneEvaluationTree } from 'ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTree';
-	import { FStructFallback } from 'ue4/assets/objects/FStructFallback';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/moviescene/evaluation/FSectionEvaluationDataTree' {
+	import { TMovieSceneEvaluationTree } from 'unreal.js/ue4/objects/moviescene/evaluation/FMovieSceneEvaluationTree';
+	import { FStructFallback } from 'unreal.js/ue4/assets/objects/FStructFallback';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	export class FSectionEvaluationDataTree implements IStructType {
 	    tree: TMovieSceneEvaluationTree<FStructFallback>;
 	    constructor(arg: FAssetArchive | TMovieSceneEvaluationTree<FStructFallback>);
@@ -5282,7 +5250,7 @@ declare module 'ue4/objects/moviescene/evaluation/FSectionEvaluationDataTree' {
 	}
 
 }
-declare module 'util/ObjectRef' {
+declare module 'unreal.js/util/ObjectRef' {
 	export class ObjectRef<T> {
 	    element: T;
 	    constructor(element?: T);
@@ -5292,8 +5260,8 @@ declare module 'util/ObjectRef' {
 	export type IntRef = ObjectRef<number>;
 
 }
-declare module 'util/decorators/UProperty' {
-	import 'reflect-metadata';
+declare module 'unreal.js/util/decorators/UProperty' {
+	import 'unreal.js/reflect-metadata';
 	export function UProperty(data?: IUProperty): {
 	    (target: Function): void;
 	    (target: Object, propertyKey: string | symbol): void;
@@ -5310,9 +5278,9 @@ declare module 'util/decorators/UProperty' {
 	}
 
 }
-declare module 'ue4/objects/engine/curves/FRealCurve' {
+declare module 'unreal.js/ue4/objects/engine/curves/FRealCurve' {
 	/** Method of interpolation between this key and the next. */
-	import { FloatRef, IntRef } from 'util/ObjectRef';
+	import { FloatRef, IntRef } from 'unreal.js/util/ObjectRef';
 	export enum ERichCurveInterpMode {
 	    /** Use linear interpolation between values. */
 	    RCIM_Linear = 0,
@@ -5365,12 +5333,12 @@ declare module 'ue4/objects/engine/curves/FRealCurve' {
 	}
 
 }
-declare module 'ue4/objects/engine/curves/FRichCurve' {
-	import { ERichCurveInterpMode, FRealCurve } from 'ue4/objects/engine/curves/FRealCurve';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { FloatRef } from 'util/ObjectRef';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/engine/curves/FRichCurve' {
+	import { ERichCurveInterpMode, FRealCurve } from 'unreal.js/ue4/objects/engine/curves/FRealCurve';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { FloatRef } from 'unreal.js/util/ObjectRef';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	/** If using RCIM_Cubic, this enum describes how the tangents should be controlled in editor. */
 	export enum ERichCurveTangentMode {
 	    /** Automatically calculates tangents to create smooth curves between values. */
@@ -5434,12 +5402,12 @@ declare module 'ue4/objects/engine/curves/FRichCurve' {
 	export function weightedEvalForTwoKeys(key1Value: number, key1Time: number, key1LeaveTangent: number, key1LeaveTangentWeight: number, key1TangentWeightMode: ERichCurveTangentWeightMode, key2Value: number, key2Time: number, key2ArriveTangent: number, key2ArriveTangentWeight: number, key2TangentWeightMode: ERichCurveTangentWeightMode, inTime: number): number;
 
 }
-declare module 'ue4/objects/engine/curves/FSimpleCurve' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
-	import { ERichCurveInterpMode, FRealCurve } from 'ue4/objects/engine/curves/FRealCurve';
-	import { FloatRef } from 'util/ObjectRef';
+declare module 'unreal.js/ue4/objects/engine/curves/FSimpleCurve' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
+	import { ERichCurveInterpMode, FRealCurve } from 'unreal.js/ue4/objects/engine/curves/FRealCurve';
+	import { FloatRef } from 'unreal.js/util/ObjectRef';
 	/** One key in a rich, editable float curve */
 	export class FSimpleCurveKey implements IStructType {
 	    /** Time at this key */
@@ -5472,11 +5440,11 @@ declare module 'ue4/objects/engine/curves/FSimpleCurve' {
 	}
 
 }
-declare module 'ue4/assets/objects/UScriptStruct' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { PropertyType } from 'ue4/assets/objects/PropertyType';
-	import { ReadType } from 'ue4/assets/objects/FProperty';
+declare module 'unreal.js/ue4/assets/objects/UScriptStruct' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { PropertyType } from 'unreal.js/ue4/assets/objects/PropertyType';
+	import { ReadType } from 'unreal.js/ue4/assets/objects/FProperty';
 	export class UScriptStruct {
 	    structName: FName;
 	    structType: IStructType;
@@ -5496,9 +5464,9 @@ declare module 'ue4/assets/objects/UScriptStruct' {
 	}
 
 }
-declare module 'ue4/objects/core/misc/Guid' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { IStructType } from 'ue4/assets/objects/UScriptStruct';
+declare module 'unreal.js/ue4/objects/core/misc/Guid' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { IStructType } from 'unreal.js/ue4/assets/objects/UScriptStruct';
 	/**
 	 * Enumerates known GUID formats.
 	 */
@@ -5606,11 +5574,10 @@ declare module 'ue4/objects/core/misc/Guid' {
 	}
 
 }
-declare module 'ue4/reader/FFileArchive' {
+declare module 'unreal.js/ue4/reader/FFileArchive' {
 	/// <reference types="node" />
-	/// <reference types="ref-napi" />
 	import { Stats } from 'fs';
-	import { FArchive } from 'ue4/reader/FArchive';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	/**
 	 * File Reader
 	 * @extends {FArchive}
@@ -5723,7 +5690,7 @@ declare module 'ue4/reader/FFileArchive' {
 	}
 
 }
-declare module 'ue4/pak/enums/PakVersion' {
+declare module 'unreal.js/ue4/pak/enums/PakVersion' {
 	export enum EPakVersion {
 	    PakVersion_Initial = 1,
 	    PakVersion_NoTimestamps = 2,
@@ -5741,12 +5708,10 @@ declare module 'ue4/pak/enums/PakVersion' {
 	}
 
 }
-declare module 'ue4/pak/objects/FPakInfo' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { EPakVersion } from 'ue4/pak/enums/PakVersion'; enum OffsetsToTry {
+declare module 'unreal.js/ue4/pak/objects/FPakInfo' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { EPakVersion } from 'unreal.js/ue4/pak/enums/PakVersion'; enum OffsetsToTry {
 	    size = 61,
 	    size8_1 = 93,
 	    size8_2 = 125,
@@ -5775,10 +5740,10 @@ declare module 'ue4/pak/objects/FPakInfo' {
 	export {};
 
 }
-declare module 'ue4/pak/objects/FPakEntry' {
-	import { FPakCompressedBlock } from 'ue4/pak/objects/FPakCompressedBlock';
-	import { FPakInfo } from 'ue4/pak/objects/FPakInfo';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/pak/objects/FPakEntry' {
+	import { FPakCompressedBlock } from 'unreal.js/ue4/pak/objects/FPakCompressedBlock';
+	import { FPakInfo } from 'unreal.js/ue4/pak/objects/FPakInfo';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class FPakEntry {
 	    name: string;
 	    pos: number;
@@ -5793,9 +5758,9 @@ declare module 'ue4/pak/objects/FPakEntry' {
 	}
 
 }
-declare module 'ue4/pak/GameFile' {
-	import { FPakEntry } from 'ue4/pak/objects/FPakEntry';
-	import { FPakCompressedBlock } from 'ue4/pak/objects/FPakCompressedBlock';
+declare module 'unreal.js/ue4/pak/GameFile' {
+	import { FPakEntry } from 'unreal.js/ue4/pak/objects/FPakEntry';
+	import { FPakCompressedBlock } from 'unreal.js/ue4/pak/objects/FPakCompressedBlock';
 	export class GameFile {
 	    /**
 	     * Path to the file
@@ -5962,9 +5927,9 @@ declare module 'ue4/pak/GameFile' {
 	}
 
 }
-declare module 'ue4/assets/mappings/TypeMappings' {
-	import { UnrealMap } from 'util/UnrealMap';
-	import { UScriptStruct } from 'ue4/assets/exports/UScriptStruct';
+declare module 'unreal.js/ue4/assets/mappings/TypeMappings' {
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { UScriptStruct } from 'unreal.js/ue4/assets/exports/UScriptStruct';
 	/**
 	 * Type mappings base
 	 */
@@ -5990,10 +5955,10 @@ declare module 'ue4/assets/mappings/TypeMappings' {
 	}
 
 }
-declare module 'ue4/assets/mappings/TypeMappingsProvider' {
-	import { TypeMappings } from 'ue4/assets/mappings/TypeMappings';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UStruct } from 'ue4/assets/exports/UStruct';
+declare module 'unreal.js/ue4/assets/mappings/TypeMappingsProvider' {
+	import { TypeMappings } from 'unreal.js/ue4/assets/mappings/TypeMappings';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
 	/**
 	 * Base for all type mappings providers
 	 * @abstract
@@ -6027,10 +5992,10 @@ declare module 'ue4/assets/mappings/TypeMappingsProvider' {
 	}
 
 }
-declare module 'ue4/assets/mappings/ReflectionTypeMappingsProvider' {
-	import { TypeMappingsProvider } from 'ue4/assets/mappings/TypeMappingsProvider';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UScriptStruct } from 'ue4/assets/exports/UScriptStruct';
+declare module 'unreal.js/ue4/assets/mappings/ReflectionTypeMappingsProvider' {
+	import { TypeMappingsProvider } from 'unreal.js/ue4/assets/mappings/TypeMappingsProvider';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UScriptStruct } from 'unreal.js/ue4/assets/exports/UScriptStruct';
 	/**
 	 * Type mappings provider which uses reflection
 	 * @extends {TypeMappingsProvider}
@@ -6059,9 +6024,9 @@ declare module 'ue4/assets/mappings/ReflectionTypeMappingsProvider' {
 	}
 
 }
-declare module 'ue4/registry/objects/FAssetRegistryVersion' {
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/registry/objects/FAssetRegistryVersion' {
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export const versionGuid: FGuid;
 	export enum Type {
 	    /** From before file versioning was implemented */
@@ -6105,8 +6070,8 @@ declare module 'ue4/registry/objects/FAssetRegistryVersion' {
 	}
 
 }
-declare module 'ue4/reader/FArchiveProxy' {
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/reader/FArchiveProxy' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	/**
 	 * Proxy for UE4 Reader
 	 * @extends {FArchive}
@@ -6200,10 +6165,10 @@ declare module 'ue4/reader/FArchiveProxy' {
 	}
 
 }
-declare module 'ue4/registry/objects/AssetBundleData' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/registry/objects/AssetBundleData' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	/** A struct representing a single AssetBundle */
 	export class FAssetBundleEntry {
 	    /** Specific name of this bundle, should be unique for a given scope */
@@ -6222,11 +6187,11 @@ declare module 'ue4/registry/objects/AssetBundleData' {
 	}
 
 }
-declare module 'ue4/registry/objects/FAssetData' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FAssetBundleData } from 'ue4/registry/objects/AssetBundleData';
-	import { FAssetRegistryArchive } from 'ue4/registry/reader/AssetRegistryArchive';
-	import { UnrealMap } from 'util/UnrealMap';
+declare module 'unreal.js/ue4/registry/objects/FAssetData' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetBundleData } from 'unreal.js/ue4/registry/objects/AssetBundleData';
+	import { FAssetRegistryArchive } from 'unreal.js/ue4/registry/reader/AssetRegistryArchive';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
 	export class FAssetData {
 	    objectPath: FName;
 	    packagePath: FName;
@@ -6241,12 +6206,12 @@ declare module 'ue4/registry/objects/FAssetData' {
 	}
 
 }
-declare module 'ue4/registry/objects/AssetDataTagMap' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FNameEntryId } from 'ue4/objects/uobject/NameTypes';
-	import { StringBuilder } from 'util/StringBuilder';
-	import { FPartialMapHandle, FStore } from 'ue4/registry/objects/AssetDataTagMapSerializationDetails';
+declare module 'unreal.js/ue4/registry/objects/AssetDataTagMap' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FNameEntryId } from 'unreal.js/ue4/objects/uobject/NameTypes';
+	import { StringBuilder } from 'unreal.js/util/StringBuilder';
+	import { FPartialMapHandle, FStore } from 'unreal.js/ue4/registry/objects/AssetDataTagMapSerializationDetails';
 	export class FAssetRegistryExportPath {
 	    _class: FName;
 	    _object: FName;
@@ -6311,13 +6276,11 @@ declare module 'ue4/registry/objects/AssetDataTagMap' {
 	}
 
 }
-declare module 'ue4/registry/objects/AssetDataTagMapSerializationDetails' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FAssetRegistryExportPath, FMapHandle, FNumberedPair, FNumberlessExportPath, FNumberlessPair, FValueId } from 'ue4/registry/objects/AssetDataTagMap';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FNameEntryId } from 'ue4/objects/uobject/NameTypes';
-	import { FAssetRegistryReader } from 'ue4/registry/reader/AssetRegistryArchive';
+declare module 'unreal.js/ue4/registry/objects/AssetDataTagMapSerializationDetails' {
+	import { FAssetRegistryExportPath, FMapHandle, FNumberedPair, FNumberlessExportPath, FNumberlessPair, FValueId } from 'unreal.js/ue4/registry/objects/AssetDataTagMap';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FNameEntryId } from 'unreal.js/ue4/objects/uobject/NameTypes';
+	import { FAssetRegistryReader } from 'unreal.js/ue4/registry/reader/AssetRegistryArchive';
 	export const OLD_BEGIN_MAGIC = 305419896;
 	export const BEGIN_MAGIC = 305419897;
 	export const END_MAGIC = 2271560481;
@@ -6362,12 +6325,12 @@ declare module 'ue4/registry/objects/AssetDataTagMapSerializationDetails' {
 	}
 
 }
-declare module 'ue4/registry/reader/AssetRegistryArchive' {
-	import { FArchiveProxy } from 'ue4/reader/FArchiveProxy';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FAssetData } from 'ue4/registry/objects/FAssetData';
-	import { FStore } from 'ue4/registry/objects/AssetDataTagMapSerializationDetails';
-	import { FName } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/ue4/registry/reader/AssetRegistryArchive' {
+	import { FArchiveProxy } from 'unreal.js/ue4/reader/FArchiveProxy';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FAssetData } from 'unreal.js/ue4/registry/objects/FAssetData';
+	import { FStore } from 'unreal.js/ue4/registry/objects/AssetDataTagMapSerializationDetails';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
 	export abstract class FAssetRegistryArchive extends FArchiveProxy {
 	    constructor(wrappedAr: FArchive);
 	    abstract serializeTagsAndBundles(out: FAssetData): any;
@@ -6384,11 +6347,11 @@ declare module 'ue4/registry/reader/AssetRegistryArchive' {
 	}
 
 }
-declare module 'ue4/registry/reader/NameTableArchive' {
-	import { FAssetRegistryArchive } from 'ue4/registry/reader/AssetRegistryArchive';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FName, FNameEntry } from 'ue4/objects/uobject/FName';
-	import { FAssetData } from 'ue4/registry/objects/FAssetData';
+declare module 'unreal.js/ue4/registry/reader/NameTableArchive' {
+	import { FAssetRegistryArchive } from 'unreal.js/ue4/registry/reader/AssetRegistryArchive';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FName, FNameEntry } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FAssetData } from 'unreal.js/ue4/registry/objects/FAssetData';
 	export class FNameTableArchiveReader extends FAssetRegistryArchive {
 	    nameMap: FNameEntry[];
 	    constructor(wrappedArchive: FArchive);
@@ -6399,9 +6362,9 @@ declare module 'ue4/registry/reader/NameTableArchive' {
 	}
 
 }
-declare module 'ue4/registry/objects/FAssetIdentifier' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/registry/objects/FAssetIdentifier' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class FAssetIdentifier {
 	    packageName: FName;
 	    primaryAssetType: FName;
@@ -6411,11 +6374,11 @@ declare module 'ue4/registry/objects/FAssetIdentifier' {
 	}
 
 }
-declare module 'ue4/registry/objects/FDependsNode' {
-	import { FAssetIdentifier } from 'ue4/registry/objects/FAssetIdentifier';
+declare module 'unreal.js/ue4/registry/objects/FDependsNode' {
+	import { FAssetIdentifier } from 'unreal.js/ue4/registry/objects/FAssetIdentifier';
 	import BitSet from 'bitset';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FAssetRegistryVersion } from 'ue4/registry/objects/FAssetRegistryVersion';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FAssetRegistryVersion } from 'unreal.js/ue4/registry/objects/FAssetRegistryVersion';
 	export const packageFlagWidth = 3;
 	export const packageFlagSetWidth: number;
 	export const manageFlagWidth = 1;
@@ -6434,21 +6397,19 @@ declare module 'ue4/registry/objects/FDependsNode' {
 	}
 
 }
-declare module 'ue4/registry/objects/FMD5Hash' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/registry/objects/FMD5Hash' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class FMD5Hash {
 	    hash?: Buffer;
 	    constructor(Ar: FArchive);
 	}
 
 }
-declare module 'ue4/registry/objects/FAssetPackageData' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FMD5Hash } from 'ue4/registry/objects/FMD5Hash';
+declare module 'unreal.js/ue4/registry/objects/FAssetPackageData' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FMD5Hash } from 'unreal.js/ue4/registry/objects/FMD5Hash';
 	export class FAssetPackageData {
 	    packageName: FName;
 	    diskSize: number;
@@ -6458,13 +6419,11 @@ declare module 'ue4/registry/objects/FAssetPackageData' {
 	}
 
 }
-declare module 'ue4/registry/AssetRegistry' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FAssetData } from 'ue4/registry/objects/FAssetData';
-	import { FDependsNode } from 'ue4/registry/objects/FDependsNode';
-	import { FAssetPackageData } from 'ue4/registry/objects/FAssetPackageData';
+declare module 'unreal.js/ue4/registry/AssetRegistry' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FAssetData } from 'unreal.js/ue4/registry/objects/FAssetData';
+	import { FDependsNode } from 'unreal.js/ue4/registry/objects/FDependsNode';
+	import { FAssetPackageData } from 'unreal.js/ue4/registry/objects/FAssetPackageData';
 	export class AssetRegistry {
 	    preallocatedAssetDataBuffer: FAssetData[];
 	    preallocatedDependsNodeDataBuffer: FDependsNode[];
@@ -6478,9 +6437,7 @@ declare module 'ue4/registry/AssetRegistry' {
 	}
 
 }
-declare module 'encryption/aes/Aes' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
+declare module 'unreal.js/encryption/aes/Aes' {
 	/**
 	 * Class to handle aes encryption
 	 */
@@ -6521,7 +6478,7 @@ declare module 'encryption/aes/Aes' {
 	}
 
 }
-declare module 'oodle/Exceptions' {
+declare module 'unreal.js/oodle/Exceptions' {
 	/**
 	 * Creates a normal oodle exception
 	 * @param {string} message Message to use
@@ -6542,9 +6499,7 @@ declare module 'oodle/Exceptions' {
 	export function CompressException(message: string): Error;
 
 }
-declare module 'oodle/Oodle' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
+declare module 'unreal.js/oodle/Oodle' {
 	export const COMPRESSOR_LZH = 0;
 	export const COMPRESSOR_LZHLW = 1;
 	export const COMPRESSOR_LZNIB = 2;
@@ -6677,9 +6632,7 @@ declare module 'oodle/Oodle' {
 	export {};
 
 }
-declare module 'compression/Compression' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
+declare module 'unreal.js/compression/Compression' {
 	import Collection from '@discordjs/collection';
 	/**
 	 * Class to handle compression quickly
@@ -6751,12 +6704,10 @@ declare module 'compression/Compression' {
 	}
 
 }
-declare module 'ue4/pak/PakFileReader' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FPakInfo } from 'ue4/pak/objects/FPakInfo';
-	import { GameFile } from 'ue4/pak/GameFile';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/pak/PakFileReader' {
+	import { FPakInfo } from 'unreal.js/ue4/pak/objects/FPakInfo';
+	import { GameFile } from 'unreal.js/ue4/pak/GameFile';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	import Collection from '@discordjs/collection';
 	/**
 	 * UE4 Pak File Reader
@@ -6924,11 +6875,9 @@ declare module 'ue4/pak/PakFileReader' {
 	}
 
 }
-declare module 'ue4/io/IoDirectoryIndex' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FIoDirectoryIndexHandle } from 'ue4/io/IoDispatcher';
+declare module 'unreal.js/ue4/io/IoDirectoryIndex' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FIoDirectoryIndexHandle } from 'unreal.js/ue4/io/IoDispatcher';
 	export class FIoDirectoryIndexEntry {
 	    name: number;
 	    firstChildEntry: number;
@@ -6970,17 +6919,15 @@ declare module 'ue4/io/IoDirectoryIndex' {
 	export {};
 
 }
-declare module 'ue4/io/IoStore' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from 'ue4/io/IoDispatcher';
-	import { uint16, uint32, uint64, uint8 } from 'Types';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { GameFile } from 'ue4/pak/GameFile';
-	import { FIoDirectoryIndexReader } from 'ue4/io/IoDirectoryIndex';
-	import { Lazy } from 'util/Lazy';
+declare module 'unreal.js/ue4/io/IoStore' {
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { EIoContainerFlags, FIoChunkHash, FIoChunkId, FIoStoreEnvironment } from 'unreal.js/ue4/io/IoDispatcher';
+	import { uint16, uint32, uint64, uint8 } from 'unreal.js/Types';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { GameFile } from 'unreal.js/ue4/pak/GameFile';
+	import { FIoDirectoryIndexReader } from 'unreal.js/ue4/io/IoDirectoryIndex';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	import Collection from '@discordjs/collection';
 	/**
 	 * I/O store container format version
@@ -7103,9 +7050,9 @@ declare module 'ue4/io/IoStore' {
 	}
 
 }
-declare module 'ue4/objects/uobject/FPackageId' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/objects/uobject/FPackageId' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export const INVALID_ID: string;
 	export function createFPackageId(name: FName): bigint;
 	/**
@@ -7125,29 +7072,28 @@ declare module 'ue4/objects/uobject/FPackageId' {
 	}
 
 }
-declare module 'fileprovider/FileProvider' {
+declare module 'unreal.js/fileprovider/FileProvider' {
 	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { Ue4Version } from 'ue4/versions/Game';
-	import { GameFile } from 'ue4/pak/GameFile';
-	import { Package } from 'ue4/assets/Package';
-	import { TypeMappingsProvider } from 'ue4/assets/mappings/TypeMappingsProvider';
-	import { Locres } from 'ue4/locres/Locres';
-	import { FnLanguage } from 'ue4/locres/FnLanguage';
-	import { AssetRegistry } from 'ue4/registry/AssetRegistry';
-	import { FIoChunkId } from 'ue4/io/IoDispatcher';
-	import { IoPackage } from 'ue4/assets/IoPackage';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { PakFileReader } from 'ue4/pak/PakFileReader';
-	import { FIoStoreReader } from 'ue4/io/IoStore';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FPackageStore } from 'ue4/asyncloading2/FPackageStore';
-	import { Lazy } from 'util/Lazy';
+	import { Ue4Version } from 'unreal.js/ue4/versions/Game';
+	import { GameFile } from 'unreal.js/ue4/pak/GameFile';
+	import { Package } from 'unreal.js/ue4/assets/Package';
+	import { TypeMappingsProvider } from 'unreal.js/ue4/assets/mappings/TypeMappingsProvider';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
+	import { FnLanguage } from 'unreal.js/ue4/locres/FnLanguage';
+	import { AssetRegistry } from 'unreal.js/ue4/registry/AssetRegistry';
+	import { FIoChunkId } from 'unreal.js/ue4/io/IoDispatcher';
+	import { IoPackage } from 'unreal.js/ue4/assets/IoPackage';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { PakFileReader } from 'unreal.js/ue4/pak/PakFileReader';
+	import { FIoStoreReader } from 'unreal.js/ue4/io/IoStore';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FPackageStore } from 'unreal.js/ue4/asyncloading2/FPackageStore';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	import Collection from '@discordjs/collection';
 	import EventEmitter from 'events';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { IConfig } from 'Config';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { IConfig } from 'unreal.js/Config';
 	/**
 	 * The main hub for interacting with ue4 assets
 	 * @extends {EventEmitter}
@@ -7431,11 +7377,9 @@ declare module 'fileprovider/FileProvider' {
 	}
 
 }
-declare module 'ue4/assets/mappings/UsmapTypeMappingsProvider' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { TypeMappingsProvider } from 'ue4/assets/mappings/TypeMappingsProvider';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/assets/mappings/UsmapTypeMappingsProvider' {
+	import { TypeMappingsProvider } from 'unreal.js/ue4/assets/mappings/TypeMappingsProvider';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	/**
 	 * Type mappings provider which uses usmap
 	 * @extends {TypeMappingsProvider}
@@ -7499,8 +7443,8 @@ declare module 'ue4/assets/mappings/UsmapTypeMappingsProvider' {
 	}
 
 }
-declare module 'ue4/assets/exports/UStreamableRenderAsset' {
-	import { UObject } from 'ue4/assets/exports/UObject';
+declare module 'unreal.js/ue4/assets/exports/UStreamableRenderAsset' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
 	export class UStreamableRenderAsset extends UObject {
 	    ForceMipLevelsToBeResidentTimestamp: number;
 	    NumCinematicMipLevels: number;
@@ -7518,7 +7462,7 @@ declare module 'ue4/assets/exports/UStreamableRenderAsset' {
 	}
 
 }
-declare module 'ue4/assets/enums/ETextureChannel' {
+declare module 'unreal.js/ue4/assets/enums/ETextureChannel' {
 	export enum ETextureChannel {
 	    TC_NONE = 0,
 	    TC_R = 1,
@@ -7529,7 +7473,7 @@ declare module 'ue4/assets/enums/ETextureChannel' {
 	}
 
 }
-declare module 'ue4/assets/enums/EMobileSpecularMask' {
+declare module 'unreal.js/ue4/assets/enums/EMobileSpecularMask' {
 	export enum EMobileSpecularMask {
 	    MSM_Constant = 0,
 	    MSM_Luminance = 1,
@@ -7545,14 +7489,14 @@ declare module 'ue4/assets/enums/EMobileSpecularMask' {
 	}
 
 }
-declare module 'ue4/assets/exports/mats/UMaterialInterface' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { UUnrealMaterial } from 'ue4/assets/exports/mats/interfaces/UUnrealMaterial';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UTexture } from 'ue4/assets/exports/tex/UTexture';
-	import { EMobileSpecularMask } from 'ue4/assets/enums/EMobileSpecularMask';
-	import { CMaterialParams } from 'ue4/converters/materials/Material';
+declare module 'unreal.js/ue4/assets/exports/mats/UMaterialInterface' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { UUnrealMaterial } from 'unreal.js/ue4/assets/exports/mats/interfaces/UUnrealMaterial';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UTexture } from 'unreal.js/ue4/assets/exports/tex/UTexture';
+	import { EMobileSpecularMask } from 'unreal.js/ue4/assets/enums/EMobileSpecularMask';
+	import { CMaterialParams } from 'unreal.js/ue4/converters/materials/Material';
 	export class FLightmassMaterialInterfaceSettings {
 	    EmissiveBoost?: number;
 	    DiffuseBoost?: number;
@@ -7587,7 +7531,7 @@ declare module 'ue4/assets/exports/mats/UMaterialInterface' {
 	}
 
 }
-declare module 'ue4/assets/enums/EBlendMode' {
+declare module 'unreal.js/ue4/assets/enums/EBlendMode' {
 	export enum EBlendMode {
 	    BLEND_Opaque = 0,
 	    BLEND_Masked = 1,
@@ -7601,7 +7545,7 @@ declare module 'ue4/assets/enums/EBlendMode' {
 	}
 
 }
-declare module 'ue4/assets/enums/EMaterialShadingModel' {
+declare module 'unreal.js/ue4/assets/enums/EMaterialShadingModel' {
 	export enum EMaterialShadingModel {
 	    MSM_Unlit = 0,
 	    MSM_DefaultLit = 1,
@@ -7620,11 +7564,11 @@ declare module 'ue4/assets/enums/EMaterialShadingModel' {
 	}
 
 }
-declare module 'ue4/assets/objects/mats/FMaterialCachedParameters' {
-	import { FMaterialParameterInfo } from 'ue4/assets/exports/mats/UMaterialInstance';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FLinearColor } from 'ue4/objects/core/math/FColor';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
+declare module 'unreal.js/ue4/assets/objects/mats/FMaterialCachedParameters' {
+	import { FMaterialParameterInfo } from 'unreal.js/ue4/assets/exports/mats/UMaterialInstance';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FLinearColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
 	export class FMaterialCachedParameters {
 	    Entries: FMaterialCachedParameterEntry[];
 	    ScalarValues: number[];
@@ -7642,18 +7586,18 @@ declare module 'ue4/assets/objects/mats/FMaterialCachedParameters' {
 	}
 
 }
-declare module 'ue4/assets/exports/mats/UMaterialInstance' {
-	import { UMaterialInterface } from 'ue4/assets/exports/mats/UMaterialInterface';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FLinearColor } from 'ue4/objects/core/math/FColor';
-	import { Lazy } from 'util/Lazy';
-	import { UTexture } from 'ue4/assets/exports/tex/UTexture';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { EBlendMode } from 'ue4/assets/enums/EBlendMode';
-	import { EMaterialShadingModel } from 'ue4/assets/enums/EMaterialShadingModel';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FMaterialCachedParameters } from 'ue4/assets/objects/mats/FMaterialCachedParameters';
+declare module 'unreal.js/ue4/assets/exports/mats/UMaterialInstance' {
+	import { UMaterialInterface } from 'unreal.js/ue4/assets/exports/mats/UMaterialInterface';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FLinearColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { Lazy } from 'unreal.js/util/Lazy';
+	import { UTexture } from 'unreal.js/ue4/assets/exports/tex/UTexture';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { EBlendMode } from 'unreal.js/ue4/assets/enums/EBlendMode';
+	import { EMaterialShadingModel } from 'unreal.js/ue4/assets/enums/EMaterialShadingModel';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FMaterialCachedParameters } from 'unreal.js/ue4/assets/objects/mats/FMaterialCachedParameters';
 	export class UMaterialInstance extends UMaterialInterface {
 	    PhysMaterial: FPackageIndex;
 	    PhysicalMaterialMap: FPackageIndex[];
@@ -7755,12 +7699,12 @@ declare module 'ue4/assets/exports/mats/UMaterialInstance' {
 	}
 
 }
-declare module 'ue4/assets/exports/mats/UMaterialInstanceConstant' {
-	import { UMaterialInstance } from 'ue4/assets/exports/mats/UMaterialInstance';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { CMaterialParams } from 'ue4/converters/materials/Material';
-	import { UUnrealMaterial } from 'ue4/assets/exports/mats/interfaces/UUnrealMaterial';
+declare module 'unreal.js/ue4/assets/exports/mats/UMaterialInstanceConstant' {
+	import { UMaterialInstance } from 'unreal.js/ue4/assets/exports/mats/UMaterialInstance';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { CMaterialParams } from 'unreal.js/ue4/converters/materials/Material';
+	import { UUnrealMaterial } from 'unreal.js/ue4/assets/exports/mats/interfaces/UUnrealMaterial';
 	export class UMaterialInstanceConstant extends UMaterialInstance {
 	    PhysMaterialMask?: FPackageIndex;
 	    deserialize(Ar: FAssetArchive, validPos: number): void;
@@ -7769,13 +7713,11 @@ declare module 'ue4/assets/exports/mats/UMaterialInstanceConstant' {
 	}
 
 }
-declare module 'ue4/converters/materials/Material' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { UUnrealMaterial } from 'ue4/assets/exports/mats/interfaces/UUnrealMaterial';
-	import { FLinearColor } from 'ue4/objects/core/math/FColor';
-	import { ETextureChannel } from 'ue4/assets/enums/ETextureChannel';
-	import { EMobileSpecularMask } from 'ue4/assets/enums/EMobileSpecularMask';
+declare module 'unreal.js/ue4/converters/materials/Material' {
+	import { UUnrealMaterial } from 'unreal.js/ue4/assets/exports/mats/interfaces/UUnrealMaterial';
+	import { FLinearColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { ETextureChannel } from 'unreal.js/ue4/assets/enums/ETextureChannel';
+	import { EMobileSpecularMask } from 'unreal.js/ue4/assets/enums/EMobileSpecularMask';
 	import AdmZip from 'adm-zip';
 	import Collection from '@discordjs/collection';
 	export class CMaterialParams {
@@ -7817,8 +7759,8 @@ declare module 'ue4/converters/materials/Material' {
 	}
 
 }
-declare module 'ue4/assets/exports/mats/interfaces/UUnrealMaterial' {
-	import { CMaterialParams } from 'ue4/converters/materials/Material';
+declare module 'unreal.js/ue4/assets/exports/mats/interfaces/UUnrealMaterial' {
+	import { CMaterialParams } from 'unreal.js/ue4/converters/materials/Material';
 	export interface UUnrealMaterial {
 	    getParams(params: CMaterialParams): void;
 	    isTextureCube(): boolean;
@@ -7827,13 +7769,13 @@ declare module 'ue4/assets/exports/mats/interfaces/UUnrealMaterial' {
 	}
 
 }
-declare module 'ue4/assets/exports/tex/UTexture' {
-	import { UStreamableRenderAsset } from 'ue4/assets/exports/UStreamableRenderAsset';
-	import { UUnrealMaterial } from 'ue4/assets/exports/mats/interfaces/UUnrealMaterial';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FPerPlatformFloat } from 'ue4/objects/engine/PerPlatformProperties';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { CMaterialParams } from 'ue4/converters/materials/Material';
+declare module 'unreal.js/ue4/assets/exports/tex/UTexture' {
+	import { UStreamableRenderAsset } from 'unreal.js/ue4/assets/exports/UStreamableRenderAsset';
+	import { UUnrealMaterial } from 'unreal.js/ue4/assets/exports/mats/interfaces/UUnrealMaterial';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FPerPlatformFloat } from 'unreal.js/ue4/objects/engine/PerPlatformProperties';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { CMaterialParams } from 'unreal.js/ue4/converters/materials/Material';
 	export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial {
 	    LightingGuid: FGuid;
 	    LodBias: number;
@@ -7950,9 +7892,9 @@ declare module 'ue4/assets/exports/tex/UTexture' {
 	}
 
 }
-declare module 'ue4/objects/engine/FStripDataFlags' {
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/objects/engine/FStripDataFlags' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FStripDataFlags {
 	    globalStripFlags: number;
 	    classStripFlags: number;
@@ -7965,7 +7907,7 @@ declare module 'ue4/objects/engine/FStripDataFlags' {
 	}
 
 }
-declare module 'ue4/assets/enums/EBulkDataFlags' {
+declare module 'unreal.js/ue4/assets/enums/EBulkDataFlags' {
 	export enum EBulkDataFlags {
 	    /** Empty flag set. */
 	    BULKDATA_None = 0,
@@ -8007,9 +7949,9 @@ declare module 'ue4/assets/enums/EBulkDataFlags' {
 	export function EBulkDataFlags_Check(bulkDataFlags1: number | EBulkDataFlags, bulkDataFlags2: number | EBulkDataFlags): boolean;
 
 }
-declare module 'ue4/assets/objects/FByteBulkDataHeader' {
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FArchiveWriter } from 'ue4/writer/FArchiveWriter';
+declare module 'unreal.js/ue4/assets/objects/FByteBulkDataHeader' {
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FArchiveWriter } from 'unreal.js/ue4/writer/FArchiveWriter';
 	export class FByteBulkDataHeader {
 	    /**
 	     * Bulk data flags
@@ -8072,12 +8014,10 @@ declare module 'ue4/assets/objects/FByteBulkDataHeader' {
 	}
 
 }
-declare module 'ue4/assets/objects/FByteBulkData' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FByteBulkDataHeader } from 'ue4/assets/objects/FByteBulkDataHeader';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/assets/objects/FByteBulkData' {
+	import { FByteBulkDataHeader } from 'unreal.js/ue4/assets/objects/FByteBulkDataHeader';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	/**
 	 * FByteBulkData
 	 */
@@ -8125,15 +8065,15 @@ declare module 'ue4/assets/objects/FByteBulkData' {
 	}
 
 }
-declare module 'ue4/assets/exports/tex/UTexture2D' {
-	import { UTexture } from 'ue4/assets/exports/tex/UTexture';
-	import { FIntPoint } from 'ue4/objects/core/math/FIntPoint';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FStripDataFlags } from 'ue4/objects/engine/FStripDataFlags';
-	import { FByteBulkData } from 'ue4/assets/objects/FByteBulkData';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/assets/exports/tex/UTexture2D' {
+	import { UTexture } from 'unreal.js/ue4/assets/exports/tex/UTexture';
+	import { FIntPoint } from 'unreal.js/ue4/objects/core/math/FIntPoint';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FStripDataFlags } from 'unreal.js/ue4/objects/engine/FStripDataFlags';
+	import { FByteBulkData } from 'unreal.js/ue4/assets/objects/FByteBulkData';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	export class UTexture2D extends UTexture {
 	    LevelIndex?: number;
 	    FirstResourceMemMip?: number;
@@ -8182,9 +8122,7 @@ declare module 'ue4/assets/exports/tex/UTexture2D' {
 	}
 
 }
-declare module 'ue4/converters/textures/util/BufferStream' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
+declare module 'unreal.js/ue4/converters/textures/util/BufferStream' {
 	export class BufferStream {
 	    protected buf: Buffer;
 	    protected pos: number;
@@ -8202,16 +8140,12 @@ declare module 'ue4/converters/textures/util/BufferStream' {
 	}
 
 }
-declare module 'ue4/converters/textures/BC5' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
+declare module 'unreal.js/ue4/converters/textures/BC5' {
 	export function readBC5(data: Buffer, width: number, height: number): Buffer;
 
 }
-declare module 'ue4/converters/textures/Image' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FTexture2DMipMap, FTexturePlatformData, UTexture2D } from 'ue4/assets/exports/tex/UTexture2D';
+declare module 'unreal.js/ue4/converters/textures/Image' {
+	import { FTexture2DMipMap, FTexturePlatformData, UTexture2D } from 'unreal.js/ue4/assets/exports/tex/UTexture2D';
 	export class Image {
 	    static convert(tex: UTexture2D, texture?: FTexturePlatformData, mip?: FTexture2DMipMap, config?: ImageConfig): Buffer;
 	} type PixelFormat = "PF_G8" | "PF_RGB8" | "PF_RGBA8" | "PF_R8G8B8A8" | "PF_BGRA8" | "PF_B8G8R8A8" | "PF_DXT1" | "PF_DXT3" | "PF_DXT5" | "PF_DXT5N" | "PF_V8U8" | "PF_V8U8_2" | "PF_BC5" | "PF_RGBA4";
@@ -8260,9 +8194,9 @@ declare module 'ue4/converters/textures/Image' {
 	export {};
 
 }
-declare module 'ue4/assets/exports/USoundBase' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
+declare module 'unreal.js/ue4/assets/exports/USoundBase' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
 	export class USoundBase extends UObject {
 	    SoundClassObject: FPackageIndex;
 	    bDebug: boolean;
@@ -8323,7 +8257,7 @@ declare module 'ue4/assets/exports/USoundBase' {
 	}
 
 }
-declare module 'ue4/assets/enums/ESoundWaveLoadingBehavior' {
+declare module 'unreal.js/ue4/assets/enums/ESoundWaveLoadingBehavior' {
 	export enum ESoundWaveLoadingBehavior {
 	    Inherited = 0,
 	    RetainOnLoad = 1,
@@ -8334,12 +8268,12 @@ declare module 'ue4/assets/enums/ESoundWaveLoadingBehavior' {
 	}
 
 }
-declare module 'ue4/objects/uobject/serialization/FFormatContainer' {
-	import { UnrealMap } from 'util/UnrealMap';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FByteBulkData } from 'ue4/assets/objects/FByteBulkData';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
+declare module 'unreal.js/ue4/objects/uobject/serialization/FFormatContainer' {
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FByteBulkData } from 'unreal.js/ue4/assets/objects/FByteBulkData';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
 	export class FFormatContainer {
 	    formats: UnrealMap<FName, FByteBulkData>;
 	    constructor(Ar: FAssetArchive);
@@ -8347,17 +8281,17 @@ declare module 'ue4/objects/uobject/serialization/FFormatContainer' {
 	}
 
 }
-declare module 'ue4/assets/exports/USoundWave' {
-	import { USoundBase } from 'ue4/assets/exports/USoundBase';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FByteBulkData } from 'ue4/assets/objects/FByteBulkData';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { ESoundWaveLoadingBehavior } from 'ue4/assets/enums/ESoundWaveLoadingBehavior';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FFormatContainer } from 'ue4/objects/uobject/serialization/FFormatContainer';
+declare module 'unreal.js/ue4/assets/exports/USoundWave' {
+	import { USoundBase } from 'unreal.js/ue4/assets/exports/USoundBase';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FByteBulkData } from 'unreal.js/ue4/assets/objects/FByteBulkData';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { ESoundWaveLoadingBehavior } from 'unreal.js/ue4/assets/enums/ESoundWaveLoadingBehavior';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FFormatContainer } from 'unreal.js/ue4/objects/uobject/serialization/FFormatContainer';
 	export class USoundWave extends USoundBase {
 	    CompressionQuality: number;
 	    StreamingPriority: number;
@@ -8458,10 +8392,8 @@ declare module 'ue4/assets/exports/USoundWave' {
 	export {};
 
 }
-declare module 'ue4/converters/sounds/SoundWave' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { USoundWave } from 'ue4/assets/exports/USoundWave';
+declare module 'unreal.js/ue4/converters/sounds/SoundWave' {
+	import { USoundWave } from 'unreal.js/ue4/assets/exports/USoundWave';
 	export class SoundWave {
 	    data: Buffer;
 	    format: string;
@@ -8471,11 +8403,11 @@ declare module 'ue4/converters/sounds/SoundWave' {
 	}
 
 }
-declare module 'ue4/assets/exports/UAkMediaAssetData' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FByteBulkData } from 'ue4/assets/objects/FByteBulkData';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { Locres } from 'ue4/locres/Locres';
+declare module 'unreal.js/ue4/assets/exports/UAkMediaAssetData' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FByteBulkData } from 'unreal.js/ue4/assets/objects/FByteBulkData';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
 	export class UAkMediaAssetData extends UObject {
 	    isStreamed: boolean;
 	    useDeviceMemory: boolean;
@@ -8499,10 +8431,8 @@ declare module 'ue4/assets/exports/UAkMediaAssetData' {
 	}
 
 }
-declare module 'ue4/converters/sounds/WwiseAudio' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { UAkMediaAssetData } from 'ue4/assets/exports/UAkMediaAssetData';
+declare module 'unreal.js/ue4/converters/sounds/WwiseAudio' {
+	import { UAkMediaAssetData } from 'unreal.js/ue4/assets/exports/UAkMediaAssetData';
 	export class WwiseAudio {
 	    name: string;
 	    data: Buffer;
@@ -8514,31 +8444,31 @@ declare module 'ue4/converters/sounds/WwiseAudio' {
 	}
 
 }
-declare module 'index' {
-	import { FileProvider } from 'fileprovider/FileProvider';
-	import { ReflectionTypeMappingsProvider } from 'ue4/assets/mappings/ReflectionTypeMappingsProvider';
-	import { UsmapTypeMappingsProvider } from 'ue4/assets/mappings/UsmapTypeMappingsProvider';
-	import { Game, Ue4Version } from 'ue4/versions/Game';
-	import { IoPackage } from 'ue4/assets/IoPackage';
-	import { PakPackage } from 'ue4/assets/PakPackage';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { Image } from 'ue4/converters/textures/Image';
-	import { SoundWave } from 'ue4/converters/sounds/SoundWave';
-	import { WwiseAudio } from 'ue4/converters/sounds/WwiseAudio';
-	import { Locres } from 'ue4/locres/Locres';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FnLanguage } from 'ue4/locres/FnLanguage';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { PakFileReader } from 'ue4/pak/PakFileReader';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/index' {
+	import { FileProvider } from 'unreal.js/fileprovider/FileProvider';
+	import { ReflectionTypeMappingsProvider } from 'unreal.js/ue4/assets/mappings/ReflectionTypeMappingsProvider';
+	import { UsmapTypeMappingsProvider } from 'unreal.js/ue4/assets/mappings/UsmapTypeMappingsProvider';
+	import { Game, Ue4Version } from 'unreal.js/ue4/versions/Game';
+	import { IoPackage } from 'unreal.js/ue4/assets/IoPackage';
+	import { PakPackage } from 'unreal.js/ue4/assets/PakPackage';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { Image } from 'unreal.js/ue4/converters/textures/Image';
+	import { SoundWave } from 'unreal.js/ue4/converters/sounds/SoundWave';
+	import { WwiseAudio } from 'unreal.js/ue4/converters/sounds/WwiseAudio';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FnLanguage } from 'unreal.js/ue4/locres/FnLanguage';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { PakFileReader } from 'unreal.js/ue4/pak/PakFileReader';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export { FileProvider, FGuid, ReflectionTypeMappingsProvider, UsmapTypeMappingsProvider, Ue4Version, Game, IoPackage, PakPackage, Image, SoundWave, WwiseAudio, Locres, FnLanguage, UObject, FArchive, FAssetArchive, PakFileReader };
 
 }
-declare module 'test' {
+declare module 'unreal.js/test' {
 	export {};
 
 }
-declare module 'fort/enums/EAttachmentRule' {
+declare module 'unreal.js/fort/enums/EAttachmentRule' {
 	export enum EAttachmentRule {
 	    KeepRelative = 0,
 	    KeepWorld = 1,
@@ -8546,7 +8476,7 @@ declare module 'fort/enums/EAttachmentRule' {
 	}
 
 }
-declare module 'fort/enums/EFXType' {
+declare module 'unreal.js/fort/enums/EFXType' {
 	export enum EFXType {
 	    GenericAnimNotify = 0,
 	    TrailAnimNotify = 1,
@@ -8572,7 +8502,7 @@ declare module 'fort/enums/EFXType' {
 	}
 
 }
-declare module 'fort/enums/EFortCustomGender' {
+declare module 'unreal.js/fort/enums/EFortCustomGender' {
 	export enum EFortCustomGender {
 	    Invalid = 0,
 	    Male = 1,
@@ -8581,7 +8511,7 @@ declare module 'fort/enums/EFortCustomGender' {
 	}
 
 }
-declare module 'fort/enums/EFortCustomPartType' {
+declare module 'unreal.js/fort/enums/EFortCustomPartType' {
 	export enum EFortCustomPartType {
 	    Head = 0,
 	    Body = 1,
@@ -8594,7 +8524,7 @@ declare module 'fort/enums/EFortCustomPartType' {
 	}
 
 }
-declare module 'fort/enums/EFortInventoryFilter' {
+declare module 'unreal.js/fort/enums/EFortInventoryFilter' {
 	export enum EFortInventoryFilter {
 	    WeaponMelee = 0,
 	    WeaponRanged = 1,
@@ -8621,7 +8551,7 @@ declare module 'fort/enums/EFortInventoryFilter' {
 	}
 
 }
-declare module 'fort/enums/EFortItemTier' {
+declare module 'unreal.js/fort/enums/EFortItemTier' {
 	export enum EFortItemTier {
 	    No_Tier = 0,
 	    I = 1,
@@ -8637,7 +8567,7 @@ declare module 'fort/enums/EFortItemTier' {
 	}
 
 }
-declare module 'fort/enums/EFortItemType' {
+declare module 'unreal.js/fort/enums/EFortItemType' {
 	export enum EFortItemType {
 	    WorldItem = 0,
 	    Ammo = 1,
@@ -8760,8 +8690,8 @@ declare module 'fort/enums/EFortItemType' {
 	}
 
 }
-declare module 'fort/enums/EFortRarity' {
-	import { FText } from 'ue4/objects/core/i18n/Text';
+declare module 'unreal.js/fort/enums/EFortRarity' {
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
 	export class EFortRarity extends FText {
 	    static Common: EFortRarity;
 	    static Uncommon: EFortRarity;
@@ -8775,7 +8705,7 @@ declare module 'fort/enums/EFortRarity' {
 	}
 
 }
-declare module 'fort/enums/EFortTemplateAccess' {
+declare module 'unreal.js/fort/enums/EFortTemplateAccess' {
 	export enum EFortTemplateAccess {
 	    Normal = 0,
 	    Trusted = 1,
@@ -8783,36 +8713,36 @@ declare module 'fort/enums/EFortTemplateAccess' {
 	}
 
 }
-declare module 'ue4/assets/exports/UDataAsset' {
-	import { UObject } from 'ue4/assets/exports/UObject';
+declare module 'unreal.js/ue4/assets/exports/UDataAsset' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
 	export class UDataAsset extends UObject {
 	}
 
 }
-declare module 'ue4/assets/exports/UPrimaryDataAsset' {
-	import { UDataAsset } from 'ue4/assets/exports/UDataAsset';
+declare module 'unreal.js/ue4/assets/exports/UPrimaryDataAsset' {
+	import { UDataAsset } from 'unreal.js/ue4/assets/exports/UDataAsset';
 	export class UPrimaryDataAsset extends UDataAsset {
 	}
 
 }
-declare module 'fort/exports/McpItemDefinitionBase' {
-	import { UPrimaryDataAsset } from 'ue4/assets/exports/UPrimaryDataAsset';
+declare module 'unreal.js/fort/exports/McpItemDefinitionBase' {
+	import { UPrimaryDataAsset } from 'unreal.js/ue4/assets/exports/UPrimaryDataAsset';
 	export class McpItemDefinitionBase extends UPrimaryDataAsset {
 	}
 
 }
-declare module 'ue4/assets/util/StructFallbackReflectionUtil' {
-	import { FPropertyTag } from 'ue4/assets/objects/FPropertyTag';
+declare module 'unreal.js/ue4/assets/util/StructFallbackReflectionUtil' {
+	import { FPropertyTag } from 'unreal.js/ue4/assets/objects/FPropertyTag';
 	export function mapToClass<T>(properties: FPropertyTag[], clazz: Function, obj: T): T;
 
 }
-declare module 'ue4/assets/exports/UCurveTable' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FRealCurve } from 'ue4/objects/engine/curves/FRealCurve';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { Locres } from 'ue4/locres/Locres';
+declare module 'unreal.js/ue4/assets/exports/UCurveTable' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FRealCurve } from 'unreal.js/ue4/objects/engine/curves/FRealCurve';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
 	/**
 	 * - Whether the curve table contains simple, rich, or no curves
 	 */
@@ -8852,8 +8782,8 @@ declare module 'ue4/assets/exports/UCurveTable' {
 	}
 
 }
-declare module 'ue4/objects/FScalableFloat' {
-	import { FCurveTableRowHandle } from 'ue4/assets/exports/UCurveTable';
+declare module 'unreal.js/ue4/objects/FScalableFloat' {
+	import { FCurveTableRowHandle } from 'unreal.js/ue4/assets/exports/UCurveTable';
 	export class FScalableFloat {
 	    /** Raw value, is multiplied by curve */
 	    value: number;
@@ -8868,8 +8798,8 @@ declare module 'ue4/objects/FScalableFloat' {
 	}
 
 }
-declare module 'fort/objects/FortColorPalette' {
-	import { FLinearColor } from 'ue4/objects/core/math/FColor';
+declare module 'unreal.js/fort/objects/FortColorPalette' {
+	import { FLinearColor } from 'unreal.js/ue4/objects/core/math/FColor';
 	export class FortColorPalette {
 	    Color1: FLinearColor;
 	    Color2: FLinearColor;
@@ -8879,11 +8809,11 @@ declare module 'fort/objects/FortColorPalette' {
 	}
 
 }
-declare module 'fort/exports/FortItemSeriesDefinition' {
-	import { UPrimaryDataAsset } from 'ue4/assets/exports/UPrimaryDataAsset';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FortColorPalette } from 'fort/objects/FortColorPalette';
+declare module 'unreal.js/fort/exports/FortItemSeriesDefinition' {
+	import { UPrimaryDataAsset } from 'unreal.js/ue4/assets/exports/UPrimaryDataAsset';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FortColorPalette } from 'unreal.js/fort/objects/FortColorPalette';
 	export class FortItemSeriesDefinition extends UPrimaryDataAsset {
 	    DisplayName: FText;
 	    Colors: FortColorPalette;
@@ -8893,21 +8823,21 @@ declare module 'fort/exports/FortItemSeriesDefinition' {
 	}
 
 }
-declare module 'fort/exports/FortItemDefinition' {
-	import { McpItemDefinitionBase } from 'fort/exports/McpItemDefinitionBase';
-	import { EFortRarity } from 'fort/enums/EFortRarity';
-	import { EFortItemType } from 'fort/enums/EFortItemType';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FGameplayTagContainer } from 'ue4/objects/gameplaytags/FGameplayTagContainer';
-	import { EFortInventoryFilter } from 'fort/enums/EFortInventoryFilter';
-	import { EFortItemTier } from 'fort/enums/EFortItemTier';
-	import { EFortTemplateAccess } from 'fort/enums/EFortTemplateAccess';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { FRotator } from 'ue4/objects/core/math/FRotator';
-	import { FCurveTableRowHandle } from 'ue4/assets/exports/UCurveTable';
-	import { FScalableFloat } from 'ue4/objects/FScalableFloat';
-	import { FortItemSeriesDefinition } from 'fort/exports/FortItemSeriesDefinition';
+declare module 'unreal.js/fort/exports/FortItemDefinition' {
+	import { McpItemDefinitionBase } from 'unreal.js/fort/exports/McpItemDefinitionBase';
+	import { EFortRarity } from 'unreal.js/fort/enums/EFortRarity';
+	import { EFortItemType } from 'unreal.js/fort/enums/EFortItemType';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FGameplayTagContainer } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTagContainer';
+	import { EFortInventoryFilter } from 'unreal.js/fort/enums/EFortInventoryFilter';
+	import { EFortItemTier } from 'unreal.js/fort/enums/EFortItemTier';
+	import { EFortTemplateAccess } from 'unreal.js/fort/enums/EFortTemplateAccess';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { FRotator } from 'unreal.js/ue4/objects/core/math/FRotator';
+	import { FCurveTableRowHandle } from 'unreal.js/ue4/assets/exports/UCurveTable';
+	import { FScalableFloat } from 'unreal.js/ue4/objects/FScalableFloat';
+	import { FortItemSeriesDefinition } from 'unreal.js/fort/exports/FortItemSeriesDefinition';
 	export class FortItemDefinition extends McpItemDefinitionBase {
 	    Rarity: EFortRarity;
 	    ItemType: EFortItemType;
@@ -8950,26 +8880,26 @@ declare module 'fort/exports/FortItemDefinition' {
 	}
 
 }
-declare module 'fort/exports/FortPersistableItemDefinition' {
-	import { FortItemDefinition } from 'fort/exports/FortItemDefinition';
+declare module 'unreal.js/fort/exports/FortPersistableItemDefinition' {
+	import { FortItemDefinition } from 'unreal.js/fort/exports/FortItemDefinition';
 	export class FortPersistableItemDefinition extends FortItemDefinition {
 	}
 
 }
-declare module 'ue4/objects/FTableRowBase' {
+declare module 'unreal.js/ue4/objects/FTableRowBase' {
 	export class FTableRowBase {
 	}
 
 }
-declare module 'ue4/assets/exports/UDataTable' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UScriptStruct } from 'ue4/assets/exports/UScriptStruct';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
-	import { FAssetArchiveWriter } from 'ue4/assets/writer/FAssetArchiveWriter';
-	import { FTableRowBase } from 'ue4/objects/FTableRowBase';
-	import { Locres } from 'ue4/locres/Locres';
+declare module 'unreal.js/ue4/assets/exports/UDataTable' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UScriptStruct } from 'unreal.js/ue4/assets/exports/UScriptStruct';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
+	import { FAssetArchiveWriter } from 'unreal.js/ue4/assets/writer/FAssetArchiveWriter';
+	import { FTableRowBase } from 'unreal.js/ue4/objects/FTableRowBase';
+	import { Locres } from 'unreal.js/ue4/locres/Locres';
 	export class UDataTable extends UObject {
 	    RowStruct: UScriptStruct;
 	    bStripFromClientBuilds?: boolean;
@@ -8986,11 +8916,11 @@ declare module 'ue4/assets/exports/UDataTable' {
 	}
 
 }
-declare module 'ue4/objects/FDataTableRowHandle' {
-	import { UDataTable } from 'ue4/assets/exports/UDataTable';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FTableRowBase } from 'ue4/objects/FTableRowBase';
+declare module 'unreal.js/ue4/objects/FDataTableRowHandle' {
+	import { UDataTable } from 'unreal.js/ue4/assets/exports/UDataTable';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FTableRowBase } from 'unreal.js/ue4/objects/FTableRowBase';
 	export class FDataTableRowHandle {
 	    DataTable: UDataTable;
 	    RowName: FName;
@@ -8999,10 +8929,10 @@ declare module 'ue4/objects/FDataTableRowHandle' {
 	}
 
 }
-declare module 'fort/exports/FortAccountItemDefinition' {
-	import { FortPersistableItemDefinition } from 'fort/exports/FortPersistableItemDefinition';
-	import { FCurveTableRowHandle } from 'ue4/assets/exports/UCurveTable';
-	import { FDataTableRowHandle } from 'ue4/objects/FDataTableRowHandle';
+declare module 'unreal.js/fort/exports/FortAccountItemDefinition' {
+	import { FortPersistableItemDefinition } from 'unreal.js/fort/exports/FortPersistableItemDefinition';
+	import { FCurveTableRowHandle } from 'unreal.js/ue4/assets/exports/UCurveTable';
+	import { FDataTableRowHandle } from 'unreal.js/ue4/objects/FDataTableRowHandle';
 	export class FortAccountItemDefinition extends FortPersistableItemDefinition {
 	    LevelToXpHandle: FCurveTableRowHandle;
 	    LevelToSacrificeXpHandle: FCurveTableRowHandle;
@@ -9016,8 +8946,8 @@ declare module 'fort/exports/FortAccountItemDefinition' {
 	}
 
 }
-declare module 'ue4/objects/gameplaytags/FGameplayTag' {
-	import { FName } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/ue4/objects/gameplaytags/FGameplayTag' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
 	export class FGameplayTag {
 	    TagName: FName;
 	    constructor(TagName?: FName);
@@ -9025,18 +8955,18 @@ declare module 'ue4/objects/gameplaytags/FGameplayTag' {
 	}
 
 }
-declare module 'fort/objects/CosmeticVariantInfo' {
-	import { FGameplayTag } from 'ue4/objects/gameplaytags/FGameplayTag';
+declare module 'unreal.js/fort/objects/CosmeticVariantInfo' {
+	import { FGameplayTag } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTag';
 	export class CosmeticVariantInfo {
 	    VariantChannelTag: FGameplayTag;
 	    ActiveVariantTag: FGameplayTag;
 	}
 
 }
-declare module 'fort/exports/variants/FortCosmeticVariant' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FGameplayTag } from 'ue4/objects/gameplaytags/FGameplayTag';
-	import { FText } from 'ue4/objects/core/i18n/Text';
+declare module 'unreal.js/fort/exports/variants/FortCosmeticVariant' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FGameplayTag } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTag';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
 	export class FortCosmeticVariant extends UObject {
 	    VariantChannelTag: FGameplayTag;
 	    VariantChannelName: FText;
@@ -9044,18 +8974,18 @@ declare module 'fort/exports/variants/FortCosmeticVariant' {
 	}
 
 }
-declare module 'fort/exports/AthenaCosmeticItemDefinition' {
-	import { FortAccountItemDefinition } from 'fort/exports/FortAccountItemDefinition';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FGameplayTagContainer } from 'ue4/objects/gameplaytags/FGameplayTagContainer';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FGameplayTag } from 'ue4/objects/gameplaytags/FGameplayTag';
-	import { CosmeticVariantInfo } from 'fort/objects/CosmeticVariantInfo';
-	import { FRotator } from 'ue4/objects/core/math/FRotator';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { FortCosmeticVariant } from 'fort/exports/variants/FortCosmeticVariant';
+declare module 'unreal.js/fort/exports/AthenaCosmeticItemDefinition' {
+	import { FortAccountItemDefinition } from 'unreal.js/fort/exports/FortAccountItemDefinition';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FGameplayTagContainer } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTagContainer';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FGameplayTag } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTag';
+	import { CosmeticVariantInfo } from 'unreal.js/fort/objects/CosmeticVariantInfo';
+	import { FRotator } from 'unreal.js/ue4/objects/core/math/FRotator';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { FortCosmeticVariant } from 'unreal.js/fort/exports/variants/FortCosmeticVariant';
 	export class AthenaCosmeticItemDefinition extends FortAccountItemDefinition {
 	    bIsShuffleTile: boolean;
 	    bIsOwnedByCampaignHero: boolean;
@@ -9126,31 +9056,31 @@ declare module 'fort/exports/AthenaCosmeticItemDefinition' {
 	}
 
 }
-declare module 'fort/exports/AthenaCharacterPartItemDefinition' {
-	import { AthenaCosmeticItemDefinition } from 'fort/exports/AthenaCosmeticItemDefinition';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
+declare module 'unreal.js/fort/exports/AthenaCharacterPartItemDefinition' {
+	import { AthenaCosmeticItemDefinition } from 'unreal.js/fort/exports/AthenaCosmeticItemDefinition';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
 	export class AthenaCharacterPartItemDefinition extends AthenaCosmeticItemDefinition {
 	    CharacterParts: FPackageIndex[];
 	}
 
 }
-declare module 'fort/exports/AthenaBackpackItemDefinition' {
-	import { AthenaCharacterPartItemDefinition } from 'fort/exports/AthenaCharacterPartItemDefinition';
+declare module 'unreal.js/fort/exports/AthenaBackpackItemDefinition' {
+	import { AthenaCharacterPartItemDefinition } from 'unreal.js/fort/exports/AthenaCharacterPartItemDefinition';
 	export class AthenaBackpackItemDefinition extends AthenaCharacterPartItemDefinition {
 	}
 
 }
-declare module 'fort/exports/FortCharacterType' {
-	import { FortAccountItemDefinition } from 'fort/exports/FortAccountItemDefinition';
+declare module 'unreal.js/fort/exports/FortCharacterType' {
+	import { FortAccountItemDefinition } from 'unreal.js/fort/exports/FortAccountItemDefinition';
 	export class FortCharacterType extends FortAccountItemDefinition {
 	}
 
 }
-declare module 'fort/exports/FortWorkerType' {
-	import { FortCharacterType } from 'fort/exports/FortCharacterType';
-	import { EFortCustomGender } from 'fort/enums/EFortCustomGender';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FGameplayTagContainer } from 'ue4/objects/gameplaytags/FGameplayTagContainer';
+declare module 'unreal.js/fort/exports/FortWorkerType' {
+	import { FortCharacterType } from 'unreal.js/fort/exports/FortCharacterType';
+	import { EFortCustomGender } from 'unreal.js/fort/enums/EFortCustomGender';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FGameplayTagContainer } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTagContainer';
 	export class FortWorkerType extends FortCharacterType {
 	    Gender: EFortCustomGender;
 	    FixedPortrait: FSoftObjectPath;
@@ -9163,31 +9093,31 @@ declare module 'fort/exports/FortWorkerType' {
 	}
 
 }
-declare module 'fort/objects/FortAttributeInitializationKey' {
-	import { FName } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/fort/objects/FortAttributeInitializationKey' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
 	export class FortAttributeInitializationKey {
 	    AttributeInitCategory: FName;
 	    AttributeInitSubCategory: FName;
 	}
 
 }
-declare module 'fort/objects/GameplayEffectApplicationInfo' {
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/fort/objects/GameplayEffectApplicationInfo' {
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class GameplayEffectApplicationInfo {
 	    GameplayEffect: FSoftObjectPath;
 	    Level: number;
 	}
 
 }
-declare module 'fort/exports/FortHeroType' {
-	import { FortWorkerType } from 'fort/exports/FortWorkerType';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FDataTableRowHandle } from 'ue4/objects/FDataTableRowHandle';
-	import { FGameplayTagContainer } from 'ue4/objects/gameplaytags/FGameplayTagContainer';
-	import { FortAttributeInitializationKey } from 'fort/objects/FortAttributeInitializationKey';
-	import { GameplayEffectApplicationInfo } from 'fort/objects/GameplayEffectApplicationInfo';
+declare module 'unreal.js/fort/exports/FortHeroType' {
+	import { FortWorkerType } from 'unreal.js/fort/exports/FortWorkerType';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FDataTableRowHandle } from 'unreal.js/ue4/objects/FDataTableRowHandle';
+	import { FGameplayTagContainer } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTagContainer';
+	import { FortAttributeInitializationKey } from 'unreal.js/fort/objects/FortAttributeInitializationKey';
+	import { GameplayEffectApplicationInfo } from 'unreal.js/fort/objects/GameplayEffectApplicationInfo';
 	export class FortHeroType extends FortWorkerType {
 	    bForceShowHeadAccessory: boolean;
 	    bForceShowBackpack: boolean;
@@ -9214,10 +9144,10 @@ declare module 'fort/exports/FortHeroType' {
 	}
 
 }
-declare module 'ue4/objects/core/math/FTransform' {
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { FQuat } from 'ue4/objects/core/math/FQuat';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/objects/core/math/FTransform' {
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { FQuat } from 'unreal.js/ue4/objects/core/math/FQuat';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class FTransform {
 	    rotation: FQuat;
 	    translation: FVector;
@@ -9228,14 +9158,14 @@ declare module 'ue4/objects/core/math/FTransform' {
 	}
 
 }
-declare module 'fort/objects/MarshalledVFXAuthoredData' {
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FGameplayTagContainer } from 'ue4/objects/gameplaytags/FGameplayTagContainer';
-	import { FGameplayTag } from 'ue4/objects/gameplaytags/FGameplayTag';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { EFXType } from 'fort/enums/EFXType';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { FTransform } from 'ue4/objects/core/math/FTransform';
+declare module 'unreal.js/fort/objects/MarshalledVFXAuthoredData' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FGameplayTagContainer } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTagContainer';
+	import { FGameplayTag } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTag';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { EFXType } from 'unreal.js/fort/enums/EFXType';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { FTransform } from 'unreal.js/ue4/objects/core/math/FTransform';
 	export class MarshalledVFXAuthoredData {
 	    NiagaraVFX: MarshalledVFXData[];
 	    CascadeVFX: MarshalledVFXData[];
@@ -9256,25 +9186,25 @@ declare module 'fort/objects/MarshalledVFXAuthoredData' {
 	}
 
 }
-declare module 'fort/exports/MarshalledVFX_AuthoredDataConfig' {
-	import { MarshalledVFXAuthoredData } from 'fort/objects/MarshalledVFXAuthoredData';
-	import { UObject } from 'ue4/assets/exports/UObject';
+declare module 'unreal.js/fort/exports/MarshalledVFX_AuthoredDataConfig' {
+	import { MarshalledVFXAuthoredData } from 'unreal.js/fort/objects/MarshalledVFXAuthoredData';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
 	export class MarshalledVFX_AuthoredDataConfig extends UObject {
 	    Data: MarshalledVFXAuthoredData;
 	}
 
 }
-declare module 'fort/exports/AthenaCharacterItemDefinition' {
-	import { AthenaCosmeticItemDefinition } from 'fort/exports/AthenaCosmeticItemDefinition';
-	import { UnrealMap } from 'util/UnrealMap';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { EFortCustomPartType } from 'fort/enums/EFortCustomPartType';
-	import { EFortCustomGender } from 'fort/enums/EFortCustomGender';
-	import { AthenaBackpackItemDefinition } from 'fort/exports/AthenaBackpackItemDefinition';
-	import { FortHeroType } from 'fort/exports/FortHeroType';
-	import { MarshalledVFX_AuthoredDataConfig } from 'fort/exports/MarshalledVFX_AuthoredDataConfig';
+declare module 'unreal.js/fort/exports/AthenaCharacterItemDefinition' {
+	import { AthenaCosmeticItemDefinition } from 'unreal.js/fort/exports/AthenaCosmeticItemDefinition';
+	import { UnrealMap } from 'unreal.js/util/UnrealMap';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { EFortCustomPartType } from 'unreal.js/fort/enums/EFortCustomPartType';
+	import { EFortCustomGender } from 'unreal.js/fort/enums/EFortCustomGender';
+	import { AthenaBackpackItemDefinition } from 'unreal.js/fort/exports/AthenaBackpackItemDefinition';
+	import { FortHeroType } from 'unreal.js/fort/exports/FortHeroType';
+	import { MarshalledVFX_AuthoredDataConfig } from 'unreal.js/fort/exports/MarshalledVFX_AuthoredDataConfig';
 	export class AthenaCharacterItemDefinition extends AthenaCosmeticItemDefinition {
 	    RequestedDataStores: UnrealMap<FName, UObject>;
 	    AuthoredVFXData_ByPart: UnrealMap<EFortCustomPartType, MarshalledVFX_AuthoredDataConfig>;
@@ -9286,57 +9216,57 @@ declare module 'fort/exports/AthenaCharacterItemDefinition' {
 	}
 
 }
-declare module 'fort/objects/variants/MaterialParamName' {
-	import { FName } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/fort/objects/variants/MaterialParamName' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
 	export class MaterialParamName {
 	    ParamName: FName;
 	}
 
 }
-declare module 'fort/objects/variants/MaterialVectorVariant' {
-	import { FLinearColor } from 'ue4/objects/core/math/FColor';
-	import { MaterialParamName } from 'fort/objects/variants/MaterialParamName';
+declare module 'unreal.js/fort/objects/variants/MaterialVectorVariant' {
+	import { FLinearColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { MaterialParamName } from 'unreal.js/fort/objects/variants/MaterialParamName';
 	export class MaterialVectorVariant extends MaterialParamName {
 	    Value: FLinearColor;
 	}
 
 }
-declare module 'fort/objects/variants/MaterialTextureVariant' {
-	import { MaterialParamName } from 'fort/objects/variants/MaterialParamName';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/fort/objects/variants/MaterialTextureVariant' {
+	import { MaterialParamName } from 'unreal.js/fort/objects/variants/MaterialParamName';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class MaterialTextureVariant extends MaterialParamName {
 	    Value: FSoftObjectPath;
 	}
 
 }
-declare module 'fort/objects/variants/MaterialFloatVariant' {
-	import { MaterialParamName } from 'fort/objects/variants/MaterialParamName';
+declare module 'unreal.js/fort/objects/variants/MaterialFloatVariant' {
+	import { MaterialParamName } from 'unreal.js/fort/objects/variants/MaterialParamName';
 	export class MaterialFloatVariant extends MaterialParamName {
 	    Value: number;
 	}
 
 }
-declare module 'fort/objects/variants/VectorParamVariant' {
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { MaterialParamName } from 'fort/objects/variants/MaterialParamName';
+declare module 'unreal.js/fort/objects/variants/VectorParamVariant' {
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { MaterialParamName } from 'unreal.js/fort/objects/variants/MaterialParamName';
 	export class VectorParamVariant extends MaterialParamName {
 	    Value: FVector;
 	}
 
 }
-declare module 'fort/objects/variants/BaseVariantDef' {
-	import { FGameplayTag } from 'ue4/objects/gameplaytags/FGameplayTag';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { EFXType } from 'fort/enums/EFXType';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FGameplayTagContainer } from 'ue4/objects/gameplaytags/FGameplayTagContainer';
-	import { MaterialVectorVariant } from 'fort/objects/variants/MaterialVectorVariant';
-	import { MaterialTextureVariant } from 'fort/objects/variants/MaterialTextureVariant';
-	import { MaterialFloatVariant } from 'fort/objects/variants/MaterialFloatVariant';
-	import { EAttachmentRule } from 'fort/enums/EAttachmentRule';
-	import { VectorParamVariant } from 'fort/objects/variants/VectorParamVariant';
+declare module 'unreal.js/fort/objects/variants/BaseVariantDef' {
+	import { FGameplayTag } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTag';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { EFXType } from 'unreal.js/fort/enums/EFXType';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FGameplayTagContainer } from 'unreal.js/ue4/objects/gameplaytags/FGameplayTagContainer';
+	import { MaterialVectorVariant } from 'unreal.js/fort/objects/variants/MaterialVectorVariant';
+	import { MaterialTextureVariant } from 'unreal.js/fort/objects/variants/MaterialTextureVariant';
+	import { MaterialFloatVariant } from 'unreal.js/fort/objects/variants/MaterialFloatVariant';
+	import { EAttachmentRule } from 'unreal.js/fort/enums/EAttachmentRule';
+	import { VectorParamVariant } from 'unreal.js/fort/objects/variants/VectorParamVariant';
 	export class BaseVariantDef {
 	    bStartUnlocked: boolean;
 	    bIsDefault: boolean;
@@ -9426,16 +9356,16 @@ declare module 'fort/objects/variants/BaseVariantDef' {
 	}
 
 }
-declare module 'fort/exports/variants/FortCosmeticVariantBackedByArray' {
-	import { FortCosmeticVariant } from 'fort/exports/variants/FortCosmeticVariant';
-	import { BaseVariantDef } from 'fort/objects/variants/BaseVariantDef';
+declare module 'unreal.js/fort/exports/variants/FortCosmeticVariantBackedByArray' {
+	import { FortCosmeticVariant } from 'unreal.js/fort/exports/variants/FortCosmeticVariant';
+	import { BaseVariantDef } from 'unreal.js/fort/objects/variants/BaseVariantDef';
 	export class FortCosmeticVariantBackedByArray extends FortCosmeticVariant {
 	    get variants(): BaseVariantDef[] | null;
 	}
 
 }
-declare module 'fort/objects/variants/MaterialVariantDef' {
-	import { BaseVariantDef, CosmeticMetaTagContainer, FoleySoundVariant, MaterialParamterDef, MaterialVariants, SoundVariant } from 'fort/objects/variants/BaseVariantDef';
+declare module 'unreal.js/fort/objects/variants/MaterialVariantDef' {
+	import { BaseVariantDef, CosmeticMetaTagContainer, FoleySoundVariant, MaterialParamterDef, MaterialVariants, SoundVariant } from 'unreal.js/fort/objects/variants/BaseVariantDef';
 	export class MaterialVariantDef extends BaseVariantDef {
 	    VariantMaterials: MaterialVariants[];
 	    VariantMaterialParams: MaterialParamterDef[];
@@ -9445,24 +9375,24 @@ declare module 'fort/objects/variants/MaterialVariantDef' {
 	}
 
 }
-declare module 'fort/exports/variants/FortCosmeticMaterialVariant' {
-	import { FortCosmeticVariantBackedByArray } from 'fort/exports/variants/FortCosmeticVariantBackedByArray';
-	import { MaterialVariantDef } from 'fort/objects/variants/MaterialVariantDef';
-	import { BaseVariantDef } from 'fort/objects/variants/BaseVariantDef';
+declare module 'unreal.js/fort/exports/variants/FortCosmeticMaterialVariant' {
+	import { FortCosmeticVariantBackedByArray } from 'unreal.js/fort/exports/variants/FortCosmeticVariantBackedByArray';
+	import { MaterialVariantDef } from 'unreal.js/fort/objects/variants/MaterialVariantDef';
+	import { BaseVariantDef } from 'unreal.js/fort/objects/variants/BaseVariantDef';
 	export class FortCosmeticMaterialVariant extends FortCosmeticVariantBackedByArray {
 	    MaterialOptions: MaterialVariantDef[];
 	    get variants(): BaseVariantDef[] | null;
 	}
 
 }
-declare module 'fort/exports/variants/VariantTypeBase' {
-	import { UObject } from 'ue4/assets/exports/UObject';
+declare module 'unreal.js/fort/exports/variants/VariantTypeBase' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
 	export class VariantTypeBase extends UObject {
 	}
 
 }
-declare module 'fort/objects/variants/MeshVariantDef' {
-	import { BaseVariantDef, CosmeticMetaTagContainer, FoleySoundVariant, MaterialParamterDef, MaterialVariants, MeshVariant, ParticleParamterVariant, ParticleVariant, ScriptedActionVariant, SocketTransformVariant, SoundVariant, VariantParticleSystemInitializerData } from 'fort/objects/variants/BaseVariantDef';
+declare module 'unreal.js/fort/objects/variants/MeshVariantDef' {
+	import { BaseVariantDef, CosmeticMetaTagContainer, FoleySoundVariant, MaterialParamterDef, MaterialVariants, MeshVariant, ParticleParamterVariant, ParticleVariant, ScriptedActionVariant, SocketTransformVariant, SoundVariant, VariantParticleSystemInitializerData } from 'unreal.js/fort/objects/variants/BaseVariantDef';
 	export class MeshVariantDef extends BaseVariantDef {
 	    VariantMeshes: MeshVariant[];
 	    VariantMaterials: MaterialVariants[];
@@ -9478,7 +9408,7 @@ declare module 'fort/objects/variants/MeshVariantDef' {
 	}
 
 }
-declare module 'ue4/assets/enums/EFunctionFlag' {
+declare module 'unreal.js/ue4/assets/enums/EFunctionFlag' {
 	export enum EFunctionFlags {
 	    FUNC_None = 0,
 	    FUNC_Final = 1,
@@ -9515,7 +9445,7 @@ declare module 'ue4/assets/enums/EFunctionFlag' {
 	}
 
 }
-declare module 'ue4/assets/enums/ETickingGroup' {
+declare module 'unreal.js/ue4/assets/enums/ETickingGroup' {
 	export enum ETickingGroup {
 	    TG_PrePhysics = 0,
 	    TG_StartPhysics = 1,
@@ -9528,19 +9458,19 @@ declare module 'ue4/assets/enums/ETickingGroup' {
 	}
 
 }
-declare module 'ue4/assets/enums/ETimelineLengthMode' {
+declare module 'unreal.js/ue4/assets/enums/ETimelineLengthMode' {
 	export enum ETimelineLengthMode {
 	    TL_TimelineLength = 0,
 	    TL_LastKeyFrame = 1
 	}
 
 }
-declare module 'ue4/assets/exports/components/UActorComponent' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FMulticastScriptDelegate } from 'ue4/objects/uobject/ScriptDelegates';
+declare module 'unreal.js/ue4/assets/exports/components/UActorComponent' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FMulticastScriptDelegate } from 'unreal.js/ue4/objects/uobject/ScriptDelegates';
 	export class UActorComponent extends UObject {
 	    ComponentTags: FName[];
 	    AssetUserData: FPackageIndex[];
@@ -9570,10 +9500,10 @@ declare module 'ue4/assets/exports/components/UActorComponent' {
 	}
 
 }
-declare module 'ue4/objects/engine/curves/UCurveFloat' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FRichCurve } from 'ue4/objects/engine/curves/FRichCurve';
-	import { Lazy } from 'util/Lazy';
+declare module 'unreal.js/ue4/objects/engine/curves/UCurveFloat' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FRichCurve } from 'unreal.js/ue4/objects/engine/curves/FRichCurve';
+	import { Lazy } from 'unreal.js/util/Lazy';
 	export class FRuntimeFloatCurve {
 	    EditorCurveData: FRichCurve;
 	    ExternalCurve: Lazy<UCurveFloat>;
@@ -9586,23 +9516,23 @@ declare module 'ue4/objects/engine/curves/UCurveFloat' {
 	}
 
 }
-declare module 'ue4/assets/objects/FBPVariableMetaDataEntry' {
-	import { FName } from 'ue4/objects/uobject/FName';
+declare module 'unreal.js/ue4/assets/objects/FBPVariableMetaDataEntry' {
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
 	export class FBPVariableMetaDataEntry {
 	    DataKey: FName;
 	    DataValue: string;
 	}
 
 }
-declare module 'ue4/assets/exports/UTimelineTemplate' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { ETimelineLengthMode } from 'ue4/assets/enums/ETimelineLengthMode';
-	import { ETickingGroup } from 'ue4/assets/enums/ETickingGroup';
-	import { UCurveFloat } from 'ue4/objects/engine/curves/UCurveFloat';
-	import { FBPVariableMetaDataEntry } from 'ue4/assets/objects/FBPVariableMetaDataEntry';
+declare module 'unreal.js/ue4/assets/exports/UTimelineTemplate' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { ETimelineLengthMode } from 'unreal.js/ue4/assets/enums/ETimelineLengthMode';
+	import { ETickingGroup } from 'unreal.js/ue4/assets/enums/ETickingGroup';
+	import { UCurveFloat } from 'unreal.js/ue4/objects/engine/curves/UCurveFloat';
+	import { FBPVariableMetaDataEntry } from 'unreal.js/ue4/assets/objects/FBPVariableMetaDataEntry';
 	export class UTimelineTemplate extends UObject {
 	    TimelineLength: number;
 	    LengthMode: ETimelineLengthMode;
@@ -9644,9 +9574,9 @@ declare module 'ue4/assets/exports/UTimelineTemplate' {
 	}
 
 }
-declare module 'ue4/assets/exports/UFunction' {
-	import { UStruct } from 'ue4/assets/exports/UStruct';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/ue4/assets/exports/UFunction' {
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export class UFunction extends UStruct {
 	    functionFlags: number;
 	    eventGraphFunction: UFunction;
@@ -9655,12 +9585,12 @@ declare module 'ue4/assets/exports/UFunction' {
 	}
 
 }
-declare module 'ue4/assets/exports/UBlueprintGeneratedClass_Properties' {
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { UActorComponent } from 'ue4/assets/exports/components/UActorComponent';
-	import { UTimelineTemplate } from 'ue4/assets/exports/UTimelineTemplate';
-	import { UFunction } from 'ue4/assets/exports/UFunction';
-	import { UObject } from 'ue4/assets/exports/UObject';
+declare module 'unreal.js/ue4/assets/exports/UBlueprintGeneratedClass_Properties' {
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { UActorComponent } from 'unreal.js/ue4/assets/exports/components/UActorComponent';
+	import { UTimelineTemplate } from 'unreal.js/ue4/assets/exports/UTimelineTemplate';
+	import { UFunction } from 'unreal.js/ue4/assets/exports/UFunction';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
 	export class UBlueprintGeneratedClass_Properties extends UObject {
 	    NumReplicatedProperties: number;
 	    bHasNativizedParent: boolean;
@@ -9675,19 +9605,19 @@ declare module 'ue4/assets/exports/UBlueprintGeneratedClass_Properties' {
 	}
 
 }
-declare module 'ue4/assets/exports/UBlueprintGeneratedClass' {
-	import { UBlueprintGeneratedClass_Properties } from 'ue4/assets/exports/UBlueprintGeneratedClass_Properties';
+declare module 'unreal.js/ue4/assets/exports/UBlueprintGeneratedClass' {
+	import { UBlueprintGeneratedClass_Properties } from 'unreal.js/ue4/assets/exports/UBlueprintGeneratedClass_Properties';
 	export class FPointerToUberGraphFrame {
 	}
 	export class UBlueprintGeneratedClass extends UBlueprintGeneratedClass_Properties {
 	}
 
 }
-declare module 'ue4/assets/exports/UClass' {
-	import { UStruct } from 'ue4/assets/exports/UStruct';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/ue4/assets/exports/UClass' {
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export class UClass extends UStruct {
 	    constructor();
 	    /** Used to check if the class was cooked or not */
@@ -9722,12 +9652,12 @@ declare module 'ue4/assets/exports/UClass' {
 	}
 
 }
-declare module 'ue4/assets/exports/ULevel_Properties' {
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { FIntVector } from 'ue4/objects/core/math/FIntVector';
-	import { UObject } from 'ue4/assets/exports/UObject';
+declare module 'unreal.js/ue4/assets/exports/ULevel_Properties' {
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { FIntVector } from 'unreal.js/ue4/objects/core/math/FIntVector';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
 	export class ULevel_Properties extends UObject {
 	    OwningWorld: FPackageIndex;
 	    Model: FPackageIndex;
@@ -9755,9 +9685,9 @@ declare module 'ue4/assets/exports/ULevel_Properties' {
 	}
 
 }
-declare module 'ue4/objects/engine/FUrl' {
+declare module 'unreal.js/ue4/objects/engine/FUrl' {
 	/** URL structure. */
-	import { FArchive } from 'ue4/reader/FArchive';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class FUrl {
 	    /** Protocol, i.e. "unreal" or "http". */
 	    protocol: string;
@@ -9777,17 +9707,15 @@ declare module 'ue4/objects/engine/FUrl' {
 	}
 
 }
-declare module 'ue4/assets/exports/ULevel' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FVector } from 'ue4/objects/core/math/FVector';
-	import { FArchive } from 'ue4/reader/FArchive';
-	import { FColor } from 'ue4/objects/core/math/FColor';
-	import { ULevel_Properties } from 'ue4/assets/exports/ULevel_Properties';
-	import { FUrl } from 'ue4/objects/engine/FUrl';
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FVector2D } from 'ue4/objects/core/math/FVector2D';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/ue4/assets/exports/ULevel' {
+	import { FVector } from 'unreal.js/ue4/objects/core/math/FVector';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
+	import { FColor } from 'unreal.js/ue4/objects/core/math/FColor';
+	import { ULevel_Properties } from 'unreal.js/ue4/assets/exports/ULevel_Properties';
+	import { FUrl } from 'unreal.js/ue4/objects/engine/FUrl';
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FVector2D } from 'unreal.js/ue4/objects/core/math/FVector2D';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export class FPrecomputedVisibilityCell {
 	    min: FVector;
 	    chunkIndex: number;
@@ -9838,14 +9766,14 @@ declare module 'ue4/assets/exports/ULevel' {
 	}
 
 }
-declare module 'ue4/assets/exports/USCS_Node' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { UStruct } from 'ue4/assets/exports/UStruct';
-	import { UClass } from 'ue4/assets/exports/UClass';
-	import { UActorComponent } from 'ue4/assets/exports/components/UActorComponent';
-	import { FBPVariableMetaDataEntry } from 'ue4/assets/objects/FBPVariableMetaDataEntry';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
+declare module 'unreal.js/ue4/assets/exports/USCS_Node' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { UStruct } from 'unreal.js/ue4/assets/exports/UStruct';
+	import { UClass } from 'unreal.js/ue4/assets/exports/UClass';
+	import { UActorComponent } from 'unreal.js/ue4/assets/exports/components/UActorComponent';
+	import { FBPVariableMetaDataEntry } from 'unreal.js/ue4/assets/objects/FBPVariableMetaDataEntry';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
 	export class USCS_Node extends UObject {
 	    ComponentClass: UClass;
 	    ComponentTemplate: UActorComponent;
@@ -9870,9 +9798,9 @@ declare module 'ue4/assets/exports/USCS_Node' {
 	}
 
 }
-declare module 'ue4/assets/exports/USimpleConstructionScript' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { USCS_Node } from 'ue4/assets/exports/USCS_Node';
+declare module 'unreal.js/ue4/assets/exports/USimpleConstructionScript' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { USCS_Node } from 'unreal.js/ue4/assets/exports/USCS_Node';
 	export class USimpleConstructionScript extends UObject {
 	    RootNodes: USCS_Node[];
 	    AllNodes: USCS_Node[];
@@ -9880,7 +9808,7 @@ declare module 'ue4/assets/exports/USimpleConstructionScript' {
 	}
 
 }
-declare module 'ue4/objects/uobject/EObjectFlags' {
+declare module 'unreal.js/ue4/objects/uobject/EObjectFlags' {
 	export enum EObjectFlags {
 	    RF_NoFlags = 0,
 	    RF_Public = 1,
@@ -9915,10 +9843,10 @@ declare module 'ue4/objects/uobject/EObjectFlags' {
 	}
 
 }
-declare module 'ue4/assets/exports/UUserDefinedStruct' {
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
-	import { UScriptStruct } from 'ue4/assets/exports/UScriptStruct';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/ue4/assets/exports/UUserDefinedStruct' {
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
+	import { UScriptStruct } from 'unreal.js/ue4/assets/exports/UScriptStruct';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export enum EUserDefinedStructureStatus {
 	    /** Struct is in an unknown state. */
 	    UDSS_UpToDate = 0,
@@ -9936,10 +9864,10 @@ declare module 'ue4/assets/exports/UUserDefinedStruct' {
 	}
 
 }
-declare module 'ue4/assets/exports/UWorld' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { ULevel } from 'ue4/assets/exports/ULevel';
-	import { FAssetArchive } from 'ue4/assets/reader/FAssetArchive';
+declare module 'unreal.js/ue4/assets/exports/UWorld' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { ULevel } from 'unreal.js/ue4/assets/exports/ULevel';
+	import { FAssetArchive } from 'unreal.js/ue4/assets/reader/FAssetArchive';
 	export class UWorld extends UObject {
 	    persistentLevel: ULevel;
 	    extraReferencedObjects: UObject;
@@ -9948,8 +9876,8 @@ declare module 'ue4/assets/exports/UWorld' {
 	}
 
 }
-declare module 'ue4/assets/mappings/JsonTypeMappingsProvider' {
-	import { TypeMappingsProvider } from 'ue4/assets/mappings/TypeMappingsProvider';
+declare module 'unreal.js/ue4/assets/mappings/JsonTypeMappingsProvider' {
+	import { TypeMappingsProvider } from 'unreal.js/ue4/assets/mappings/TypeMappingsProvider';
 	/**
 	 * Type mappings provider which uses json data
 	 * @abstract
@@ -9973,8 +9901,8 @@ declare module 'ue4/assets/mappings/JsonTypeMappingsProvider' {
 	}
 
 }
-declare module 'ue4/wwise/objects/BankHeader' {
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/wwise/objects/BankHeader' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class BankHeader {
 	    readonly version: number;
 	    readonly id: number;
@@ -9982,10 +9910,8 @@ declare module 'ue4/wwise/objects/BankHeader' {
 	}
 
 }
-declare module 'ue4/wwise/objects/AkEntry' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/wwise/objects/AkEntry' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class AkEntry {
 	    readonly nameHash: number;
 	    readonly offsetMultiplier: number;
@@ -10008,9 +9934,9 @@ declare module 'ue4/wwise/objects/AkEntry' {
 	}
 
 }
-declare module 'ue4/wwise/objects/AkFolder' {
-	import { AkEntry } from 'ue4/wwise/objects/AkEntry';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/wwise/objects/AkFolder' {
+	import { AkEntry } from 'unreal.js/ue4/wwise/objects/AkEntry';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class AkFolder {
 	    readonly offset: number;
 	    readonly id: number;
@@ -10035,8 +9961,8 @@ declare module 'ue4/wwise/objects/AkFolder' {
 	}
 
 }
-declare module 'ue4/wwise/objects/DataIndex' {
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/wwise/objects/DataIndex' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class DataIndex {
 	    readonly id: number;
 	    readonly offset: number;
@@ -10045,7 +9971,7 @@ declare module 'ue4/wwise/objects/DataIndex' {
 	}
 
 }
-declare module 'ue4/wwise/enums/EHierarchyObjectType' {
+declare module 'unreal.js/ue4/wwise/enums/EHierarchyObjectType' {
 	export enum EHierarchyObjectType {
 	    Settings = 0,
 	    SoundSfxVoice = 1,
@@ -10069,8 +9995,8 @@ declare module 'ue4/wwise/enums/EHierarchyObjectType' {
 	}
 
 }
-declare module 'ue4/wwise/objects/AbstractHierarchy' {
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/wwise/objects/AbstractHierarchy' {
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export abstract class AbstractHierarchy {
 	    id: number;
 	    constructor(Ar: FArchive);
@@ -10078,10 +10004,10 @@ declare module 'ue4/wwise/objects/AbstractHierarchy' {
 	}
 
 }
-declare module 'ue4/wwise/objects/Hierarchy' {
-	import { EHierarchyObjectType } from 'ue4/wwise/enums/EHierarchyObjectType';
-	import { AbstractHierarchy } from 'ue4/wwise/objects/AbstractHierarchy';
-	import { FArchive } from 'ue4/reader/FArchive';
+declare module 'unreal.js/ue4/wwise/objects/Hierarchy' {
+	import { EHierarchyObjectType } from 'unreal.js/ue4/wwise/enums/EHierarchyObjectType';
+	import { AbstractHierarchy } from 'unreal.js/ue4/wwise/objects/AbstractHierarchy';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class Hierarchy {
 	    readonly type: EHierarchyObjectType;
 	    readonly length: number;
@@ -10095,7 +10021,7 @@ declare module 'ue4/wwise/objects/Hierarchy' {
 	}
 
 }
-declare module 'ue4/wwise/enums/ESectionIdentifier' {
+declare module 'unreal.js/ue4/wwise/enums/ESectionIdentifier' {
 	export enum ESectionIdentifier {
 	    AKPK = 1263553345,
 	    BKHD = 1145588546,
@@ -10112,15 +10038,13 @@ declare module 'ue4/wwise/enums/ESectionIdentifier' {
 	}
 
 }
-declare module 'ue4/wwise/WwiseReader' {
-	/// <reference types="node" />
-	/// <reference types="ref-napi" />
-	import { BankHeader } from 'ue4/wwise/objects/BankHeader';
-	import { AkFolder } from 'ue4/wwise/objects/AkFolder';
-	import { DataIndex } from 'ue4/wwise/objects/DataIndex';
-	import { Hierarchy } from 'ue4/wwise/objects/Hierarchy';
+declare module 'unreal.js/ue4/wwise/WwiseReader' {
+	import { BankHeader } from 'unreal.js/ue4/wwise/objects/BankHeader';
+	import { AkFolder } from 'unreal.js/ue4/wwise/objects/AkFolder';
+	import { DataIndex } from 'unreal.js/ue4/wwise/objects/DataIndex';
+	import { Hierarchy } from 'unreal.js/ue4/wwise/objects/Hierarchy';
 	import Collection from '@discordjs/collection';
-	import { FArchive } from 'ue4/reader/FArchive';
+	import { FArchive } from 'unreal.js/ue4/reader/FArchive';
 	export class WwiseReader {
 	    header: BankHeader;
 	    folders: AkFolder[];
@@ -10171,7 +10095,7 @@ declare module 'ue4/wwise/WwiseReader' {
 	}
 
 }
-declare module 'ue4/wwise/enums/EHierarchyParameterType' {
+declare module 'unreal.js/ue4/wwise/enums/EHierarchyParameterType' {
 	export enum EHierarchyParameterType {
 	    VoiceVolume = 0,
 	    VoicePitch = 2,
@@ -10218,7 +10142,7 @@ declare module 'ue4/wwise/enums/EHierarchyParameterType' {
 	}
 
 }
-declare module 'ue4/wwise/enums/ESoundConversion' {
+declare module 'unreal.js/ue4/wwise/enums/ESoundConversion' {
 	export enum ESoundConversion {
 	    PCM = 1,
 	    ADPCM = 2,
@@ -10226,7 +10150,7 @@ declare module 'ue4/wwise/enums/ESoundConversion' {
 	}
 
 }
-declare module 'ue4/wwise/enums/ESoundSource' {
+declare module 'unreal.js/ue4/wwise/enums/ESoundSource' {
 	export enum ESoundSource {
 	    Embedded = 0,
 	    Streamed = 1,
@@ -10234,7 +10158,7 @@ declare module 'ue4/wwise/enums/ESoundSource' {
 	}
 
 }
-declare module 'ue4/wwise/enums/ESoundType' {
+declare module 'unreal.js/ue4/wwise/enums/ESoundType' {
 	export enum ESoundType {
 	    SoundSfx = 0,
 	    SoundVoice = 1,
@@ -10242,7 +10166,7 @@ declare module 'ue4/wwise/enums/ESoundType' {
 	}
 
 }
-declare module 'util/decorators/ObjectRegistryIgnore' {
+declare module 'unreal.js/util/decorators/ObjectRegistryIgnore' {
 	export function ObjectRegistryIgnore<T extends {
 	    new (...args: any[]): {};
 	}>(constructor: T): {
@@ -10251,7 +10175,7 @@ declare module 'util/decorators/ObjectRegistryIgnore' {
 	} & T;
 
 }
-declare module 'util/decorators/ObjectRegistryOverrideIgnore' {
+declare module 'unreal.js/util/decorators/ObjectRegistryOverrideIgnore' {
 	export function ObjectRegistryOverrideIgnore<T extends {
 	    new (...args: any[]): {};
 	}>(constructor: T): {
@@ -10260,10 +10184,10 @@ declare module 'util/decorators/ObjectRegistryOverrideIgnore' {
 	} & T;
 
 }
-declare module 'valorant/exports/CharacterAbilityUIData' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
+declare module 'unreal.js/valorant/exports/CharacterAbilityUIData' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
 	export class CharacterAbilityUIData extends UObject {
 	    DisplayName: FText;
 	    Description: FText;
@@ -10271,11 +10195,11 @@ declare module 'valorant/exports/CharacterAbilityUIData' {
 	}
 
 }
-declare module 'valorant/exports/CharacterDataAsset' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
+declare module 'unreal.js/valorant/exports/CharacterDataAsset' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
 	export class CharacterDataAsset extends UObject {
 	    CharacterID: FName;
 	    Character: FSoftObjectPath;
@@ -10290,20 +10214,20 @@ declare module 'valorant/exports/CharacterDataAsset' {
 	}
 
 }
-declare module 'valorant/exports/CharacterRoleDataAsset' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { FGuid } from 'ue4/objects/core/misc/Guid';
+declare module 'unreal.js/valorant/exports/CharacterRoleDataAsset' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { FGuid } from 'unreal.js/ue4/objects/core/misc/Guid';
 	export class CharacterRoleDataAsset extends UObject {
 	    UIData: FSoftObjectPath;
 	    Uuid: FGuid;
 	}
 
 }
-declare module 'valorant/exports/CharacterRoleUIData' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
+declare module 'unreal.js/valorant/exports/CharacterRoleUIData' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
 	export class CharacterRoleUIData extends UObject {
 	    DisplayName: FText;
 	    Description: FText;
@@ -10311,12 +10235,12 @@ declare module 'valorant/exports/CharacterRoleUIData' {
 	}
 
 }
-declare module 'valorant/exports/CharacterUIData' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FText } from 'ue4/objects/core/i18n/Text';
-	import { FName } from 'ue4/objects/uobject/FName';
-	import { FPackageIndex } from 'ue4/objects/uobject/ObjectResource';
-	import { UScriptMap } from 'ue4/objects/uobject/UScriptMap';
+declare module 'unreal.js/valorant/exports/CharacterUIData' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FText } from 'unreal.js/ue4/objects/core/i18n/Text';
+	import { FName } from 'unreal.js/ue4/objects/uobject/FName';
+	import { FPackageIndex } from 'unreal.js/ue4/objects/uobject/ObjectResource';
+	import { UScriptMap } from 'unreal.js/ue4/objects/uobject/UScriptMap';
 	export class CharacterUIData extends UObject {
 	    FullPortrait: FPackageIndex;
 	    BustPortrait: FPackageIndex;
@@ -10329,68 +10253,68 @@ declare module 'valorant/exports/CharacterUIData' {
 	}
 
 }
-declare module 'valorant/exports/ContractDataAssetV2ContentCharacter' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
-	import { ArrayProperty } from 'ue4/assets/objects/FProperty';
+declare module 'unreal.js/valorant/exports/ContractDataAssetV2ContentCharacter' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
+	import { ArrayProperty } from 'unreal.js/ue4/assets/objects/FProperty';
 	export class ContractDataAssetV2ContentCharacter extends UObject {
 	    RelatedCharacter: FSoftObjectPath;
 	    Chapters: ArrayProperty;
 	}
 
 }
-declare module 'valorant/exports/EditableRewardCharacter' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/valorant/exports/EditableRewardCharacter' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class EditableRewardCharacter extends UObject {
 	    Character: FSoftObjectPath;
 	}
 
 }
-declare module 'valorant/exports/EditableRewardCurrency' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/valorant/exports/EditableRewardCurrency' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class EditableRewardCurrency extends UObject {
 	    Currency: FSoftObjectPath;
 	}
 
 }
-declare module 'valorant/exports/EditableRewardEquippableCharmLevel' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/valorant/exports/EditableRewardEquippableCharmLevel' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class EditableRewardEquippableCharmLevel extends UObject {
 	    EquippableCharmLevel: FSoftObjectPath;
 	}
 
 }
-declare module 'valorant/exports/EditableRewardEquippableSkinLevel' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/valorant/exports/EditableRewardEquippableSkinLevel' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class EditableRewardEquippableSkinLevel extends UObject {
 	    EquippableSkinLevel: FSoftObjectPath;
 	    bHighlighted: boolean;
 	}
 
 }
-declare module 'valorant/exports/EditableRewardPlayerCard' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/valorant/exports/EditableRewardPlayerCard' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class EditableRewardPlayerCard extends UObject {
 	    PlayerCard: FSoftObjectPath;
 	}
 
 }
-declare module 'valorant/exports/EditableRewardPlayerTitle' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/valorant/exports/EditableRewardPlayerTitle' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class EditableRewardPlayerTitle extends UObject {
 	    Title: FSoftObjectPath;
 	}
 
 }
-declare module 'valorant/exports/EditableRewardSpray' {
-	import { UObject } from 'ue4/assets/exports/UObject';
-	import { FSoftObjectPath } from 'ue4/objects/uobject/SoftObjectPath';
+declare module 'unreal.js/valorant/exports/EditableRewardSpray' {
+	import { UObject } from 'unreal.js/ue4/assets/exports/UObject';
+	import { FSoftObjectPath } from 'unreal.js/ue4/objects/uobject/SoftObjectPath';
 	export class EditableRewardSpray extends UObject {
 	    Spray: FSoftObjectPath;
 	}
