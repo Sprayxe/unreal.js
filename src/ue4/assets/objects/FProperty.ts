@@ -27,35 +27,35 @@ export class FProperty {
      * @returns {any} Current value
      * @public
      */
-    getTagTypeValue() {
+    getTagTypeValue(): any {
         return this instanceof ArrayProperty ? this.array :
             this instanceof BoolProperty ? this.bool :
-                this instanceof ByteProperty ? this.byte :
-                    this instanceof DelegateProperty ? this.delegate :
-                        this instanceof DoubleProperty ? this.number :
-                            this instanceof EnumProperty ? this.name :
-                                this instanceof FieldPathProperty ? this.fieldPath :
-                                    this instanceof FloatProperty ? this.float :
-                                        this instanceof IntProperty ? this.number :
-                                            this instanceof Int16Property ? this.number :
-                                                this instanceof Int64Property ? this.number :
-                                                    this instanceof Int8Property ? this.number :
-                                                        this instanceof InterfaceProperty ? this.interfaceProperty :
-                                                            this instanceof LazyObjectProperty ? this.guid :
-                                                                this instanceof MapProperty ? this.map :
-                                                                    this instanceof MulticastDelegateProperty ? this.delegate :
-                                                                        this instanceof NameProperty ? this.name :
-                                                                            this instanceof ObjectProperty ? this.index :
-                                                                                this instanceof SetProperty ? this.array :
-                                                                                    this instanceof SoftClassProperty ? this.object :
-                                                                                        this instanceof SoftObjectProperty ? this.object :
-                                                                                            this instanceof StrProperty ? this.str :
-                                                                                                this instanceof StructProperty ? this.struct.structType :
-                                                                                                    this instanceof TextProperty ? this.text :
-                                                                                                        this instanceof UInt16Property ? this.number :
-                                                                                                            this instanceof UInt32Property ? this.number :
-                                                                                                                this instanceof UInt64Property ? this.number :
-                                                                                                                    null
+            this instanceof ByteProperty ? this.byte :
+            this instanceof DelegateProperty ? this.delegate :
+            this instanceof DoubleProperty ? this.number :
+            this instanceof EnumProperty ? this.name :
+            this instanceof FieldPathProperty ? this.fieldPath :
+            this instanceof FloatProperty ? this.float :
+            this instanceof IntProperty ? this.number :
+            this instanceof Int16Property ? this.number :
+            this instanceof Int64Property ? this.number :
+            this instanceof Int8Property ? this.number :
+            this instanceof InterfaceProperty ? this.interfaceProperty :
+            this instanceof LazyObjectProperty ? this.guid :
+            this instanceof MapProperty ? this.map :
+            this instanceof MulticastDelegateProperty ? this.delegate :
+            this instanceof NameProperty ? this.name :
+            this instanceof ObjectProperty ? this.index :
+            this instanceof SetProperty ? this.array :
+            this instanceof SoftClassProperty ? this.object :
+            this instanceof SoftObjectProperty ? this.object :
+            this instanceof StrProperty ? this.str :
+            this instanceof StructProperty ? this.struct.structType :
+            this instanceof TextProperty ? this.text :
+            this instanceof UInt16Property ? this.number :
+            this instanceof UInt32Property ? this.number :
+            this instanceof UInt64Property ? this.number :
+            null
     }
 
     /**

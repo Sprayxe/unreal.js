@@ -1,5 +1,5 @@
 import { FArchive } from "../../reader/FArchive";
-import { FName } from "./FName";
+import { FName, FNameDummy } from "./FName";
 
 export const NAME_NO_NUMBER_INTERNAL = 0
 
@@ -34,7 +34,7 @@ export class FMinimalName {
         }
     }
 
-    toName() {
+    toName(): FNameDummy {
         return FName.dummy(this.nameMap[this.index.value], this.num)
     }
 }

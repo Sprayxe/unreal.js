@@ -1,9 +1,9 @@
 {
   "name": "unreal.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A pak reader for games like VALORANT & Fortnite written in Node.JS",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "typings/index.d.ts",
   "scripts": {
     "compile": "tsc",
     "start": "tsc && node dist/index.js",
