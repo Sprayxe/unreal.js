@@ -19,7 +19,7 @@ This library is in VERY early development so it might be unstable. Please also k
 - Supports loading of UE4 pak files
 - Supports loading of UE4 asset files (.uasset, .umap, .uexp, .ubulk)
 - Supports loading of .locres files
-- Supports loading of AssetRegistry.bin  
+- Supports loading of AssetRegistry.bin
 - Supports exporting of UE4 textures as image
 - Supports exporting of UE4 sounds files
 
@@ -127,7 +127,7 @@ You will also experience longer mounting times than e.g VALORANT. The first expo
   // this will find an export which matches the class 'UTexture2D'
   const tex = pkg.getExportOfType(UTexture2D)
   // use 'pkg.getExportOfTypeOrNull(UTexture2D)' if you check for undefined/null manually
-  const image = Image.convert(sound) // converts texture to image (import Image class from unreal.js)
+  const image = Image.convert(tex) // converts texture to image (import Image class from unreal.js)
   // writes it it a file
   writeFileSync("image.png", image)
   ```
