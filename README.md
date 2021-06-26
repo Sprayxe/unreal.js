@@ -38,7 +38,7 @@ SOON...
 #### Basics: FileProvider
 The file provider is basically the heart of the library and from there you control basically all features.
 - **Usage with Fortnite**\
-  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need [oo2core_8_win64.dll](https://drive.google.com/file/d/1PK-ImVzvJXupHljncMo95oAlV2TXEb8D/view?usp=sharing) present in your working directory. You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version. 
+  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need `oo2core_8_win64.dll` present in your working directory. You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version. 
     ```js
     // Create new instance
     const usmap = new UsmapTypeMappingsProvider(readFileSync("USMAPPATH"))
