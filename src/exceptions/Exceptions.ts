@@ -3,6 +3,7 @@ import { FArchiveWriter } from "../ue4/writer/FArchiveWriter";
 
 /**
  * Creates a parser exception
+ * @extends {Error}
  */
 export class ParserException extends Error {
     /**
@@ -19,6 +20,7 @@ export class ParserException extends Error {
 
 /**
  * Creates an invalid aes key exception
+ * @extends {Error}
  */
 export class InvalidAesKeyException extends ParserException {
     /**
@@ -34,6 +36,7 @@ export class InvalidAesKeyException extends ParserException {
 
 /**
  * Creates a missing schema exception
+ * @extends {Error}
  */
 export class MissingSchemaException extends ParserException {
     /**
@@ -49,6 +52,7 @@ export class MissingSchemaException extends ParserException {
 
 /**
  * Creates an unknown property exception
+ * @extends {Error}
  */
 export class UnknownPropertyException extends ParserException {
     /**

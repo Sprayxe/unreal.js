@@ -13,6 +13,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerEngine() {
+        //const p = process.cwd()
         const p = process.cwd() + "/node_modules/unreal.js"
         const dir0 = (await fs.readdir(p + "/dist/ue4/assets/exports/mats")).filter(f => f.endsWith(".js"))
         const dir1 = (await fs.readdir(p + "/dist/ue4/assets/exports/tex")).filter(f => f.endsWith(".js"))
@@ -38,6 +39,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerFortnite() {
+        //const p = process.cwd()
         const p = process.cwd() + "/node_modules/unreal.js"
         const dir0 = (await fs.readdir(p + "/dist/fort/exports/variants")).filter(f => f.endsWith(".js"))
         const dir = (await fs.readdir(p + "/dist/fort/exports")).filter(f => f.endsWith(".js"))
@@ -57,6 +59,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerValorant() {
+        // const p = process.cwd()
         const p = process.cwd() + "/node_modules/unreal.js"
         const dir1 = (await fs.readdir(p + "/dist/valorant/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir1) {

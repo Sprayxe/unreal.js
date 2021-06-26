@@ -2,7 +2,7 @@
 [![TYPESCRIPT](https://img.shields.io/badge/typescript-%23007ACC.svg?&style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![JAVASCRIPT](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![NODEJS](https://img.shields.io/badge/node.js-%2343853D.svg?&style=for-the-badge&logo=node.js&logoColor=white)](https://www.nodejs.org)
-[![DISCORD0](https://img.shields.io/badge/AK47%20Server-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/akbot)\
+[![DISCORD0](https://img.shields.io/badge/Discord%20Server-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/b2H6EGAmdQ)\
 [![NPM](https://nodei.co/npm/unreal.js.png)](https://npmjs.com/package/unreal.js)
 
 ![LOGO_0](https://media.discordapp.net/attachments/833965731279929365/853716847203844106/image0.png)
@@ -37,8 +37,10 @@ SOON...
 ### Usage
 #### Basics: FileProvider
 The file provider is basically the heart of the library and from there you control basically all features.
-- **Usage with Fortnite**\
-  **IMPORTANT**: When using the library with Fortnite V14.40 and above, you need `oo2core_8_win64.dll` present in your working directory (you can download it using `Oodle.downloadDLL()`). You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version. 
+
+**IMPORTANT**: When using the library with **Fortnite V14.40 and above**, you need `oo2core_8_win64.dll` present in your working directory (you can download it using `Oodle.downloadDLL()`). You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version.\
+You will also experience longer mounting times than e.g VALORANT. The first export may take up to 3 seconds, if you don't want this, put `provider.globalPackageStore.value` after `await provider.initialize()` to instantly load the needed resources (we are working on optimizing fortnite).
+- **Usage with Fortnite**
     ```js
     // Create new instance
     const usmap = new UsmapTypeMappingsProvider(readFileSync("USMAPPATH"))

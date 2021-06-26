@@ -41,6 +41,7 @@ import { FWeightedRandomSampler } from "../../objects/engine/FWeightedRandomSamp
 import { FSectionEvaluationDataTree } from "../../objects/moviescene/evaluation/FSectionEvaluationDataTree";
 import { FRichCurveKey } from "../../objects/engine/curves/FRichCurve";
 import { FSimpleCurveKey } from "../../objects/engine/curves/FSimpleCurve";
+import { Config } from "../../../Config";
 
 export class UScriptStruct {
     structName: FName
@@ -190,7 +191,7 @@ export class UScriptStruct {
                     this.structType = new FVectorMaterialInput(x)
                     break
                 default:
-                    console.debug(`Using property serialization for struct ${this.structName}`)
+                    if (Config.GDebugProperties) console.debug(`Using property serialization for struct ${this.structName}`)
                     this.structType = new FStructFallback(x, y.structClass, this.structName)
             }
         } else {

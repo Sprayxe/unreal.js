@@ -1,26 +1,47 @@
 /**
- * Creates a normal oodle exception
- * @param {string} message Message to use
- * @returns {Error} Exception
+ * Creates a basic oodle exception
+ * @extends {Error}
  */
-export function OodleException(message: string) {
-    return new Error(`[Oodle] Exception: ${message}`)
+export class OodleException extends Error {
+    /**
+     * Creates an instance
+     * @param {string} message Message to use
+     * @constructor
+     * @public
+     */
+    constructor(message: string) {
+        super(message)
+    }
 }
 
 /**
  * Creates a decompress oodle exception
- * @param {string} message Message to use
- * @returns {Error} Exception
+ * @extends {Error}
  */
-export function DecompressException(message: string) {
-    return new Error(`[Oodle] Decompress-Exception: ${message}`)
+export class DecompressException extends Error {
+    /**
+     * Creates an instance
+     * @param {string} message Message to use
+     * @constructor
+     * @public
+     */
+    constructor(message: string) {
+        super(message)
+    }
 }
 
 /**
  * Creates a compress oodle exception
- * @param {string} message Message to use
- * @returns {Error} Exception
+ * @extends {Error}
  */
-export function CompressException(message: string) {
-    return new Error(`[Oodle] Compress-Exception: ${message}`)
+export class CompressException extends Error {
+    /**
+     * Creates an instance
+     * @param {string} message Message to use
+     * @constructor
+     * @public
+     */
+    constructor(message: string) {
+        super(message)
+    }
 }

@@ -13,17 +13,72 @@ import { StringBuilder } from "../../../util/StringBuilder";
 import { camelCase } from "lodash"
 import { Lazy } from "../../../util/Lazy";
 
+/**
+ * UE4 Asset Object
+ * @implements {IPropertyHolder}
+ */
 export class UObject implements IPropertyHolder {
+    /**
+     * Object name
+     * @type {string}
+     * @public
+     */
     name: string = ""
+
+    /**
+     * Outer object of object
+     * @type {UObject}
+     * @public
+     */
     outer: UObject = null
+
+    /**
+     * Object class
+     * @type {any}
+     * @public
+     */
     clazz: any = null
+
+    /**
+     * Template of object
+     * @type {Lazy<UObject>}
+     * @public
+     */
     template: Lazy<UObject> = null
+
+    /**
+     * Object properties
+     * @type {Array<FPropertyTag>}
+     * @public
+     */
     properties: FPropertyTag[] = []
+
+    /**
+     * Object GUID
+     * @type {FGuid}
+     * @public
+     */
     objectGuid: FGuid = null
+
+    /**
+     * Object flags
+     * @type {number}
+     * @public
+     */
     flags = 0
 
+    /**
+     * Object export
+     * @type {FObjectExport}
+     * @public
+     */
     export: FObjectExport
 
+    /**
+     * Package that owns this object
+     * @type {Package}
+     * @public
+     */
     get owner(): Package {
         let current = this.outer
         let next = current?.outer
@@ -34,28 +89,66 @@ export class UObject implements IPropertyHolder {
         return current as unknown as Package
     }
 
+    /**
+     * Type of export
+     * @type {string}
+     * @public
+     */
     get exportType(): string {
         return this.clazz?.name || UObject.name
     }
 
+    /**
+     * Creates an instance
+     * @param {?Array<FPropertyTag>} properties Properties to assign
+     * @constructor
+     * @public
+     */
     constructor(properties: FPropertyTag[] = []) {
         this.properties = properties
     }
 
+    /**
+     * Sets a property
+     * @param {string} name Name of property
+     * @param {any} value Value of property
+     * @returns {void}
+     * @public
+     */
     set<T>(name: string, value: T) {
         if (this.getOrNull(name))
             return this.properties.find(it => it.name.text === name)?.setTagTypeValue(value)
     }
 
+    /**
+     * Gets a property (safe)
+     * @param {string} name Name of property to find
+     * @param {any} dflt Default value to return
+     * @returns {any} Result
+     * @public
+     */
     getOrDefault<T>(name: string, dflt: T) {
         const value: T = this.getOrNull(name)
         return value || dflt
     }
 
+    /**
+     * Gets a property (safe)
+     * @param {string} name Name of property to find
+     * @returns {?any} Result or null
+     * @public
+     */
     getOrNull<T>(name: string): T {
         return this.properties.find(it => it.name.text === name)?.getTagTypeValue()
     }
 
+    /**
+     * Gets a property
+     * @param {string} name Name of property to find
+     * @returns {any} Result
+     * @throws {Error} If property doesn't exist
+     * @public
+     */
     get<T>(name: string): T {
         const val = this.getOrNull<T>(name)
         if (!val)
@@ -63,6 +156,13 @@ export class UObject implements IPropertyHolder {
         return val
     }
 
+    /**
+     * Deserializes properties
+     * @param {FAssetArchive} Ar Reader to use
+     * @param {number} validPos Valid position of Reader
+     * @returns {void}
+     * @public
+     */
     deserialize(Ar: FAssetArchive, validPos: number) {
         this.properties = []
         if (typeof ((this as any).interfaces) === "undefined") {
@@ -77,12 +177,24 @@ export class UObject implements IPropertyHolder {
             this.objectGuid = new FGuid(Ar)
     }
 
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FAssetArchiveWriter) {
         serializeProperties(Ar, this.properties)
         Ar.writeBoolean(!!this.objectGuid)
         this.objectGuid?.serialize(Ar)
     }
 
+    /**
+     * Turns this object into json
+     * @param {Locres} locres Locres to use
+     * @returns {any} Json
+     * @public
+     */
     toJson(locres: Locres = null): any {
         const ob = {}
         this.properties.forEach((pTag) => {
@@ -94,16 +206,46 @@ export class UObject implements IPropertyHolder {
         return ob
     }
 
+    /**
+     * Clears flags
+     * @param {number} newFlags New flags to set
+     * @returns {void}
+     * @public
+     */
     clearFlags(newFlags: number) {
         this.flags = this.flags & newFlags
     }
 
+    /**
+     * Checks if this has provided flags
+     * @param {number} flagsToCheck Flags to check for
+     * @returns {boolean} Wether if flags matched or not
+     * @public
+     */
     hasAnyFlags(flagsToCheck: number) {
         return (this.flags & flagsToCheck) !== 0
     }
 
+    /**
+     * Gets full name
+     * @param {UObject} stopOuter Outer object
+     * @param {boolean} includeClassPackage Wether to include class
+     * @returns {string} Full name
+     * @public
+     */
     getFullName(stopOuter: UObject, includeClassPackage: boolean)
+
+    /**
+     * Gets full name with an existing string builder
+     * @param {UObject} stopOuter Outer object
+     * @param {StringBuilder} resultString String builder to use
+     * @param {boolean} includeClassPackage Wether to include class
+     * @returns {string} Full name
+     * @public
+     */
     getFullName(stopOuter: UObject, resultString: StringBuilder, includeClassPackage: boolean)
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     getFullName(x?: any, y?: any, z?: any) {
         if (typeof y === "boolean") {
             const result = new StringBuilder(128)
@@ -116,12 +258,28 @@ export class UObject implements IPropertyHolder {
                 y.append(this.clazz?.name)
             }
             y.append(" ")
-            this.getPathName(x, y)
+            return this.getPathName(x, y)
         }
     }
 
+    /**
+     * Gets path name
+     * @param {UObject} stopouter Outer object
+     * @returns {string} Path name
+     * @public
+     */
     getPathName(stopouter?: UObject)
+
+    /**
+     * Gets path name with existing string builder instance
+     * @param {UObject} stopouter Outer object
+     * @param {StringBuilder} resultString String builder to use
+     * @returns {string} Path name
+     * @public
+     */
     getPathName(stopouter: UObject, resultString: StringBuilder)
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     getPathName(x?: any, y?: any) {
         if (!y) {
             const result = new StringBuilder()
@@ -145,11 +303,23 @@ export class UObject implements IPropertyHolder {
         }
     }
 
+    /**
+     * Turns this into string
+     * @returns {string}
+     * @public
+     */
     toString() {
         return this.name
     }
 }
 
+/**
+ * Deserializes versioned tagged properties
+ * @param {Array<FPropertyTag>} properties Array to assign properties to
+ * @param {FAssetArchive} Ar Reader to use
+ * @returns {void}
+ * @export
+ */
 export function deserializeVersionedTaggedProperties(properties: FPropertyTag[], Ar: FAssetArchive) {
     while (true) {
         const tag = new FPropertyTag(Ar, true)
@@ -159,6 +329,13 @@ export function deserializeVersionedTaggedProperties(properties: FPropertyTag[],
     }
 }
 
+/**
+ * Serializes properties
+ * @param {FAssetArchiveWriter} Ar Writer to use
+ * @param {Array<FPropertyTag>} properties Array with properties to serialize
+ * @returns {void}
+ * @export
+ */
 export function serializeProperties(Ar: FAssetArchiveWriter, properties: FPropertyTag[]) {
     properties.forEach((it) => it.serialize(Ar, true))
     const nameMap = FName.getByNameMap("None", Ar.nameMap)

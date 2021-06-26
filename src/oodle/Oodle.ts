@@ -100,7 +100,7 @@ export class Oodle {
                 0, 0
             )
             if (resultCode <= 0)
-                throw DecompressException(`Oodle decompression failed with code ${resultCode}`)
+                throw new DecompressException(`Oodle decompression failed with code ${resultCode}`)
             //const stop = Date.now()
             //const seconds = (stop - start) / 1000
             //console.debug(`Oodle decompress: ${srcLen} => ${dstLen} (${seconds} seconds)`)
@@ -133,7 +133,7 @@ export class Oodle {
             ref.NULL, 0, 0, ref.NULL, 0
         )
         if (resultCode <= 0)
-            throw CompressException(`Oodle compression failed with code ${resultCode}`)
+            throw new CompressException(`Oodle compression failed with code ${resultCode}`)
         const dst = dstPointer.subarray(0, resultCode)
         //const stop = Date.now()
         //const seconds = (stop - start) / 1000
@@ -141,12 +141,21 @@ export class Oodle {
         return dst
     }
 
+    /**
+     * Gets path to oodle dll
+     * @returns {string} Path
+     * @private
+     * @static
+     */
     private static getDLLPath(): string {
         return `${process.cwd()}/${OodleDownloader.OODLE_FILE_NAME}`
     }
 
     /**
      * Downloads oo2core_8_win64.dll if it doesn't exist
+     * @returns {Promise<void>}
+     * @public
+     * @static
      */
     static async downloadDLL() {
         const path = Oodle.getDLLPath()
@@ -158,6 +167,8 @@ export class Oodle {
 
     /**
      * Loads the .dll library
+     * @returns {void}
+     * @throws {OodleException} Oodle library not found
      * @public
      * @static
      */
@@ -166,14 +177,14 @@ export class Oodle {
             if (!this.oodleLib) {
                 const path = Oodle.getDLLPath()
                 if (!existsSync(path))
-                    throw OodleException("Missing oodle library 'oo2core_8_win64.dll'!")
+                    throw new OodleException("Missing oodle library 'oo2core_8_win64.dll'!")
                 this.oodleLib = ffi.Library(path, {
                     OodleLZ_Decompress: ["int", ["uint8*", "int", "uint8*", "size_t", "int", "int", "int", "uint8*", "size_t", "void*", "void*", "void*", "size_t", "int"]],
                     OodleLZ_Compress: ["int", ["int", "uint8*", "size_t", "uint8*", "int", "void*", "size_t", "size_t", "void*", "size_t"]]
                 })
             }
         } catch (e) {
-            throw OodleException(e)
+            throw new OodleException(e)
         }
     }
 }
