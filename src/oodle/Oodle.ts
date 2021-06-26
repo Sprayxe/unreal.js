@@ -150,7 +150,10 @@ export class Oodle {
      */
     static async downloadDLL() {
         const path = Oodle.getDLLPath()
-        if (!existsSync(path)) await OodleDownloader.download(path)
+        if (!existsSync(path)) {
+            console.log(`${OodleDownloader.OODLE_FILE_NAME} is missing, downloading it...`)
+            await OodleDownloader.download(path)
+        }
     }
 
     /**
