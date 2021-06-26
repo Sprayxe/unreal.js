@@ -183,7 +183,7 @@ Replace:
   - [![TWITTER0](https://img.shields.io/badge/Sprayxe_-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/Sprayxe_)
   - [![TWITTER1](https://img.shields.io/badge/amrsatrio-%231DA1F2.svg?&style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/amrsatrio)
 - Discord
-  - [![DISCORD0](https://img.shields.io/badge/MarcelWRLD%230999-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
+  - [![DISCORD0](https://img.shields.io/badge/MarcelWRLD%230742-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
   - [![DISCORD1](https://img.shields.io/badge/tb24%235219-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@me)
 
 ## Contributors
