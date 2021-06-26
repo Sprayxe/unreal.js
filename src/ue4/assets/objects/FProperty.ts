@@ -486,10 +486,11 @@ export class FProperty {
 
     /**
      * Returns a value referring to read type
-     * @param {() => any} valueIfNonZero
-     * @param {() =>  any} valueIfZero
+     * @param {any} valueIfNonZero
+     * @param {any} valueIfZero
      * @param {ReadType} type
      * @returns {any}
+     * @example valueOr(() => new Class(Ar), () => new EmptyClass(), type)
      * @public
      * @static
      */

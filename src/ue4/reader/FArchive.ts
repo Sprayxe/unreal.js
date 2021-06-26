@@ -95,7 +95,7 @@ export class FArchive {
 
     /**
      * Wether if this reader is the the end
-     * @type {boolean} Result
+     * @type {boolean}
      * @public
      */
     get isAtStopper(): boolean {
@@ -304,9 +304,11 @@ export class FArchive {
 
     /**
      * Reads an array
-     * @param {(index) => any} init Callable method for array entries
+     * @param {any} init Callable method for array entries
      * @param {number} length Length to read
      * @returns {Array<any>} Result
+     * @example readArray((index) => new Class(index))
+     * @example readArray((index) => new Class(index), 69420)
      * @public
      */
     readArray<T>(init: (index: number) => T, length?: number): T[] {
@@ -321,8 +323,10 @@ export class FArchive {
     /**
      * Reads a map
      * @param {number} length Length to read
-     * @param {(index) => Pair<any, any>} init Callable method for map entries
-     * @returns {Array<any>} Result
+     * @param {any} init Callable method for map entries
+     * @returns {UnrealMap<any, any>} Result
+     * @example readTMap(null, (Ar) => { return { key: Ar.readFName(), value: Ar.readObject() } })
+     * @example readTMap(69420, (Ar) => { return { key: Ar.readFName(), value: Ar.readObject() } })
      * @public
      */
     readTMap<K, V>(length: number = this.readInt32(), init: (it: FArchive) => Pair<K, V>): UnrealMap<K, V> {
