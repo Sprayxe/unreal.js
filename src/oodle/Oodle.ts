@@ -3,6 +3,7 @@ import { CompressException, DecompressException, OodleException } from "./Except
 import ref from "ref-napi";
 import { INTEGER_MAX_VALUE } from "../util/Const";
 import { existsSync } from "fs";
+import { OodleDownloader } from './OodleDownloader';
 
 export const COMPRESSOR_LZH = 0
 export const COMPRESSOR_LZHLW = 1
@@ -140,6 +141,18 @@ export class Oodle {
         return dst
     }
 
+    private static getDLLPath(): string {
+        return `${process.cwd()}/${OodleDownloader.OODLE_FILE_NAME}`
+    }
+
+    /**
+     * Downloads oo2core_8_win64.dll if it doesn't exist
+     */
+    static async downloadDLL() {
+        const path = Oodle.getDLLPath()
+        if (!existsSync(path)) await OodleDownloader.download(path)
+    }
+
     /**
      * Loads the .dll library
      * @public
@@ -148,7 +161,7 @@ export class Oodle {
     static ensureLib() {
         try {
             if (!this.oodleLib) {
-                const path = process.cwd() + "/oo2core_8_win64.dll"
+                const path = Oodle.getDLLPath()
                 if (!existsSync(path))
                     throw OodleException("Missing oodle library 'oo2core_8_win64.dll'!")
                 this.oodleLib = ffi.Library(path, {
