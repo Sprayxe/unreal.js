@@ -45,7 +45,7 @@ You will also experience longer mounting times than e.g VALORANT. The first expo
     // Create new instance
     const usmap = new UsmapTypeMappingsProvider(readFileSync("USMAPPATH"))
     const provider = new FileProvider("GAMEPATH", VERSION, usmap)
-    provider.mappings.reload() // Loads .usmap
+    provider.mappingsProvider.reload() // Loads .usmap
     // 'start' the provider
     provider.populateIoStoreFiles = true
     await provider.initialize()
