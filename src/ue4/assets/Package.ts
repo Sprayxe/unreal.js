@@ -96,13 +96,13 @@ export abstract class Package extends UObject {
 
     /**
      * Gets an export of specific type
-     * @param {Function} type The class object which is either UObject or extends it
+     * @param {object} type The class object which is either UObject or extends it
      * @returns {any} the first export of the given type
      * @throws {TypeError} if there is no export of the given type
      * @example getExportOfType(CharacterAbilityUIData)
      * @public
      */
-    getExportOfType(type: Function) {
+    getExportOfType(type: object) {
         const obj = this.getExportsOfType(type)[0]
         if (obj)
             return obj
@@ -111,23 +111,23 @@ export abstract class Package extends UObject {
 
     /**
      * Gets an export of specific type
-     * @param {Function} type The class object which is either UObject or extends it
+     * @param {object} type The class object which is either UObject or extends it
      * @returns {?any} the first export of the given type or null
      * @example getExportOfTypeOrNull(CharacterAbilityUIData)
      * @public
      */
-    getExportOfTypeOrNull(type: Function) {
+    getExportOfTypeOrNull(type: object) {
         return this.getExportsOfType(type)[0] || null
     }
 
     /**
      * Gets an exports of specific type
-     * @param {Function} type The class object which is either UObject or extends it
+     * @param {object} type The class object which is either UObject or extends it
      * @returns {any[]} the first export of the given type or null
      * @example getExportsOfType(CharacterAbilityUIData)
      * @public
      */
-    getExportsOfType(type: Function) {
+    getExportsOfType(type: object) {
         return this.exports.filter(e => e instanceof type)
     }
 
