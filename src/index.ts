@@ -10,6 +10,7 @@ import { SoundWave } from "./ue4/converters/sounds/SoundWave";
 import { WwiseAudio } from "./ue4/converters/sounds/WwiseAudio";
 import { Locres } from "./ue4/locres/Locres";
 import { UObject } from "./ue4/assets/exports/UObject";
+import { UTexture2D } from "./ue4/assets/exports/tex/UTexture2D";
 import { FnLanguage } from "./ue4/locres/FnLanguage";
 import { FArchive } from "./ue4/reader/FArchive";
 import { PakFileReader } from "./ue4/pak/PakFileReader";
@@ -37,6 +38,7 @@ export {
     Locres,
     FnLanguage,
     UObject,
+    UTexture2D,
     // readers
     FArchive,
     FAssetArchive,
