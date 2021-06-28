@@ -10,14 +10,14 @@ export class TypeMappings {
      * @type {object}
      * @public
      */
-    types: {} // Map<string, UScriptStruct>
+    types: any // Map<string, UScriptStruct>
 
     /**
      * Stores enums
      * @type {object}
      * @public
      */
-    enums: {} // Map<string, string[]>
+    enums: any // Map<string, string[]>
 
     /**
      * Creates a new instance using args

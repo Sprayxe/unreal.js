@@ -2,6 +2,7 @@ import { UStruct } from "./UStruct";
 import { FName } from "../../objects/uobject/FName";
 import { UObject } from "./UObject";
 import { Lazy } from "../../../util/Lazy";
+import { FAssetArchive } from "../reader/FAssetArchive";
 
 export class UScriptStruct extends UStruct {
     useClassProperties = false

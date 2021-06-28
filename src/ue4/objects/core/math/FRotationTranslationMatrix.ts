@@ -3,12 +3,17 @@ import { FRotator } from "./FRotator";
 import { FVector } from "./FVector";
 import { Utils } from "../../../../util/Utils";
 
+/**
+ * Represents an UE4 FRotationTranslationMatrix
+ * @extends {FMatrix}
+ */
 export class FRotationTranslationMatrix extends FMatrix {
     /**
-     * Constructor.
-     *
-     * @param rot rotation
-     * @param origin translation to apply
+     * Constructor
+     * @param {FRotator} rot Rotation to use
+     * @param {FVector} origin Translation to use
+     * @constructor
+     * @public
      */
     constructor(rot: FRotator, origin: FVector) {
         super()

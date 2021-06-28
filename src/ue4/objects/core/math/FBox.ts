@@ -4,26 +4,74 @@ import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 
 /**
- * Implements an axis-aligned box.
- *
+ * Implements an axis-aligned box
  * Boxes describe an axis-aligned extent in three dimensions. They are used for many different things in the
- * Engine and in games, such as bounding volumes, collision detection and visibility calculation.
+ * Engine and in games, such as bounding volumes, collision detection and visibility calculation
+ * @implements {IStructType}
  */
 export class FBox implements IStructType {
-    /** Holds the box's minimum point. */
+    /**
+     * Holds the box's minimum point
+     * @type {FVector}
+     * @public
+     */
     public min: FVector
 
-    /** Holds the box's maximum point. */
+    /**
+     * Holds the box's maximum point
+     * @type {FVector}
+     * @public
+     */
     public max: FVector
 
-    /** Holds a flag indicating whether this box is valid. */
+    /**
+     * Holds a flag indicating whether this box is valid
+     * @type {boolean}
+     * @public
+     */
     public isValid: boolean
 
+    /**
+     * Creates empty instance
+     * @constructor
+     * @public
+     */
     constructor()
+
+    /**
+     * Creates an instance using FBox
+     * @param {FBox} box Box to yeet data from
+     * @constructor
+     * @public
+     */
     constructor(box: FBox)
+
+    /**
+     * Creates an instance using UE4 Reader
+     * @param {FArchive} Ar Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using FVector's
+     * @param {Array<FVector>} points Vectors to use
+     * @constructor
+     * @public
+     */
     constructor(points: FVector[])
+
+    /**
+     * Creates an instance using two FVector's
+     * @param {FVector} min Min
+     * @param {FVector} max Max
+     * @constructor
+     * @public
+     */
     constructor(min: FVector, max: FVector)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any) {
         if (!x) {
             this.min = new FVector(0, 0, 0)
@@ -45,6 +93,12 @@ export class FBox implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         this.min.serialize(Ar)
         this.max.serialize(Ar)
@@ -52,9 +106,9 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Compares two boxes for equality.
-     *
-     * @return true if the boxes are equal, false otherwise.
+     * Compares two boxes for equality
+     * @returns {boolean} Wether the boxes are equal, false otherwise
+     * @public
      */
     equals(other: any): boolean {
         if (this === other) return true
@@ -64,10 +118,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Adds to this bounding box to include a new bounding volume.
-     *
-     * @param other the bounding volume to increase the bounding volume to.
-     * @return Reference to this bounding volume after resizing to include the other bounding volume.
+     * Adds to this bounding box to include a new bounding volume
+     * @param other the bounding volume to increase the bounding volume to
+     * @returns {void} Reference to this bounding volume after resizing to include the other bounding volume
+     * @public
      */
     plusAssign0(other: FBox): void {
         if (this.isValid) {
@@ -88,10 +142,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Adds to this bounding box to include a given point.
-     *
-     * @param other the point to increase the bounding volume to.
-     * @return Reference to this bounding box after resizing to include the other point.
+     * Adds to this bounding box to include a given point
+     * @param other the point to increase the bounding volume to
+     * @returns {void} Reference to this bounding box after resizing to include the other point
+     * @public
      */
     plusAssign1(other: FVector): void {
         if (this.isValid) {
@@ -112,10 +166,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Gets the result of addition to this bounding volume.
-     *
-     * @param other The other volume to add to this.
-     * @return A new bounding volume.
+     * Gets the result of addition to this bounding volume
+     * @param other The other volume to add to this
+     * @returns {FBox} A new bounding volume
+     * @public
      */
     plus0(other: FBox): FBox {
         const box = new FBox(this)
@@ -124,10 +178,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Gets the result of addition to this bounding volume.
-     *
-     * @param other The other point to add to this.
-     * @return A new bounding volume.
+     * Gets the result of addition to this bounding volume
+     * @param other The other point to add to this
+     * @returns {FBox} A new bounding volume
+     * @public
      */
     plus1(other: FVector): FBox {
         const box = new FBox(this)
@@ -136,10 +190,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Gets the min or max of this bounding volume.
-     *
-     * @param index the index into points of the bounding volume.
-     * @return a point of the bounding volume.
+     * Gets the min or max of this bounding volume
+     * @param index the index into points of the bounding volume
+     * @returns {FVector} a point of the bounding volume
+     * @public
      */
     get(index: number): FVector {
         if (index === 0)
@@ -150,30 +204,30 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Calculates the distance of a point to this box.
-     *
-     * @param point The point.
-     * @return The distance.
+     * Calculates the distance of a point to this box
+     * @param point The point
+     * @returns {number} The distance
+     * @public
      */
     computeSquaredDistanceToPoint(point: FVector): number {
         return FVector.computeSquaredDistanceFromBoxToPoint(this.min, this.max, point)
     }
 
     /**
-     * - Increases the box size.
-     *
-     * @param v The size to increase the volume by.
-     * @return A new bounding box.
+     * Increases the box size
+     * @param v The size to increase the volume by
+     * @returns {FBox} A new bounding box
+     * @public
      */
     expandBy0(v: FVector): FBox {
         return new FBox(this.min.minus0(v), this.max.plus0(v))
     }
 
     /**
-     * - Increases the box size.
-     *
-     * @param w The size to increase the volume by.
-     * @return A new bounding box.
+     * Increases the box size
+     * @param w The size to increase the volume by
+     * @returns {FBox} A new bounding box
+     * @public
      */
     expandBy1(w: number): FBox {
         const v = new FVector(w, w, w)
@@ -181,31 +235,31 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Increases the box size.
-     *
+     * Increases the box size
      * @param neg The size to increase the volume by in the negative direction (positive values move the bounds outwards)
      * @param pos The size to increase the volume by in the positive direction (positive values move the bounds outwards)
-     * @return A new bounding box.
+     * @returns {FBox} A new bounding box
+     * @public
      */
     expandBy2(neg: FVector, pos: FVector): FBox {
         return new FBox(this.min.minus0(neg), this.max.plus0(pos))
     }
 
     /**
-     * - Shifts the bounding box position.
-     *
-     * @param offset The vector to shift the box by.
-     * @return A new bounding box.
+     * Shifts the bounding box position
+     * @param offset The vector to shift the box by
+     * @returns {FBox} A new bounding box
+     * @public
      */
     shiftBy(offset: FVector): FBox {
         return new FBox(this.min.plus0(offset), this.max.plus0(offset))
     }
 
     /**
-     * - Moves the center of bounding box to new destination.
-     *
-     * @param destination The destination point to move center of box to.
-     * @return A new bounding box.
+     * - Moves the center of bounding box to new destination
+     * @param destination The destination point to move center of box to
+     * @returns {FBox} A new bounding box
+     * @public
      */
     moveTo(destination: FVector): FBox {
         const offset = destination.minus0(this.getCenter())
@@ -213,27 +267,28 @@ export class FBox implements IStructType {
     }
 
     /**
-     * Gets the center point of this box.
-     *
-     * @return The center point.
-     * @see getCenterAndExtents
-     * @see getExtent
-     * @see getSize
-     * @see getVolume
+     * Gets the center point of this box
+     * @returns {FVector} The center point
+     * @public
+     * @see {getCenterAndExtents}
+     * @see {getExtent}
+     * @see {getSize}
+     * @see {getVolume}
      */
     getCenter(): FVector {
         return this.min.plus0(this.max).times1(0.5)
     }
 
     /**
-     * - Gets the center and extents of this box.
-     *
+     * Gets the center and extents of this box.
      * @param center(out) Will contain the box center point.
      * @param extents(out) Will contain the extent around the center.
-     * @see getCenter
-     * @see getExtent
-     * @see getSize
-     * @see getVolume
+     * @returns {void}
+     * @public
+     * @see {getCenter}
+     * @see {getExtent}
+     * @see {getSize}
+     * @see {getVolume}
      */
     getCenterAndExtents(center: FVector, extents: FVector): void {
         extents.set(this.getExtent())
@@ -241,10 +296,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Calculates the closest point on or inside the box to a given point in space.
-     *
-     * @param point The point in space.
-     * @return The closest point on or inside the box.
+     * Calculates the closest point on or inside the box to a given point in space
+     * @param point The point in space
+     * @returns {FVector} The closest point on or inside the box
+     * @public
      */
     getClosestPointTo(point: FVector): FVector {
         // start by considering the point inside the box
@@ -275,49 +330,49 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Gets the extents of this box.
-     *
-     * @return The box extents.
-     * @see getCenter
-     * @see getCenterAndExtents
-     * @see getSize
-     * @see getVolume
+     * Gets the extents of this box
+     * @returns {FVector} The box extents
+     * @public
+     * @see {getCenter}
+     * @see {getCenterAndExtents}
+     * @see {getSize}
+     * @see {getVolume}
      */
     getExtent(): FVector {
         return this.max.minus0(this.max).times1(0.5)
     }
 
     /**
-     * Gets the size of this box.
-     *
-     * @return The box size.
-     * @see getCenter
-     * @see getCenterAndExtents
-     * @see getExtent
-     * @see getVolume
+     * Gets the size of this box
+     * @returns {FVector} The box size
+     * @public
+     * @see {getCenter}
+     * @see {getCenterAndExtents}
+     * @see {getExtent}
+     * @see {getVolume}
      */
     getSize(): FVector {
         return this.max.minus0(this.min)
     }
 
     /**
-     * - Gets the volume of this box.
-     *
-     * @return The box volume.
-     * @see getCenter
-     * @see getCenterAndExtents
-     * @see getExtent
-     * @see getSize
+     * Gets the volume of this box
+     * @returns {number} The box volume
+     * @public
+     * @see {getCenter}
+     * @see {getCenterAndExtents}
+     * @see {getExtent}
+     * @see {getSize}
      */
     getVolume(): number {
         return (this.max.x - this.min.x) * (this.max.y - this.min.y) * (this.max.z - this.min.z)
     }
 
     /**
-     * - Checks whether the given bounding box intersects this bounding box.
-     *
-     * @param other The bounding box to intersect with.
-     * @return true if the boxes intersect, false otherwise.
+     * Checks whether the given bounding box intersects this bounding box
+     * @param {FBox} other The bounding box to intersect with
+     * @returns {boolean} Wether the boxes intersect, false otherwise
+     * @public
      */
     intersect(other: FBox): boolean {
         if ((this.min.x > other.max.x) || (other.min.x > this.max.x))
@@ -328,10 +383,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Checks whether the given bounding box intersects this bounding box in the XY plane.
-     *
-     * @param other The bounding box to test intersection.
-     * @return true if the boxes intersect in the XY Plane, false otherwise.
+     * Checks whether the given bounding box intersects this bounding box in the XY plane
+     * @param {FBox} other The bounding box to test intersection
+     * @returns {boolean} Wether the boxes intersect in the XY Plane, false otherwise
+     * @public
      */
     intersectXY(other: FBox): boolean {
         if ((this.min.x > other.max.x) || (other.min.x > this.max.x))
@@ -340,10 +395,10 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Returns the overlap FBox of two box
-     *
-     * @param other The bounding box to test overlap
-     * @return the overlap box. It can be 0 if they don't overlap
+     * Returns the overlap FBox of two box
+     * @param {FBox} other The bounding box to test overlap
+     * @returns {FBox} the overlap box. It can be 0 if they don't overlap
+     * @public
      */
     overlap(other: FBox): FBox {
         if (!this.intersect(other)) {
@@ -372,21 +427,21 @@ export class FBox implements IStructType {
 
 
     /**
-     * - Checks whether a given box is fully encapsulated by this box.
-     *
-     * @param other The box to test for encapsulation within the bounding volume.
-     * @return true if box is inside this volume.
+     * Checks whether a given box is fully encapsulated by this box
+     * @param {FBox} other The box to test for encapsulation within the bounding volume
+     * @returns {FBox} Wether box is inside this volume
+     * @public
      */
     isInside0(other: FBox) {
         return this.isInside1(other.min) && this.isInside1(other.max)
     }
 
     /**
-     * - Checks whether the given location is inside this box.
-     *
-     * @param _in The location to test for inside the bounding volume.
-     * @return true if location is inside this volume.
-     * @see isInsideXY
+     * Checks whether the given location is inside this box
+     * @param {FVector} _in The location to test for inside the bounding volume
+     * @returns {boolean} Wether location is inside this volume
+     * @public
+     * @see {isInsideXY1}
      */
     isInside1(_in: FVector): boolean {
         return (_in.x > this.min.x) && (_in.x < this.max.x)
@@ -395,11 +450,11 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Checks whether the given location is inside or on this box.
-     *
-     * @param _in The location to test for inside the bounding volume.
-     * @return true if location is inside this volume.
-     * @see isInsideXY
+     * Checks whether the given location is inside or on this box
+     * @param _in The location to test for inside the bounding volume
+     * @returns {boolean} Wether location is inside this volume
+     * @public
+     * @see {isInsideXY1}
      */
     isInsideOrOn(_in: FVector): boolean {
         return (_in.x >= this.min.x) && (_in.x <= this.max.x)
@@ -408,21 +463,21 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Checks whether the given box is fully encapsulated by this box in the XY plane.
-     *
-     * @param other The box to test for encapsulation within the bounding box.
-     * @return true if box is inside this box in the XY plane.
+     * Checks whether the given box is fully encapsulated by this box in the XY plane
+     * @param other The box to test for encapsulation within the bounding box
+     * @returns {boolean} Wether is inside this box in the XY plane
+     * @public
      */
     isInsideXY0(other: FBox): boolean {
         return this.isInsideXY1(other.min) && this.isInsideXY1(other.max)
     }
 
     /**
-     * - Checks whether the given location is inside this box in the XY plane.
-     *
-     * @param _in The location to test for inside the bounding box.
-     * @return true if location is inside this box in the XY plane.
-     * @see isInside
+     * - Checks whether the given location is inside this box in the XY plane
+     * @param _in The location to test for inside the bounding box
+     * @returns {boolean} Wether location is inside this box in the XY plane
+     * @public
+     * @see {isInside1}
      */
     isInsideXY1(_in: FVector): boolean {
         return (_in.x > this.min.x) && (_in.x < this.max.x)
@@ -435,10 +490,20 @@ export class FBox implements IStructType {
 
     // TODO transformProjectBy(projM: FMatrix): FBox
 
+    /**
+     * Turns this into string
+     * @returns {string}
+     * @public
+     */
     toString() {
         return `IsValid=${this.isValid}, Min=(${this.min.toString()}), Max=(${this.max.toString()})`
     }
 
+    /**
+     * Turns this into json
+     * @returns {any}
+     * @public
+     */
     toJson() {
         return {
             bIsValid: this.isValid,
@@ -448,11 +513,11 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Utility function to build an AABB from Origin and Extent
-     *
-     * @param origin The location of the bounding box.
-     * @param extent Half size of the bounding box.
-     * @return A new axis-aligned bounding box.
+     * Utility function to build an AABB from Origin and Extent
+     * @param {FVector} origin The location of the bounding box
+     * @param {FVector} extent Half size of the bounding box
+     * @returns {FBox} A new axis-aligned bounding box
+     * @public
      */
     static buildAABB(origin: FVector, extent: FVector): FBox {
         return new FBox(origin.minus0(extent), origin.plus0(extent))

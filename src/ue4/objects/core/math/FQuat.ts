@@ -2,14 +2,59 @@ import { IStructType } from "../../../assets/objects/UScriptStruct";
 import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 
+/**
+ * Represents an UE4 FQuat
+ * @implements {IStructType}
+ */
 export class FQuat implements IStructType {
+    /**
+     * X Value
+     * @type {number}
+     * @public
+     */
     public x: number
+
+    /**
+     * Y Value
+     * @type {number}
+     * @public
+     */
     public y: number
+
+    /**
+     * Z Value
+     * @type {number}
+     * @public
+     */
     public z: number
+
+    /**
+     * W Value
+     * @type {number}
+     * @public
+     */
     public w: number
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using XYZW values
+     * @param {number} x X value
+     * @param {number} y Y value
+     * @param {number} z Z value
+     * @param {number} w W value
+     * @constructor
+     * @public
+     */
     constructor(x: number, y: number, z: number, w: number)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg = args[0]
         if (arg instanceof FArchive) {
@@ -25,6 +70,12 @@ export class FQuat implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeFloat32(this.x)
         Ar.writeFloat32(this.y)
@@ -32,6 +83,11 @@ export class FQuat implements IStructType {
         Ar.writeFloat32(this.w)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             x: this.x,

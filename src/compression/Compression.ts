@@ -57,9 +57,9 @@ export class Compression {
 
     /**
      * Uncompresses a buffer
-     * @param formatName Name of compression to use
-     * @param compressedBuffer The buffer to decompress
-     * @param uncompressedSize The size of the uncompress buffer
+     * @param {string} formatName Name of compression to use
+     * @param {Buffer} compressedBuffer The buffer to decompress
+     * @param {Buffer} uncompressedSize The size of the uncompress buffer
      * @returns {void}
      * @public
      */
@@ -71,9 +71,9 @@ export class Compression {
 
     /**
      * Uncompresses a buffer
-     * @param formatName Name of compression to use
-     * @param compressedBuffer The buffer to decompress
-     * @param uncompressedBuffer A buffer allocated for the decompressed data
+     * @param {string} formatName Name of compression to use
+     * @param {Buffer} compressedBuffer The buffer to decompress
+     * @param {Buffer} uncompressedBuffer A buffer allocated for the decompressed data
      * @returns {void}
      * @public
      */
@@ -84,13 +84,13 @@ export class Compression {
 
     /**
      * Uncompresses a buffer
-     * @param formatName Name of compression to use
-     * @param uncompressedBuffer A buffer allocated for the decompressed data
-     * @param uncompressedBufferOff Offset of the allocated buffer for decompression
-     * @param uncompressedSize Size of the allocated buffer for decompression
-     * @param compressedBuffer Buffer to decompress
-     * @param compressedBufferOff Offset of the compressed buffer
-     * @param compressedSize Size of the compressed buffer
+     * @param {string} formatName Name of compression to use
+     * @param {Buffer} uncompressedBuffer A buffer allocated for the decompressed data
+     * @param {number} uncompressedBufferOff Offset of the allocated buffer for decompression
+     * @param {number} uncompressedSize Size of the allocated buffer for decompression
+     * @param {Buffer} compressedBuffer Buffer to decompress
+     * @param {number} compressedBufferOff Offset of the compressed buffer
+     * @param {number} compressedSize Size of the compressed buffer
      * @returns {void}
      * @public
      */

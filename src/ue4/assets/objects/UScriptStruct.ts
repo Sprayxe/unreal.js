@@ -43,12 +43,44 @@ import { FRichCurveKey } from "../../objects/engine/curves/FRichCurve";
 import { FSimpleCurveKey } from "../../objects/engine/curves/FSimpleCurve";
 import { Config } from "../../../Config";
 
+/**
+ * UScriptStruct
+ */
 export class UScriptStruct {
+    /**
+     * Name of struct
+     * @type {FName}
+     * @public
+     */
     structName: FName
+
+    /**
+     * Type of struct
+     * @type {IStructType}
+     * @public
+     */
     structType: IStructType
 
+    /**
+     * Creates an instance from reading
+     * @param {FAssetArchive} Ar Reader to use
+     * @param {PropertyType} typeData Type data
+     * @param {ReadType} type Read type
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive, typeData: PropertyType, type: ReadType)
-    constructor(structName: FName, structType: any)
+
+    /**
+     * Creates an instance using FName and any
+     * @param {FName} structName Name of struct
+     * @param {IStructType} structType Type of struct
+     * @constructor
+     * @public
+     */
+    constructor(structName: FName, structType: IStructType)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any, z?: any) {
         if (x instanceof FAssetArchive) {
             this.structName = y.structName

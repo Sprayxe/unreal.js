@@ -5,61 +5,87 @@ import { FLinearColor } from "./FColor";
 import { IStructType } from "../../../assets/objects/UScriptStruct";
 
 export class FVector4 implements IStructType {
-    /** The vector's X-component. */
+    /**
+     * The vector's X-component
+     * @type {number}
+     * @public
+     */
     public x: number
 
-    /** The vector's Y-component. */
+    /**
+     * The vector's Y-component
+     * @type {number}
+     * @public
+     */
     public y: number
 
-    /** The vector's Z-component. */
+    /**
+     * The vector's Z-component
+     * @type {number}
+     * @public
+     */
     public z: number
 
-    /** The vector's W-component. */
+    /**
+     * The vector's W-component
+     * @type {number}
+     * @public
+     */
     public w: number
 
     /**
-     * - Constructor which initializes all components to 0.0
+     * Creates an empty instance
+     * @constructor
+     * @public
      */
     constructor()
 
     /**
-     * - Constructor which initializes all components using FArchive
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar Reader to use
+     * @constructor
+     * @public
      */
     constructor(Ar: FArchive)
 
     /**
-     * - Constructor.
-     *
-     * @param vector 3D Vector to set first three components.
-     * @param w W Coordinate.
+     * Creates an instance using FVector and number
+     * @param {FVector} vector 3D Vector to set first three components
+     * @param {number} w W Coordinate
+     * @constructor
+     * @public
      */
     constructor(vector: FVector, w: number)
 
     /**
-     * - Creates and initializes a new vector from a color value.
-     *
-     * @param color Color used to set vector.
+     * Creates an instance using FLinearColor
+     * @param {FLinearColor} color Color used to set vector
+     * @constructor
+     * @public
      */
     constructor(color: FLinearColor)
 
     /**
-     * - Creates and initializes a new vector from the specified components.
-     *
-     * @param x X Coordinate.
-     * @param y Y Coordinate.
-     * @param z Z Coordinate.
-     * @param w W Coordinate.
+     * Creates an instance using values
+     * @param {number} x X Coordinate
+     * @param {number} y Y Coordinate
+     * @param {number} z Z Coordinate
+     * @param {number} w W Coordinate
+     * @constructor
+     * @public
      */
     constructor(x: number, y: number, z: number, w: number)
 
     /**
-     * - Creates and initializes a new vector from the specified 2D vectors.
-     *
-     * @param xy A 2D vector holding the X- and Y-components.
-     * @param zw A 2D vector holding the Z- and W-components.
+     * Creates an instance using specified 2D vectors
+     * @param {FVector2D} xy A 2D vector holding the X- and Y-components
+     * @param {FVector2D} zw A 2D vector holding the Z- and W-components
+     * @constructor
+     * @public
      */
     constructor(xy: FVector2D, zw: FVector2D)
 
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     constructor(arg1?: any, arg2?: any, arg3?: any, arg4?: any) {
         if (arg1 instanceof FArchive) {
             this.x = arg1.readFloat32()
@@ -94,6 +120,11 @@ export class FVector4 implements IStructType {
         }
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             x: this.x,

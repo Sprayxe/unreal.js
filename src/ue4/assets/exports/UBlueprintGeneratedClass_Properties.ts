@@ -2,10 +2,10 @@ import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { UActorComponent } from "./components/UActorComponent";
 import { UTimelineTemplate } from "./UTimelineTemplate";
 import { UFunction } from "./UFunction";
-import { UObject } from "./UObject";
 import { UProperty } from "../../../util/decorators/UProperty";
+import { UClass } from "./UClass";
 
-export class UBlueprintGeneratedClass_Properties extends UObject {
+export class UBlueprintGeneratedClass_Properties extends UClass {
     public NumReplicatedProperties: number = null
     public bHasNativizedParent: boolean = null
     public bHasCookedComponentInstancingData: boolean = null

@@ -127,7 +127,7 @@ export class FGuid implements IStructType {
      * Provides read-only access to the GUIDs components.
      *
      * @param index The index of the component to return (0...3).
-     * @returns The component.
+     * @returns {number} The component.
      */
     get(index: number) {
         if (index === 0)
@@ -171,7 +171,7 @@ export class FGuid implements IStructType {
      *
      * A GUID that has all its components set to zero is considered invalid.
      *
-     * @returns true if valid, false otherwise.
+     * @returns {boolean} Wether valid
      * @see invalidate
      */
     isValid() {
@@ -182,7 +182,7 @@ export class FGuid implements IStructType {
      * Converts this GUID to its string representation using the specified format.
      *
      * @param format The string format to use.
-     * @return The string representation.
+     * @returns {string} The string representation.
      */
     toString(format: EGuidFormats = EGuidFormats.Digits) {
         if (format === EGuidFormats.DigitsWithHyphens) {

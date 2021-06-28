@@ -208,7 +208,7 @@ export class FIoStoreTocResource {
     chunkBlockSignatures: Buffer[] //FSHAHash[]
     chunkMetas: FIoStoreTocEntryMeta[]
     directoryIndexBuffer: Buffer
-    chunkIdToIndex = new Collection<string, number>()
+    chunkIdToIndex = {} // new Collection<string, number>()
 
     read(tocBuffer: FArchive, readOptions: EIoStoreTocReadOptions) {
         // Header
@@ -232,27 +232,27 @@ export class FIoStoreTocResource {
         }
 
         // Chunk IDs
-        this.chunkIds = new Array(this.header.tocEntryCount)
+        this.chunkIds = []
         for (let i = 0; i < this.header.tocEntryCount; i++) {
             const id = new FIoChunkId(tocBuffer)
             this.chunkIds[i] = id
-            this.chunkIdToIndex.set(id.id.toString("base64"), i)
+            this.chunkIdToIndex[id.id.toString("base64")] = i
         }
 
         // Chunk offsets
-        this.chunkOffsetLengths = new Array(this.header.tocEntryCount)
+        this.chunkOffsetLengths = []
         for (let i = 0; i < this.header.tocEntryCount; i++) {
             this.chunkOffsetLengths[i] = new FIoOffsetAndLength(tocBuffer)
         }
 
         // Compression blocks
-        this.compressionBlocks = new Array(this.header.tocCompressedBlockEntryCount)
+        this.compressionBlocks = []
         for (let i = 0; i < this.header.tocCompressedBlockEntryCount; i++) {
             this.compressionBlocks[i] = new FIoStoreTocCompressedBlockEntry(tocBuffer)
         }
 
         // Compression methods
-        this.compressionMethods = new Array(this.header.compressionMethodNameCount + 1)
+        this.compressionMethods = []
         this.compressionMethods[0] = "None"
         for (let i = 0; i < this.header.compressionMethodNameCount; i++) {
             const compressionMethodName = tocBuffer.readBuffer(this.header.compressionMethodNameLength)
@@ -300,11 +300,11 @@ export class FIoStoreTocResource {
     }
 
     getTocEntryIndex(chunkId: FIoChunkId) {
-        return this.chunkIdToIndex.get(chunkId.id.toString("base64")) || -1
+        return this.chunkIdToIndex[chunkId.id.toString("base64")] || -1
     }
 
     getOffsetAndLength(chunkId: FIoChunkId): FIoOffsetAndLength {
-        const index = this.chunkIdToIndex.get(chunkId.id.toString("base64"))
+        const index = this.chunkIdToIndex[chunkId.id.toString("base64")]
         return index != null ? this.chunkOffsetLengths[index] : null
     }
 }

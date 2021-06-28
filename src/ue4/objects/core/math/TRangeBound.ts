@@ -1,19 +1,46 @@
-/**
- * Template for range bounds.
- */
 import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 import { IStructType } from "../../../assets/objects/UScriptStruct";
 
+/**
+ * Template for range bounds
+ * @implements {IStructType}
+ */
 export class TRangeBound<T> implements IStructType {
-    /** Holds the type of the bound. */
+    /**
+     * Holds the type of the bound
+     * @type {ERangeBoundTypes}
+     * @public
+     */
     public type: ERangeBoundTypes
 
-    /** Holds the bound's value. */
+    /**
+     * Holds the bound's value
+     * @type {any}
+     * @public
+     */
     public value: T
 
+    /**
+     * Creates an instance using an UE4 Reader and an init function
+     * @param {FArchive} Ar Reader to use
+     * @param {any} init Function to use
+     * @example new TRangeBound(Ar, () => Ar.readFName())
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive, init: () => T)
+
+    /**
+     * Creates an instance using values
+     * @param {ERangeBoundTypes} boundType Bound type
+     * @param {any} value Value
+     * @constructor
+     * @public
+     */
     constructor(boundType: ERangeBoundTypes, value: T)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any, y: any) {
         if (x instanceof FArchive) {
             this.type = x.readInt8()
@@ -24,11 +51,24 @@ export class TRangeBound<T> implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar Writer to use
+     * @param {void} write Function to use
+     * @example <TRangeBound>.serialize(Ar, (it) => Ar.writeInt8(it))
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter, write: (it: T) => void) {
         Ar.writeInt8(this.type)
         write(this.value)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             type: Object.keys(ERangeBoundTypes)[this.type],

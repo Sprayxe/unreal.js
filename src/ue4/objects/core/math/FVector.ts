@@ -12,82 +12,107 @@ import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 /** Allowed error for a normalized vector (against squared magnitude) */
 const THRESH_VECTOR_NORMALIZED = 0.01
 
+/**
+ * Represents an UE4 FVector
+ * @implements {IStructType}
+ */
 export class FVector implements IStructType {
-    /** Vector's X component. */
+    /**
+     * Vector's X component
+     * @type {number}
+     * @public
+     */
+
     public x: number
-    /** Vector's Y component. */
+    /**
+     * Vector's Y component
+     * @type {number}
+     * @public
+     */
     public y: number
-    /** Vector's Z component. */
+
+    /**
+     * Vector's Z component
+     * @type {number}
+     * @public
+     */
     public z: number
 
-    /** Default constructor (no initialization). */
+    /**
+     * Creates an empty instance
+     * @constructor
+     * @public
+     */
     constructor()
 
     /**
-     * - Constructor initializing all components to a single float value.
-     *
-     * @param f Value to set all components to.
+     * Creates an empty with a default value
+     * @param {number} f Value to set all components to
+     * @constructor
+     * @public
      */
     constructor(f: number)
 
     /**
-     * - Constructor initializing all components using FArchive
-     *
-     * @param Ar FArchive to use.
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar Reader to use
+     * @constructor
+     * @public
      */
     constructor(Ar: FArchive)
 
     /**
-     * - Constructor using the XYZ components from a 4D vector.
-     *
-     * @param v 4D Vector to copy from.
+     * Creates an instance using FVector4
+     * @param {FVector4} v 4D Vector to copy from
+     * @constructor
+     * @public
      */
     constructor(v: FVector4)
 
     /**
-     * - Constructs a vector from an FLinearColor.
-     *
-     * @param color Color to copy from.
+     * Creates an instance using FLinearColor
+     * @param {FLinearColor} color Color to copy from
+     * @constructor
+     * @public
      */
     constructor(color: FLinearColor)
 
     /**
-     * - Constructs a vector from an FIntVector.
-     *
-     * @param vector FIntVector to copy from.
+     * Creates an instance using FIntVector
+     * @param {FIntVector} vector FIntVector to copy from
+     * @constructor
+     * @public
      */
     constructor(vector: FIntVector)
 
     /**
-     * - Constructs a vector from an FIntPoint.
-     *
-     * @param a Int Point used to set X and Y coordinates, Z is set to zero.
+     * Creates an instance using FIntPoint
+     * @param {FIntPoint} a Int Point used to set X and Y coordinates, Z is set to zero
+     * @constructor
+     * @public
      */
     constructor(a: FIntPoint)
 
     /**
-     * - Constructs a vector from an FVector2D and Z value.
-     *
-     * @param v Vector to copy from.
-     * @param z Z Coordinate.
+     * Creates an instance using FVector2D and a Z value
+     * @param {FVector2D} v Vector to copy from
+     * @param {number} z Z Coordinate
+     * @constructor
+     * @public
      */
     constructor(v: FVector2D, z: number)
 
     /**
-     * - Constructor using initial values for each component.
-     *
-     * @param x X Coordinate.
-     * @param y Y Coordinate.
-     * @param z Z Coordinate.
+     * Creates an instance using values
+     * @param {number} x X Coordinate
+     * @param {number} y Y Coordinate
+     * @param {number} z Z Coordinate
+     * @constructor
+     * @public
      */
     constructor(x: number, y: number, z: number)
 
-    /**
-     * - 'Internal' constructor of library [do not use]
-     * @param arg1
-     * @param arg2
-     * @param arg3
-     */
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(arg1?: any, arg2?: any, arg3?: any) {
         if (typeof arg1 === "number" && !arg2) {
             this.x = arg1
@@ -124,12 +149,23 @@ export class FVector implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeFloat32(this.x)
         Ar.writeFloat32(this.y)
         Ar.writeFloat32(this.z)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             x: this.x,
@@ -140,9 +176,9 @@ export class FVector implements IStructType {
 
     /**
      * Copy another FVector into this one
-     *
-     * @param other The other vector.
-     * @return Reference to vector after copy.
+     * @param {FVector} other The other vector
+     * @returns {FVector} Reference to vector after copy
+     * @public
      */
     set(other: FVector): FVector {
         this.x = other.x
@@ -152,10 +188,10 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Calculate cross product between this and another vector.
-     *
-     * @param v The other vector.
-     * @return The cross product.
+     * Calculate cross product between this and another vector
+     * @param {FVector} v The other vector
+     * @returns {FVector} The cross product
+     * @public
      */
     xor(v: FVector): FVector {
         return new FVector(
@@ -166,98 +202,114 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Calculate the dot product between this and another vector.
-     *
-     * @param v The other vector.
-     * @return The dot product.
+     * Calculate the dot product between this and another vector
+     * @param {FVector} v The other vector
+     * @returns {number} The dot product
+     * @public
      */
     or(v: FVector): number {
         return this.x * v.x + this.y * v.y + this.z * v.z
     }
 
     /**
-     * Gets the result of component-wise addition of this and another vector.
-     *
-     * @param v The vector to add to this.
-     * @return The result of vector addition.
+     * Gets the result of component-wise addition of this and another vector
+     * @param {FVector} v The vector to add to this
+     * @returns {FVector} The result of vector addition
+     * @public
      */
     plus0(v: FVector): FVector {
         return new FVector(this.x + v.x, this.y + v.y, this.z + v.z)
     }
 
     /**
-     * Gets the result of adding to each component of the vector.
-     *
-     * @param bias How much to add to each component.
-     * @return The result of addition.
+     * Gets the result of adding to each component of the vector
+     * @param {number} bias How much to add to each component
+     * @returns {FVector}  The result of addition
+     * @public
      */
     plus1(bias: number): FVector {
         return new FVector(this.x + bias, this.y + bias, this.z + bias)
     }
 
     /**
-     * Gets the result of component-wise subtraction of this by another vector.
-     *
-     * @param v The vector to subtract from this.
-     * @return The result of vector subtraction.
+     * Gets the result of component-wise subtraction of this by another vector
+     * @param {FVector} v The vector to subtract from this
+     * @returns {FVector} The result of vector subtraction
+     * @public
      */
     minus0(v: FVector): FVector {
         return new FVector(this.x - v.x, this.y - v.y, this.z - v.z)
     }
 
     /**
-     * Gets the result of subtracting from each component of the vector.
-     *
-     * @param bias How much to subtract from each component.
-     * @return The result of subtraction.
+     * Gets the result of subtracting from each component of the vector
+     * @param {number} bias How much to subtract from each component
+     * @returns {FVector} The result of subtraction
+     * @public
      */
     minus1(bias: number): FVector {
         return new FVector(this.x - bias, this.y - bias, this.z - bias)
     }
 
     /**
-     * Gets the result of component-wise multiplication of this vector by another.
-     *
-     * @param v The vector to multiply with.
-     * @return The result of multiplication.
+     * Gets the result of component-wise multiplication of this vector by another
+     * @param {FVector} v The vector to multiply with
+     * @returns {FVector} The result of multiplication
+     * @public
      */
     times0(v: FVector) {
         return new FVector(this.x * v.x, this.y * v.y, this.z * v.z)
     }
 
     /**
-     * Gets the result of scaling the vector (multiplying each component by a value).
-     *
-     * @param scale What to multiply each component by.
-     * @return The result of multiplication.
+     * Gets the result of scaling the vector (multiplying each component by a value)
+     * @param {number} scale What to multiply each component by
+     * @returns {FVector} The result of multiplication
+     * @public
      */
     times1(scale: number): FVector {
         return new FVector(this.x * scale, this.y * scale, this.z * scale)
     }
 
     /**
-     * Gets the result of component-wise division of this vector by another.
-     *
-     * @param v The vector to divide by.
-     * @return The result of division.
+     * Gets the result of component-wise division of this vector by another
+     * @param {FVector} v The vector to divide by
+     * @returns {FVector} The result of division
+     * @public
      */
     div0(v: FVector) {
         return new FVector(this.x / v.x, this.y / v.y, this.z / v.z)
     }
 
     /**
-     * Gets the result of dividing each component of the vector by a value.
-     *
-     * @param scale What to divide each component by.
-     * @return The result of division.
+     * Gets the result of dividing each component of the vector by a value
+     * @param {number} scale What to divide each component by
+     * @returns {FVector} The result of division
+     * @public
      */
     div1(scale: number): FVector {
         const rScale = 1 / scale
         return new FVector(this.x * rScale, this.y * rScale, this.z * rScale)
     }
 
-    equals(other: any)
+    /**
+     * Checks for equality to another object
+     * @param {?any} other Other object
+     * @returns {boolean} Result
+     * @public
+     */
+    equals(other?: any)
+
+    /**
+     * Checks for equality to another FVector and a tolerance
+     * @param {FVector} v FVector to check
+     * @param {number} tolerance Tolerance to use
+     * @returns {boolean} Result
+     * @public
+     */
     equals(v: FVector, tolerance: number)
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     equals(x?: any, y?: any) {
         if (x instanceof FVector && y != null) {
             return Math.abs(this.x - x.x) <= y
@@ -272,6 +324,12 @@ export class FVector implements IStructType {
         }
     }
 
+    /**
+     * Checks wether all components are equal
+     * @param {number} tolerance Tolerance to use
+     * @returns {boolean}
+     * @public
+     */
     allComponentsEqual(tolerance: number = KINDA_SMALL_NUMBER) {
         return Math.abs(this.x - this.y) <= tolerance
             && Math.abs(this.x - this.z) <= tolerance
@@ -279,19 +337,20 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Get a negated copy of the vector.
-     *
-     * @return A negated copy of the vector.
+     * Get a negated copy of the vector
+     * @returns {FVector} A negated copy of the vector
+     * @public
      */
     unaryMinus(): FVector {
         return new FVector(-this.x, -this.y, -this.z)
     }
 
     /**
-     * Adds another vector to this.
-     * Uses component-wise addition.
-     *
-     * @param v Vector to add to this.
+     * Adds another vector to this
+     * Uses component-wise addition
+     * @param {FVector} v Vector to add to this
+     * @returns {void}
+     * @public
      */
     plusAssign(v: FVector) {
         this.x += v.x
@@ -300,10 +359,11 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Subtracts another vector from this.
-     * Uses component-wise subtraction.
-     *
-     * @param v Vector to subtract from this.
+     * Subtracts another vector from this
+     * Uses component-wise subtraction
+     * @param {FVector} v Vector to subtract from this
+     * @returns {void}
+     * @public
      */
     minusAssign(v: FVector) {
         this.x -= v.x
@@ -312,9 +372,10 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Scales the vector.
-     *
-     * @param scale Amount to scale this vector by.
+     * Scales the vector
+     * @param {number} scale Amount to scale this vector by
+     * @returns {void}
+     * @public
      */
     timesAssign0(scale: number) {
         this.x *= scale
@@ -323,9 +384,10 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Multiplies the vector with another vector, using component-wise multiplication.
-     *
-     * @param v What to multiply this vector with.
+     * Multiplies the vector with another vector, using component-wise multiplication
+     * @param {FVector} v What to multiply this vector with
+     * @returns {void}
+     * @public
      */
     timesAssign1(v: FVector) {
         this.x *= v.x
@@ -334,9 +396,10 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Divides the vector by a number.
-     *
-     * @param v What to divide this vector by.
+     * Divides the vector by a number
+     * @param {FVector} v What to divide this vector by
+     * @returns {void}
+     * @public
      */
     divAssign(v: FVector) {
         this.x /= v.x
@@ -345,10 +408,11 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Gets specific component of the vector.
-     *
-     * @param index the index of vector component
-     * @return Copy of the component.
+     * Gets specific component of the vector
+     * @param {number} index the index of vector component
+     * @returns {number} Copy of the component
+     * @throws {RangeError} If index is < 0 or > 2
+     * @public
      */
     get(index: number): number {
         if (index === 0)
@@ -357,14 +421,16 @@ export class FVector implements IStructType {
             return this.y
         if (index === 2)
             return this.z
-        throw new RangeError(`Received index: ${index}, but max. index is 2`)
+        throw new RangeError(`Received index: ${index}, but max./min. index: 2/0`)
     }
 
     /**
-     * Sets specific component of the vector.
-     *
-     * @param index the index of vector component
-     * @param value the new value of vector component
+     * Sets specific component of the vector
+     * @param {number} index the index of vector component
+     * @param {number} value the new value of vector component
+     * @returns {void}
+     * @throws {RangeError} If index is < 0 or > 2
+     * @public
      */
     set0(index: number, value: number) {
         if (index === 0)
@@ -373,15 +439,16 @@ export class FVector implements IStructType {
             this.y = value
         if (index === 2)
             this.z = value
-        throw new RangeError(`Received index: ${index}, but max. index is 2`)
+        throw new RangeError(`Received index: ${index}, but max./min. index: 2/0`)
     }
 
     /**
-     * Set the values of the vector directly.
-     *
-     * @param x New X coordinate.
-     * @param y New Y coordinate.
-     * @param z New Z coordinate.
+     * Set the values of the vector directly
+     * @param {number} x New X coordinate
+     * @param {number} y New Y coordinate
+     * @param {number} z New Z coordinate
+     * @returns {void}
+     * @public
      */
     set1(x: number, y: number, z: number) {
         this.x = x
@@ -390,170 +457,182 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Get the maximum value of the vector's components.
-     *
-     * @return The maximum value of the vector's components.
+     * Get the maximum value of the vector's components
+     * @returns {number} The maximum value of the vector's components
+     * @public
      */
     getMax(): number {
         return Math.max(Math.max(this.x, this.y), this.z)
     }
 
     /**
-     * Get the maximum absolute value of the vector's components.
-     *
-     * @return The maximum absolute value of the vector's components.
+     * Get the maximum absolute value of the vector's components
+     * @returns {number} The maximum absolute value of the vector's components
+     * @public
      */
     getAbsMax(): number {
         return Math.max(Math.max(Math.abs(this.x), Math.abs(this.y)), Math.abs(this.z))
     }
 
     /**
-     * Get the minimum value of the vector's components.
-     *
-     * @return The minimum value of the vector's components.
+     * Get the minimum value of the vector's components
+     * @returns {number} The minimum value of the vector's components
+     * @public
      */
     getMin(): number {
         return Math.min(Math.min(this.x, this.y), this.z)
     }
 
     /**
-     * Get the minimum absolute value of the vector's components.
-     *
-     * @return The minimum absolute value of the vector's components.
+     * Get the minimum absolute value of the vector's components
+     * @returns {number} The minimum absolute value of the vector's components
+     * @public
      */
     getAbsMin(): number {
         return Math.min(Math.min(Math.abs(this.x), Math.abs(this.y)), Math.abs(this.z))
     }
 
-    /** Gets the component-wise min of two vectors. */
+    /**
+     * Gets the component-wise min of two vectors
+     * @param {FVector} other Other FVector
+     * @returns {FVector} New instance
+     * @public
+     */
     componentMin(other: FVector): FVector {
         return new FVector(Math.min(this.x, other.x), Math.min(this.y, other.y), Math.min(this.z, other.z))
     }
 
-    /** Gets the component-wise max of two vectors. */
+    /**
+     * Gets the component-wise max of two vectors
+     * @param {FVector} other Other FVector
+     * @returns {FVector} New instance
+     * @public
+     */
     componentMax(other: FVector): FVector {
         return new FVector(Math.max(this.x, other.x), Math.max(this.y, other.y), Math.max(this.z, other.z))
     }
 
     /**
-     * Get a copy of this vector with absolute value of each component.
-     *
-     * @return A copy of this vector with absolute value of each component.
+     * Get a copy of this vector with absolute value of each component
+     * @returns {FVector} A copy of this vector with absolute value of each component
+     * @public
      */
     getAbs(): FVector {
         return new FVector(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z))
     }
 
     /**
-     * Get the length (magnitude) of this vector.
-     *
-     * @return The length of this vector.
+     * The length (magnitude) of this vector
+     * @type {number}
+     * @public
      */
-    size(): number {
+    get size(): number {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
     }
 
     /**
-     * Get the squared length of this vector.
-     *
-     * @return The squared length of this vector.
+     * The squared length of this vector
+     * @type {number}
+     * @public
      */
-    sizeSquared(): number {
+    get sizeSquared(): number {
         return this.x * this.x + this.y * this.y + this.z * this.z
     }
 
     /**
-     * Get the length of the 2D components of this vector.
-     *
-     * @return The 2D length of this vector.
+     * The length of the 2D components of this vector
+     * @type {number}
+     * @public
      */
-    size2D(): number {
+    get size2D(): number {
         return Math.sqrt(this.x * this.x + this.y * this.y)
     }
 
     /**
-     * Get the squared length of the 2D components of this vector.
-     *
-     * @return The squared 2D length of this vector.
+     * The squared length of the 2D components of this vector
+     * @type {number}
+     * @public
      */
-    sizeSquared2D(): number {
+    get sizeSquared2D(): number {
         return this.x * this.x + this.y * this.y
     }
 
     /**
-     * Checks whether vector is near to zero within a specified tolerance.
-     *
-     * @param tolerance Error tolerance.
-     * @return true if the vector is near to zero, false otherwise.
+     * Checks whether vector is near to zero within a specified tolerance
+     * @param {number} tolerance Error tolerance
+     * @returns {boolean} Wether the vector is near to zero, false otherwise
+     * @public
      */
     isNearlyZero(tolerance: number = KINDA_SMALL_NUMBER): boolean {
         return Math.abs(this.x) <= tolerance && Math.abs(this.y) <= tolerance && Math.abs(this.z) <= tolerance
     }
 
     /**
-     * Checks whether all components of the vector are exactly zero.
-     *
-     * @return true if the vector is exactly zero, false otherwise.
+     * Whether all components of the vector are exactly zero
+     * @type {boolean}
+     * @public
      */
-    isZero(): boolean {
+    get isZero(): boolean {
         return this.x === 0 && this.y === 0 && this.z === 0
     }
 
     /**
-     * Check if the vector is of unit length, with specified tolerance.
-     *
-     * @param lengthSquaredTolerance Tolerance against squared length.
-     * @return true if the vector is a unit vector within the specified tolerance.
+     * Check if the vector is of unit length, with specified tolerance
+     * @param {number} lengthSquaredTolerance Tolerance against squared length
+     * @returns {boolean} Wether the vector is a unit vector within the specified tolerance
+     * @public
      */
     isUnit(lengthSquaredTolerance: number = KINDA_SMALL_NUMBER): boolean {
-        return Math.abs(1 - this.sizeSquared()) < lengthSquaredTolerance
+        return Math.abs(1 - this.sizeSquared) < lengthSquaredTolerance
     }
 
     /**
-     * Checks whether vector is normalized.
-     *
-     * @return true if normalized, false otherwise.
+     * Whether vector is normalized
+     * @type {boolean}
+     * @public
      */
-    isNormalized(): boolean {
-        return Math.abs(1 - this.sizeSquared()) < THRESH_VECTOR_NORMALIZED // TODO port more methods
+    get isNormalized(): boolean {
+        return Math.abs(1 - this.sizeSquared) < THRESH_VECTOR_NORMALIZED
     }
 
+    // TODO port more methods
+
     /**
-     * Get a textual representation of this vector.
-     *
-     * @return A string describing the vector.
+     * Get a textual representation of this vector
+     * @returns {string} A string describing the vector
+     * @public
      */
     toString() {
         return `X=${this.x.toLocaleString()} Y=${this.y.toLocaleString()} Z=${this.z.toLocaleString()}`
     }
 
     /**
-     * Squared distance between two points.
-     *
-     * @param other The other point.
-     * @return The squared distance between two points.
+     * Squared distance between two points
+     * @param {FVector} other The other point
+     * @returns {number} The squared distance between two points
+     * @public
      */
     distSquared(other: FVector) {
         return square(other.x - this.x) + square(other.y - this.y)
     }
 
     /**
-     * Calculate the cross product of two vectors.
-     *
-     * @param a The first vector.
-     * @param b The second vector.
-     * @return The cross product.
+     * Calculate the cross product of two vectors
+     * @param {FVector} a The first vector
+     * @param {FVector} b The second vector
+     * @returns {number} The cross product
+     * @public
      */
     static crossProduct(a: FVector, b: FVector): FVector {
         return a.xor(b)
     }
 
     /**
-     * Calculate the dot product of two vectors.
-     *
-     * @param a The first vector.
-     * @param b The second vector.
-     * @return The dot product.
+     * Calculate the dot product of two vectors
+     * @param {FVector} a The first vector
+     * @param {FVector} b The second vector
+     * @returns {number} The dot product
+     * @public
      */
     static dotProduct(a: FVector, b: FVector): number {
         return a.or(b)
@@ -561,11 +640,12 @@ export class FVector implements IStructType {
 
     /**
      * Util to calculate distance from a point to a bounding box
-     *
-     * @param mins 3D Point defining the lower values of the axis of the bound box
-     * @param maxs 3D Point defining the lower values of the axis of the bound box
-     * @param point 3D position of interest
-     * @return the distance from the Point to the bounding box.
+     * @param {FVector} mins 3D Point defining the lower values of the axis of the bound box
+     * @param {FVector} maxs 3D Point defining the lower values of the axis of the bound box
+     * @param {FVector} point 3D position of interest
+     * @returns {number} the distance from the Point to the bounding box
+     * @public
+     * @static
      */
     static computeSquaredDistanceFromBoxToPoint(mins: FVector, maxs: FVector, point: FVector): number {
         // Accumulates the distance as we iterate axis

@@ -23,7 +23,6 @@ import { FGuid } from "../ue4/objects/core/misc/Guid";
 import { FNameMap } from "../ue4/asyncloading2/FNameMap";
 import { FPackageStore } from "../ue4/asyncloading2/FPackageStore";
 import fs from "fs";
-import * as fsAsync from "fs/promises"
 import { InvalidAesKeyException, ParserException } from "../exceptions/Exceptions";
 import { FFileArchive } from "../ue4/reader/FFileArchive";
 import { Aes } from "../encryption/aes/Aes";
@@ -628,7 +627,7 @@ export class FileProvider extends EventEmitter {
             }
         }
 
-        const dir = await fsAsync.readdir(this.folder)
+        const dir = await fs.readdirSync(this.folder)
         for (const dirEntry of dir) {
             const path = this.folder + dirEntry
             if (path.endsWith(".pak")) {

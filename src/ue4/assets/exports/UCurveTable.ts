@@ -99,10 +99,16 @@ export class UCurveTable extends UObject {
  * - Handle to a particular row in a table.
  */
 export class FCurveTableRowHandle {
-    /** Pointer to table we want a row from */
+    /**
+     * Pointer to table we want a row from
+     * @type {UCurveTable}
+     */
     @UProperty({name: "CurveTable"})
     public curveTable: UCurveTable = null
-    /** Name of row in the table that we want */
+    /**
+     * Name of row in the table that we want
+     * @type {FName}
+     */
     @UProperty({name: "RowName"})
     public rowName: FName = FName.NAME_None
 
@@ -118,15 +124,15 @@ export class FCurveTableRowHandle {
     }
 
     /** Evaluate the curve if it is valid
-     * @param xValue The input X value to the curve
-     * @return The value of the curve if valid, 0 if not
+     * @param {number} xValue The input X value to the curve
+     * @returns {number} The value of the curve if valid, 0 if not
      */
     eval(xValue: number): number
 
     /** Evaluate the curve if it is valid
-     * @param xValue The input X value to the curve
-     * @param yValue The output Y value from the curve
-     * @return True if it filled out yValue with a valid number, false otherwise
+     * @param {number} xValue The input X value to the curve
+     * @param {?FloatRef} yValue The output Y value from the curve
+     * @returns {boolean} Wether it filled out yValue with a valid number, false otherwise
      */
     eval(xValue: number, yValue?: FloatRef): boolean | number {
         if (!yValue)
