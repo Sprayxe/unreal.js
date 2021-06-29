@@ -2,6 +2,7 @@
 import { FloatRef, IntRef, ObjectRef } from "../../../../util/ObjectRef";
 import { FLOAT_MAX_VALUE } from "../../../../util/Const";
 import { UProperty } from "../../../../util/decorators/UProperty";
+import { FStructFallback } from "../../../assets/objects/FStructFallback";
 
 export enum ERichCurveInterpMode {
     /** Use linear interpolation between values. */
@@ -82,11 +83,18 @@ export class FRealCurve {
         cycleCount.element = Math.abs(cycleCount.element)
     }
 
+    static loadFromFallback(fallback: FStructFallback, obj: FRealCurve = new FRealCurve()) {
+        obj.defaultValue = fallback.get("DefaultValue")
+        obj.preInfinityExtrap = ERichCurveExtrapolation[fallback.get<any>("PreInfinityExtrap").text.split(":").pop()] as any
+        obj.postInfinityExtrap = ERichCurveExtrapolation[fallback.get<any>("PostInfinityExtrap").text.split(":").pop()] as any
+        return obj
+    }
+
     toJson() {
         return {
             defaultValue: this.defaultValue,
-            preInfinityExtrap: Object.keys(ERichCurveExtrapolation)[this.preInfinityExtrap],
-            postInfinityExtrap: Object.keys(ERichCurveExtrapolation)[this.postInfinityExtrap]
+            preInfinityExtrap: Object.keys(ERichCurveExtrapolation).filter(k => k.length > 1)[this.preInfinityExtrap],
+            postInfinityExtrap: Object.keys(ERichCurveExtrapolation).filter(k => k.length > 1)[this.postInfinityExtrap]
         }
     }
 }

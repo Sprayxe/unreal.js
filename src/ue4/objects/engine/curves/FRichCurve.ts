@@ -7,6 +7,7 @@ import { isNearlyZero, lerp } from "../../core/math/UnrealMathUtility";
 import Bezier from "bezier-js"
 import { IStructType } from "../../../assets/objects/UScriptStruct";
 import { UProperty } from "../../../../util/decorators/UProperty";
+import { FStructFallback } from "../../../assets/objects/FStructFallback";
 
 /** If using RCIM_Cubic, this enum describes how the tangents should be controlled in editor. */
 export enum ERichCurveTangentMode {
@@ -153,6 +154,13 @@ export class FRichCurve extends FRealCurve {
     /** Sorted array of keys */
     @UProperty({ name: "Keys" })
     public keys = new Array<FRichCurveKey>()
+
+    static loadFromFallback(fallback: FStructFallback) {
+        const obj = new FRichCurve()
+        super.loadFromFallback(fallback, obj)
+        obj.keys = fallback.get<any>("Keys").contents.map(s => s.struct.structType)
+        return obj
+    }
 
     /** Remap inTime based on pre and post infinity extrapolation values */
     remapTimeValue(inTime: FloatRef, cycleValueOffset: FloatRef) {

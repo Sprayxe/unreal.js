@@ -14,6 +14,7 @@ import { UnrealMap } from "../../../../util/UnrealMap";
 import { PropertyType } from "../../../assets/objects/PropertyType";
 import { Utils } from "../../../../util/Utils";
 import { Config } from "../../../../Config";
+import { BitSetExtensions } from "../../../../util/BitSetExtensions";
 
 export class FUnversionedPropertySerializer {
     info: PropertyInfo
@@ -140,7 +141,7 @@ export class FUnversionedHeader {
 
         if (zeroMaskNum > 0) {
             this.zeroMask = this.loadZeroMaskData(Ar, zeroMaskNum)
-            this.bHasNonZeroValues = unmaskedNum > 0 || Utils.bitSetIndex(this.zeroMask, false) !== INDEX_NONE
+            this.bHasNonZeroValues = unmaskedNum > 0 || BitSetExtensions.indexOfFirst(this.zeroMask, false) !== INDEX_NONE
         } else {
             this.zeroMask = new BitSet(0)
             this.bHasNonZeroValues = unmaskedNum > 0

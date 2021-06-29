@@ -1,17 +1,15 @@
-import { deserializeVersionedTaggedProperties, UObject } from "./UObject";
+import { UObject } from "./UObject";
 import { FName } from "../../objects/uobject/FName";
 import { FRealCurve } from "../../objects/engine/curves/FRealCurve";
 import { FAssetArchive } from "../reader/FAssetArchive";
-import { UScriptStruct } from "./UScriptStruct";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FSimpleCurve } from "../../objects/engine/curves/FSimpleCurve";
 import { FRichCurve } from "../../objects/engine/curves/FRichCurve";
-import { deserializeUnversionedProperties } from "../../objects/uobject/serialization/UnversionedPropertySerialization";
-import { mapToClass } from "../util/StructFallbackReflectionUtil";
 import { UnrealMap } from "../../../util/UnrealMap";
 import { Locres } from "../../locres/Locres";
 import { FloatRef } from "../../../util/ObjectRef";
 import { UProperty } from "../../../util/decorators/UProperty";
+import { FStructFallback } from "../objects/FStructFallback";
 
 /**
  * - Whether the curve table contains simple, rich, or no curves
@@ -40,31 +38,21 @@ export class UCurveTable extends UObject {
         super.deserialize(Ar, validPos);
         const numRows = Ar.readInt32()
         this.curveTableMode = Ar.readUInt8()
-        let rowStruct: UScriptStruct
-        if (this.curveTableMode === ECurveTableMode.Empty) {
-            throw new ParserException("CurveTableMode == ECurveTableMode::Empty, unsupported")
-        } else if (this.curveTableMode === ECurveTableMode.SimpleCurves) {
-            rowStruct = new UScriptStruct(FSimpleCurve)
-        } else if (this.curveTableMode === ECurveTableMode.RichCurves) {
-            rowStruct = new UScriptStruct(FRichCurve)
-        }
         this.rowMap = Ar.readTMap(numRows, () => {
             const key = Ar.readFName()
-            let value: FRealCurve
+            let instance: any
+            let curve: string
             if (this.curveTableMode === ECurveTableMode.Empty) {
                 throw new ParserException("CurveTableMode == ECurveTableMode::Empty, unsupported")
             } else if (this.curveTableMode === ECurveTableMode.SimpleCurves) {
-                value = new FSimpleCurve()
+                curve = "SimpleCurve"
+                instance = FSimpleCurve
             } else if (this.curveTableMode === ECurveTableMode.RichCurves) {
-                value = new FRichCurve()
+                curve = "RichCurve"
+                instance = FRichCurve
             }
-            const properties = []
-            if (Ar.useUnversionedPropertySerialization) {
-                deserializeUnversionedProperties(properties, rowStruct, Ar)
-            } else {
-                deserializeVersionedTaggedProperties(properties, Ar)
-            }
-            (value as any) = mapToClass(properties, value)
+            const fallback = new FStructFallback(Ar, FName.dummy(curve))
+            const value = instance.loadFromFallback(fallback)
             return {key, value}
         })
     }
@@ -87,7 +75,7 @@ export class UCurveTable extends UObject {
 
     toJson(locres: Locres = null): any {
         return this.rowMap.map((v, k) => {
-            return {key: k.text, value: v.toJson()}
+            return { key: k.text, value: v.toJson() }
         })
     }
 }

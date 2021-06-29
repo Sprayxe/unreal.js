@@ -46,16 +46,6 @@ export class Utils {
         return angdeg * 0.017453292519943295 // DEGREES_TO_RADIANS
     }
 
-    static bitSetIndex(bitSet: BitSet, value: boolean) {
-        const size = bitSet.toArray().length
-        for (let i = 0; i < size; ++i) {
-            if (bitSet.get(i) === Number(value)) {
-                return i
-            }
-        }
-        return INDEX_NONE
-    }
-
     static takeWhile(buf: Buffer, filter: (byte: number) => boolean) {
         const bytes = []
         for (let b = 0; b < buf.length; ++b) {

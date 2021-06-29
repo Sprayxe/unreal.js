@@ -6,6 +6,7 @@ import { FloatRef, ObjectRef } from "../../../../util/ObjectRef";
 import { isNearlyZero, lerp } from "../../core/math/UnrealMathUtility";
 import { FLOAT_MAX_VALUE } from "../../../../util/Const";
 import { UProperty } from "../../../../util/decorators/UProperty";
+import { FStructFallback } from "../../../assets/objects/FStructFallback";
 
 /** One key in a rich, editable float curve */
 export class FSimpleCurveKey implements IStructType {
@@ -47,6 +48,15 @@ export class FSimpleCurve extends FRealCurve {
     /** Sorted array of keys */
     @UProperty({ name: "Keys" })
     public keys = new Array<FSimpleCurveKey>()
+
+    static loadFromFallback(fallback: FStructFallback) {
+        const obj = new FSimpleCurve()
+        super.loadFromFallback(fallback, obj)
+        const mode = fallback.get<any>("InterpMode").text.split(":").pop()
+        obj.interpMode = ERichCurveInterpMode[mode] as any
+        obj.keys = fallback.get<any>("Keys").contents.map(s => s.struct.structType)
+        return obj
+    }
 
     /** Get range of input time values. Outside this region curve continues constantly the start/end values. */
     getTimeRange(minTime: FloatRef, maxTime: FloatRef) {
@@ -192,7 +202,7 @@ export class FSimpleCurve extends FRealCurve {
 
     toJson() {
         const obj = super.toJson() as any
-        obj.interpMode = Object.keys(ERichCurveInterpMode)[this.interpMode]
+        obj.interpMode = Object.keys(ERichCurveInterpMode).filter(k => k.length > 1)[this.interpMode]
         obj.keys = this.keys.map(k => k.toJson())
         return obj
     }
