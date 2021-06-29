@@ -37,7 +37,7 @@ export class FUnversionedPropertySerializer {
             ]
             arr.forEach((it) => it ? Ar.checkDummyName(it.text) : null)
         }
-        const tag = new FPropertyTag(FName.dummy(this.info.name, 0))
+        const tag = new FPropertyTag(FName.dummy(this.info.name))
         tag.arrayIndex = this.arrayIndex
         tag.prop = FProperty.readPropertyValue(Ar, this.info.type, type)
         return tag

@@ -3,6 +3,7 @@ import { FName } from "../../objects/uobject/FName";
 import { UObject } from "./UObject";
 import { Lazy } from "../../../util/Lazy";
 import { FAssetArchive } from "../reader/FAssetArchive";
+import { ObjectTypeRegistry } from "../ObjectTypeRegistry";
 
 export class UScriptStruct extends UStruct {
     useClassProperties = false
@@ -38,7 +39,7 @@ export class UScriptStruct extends UStruct {
         if (x instanceof FName) {
             this.name = x?.text || FName.NAME_None.text
         } else if (x) {
-            this.name = (!(y instanceof FName) ? FName.dummy(x.name) || FName.NAME_None : y).text
+            this.name = (!(y instanceof FName) ? FName.dummy(ObjectTypeRegistry.unprefix(x.name, true)) : y).text
             this.structClass = x
             this.useClassProperties = true
         } else {

@@ -37,10 +37,10 @@ export class FText {
             this.historyType = x.readInt8()
             this.textHistory = this.historyType === ETextHistoryType.None ? new FTextHistoryNone(x) :
                 this.historyType === ETextHistoryType.Base ? new FTextHistoryBase(x) :
-                    this.historyType === ETextHistoryType.OrderedFormat ? new FTextHistoryOrderedFormat(x) :
-                        this.historyType === ETextHistoryType.AsCurrency ? new FTextHistoryFormatNumber(x) :
-                            this.historyType === ETextHistoryType.StringTableEntry ? new FTextHistoryStringTableEntry(x) :
-                                null;
+                this.historyType === ETextHistoryType.OrderedFormat ? new FTextHistoryOrderedFormat(x) :
+                this.historyType === ETextHistoryType.AsCurrency ? new FTextHistoryFormatNumber(x) :
+                this.historyType === ETextHistoryType.StringTableEntry ? new FTextHistoryStringTableEntry(x) :
+                null
             this.text = this.textHistory.text
         } else if (typeof x === "string" && params.length === 1) {
             this.flags = 0

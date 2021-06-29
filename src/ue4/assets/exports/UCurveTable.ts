@@ -28,8 +28,8 @@ export class UCurveTable extends UObject {
      * If curveTableMode is SimpleCurves the value type will be FSimpleCurve
      * If curveTableMode is RichCurves the value type will be FRichCurve
      */
-    public rowMap: UnrealMap<FName, FRealCurve>
-    public curveTableMode: ECurveTableMode
+    public rowMap: UnrealMap<FName, FRealCurve> = null
+    public curveTableMode: ECurveTableMode = null
 
     /*val richCurveRowMap get(): Map<FName, FRichCurve> {
         check(curveTableMode != ECurveTableMode.SimpleCurves)
@@ -50,16 +50,13 @@ export class UCurveTable extends UObject {
         }
         this.rowMap = Ar.readTMap(numRows, () => {
             const key = Ar.readFName()
-            let clazz: Function
             let value: FRealCurve
             if (this.curveTableMode === ECurveTableMode.Empty) {
                 throw new ParserException("CurveTableMode == ECurveTableMode::Empty, unsupported")
             } else if (this.curveTableMode === ECurveTableMode.SimpleCurves) {
                 value = new FSimpleCurve()
-                clazz = FSimpleCurve
             } else if (this.curveTableMode === ECurveTableMode.RichCurves) {
                 value = new FRichCurve()
-                clazz = FRichCurve
             }
             const properties = []
             if (Ar.useUnversionedPropertySerialization) {
@@ -67,7 +64,7 @@ export class UCurveTable extends UObject {
             } else {
                 deserializeVersionedTaggedProperties(properties, Ar)
             }
-            (value as any) = mapToClass(properties, clazz, value)
+            (value as any) = mapToClass(properties, value)
             return {key, value}
         })
     }

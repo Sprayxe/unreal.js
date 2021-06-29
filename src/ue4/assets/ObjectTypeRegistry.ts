@@ -22,19 +22,19 @@ export class ObjectTypeRegistry {
             const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
-            this.registerClass(clazz)
+            this.register(clazz)
         }
         for (const file of dir0) {
             const clazz = (await import(`./exports/mats/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
-            this.registerClass(clazz)
+            this.register(clazz)
         }
         for (const file of dir1) {
             const clazz = (await import(`./exports/tex/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
-            this.registerClass(clazz)
+            this.register(clazz)
         }
     }
 
@@ -47,14 +47,14 @@ export class ObjectTypeRegistry {
             const clazz = (await import(`../../fort/exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
-            this.registerClass(clazz)
+            this.register(clazz)
         }
         // variants
         for (const file of dir0) {
             const clazz = (await import(`../../fort/exports/variants/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
-            this.registerClass(clazz)
+            this.register(clazz)
         }
     }
 
@@ -66,25 +66,29 @@ export class ObjectTypeRegistry {
             const clazz = (await import(`../../valorant/exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
                 continue;
-            this.registerClass(clazz)
+            this.register(clazz)
         }
     }
 
-    static registerClass(clazz: any)
-    static registerClass(serializedName: string, clazz: any)
-    static registerClass(x?: any, y?: any) {
+    static register(clazz: any)
+    static register(serializedName: string, clazz: any)
+    static register(x?: any, y?: any) {
         if (y) {
             this.registry[x] = y
         } else {
-            let name = x.name as string
-            if ((name[0] === "U" || name[0] === "A") && name[1] === name[1].toUpperCase()) {
-                name = name.substring(1)
-            }
-            this.registerClass(name, x)
+            this.register(this.unprefix(x.name), x)
         }
     }
 
     static get(name: string) {
         return this.registry[name]
+    }
+
+    static unprefix(str: string, includeF: boolean = false) {
+        if ((str[0] === "U" || str[0] === "A" || (includeF ? str[0] === "F" : true))
+            && str[1] === str[1].toUpperCase()) {
+            return str.substring(1)
+        }
+        return str
     }
 }

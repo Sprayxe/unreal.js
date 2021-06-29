@@ -9,6 +9,7 @@ import {
     FStructProperty
 } from "../exports/UStruct";
 import { Lazy } from "../../../util/Lazy";
+import { ObjectTypeRegistry } from "../ObjectTypeRegistry";
 
 /**
  * Property type
@@ -130,7 +131,8 @@ export class PropertyType {
             this.innerType = new PropertyType(x.innerType)
             this.valueType = new PropertyType(x.valueType)
         } else if (x instanceof FPropertySerialized) {
-            this.type = FName.NAME_None
+            const simpleName = Object.getPrototypeOf(x)?.constructor?.name
+            this.type = simpleName ? FName.dummy(ObjectTypeRegistry.unprefix(simpleName, true)) : FName.NAME_None
             if (x instanceof FArrayProperty) {
                 this.innerType = x.inner ? new PropertyType(x.inner) : null
             } else if (x instanceof FByteProperty) {
@@ -141,8 +143,9 @@ export class PropertyType {
             } else if (x instanceof FSetProperty) {
                 this.innerType = x.elementProp ? new PropertyType(x.elementProp) : null
             } else if (x instanceof FStructProperty) {
-                this.structClass = new Lazy<any>(() => x.struct)
-                this.structName = FName.dummy(this.structClass?.value?.name, 0) || FName.NAME_None
+                this.structClass = x.struct
+                const n = this.structClass?.value?.name
+                this.structName = n ? FName.dummy(n) : FName.NAME_None
             }
         }
     }

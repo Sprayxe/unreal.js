@@ -12,6 +12,7 @@ import { Locres } from "../../locres/Locres";
 import { StringBuilder } from "../../../util/StringBuilder";
 import { camelCase } from "lodash"
 import { Lazy } from "../../../util/Lazy";
+import { EObjectFlags } from "../../objects/uobject/EObjectFlags";
 
 /**
  * UE4 Asset Object
@@ -165,7 +166,7 @@ export class UObject implements IPropertyHolder {
      */
     deserialize(Ar: FAssetArchive, validPos: number) {
         this.properties = []
-        if (typeof ((this as any).interfaces) === "undefined") {
+        if (Object.getPrototypeOf(this)?.constructor?.name !== "UClass") {
             if (Ar.useUnversionedPropertySerialization) {
                 if (this.clazz == null) throw new ParserException("Found unversioned properties but object does not have a class.", Ar);
                 deserializeUnversionedProperties(this.properties, this.clazz, Ar)
@@ -173,7 +174,7 @@ export class UObject implements IPropertyHolder {
                 deserializeVersionedTaggedProperties(this.properties, Ar)
             }
         }
-        if (Ar.pos + 4 <= validPos && Ar.readBoolean() && Ar.pos + 16 <= validPos)
+        if ((EObjectFlags.RF_ClassDefaultObject & this.flags) === 0 && Ar.readBoolean())
             this.objectGuid = new FGuid(Ar)
     }
 

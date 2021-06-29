@@ -62,7 +62,7 @@ export class UDataTable extends UObject {
     findRowMapped<T extends FTableRowBase>(rowName: FName): T {
         const row = this.findRow(rowName)
         if (!row) return null;
-        return mapToClass(row.properties, this.RowStruct.rawStructClass, new this.RowStruct.structClass())
+        return mapToClass(row.properties, this.RowStruct.structClass)
     }
 
     toJson(locres: Locres = null): any {
