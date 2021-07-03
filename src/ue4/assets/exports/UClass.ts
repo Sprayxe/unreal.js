@@ -5,38 +5,122 @@ import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
 
+/**
+ * FImplementedInterface
+ */
+export class FImplementedInterface {
+    /**
+     * The interface class
+     * @type {FPackageIndex}
+     * @public
+     */
+    clazz: FPackageIndex
+
+    /**
+     * The pointer offset of the interface's vtable
+     * @type {number}
+     * @public
+     */
+    pointerOffset: number
+
+    /**
+     * Whether or not this interface has been implemented via K2
+     * @type {boolean}
+     * @public
+     */
+    bImplementedByK2: boolean
+
+    /**
+     * Creates an UE4 Asset Reader
+     * @param {FAssetArchive} Ar Reader to use
+     * @constructor
+     * @public
+     */
+    constructor(Ar: FAssetArchive) {
+        this.clazz = new FPackageIndex(Ar)
+        this.pointerOffset = Ar.readInt32()
+        this.bImplementedByK2 = Ar.readBoolean()
+    }
+}
+
+/**
+ * Represents an UE4 Class
+ * @extends {UStruct}
+ */
 export class UClass extends UStruct {
+    /**
+     * Creates an instance
+     * @constructor
+     * @public
+     */
     constructor() {
         super()
     }
 
-    /** Used to check if the class was cooked or not */
+    /**
+     * Used to check if the class was cooked or not
+     * @type {boolean}
+     * @public
+     */
     bCooked = false
 
-    /** Class flags; See EClassFlags for more information */
+    /**
+     * Class flags; See EClassFlags for more information
+     * @type {number}
+     * @public
+     */
     classFlags = 0
 
-    /** The required type for the outer of instances of this class */
+    /**
+     * The required type for the outer of instances of this class
+     * @type {number}
+     * @public
+     */
     classWithin: FPackageIndex = null
 
-    /** This is the blueprint that caused the generation of this class, or null if it is a native compiled-in class */
+    /**
+     * This is the blueprint that caused the generation of this class, or null if it is a native compiled-in class
+     * @type {FPackageIndex}
+     * @public
+     */
     classGeneratedBy: FPackageIndex = null
 
-    /** Which Name.ini file to load Config variables out of */
+    /**
+     * Which Name.ini file to load Config variables out of
+     * @type {FName}
+     * @public
+     */
     classConfigName: FName = null
 
-    /** The class default object; used for delta serialization and object initialization */
+    /**
+     * The class default object; used for delta serialization and object initialization
+     * @type {FPackageIndex}
+     * @public
+     */
     classDefaultObject: FPackageIndex = null
 
-    /** Map of all functions by name contained in this class */
+    /**
+     * Map of all functions by name contained in this class
+     * @type {FPackageIndex}
+     * @public
+     */
     private funcMap: UnrealMap<FName, UFunction> = null
 
     /**
-     * The list of interfaces which this class implements, along with the pointer property that is located at the offset of the interface's vtable.
-     * If the interface class isn't native, the property will be null.
+     * The list of interfaces which this class implements, along with the pointer property that is located at the offset of the interface's vtable
+     * If the interface class isn't native, the property will be null
+     * @type {Array<FImplementedInterface>}
+     * @public
      */
     interfaces: FImplementedInterface[] = []
 
+    /**
+     * Deserializes this
+     * @param {FAssetArchive} Ar UE4 Reader to use
+     * @param {number} validPos End position of reader
+     * @returns {void}
+     * @public
+     */
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
 
@@ -69,20 +153,5 @@ export class UClass extends UStruct {
 
         // Defaults.
         this.classDefaultObject = new FPackageIndex(Ar)
-    }
-}
-
-export class FImplementedInterface {
-    /** the interface class */
-    clazz: FPackageIndex
-    /** the pointer offset of the interface's vtable */
-    pointerOffset: number
-    /** whether or not this interface has been implemented via K2 */
-    bImplementedByK2: boolean
-
-    constructor(Ar: FAssetArchive) {
-        this.clazz = new FPackageIndex(Ar)
-        this.pointerOffset = Ar.readInt32()
-        this.bImplementedByK2 = Ar.readBoolean()
     }
 }

@@ -124,33 +124,51 @@ export class PakFileReader {
         // Pak Entry is written before the file data,
         // but its the same as the one from the index, just without a name
         const tempEntry = new FPakEntry(exAr, this.pakInfo, false)
+        for (const it of tempEntry.compressionBlocks) {
+            it.compressedStart += gameFile.pos
+            it.compressedEnd += gameFile.pos
+        }
         if (gameFile.isCompressed()) {
             console.debug(`${gameFile.getName()} is compressed with ${gameFile.compressionMethod}`)
-            const uncompressedBuffer = Buffer.allocUnsafe(gameFile.uncompressedSize)
+            const uncompressedBuffer = Buffer.alloc(gameFile.uncompressedSize)
             let uncompressedBufferOff = 0
-            tempEntry.compressionBlocks.forEach((block) => {
+            for (const block of tempEntry.compressionBlocks) {
                 exAr.pos = block.compressedStart
                 let srcSize = block.compressedEnd - block.compressedStart
-                if (gameFile.isEncrypted) {
-                    srcSize = Utils.align(srcSize, Aes.BLOCK_SIZE)
-                }
                 // Read the compressed block
-                const compressedBuffer = this.readAndDecrypt(srcSize, gameFile.isEncrypted)
+                let compressedBuffer: Buffer
+                if (gameFile.isEncrypted) {
+                    // The compressed block is encrypted, align it and then decrypt
+                    if (!this.aesKey) {
+                        throw new ParserException("Decrypting a encrypted file requires an encryption key to be set")
+                    }
+                    srcSize = Utils.align(srcSize, Aes.BLOCK_SIZE)
+                    const buf = exAr.readBuffer(srcSize)
+                    compressedBuffer = Aes.decrypt(buf, this.aesKey)
+                } else {
+                    // Read the block data
+                    compressedBuffer = exAr.readBuffer(srcSize)
+                }
                 // Calculate the uncompressed size,
                 // its either just the compression block size
                 // or if its the last block its the remaining data size
                 const uncompressedSize = Math.min(gameFile.compressionBlockSize, gameFile.uncompressedSize - uncompressedBufferOff)
                 Compression.uncompress(gameFile.compressionMethod, uncompressedBuffer, uncompressedBufferOff, uncompressedSize, compressedBuffer, 0, srcSize)
                 uncompressedBufferOff += gameFile.compressionBlockSize
-            })
-            return uncompressedBuffer
-        } else {
-            // File might be encrypted or just stored normally
-            let srcSize = gameFile.uncompressedSize
-            if (gameFile.isEncrypted) {
-                srcSize = Utils.align(srcSize, Aes.BLOCK_SIZE)
             }
-            return this.readAndDecrypt(srcSize, gameFile.isEncrypted).subarray(0, gameFile.uncompressedSize)
+            return uncompressedBuffer
+        } else if (gameFile.isEncrypted) {
+            console.debug(`${gameFile.getName()} is encrypted, decrypting`)
+            if (this.aesKey) {
+                throw new ParserException("Decrypting a encrypted file requires an encryption key to be set")
+            }
+            // AES is block encryption, all encrypted blocks need to be 16 bytes long,
+            // fix the game file length by growing it to the next multiple of 16 bytes
+            const newLength = Utils.align(gameFile.size, Aes.BLOCK_SIZE)
+            const buffer = Aes.decrypt(exAr.readBuffer(newLength), this.aesKey)
+            return buffer.subarray(0, gameFile.size)
+        } else {
+            return exAr.readBuffer(gameFile.size)
         }
     }
 
@@ -256,7 +274,7 @@ export class PakFileReader {
             const filesNum = directoryIndexAr.readInt32()
             for (let j = 0; j < filesNum; j++) {
                 const file = directoryIndexAr.readString()
-                const path = this.mountPoint + directory + file
+                const path = directory + file
                 encodedPakEntriesAr.pos = directoryIndexAr.readInt32()
                 const entry = this.readBitEntry(encodedPakEntriesAr)
                 entry.name = path

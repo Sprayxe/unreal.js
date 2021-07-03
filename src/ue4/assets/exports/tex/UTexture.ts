@@ -5,44 +5,10 @@ import { FPerPlatformFloat } from "../../../objects/engine/PerPlatformProperties
 import { FPackageIndex } from "../../../objects/uobject/ObjectResource";
 import { CMaterialParams } from "../../../converters/materials/Material";
 
-export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial {
-    public LightingGuid: FGuid
-    public LodBias: number
-    public CompressionSettings: ETextureCompressionSettings
-    public Filter: ETextureFilter
-    public MipLoadOptions: ETextureMipLoadOptions
-    public LODGroup: ETextureGroup
-    public Downscale: FPerPlatformFloat
-    public DownscaleOptions: ETextureDownscaleOptions
-    public SRGB: boolean
-    public bNoTiling: boolean
-    public VirtualTextureStreaming: boolean
-    public CompressionYCoCg: boolean
-    public bNotOfflineProcessed: boolean
-    public bAsyncResourceReleaseHasBeenStarted: boolean
-    public AssetUserData: FPackageIndex[]
-
-    getParams(params: CMaterialParams) {
-        // ???
-    }
-
-    getName(): string {
-        return this.name
-    }
-
-    // no default in typescript interfaces
-    appendReferencedTextures(outTextures: UUnrealMaterial[], onlyRendered: boolean) {
-        const params = new CMaterialParams()
-        this.getParams(params)
-        params.appendAllTextures(outTextures)
-    }
-
-    // no default in typescript interfaces
-    isTextureCube() {
-        return false
-    }
-}
-
+/**
+ * ETextureCompressionSettings
+ * @enum
+ */
 export enum ETextureCompressionSettings {
     TC_Default,
     TC_Normalmap,
@@ -59,6 +25,10 @@ export enum ETextureCompressionSettings {
     TC_HalfFloat
 }
 
+/**
+ * ETextureFilter
+ * @enum
+ */
 export enum ETextureFilter {
     TF_Nearest,
     TF_Bilinear,
@@ -66,12 +36,20 @@ export enum ETextureFilter {
     TF_Default
 }
 
+/**
+ * ETextureMipLoadOptions
+ * @enum
+ */
 export enum ETextureMipLoadOptions {
     Default,
     AllMips,
     OnlyFirstMip
 }
 
+/**
+ * ETextureGroup
+ * @enum
+ */
 export enum ETextureGroup {
     TEXTUREGROUP_World,
     TEXTUREGROUP_WorldNormalMap,
@@ -124,6 +102,10 @@ export enum ETextureGroup {
     TEXTUREGROUP_Project15
 }
 
+/**
+ * ETextureDownscaleOptions
+ * @enum
+ */
 export enum ETextureDownscaleOptions {
     Default,
     Unfiltered,
@@ -139,4 +121,157 @@ export enum ETextureDownscaleOptions {
     Sharpen8,
     Sharpen9,
     Sharpen10
+}
+
+/**
+ * Represents an UE4 Texture
+ * @extends {UStreamableRenderAsset}
+ * @implements {UUnrealMaterial}
+ */
+export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial {
+    /**
+     * GUID of lighting
+     * @type {FGuid}
+     * @public
+     */
+    public LightingGuid: FGuid
+
+    /**
+     * Lod bias
+     * @type {number}
+     * @public
+     */
+    public LodBias: number
+
+    /**
+     * Compression settings of texture
+     * @type {ETextureCompressionSettings}
+     * @public
+     */
+    public CompressionSettings: ETextureCompressionSettings
+
+    /**
+     * Texture filter
+     * @type {ETextureFilter}
+     * @public
+     */
+    public Filter: ETextureFilter
+
+    /**
+     * Mip load options
+     * @type {ETextureMipLoadOptions}
+     * @public
+     */
+    public MipLoadOptions: ETextureMipLoadOptions
+
+    /**
+     * LOD group
+     * @type {ETextureGroup}
+     * @public
+     */
+    public LODGroup: ETextureGroup
+
+    /**
+     * Texture downscale
+     * @type {FPerPlatformFloat}
+     * @public
+     */
+    public Downscale: FPerPlatformFloat
+
+    /**
+     * Options of texture downscale
+     * @type {ETextureDownscaleOptions}
+     * @public
+     */
+    public DownscaleOptions: ETextureDownscaleOptions
+
+    /**
+     * SRGB
+     * @type {boolean}
+     * @public
+     */
+    public SRGB: boolean
+
+    /**
+     * Wether tilting applies to texture
+     * @type {boolean}
+     * @public
+     */
+    public bNoTiling: boolean
+
+    /**
+     * Wether this texture is virtually streamed
+     * @type {boolean}
+     * @public
+     */
+    public VirtualTextureStreaming: boolean
+
+    /**
+     * CompressionYCoCg
+     * @type {boolean}
+     * @public
+     */
+    public CompressionYCoCg: boolean
+
+    /**
+     * Wether this is not offline processed
+     * @type {boolean}
+     * @public
+     */
+    public bNotOfflineProcessed: boolean
+
+    /**
+     * Wether an async resource release was started
+     * @type {boolean}
+     * @public
+     */
+    public bAsyncResourceReleaseHasBeenStarted: boolean
+
+    /**
+     * Asset user data
+     * @type {Array<FPackageIndex>}
+     * @public
+     */
+    public AssetUserData: FPackageIndex[]
+
+    /**
+     * Gets params
+     * @param {CMaterialParams} params Params to modify
+     * @returns {void}
+     * @public
+     */
+    getParams(params: CMaterialParams) {
+        // ???
+    }
+
+    /**
+     * Gets name
+     * @returns {string}
+     * @public
+     */
+    getName(): string {
+        return this.name
+    }
+
+    /**
+     * Appends textures
+     * @param {Array<UUnrealMaterial>} outTextures Array to mofify
+     * @param {boolean} onlyRendered Wether only rendered
+     * @returns {void}
+     * @public
+     */
+    appendReferencedTextures(outTextures: UUnrealMaterial[], onlyRendered: boolean) {
+        const params = new CMaterialParams()
+        this.getParams(params)
+        params.appendAllTextures(outTextures)
+    }
+
+    /**
+     * Wether is texture cube
+     * @returns {boolean}
+     * @public
+     */
+    isTextureCube() {
+        return false
+    }
 }

@@ -1,3 +1,7 @@
+/**
+ * EFunctionFlags
+ * @enum
+ */
 export enum EFunctionFlags {
     FUNC_None = 0x00000000,
 

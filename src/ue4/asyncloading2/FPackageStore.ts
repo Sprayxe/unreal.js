@@ -19,32 +19,95 @@ import osLocale from "os-locale";
 import { FByteArchive } from "../reader/FByteArchive";
 import { ParserException } from "../../exceptions/Exceptions";
 import { UnrealMap } from "../../util/UnrealMap";
+import Collection from "@discordjs/collection";
 
+/**
+ * FPackageStore (I/O)
+ * @extends {FOnContainerMountedListener}
+ */
 export class FPackageStore extends FOnContainerMountedListener {
+    /**
+     * Provider
+     * @type {FileProvider}
+     * @public
+     */
     provider: FileProvider
+
+    /**
+     * Global name map
+     * @type {FNameMap}
+     * @public
+     */
     globalNameMap: FNameMap
 
+    /**
+     * Creates instance using values
+     * @param {FileProvider} provider File provider to use
+     * @param {FNameMap} globalNameMap Global name map to use
+     */
     constructor(provider: FileProvider, globalNameMap: FNameMap) {
         super()
         this.provider = provider
         this.globalNameMap = globalNameMap
     }
 
-    loadedContainers = new UnrealMap<bigint, FLoadedContainer>()
+    /**
+     * Loaded containers
+     * @type {Collection<bigint, FLoadedContainer>}
+     * @public
+     */
+    loadedContainers = new Collection<bigint, FLoadedContainer>()
 
+    /**
+     * Current culture names
+     * @type {Array<string>}
+     * @public
+     */
     currentCultureNames: string[] = []
 
-    storeEntries = new UnrealMap<bigint, FPackageStoreEntry>()
-    redirectedPackages = new UnrealMap<bigint, bigint>()
+    /**
+     * Store entries
+     * @type {Collection<bigint, FPackageStoreEntry>}
+     * @public
+     */
+    storeEntries = new Collection<bigint, FPackageStoreEntry>()
 
+    /**
+     * Redirected packages
+     * @type {Collection<bigint, FPackageStoreEntry>}
+     * @public
+     */
+    redirectedPackages = new Collection<bigint, bigint>()
+
+    /**
+     * Script object entries
+     * @type {Array<FScriptObjectEntry>}
+     * @public
+     */
     scriptObjectEntries: FScriptObjectEntry[] = []
+
+    /**
+     * Script object entries map
+     * @type {UnrealMap<FPackageObjectIndex, FScriptObjectEntry>}
+     * @public
+     */
     scriptObjectEntriesMap = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
 
+    /**
+     * Sets up culture
+     * @returns {void}
+     * @public
+     */
     setupCulture() {
         this.currentCultureNames = []
         this.currentCultureNames.push(osLocale.sync().toString().replace("_", "-"))
     }
 
+    /**
+     * Sets up initial load data
+     * @returns {void}
+     * @public
+     */
     setupInitialLoadData() {
         const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
@@ -60,6 +123,12 @@ export class FPackageStore extends FOnContainerMountedListener {
         }
     }
 
+    /**
+     * Loads containers
+     * @param {Array<FIoDispatcherMountedContainer>} containers Containers to load
+     * @returns {void}
+     * @public
+     */
     loadContainers(containers: FIoDispatcherMountedContainer[]) {
         const invalidId = 0xFFFFFFFFFFFFFFFFn
         const containersToLoad = containers.filter(it => it.containerId !== invalidId)
@@ -127,10 +196,22 @@ export class FPackageStore extends FOnContainerMountedListener {
         console.log(`Loaded mounted containers in ${Date.now() - start}ms!`)
     }
 
-    onContainerMounted(container:FIoDispatcherMountedContainer) {
+    /**
+     * On container mounted 'event'
+     * @param {FIoDispatcherMountedContainer} container Container to call
+     * @returns {void}
+     * @public
+     */
+    onContainerMounted(container: FIoDispatcherMountedContainer) {
         this.loadContainers([container])
     }
 
+    /**
+     * Applies store redirects
+     * @param {UnrealMap<bigint, bigint>} redirects Redirects to apply
+     * @returns {void}
+     * @public
+     */
     applyRedirects(redirects: UnrealMap<bigint, bigint>) {
         if (!redirects.size)
             return
@@ -148,19 +229,63 @@ export class FPackageStore extends FOnContainerMountedListener {
         }
     }
 
+    /**
+     * Gets an store entry
+     * @param {bigint} packageId ID of store entry to get
+     * @returns {FPackageStoreEntry}
+     * @public
+     */
     findStoreEntry(packageId: bigint) {
         return this.storeEntries.get(packageId)
     }
 
+    /**
+     * Gets redirected package id
+     * @param {bigint} packageId ID of redirect to get
+     * @returns {Collection<bigint, bigint>}
+     * @public
+     */
     getRedirectedPackageId(packageId: bigint) {
         return this.redirectedPackages.get(packageId)
     }
 }
 
+/**
+ * FLoadedContainer
+ */
 export class FLoadedContainer {
+    /**
+     * Container name map
+     * @type {FNameMap}
+     * @public
+     */
     containerNameMap = new FNameMap()
+
+    /**
+     * Store entries
+     * @type {Array<FPackageStoreEntry>}
+     * @public
+     */
     storeEntries: FPackageStoreEntry[] = []
+
+    /**
+     * Package count
+     * @type {number}
+     * @public
+     */
     packageCount = 0
+
+    /**
+     * Order
+     * @type {number}
+     * @public
+     */
     order = 0
+
+    /**
+     * bValid
+     * @type {boolean}
+     * @public
+     */
     bValid = false
 }

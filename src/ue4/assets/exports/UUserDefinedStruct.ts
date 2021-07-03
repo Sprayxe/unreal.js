@@ -6,6 +6,10 @@ import { FPropertyTag } from "../objects/FPropertyTag";
 import { deserializeUnversionedProperties } from "../../objects/uobject/serialization/UnversionedPropertySerialization";
 import { deserializeVersionedTaggedProperties } from "./UObject";
 
+/**
+ * EUserDefinedStructureStatus
+ * @enum
+ */
 export enum EUserDefinedStructureStatus {
     /** Struct is in an unknown state. */
     UDSS_UpToDate,
@@ -17,8 +21,23 @@ export enum EUserDefinedStructureStatus {
     UDSS_Duplicate
 }
 
+/**
+ * UUserDefinedStruct
+ * @extends {UScriptStruct}
+ */
 export class UUserDefinedStruct extends UScriptStruct {
+    /**
+     * Status
+     * @type {EUserDefinedStructureStatus}
+     * @public
+     */
     public Status = EUserDefinedStructureStatus.UDSS_UpToDate
+
+    /**
+     * Guid
+     * @type {FGuid}
+     * @public
+     */
     public Guid: FGuid = null
 
     deserialize(Ar: FAssetArchive, validPos: number) {

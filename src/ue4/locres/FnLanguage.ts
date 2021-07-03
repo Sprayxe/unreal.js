@@ -1,8 +1,18 @@
+/**
+ * Gets value of language code
+ * @param {string} lang Language code
+ * @returns {FnLanguage} Instance
+ * @export
+ */
 export function valueOfLanguageCode(lang: string): FnLanguage {
     const value = Object.values(FnLanguage).find(v => v === lang)
     return value || FnLanguage.UNKNOWN
 }
 
+/**
+ * FnLanguage
+ * @enum
+ */
 export enum FnLanguage {
     AR = "ar",
     DE = "de",

@@ -10,7 +10,6 @@ import {
     createIoChunkId,
     EIoChunkType,
     FIoChunkId,
-    FIoDispatcherMountedContainer,
     FIoStoreEnvironment
 } from "../ue4/io/IoDispatcher";
 import { IoPackage } from "../ue4/assets/IoPackage";
@@ -35,6 +34,7 @@ import { FSoftObjectPath } from "../ue4/objects/uobject/SoftObjectPath";
 import { createFPackageId } from "../ue4/objects/uobject/FPackageId";
 import { Oodle } from "../oodle/Oodle";
 import { Config, IConfig } from "../Config";
+import { Utils } from "../util/Utils";
 
 /**
  * The main hub for interacting with ue4 assets
@@ -122,8 +122,8 @@ export class FileProvider extends EventEmitter {
         const globalPackageStore = new FPackageStore(this, globalNameMap)
         globalNameMap.loadGlobal(this)
         globalPackageStore.setupInitialLoadData()
-        globalPackageStore.setupCulture()
-        globalPackageStore.loadContainers(this.mountedIoStoreReaders.map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
+        //globalPackageStore.setupCulture()
+        //globalPackageStore.loadContainers(this.mountedIoStoreReaders.map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
         return globalPackageStore
     })
 
@@ -330,11 +330,12 @@ export class FileProvider extends EventEmitter {
                 const ubulk = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".ubulk")
                 return new PakPackage(uasset, uexp, ubulk, path, this, this.game)
             } else {
-                const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
-                if (!storeEntry)
-                    return null
-                const ioBuffer = this.saveChunk(createIoChunkId(x, 0, EIoChunkType.ExportBundleData))
-                return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore.value, this, this.game)
+                let ioBuffer: Buffer
+                try {
+                    ioBuffer = this.saveChunk(createIoChunkId(x, 0, EIoChunkType.ExportBundleData))
+                } catch { }
+                if (!ioBuffer) return null
+                return new IoPackage(ioBuffer, x, this.globalPackageStore.value, this, this.game)
             }
         } catch (e) {
             console.error(`Failed to load package ${x.toString()}`)
@@ -365,7 +366,7 @@ export class FileProvider extends EventEmitter {
             }
         }
         const pkg = this.loadGameFile(packagePath) // TODO allow reading umaps via this route, currently fixPath() only appends .uasset. EDIT(2020-12-15): This works with IoStore assets, but not PAK assets.
-        return pkg?.findObjectByName(objectName) as T
+        return pkg?.findObjectByName(objectName)?.value as T
     }
 
     /**
@@ -384,6 +385,14 @@ export class FileProvider extends EventEmitter {
      */
     loadLocres(file: GameFile): Locres
 
+    /**
+     * Loads a UE4 Locres file
+     * @param {FnLanguage} ln Language to load
+     * @returns {?Locres} The parsed locres or null if not found
+     * @public
+     */
+    loadLocres(ln: FnLanguage)
+
     /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     loadLocres(x?: any) {
         try {
@@ -393,16 +402,43 @@ export class FileProvider extends EventEmitter {
                 const locres = this.saveGameFile(x)
                 return new Locres(locres, x.path, this.getLocresLanguageByPath(x.path))
             } else if (typeof x === "string") {
-                const path = this.fixPath(x)
-                const gameFile = this.findGameFile(path)
-                if (gameFile)
-                    return this.loadLocres(gameFile)
-                if (!path.endsWith(".locres"))
-                    return null
-                const locres = this.saveGameFile(path)
-                if (!locres)
-                    return null
-                return new Locres(locres, path, this.getLocresLanguageByPath(x))
+                // basically String.replaceAll() but it doesnt exist in js yet lol
+                if (FnLanguage[x.toUpperCase().split("-").join("_")] != null) {
+                    const files = this.files
+                        .filter(it => {
+                            const path = it.path.toLowerCase()
+                            return path.startsWith(`${this.gameName}Game/Content/Localization`.toLowerCase())
+                                && path.includes(`/${x}/`.toLowerCase())
+                                && path.endsWith(".locres")
+                        })
+                    if (!files.size) return null
+                    let first: Locres = null
+                    for (const file of files.values()) {
+                        try {
+                            const f = first
+                            if (f == null) {
+                                first = this.loadLocres(file)
+                            } else {
+                                this.loadLocres(file)?.mergeInto(first)
+                            }
+                        } catch (e) {
+                            console.error(`Failed to locres file ${file.getName()}`)
+                            console.error(e)
+                        }
+                    }
+                    return first
+                } else {
+                    const path = this.fixPath(x)
+                    const gameFile = this.findGameFile(path)
+                    if (gameFile)
+                        return this.loadLocres(gameFile)
+                    if (!path.endsWith(".locres"))
+                        return null
+                    const locres = this.saveGameFile(path)
+                    if (!locres)
+                        return null
+                    return new Locres(locres, path, this.getLocresLanguageByPath(x))
+                }
             }
         } catch (e) {
             console.error(`Failed to load locres ${x instanceof GameFile ? x.path : x}`)
@@ -417,7 +453,10 @@ export class FileProvider extends EventEmitter {
      * @public
      */
     getLocresLanguageByPath(filePath: string): FnLanguage {
-        return valueOfLanguageCode(filePath.split(new RegExp("Localization/(.*?)/"))[1])
+        return valueOfLanguageCode(Utils.takeWhileStr(
+            filePath.split(new RegExp("Localization/(.*?)/"))[2],
+            (it) => it !== "/")
+        )
     }
 
     /**
@@ -455,6 +494,7 @@ export class FileProvider extends EventEmitter {
                 return locres ? new AssetRegistry(locres, path) : null
             }
         } catch (e) {
+            console.error(e)
             console.error(`Failed to load asset registry ${x instanceof GameFile ? x.path : x}`)
         }
     }
@@ -598,9 +638,9 @@ export class FileProvider extends EventEmitter {
                     ioStoreReader.getFiles().forEach((it) => this.files.set(it.path.toLowerCase(), it))
                 }
                 this.mountedIoStoreReaders.push(ioStoreReader)
-                if (this.globalPackageStore.isInitialized) {
+                /*if (this.globalPackageStore.isInitialized) {
                     this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
-                }
+                }*/
             } catch (e) {
                 console.warn("Failed to mount IoStore environment \"%s\"", absolutePath, e)
             }

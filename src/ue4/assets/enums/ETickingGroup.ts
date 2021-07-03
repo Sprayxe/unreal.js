@@ -1,3 +1,7 @@
+/**
+ * ETickingGroup
+ * @enum
+ */
 export enum ETickingGroup {
     TG_PrePhysics,
     TG_StartPhysics,

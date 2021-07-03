@@ -17,6 +17,7 @@ import { FSoftClassPath, FSoftObjectPath } from "../../objects/uobject/SoftObjec
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FExportArchive } from "../reader/FExportArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
+import { Locres } from "../../locres/Locres";
 
 /**
  * Represents a property
@@ -130,10 +131,11 @@ export class FProperty {
 
     /**
      * Turns this instance's value for json
+     * @param {any} arg Used for locres in TextProperty
      * @returns {any}
      * @public
      */
-    toJsonValue() {
+    toJsonValue(arg?: any) {
         return null
     }
 
@@ -1198,7 +1200,7 @@ export class TextProperty extends FProperty {
      * @returns {any}
      * @public
      */
-    toJsonValue(): any {
+    toJsonValue(locres?: Locres): any {
         return this.text.toJson()
     }
 }

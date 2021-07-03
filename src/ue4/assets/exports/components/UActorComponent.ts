@@ -5,25 +5,10 @@ import { FPackageIndex } from "../../../objects/uobject/ObjectResource";
 import { FMulticastScriptDelegate } from "../../../objects/uobject/ScriptDelegates";
 import { UProperty } from "../../../../util/decorators/UProperty";
 
-export class UActorComponent extends UObject {
-    //public FActorComponentTickFunction PrimaryComponentTick;
-    @UProperty({skipPrevious: 1})
-    public ComponentTags: FName[]
-    public AssetUserData: FPackageIndex[]
-    public UCSSerializationIndex: number
-    public bNetAddressable: boolean
-    public bReplicates: boolean
-    public bAutoActivate: boolean
-    public bIsActive: boolean;
-    public bEditableWhenInherited: boolean;
-    public bCanEverAffectNavigation: boolean;
-    public bIsEditorOnly: boolean;
-    public CreationMethod: EComponentCreationMethod;
-    public OnComponentActivated: FMulticastScriptDelegate;
-    public OnComponentDeactivated: FMulticastScriptDelegate;
-    public UCSModifiedProperties: FSimpleMemberReference[];
-}
-
+/**
+ * EComponentCreationMethod
+ * @enum
+ */
 export enum EComponentCreationMethod {
     Native,
     SimpleConstructionScript,
@@ -31,8 +16,134 @@ export enum EComponentCreationMethod {
     Instance
 }
 
+/**
+ * FSimpleMemberReference
+ */
 export class FSimpleMemberReference {
-    public MemberParent: UObject;
-    public MemberName: FName;
-    public MemberGuid: FGuid;
+    /**
+     * MemberParent
+     * @type {UObject}
+     * @public
+     */
+    public MemberParent: UObject
+
+    /**
+     * MemberName
+     * @type {FName}
+     * @public
+     */
+    public MemberName: FName
+
+    /**
+     * MemberGuid
+     * @type {FGuid}
+     * @public
+     */
+    public MemberGuid: FGuid
+}
+
+/**
+ * UActorComponent
+ * @extends {UObject}
+ */
+export class UActorComponent extends UObject {
+    //public FActorComponentTickFunction PrimaryComponentTick;
+    /**
+     * ComponentTags
+     * @type {Array<FName>}
+     * @public
+     */
+    @UProperty({skipPrevious: 1})
+    public ComponentTags: FName[]
+
+    /**
+     * AssetUserData
+     * @type {Array<FPackageIndex>}
+     * @public
+     */
+    public AssetUserData: FPackageIndex[]
+
+    /**
+     * UCSSerializationIndex
+     * @type {number}
+     * @public
+     */
+    public UCSSerializationIndex: number
+
+    /**
+     * bNetAddressable
+     * @type {boolean}
+     * @public
+     */
+    public bNetAddressable: boolean
+
+    /**
+     * bReplicates
+     * @type {boolean}
+     * @public
+     */
+    public bReplicates: boolean
+
+    /**
+     * bAutoActivate
+     * @type {boolean}
+     * @public
+     */
+    public bAutoActivate: boolean
+
+    /**
+     * bIsActive
+     * @type {boolean}
+     * @public
+     */
+    public bIsActive: boolean
+
+    /**
+     * bEditableWhenInherited
+     * @type {boolean}
+     * @public
+     */
+    public bEditableWhenInherited: boolean
+
+    /**
+     * bCanEverAffectNavigation
+     * @type {boolean}
+     * @public
+     */
+    public bCanEverAffectNavigation: boolean
+
+    /**
+     * bIsEditorOnly
+     * @type {boolean}
+     * @public
+     */
+    public bIsEditorOnly: boolean
+
+    /**
+     * CreationMethod
+     * @type {EComponentCreationMethod}
+     * @public
+     */
+    public CreationMethod: EComponentCreationMethod
+
+    /**
+     * OnComponentActivated
+     * @type {FMulticastScriptDelegate}
+     * @public
+     */
+    public OnComponentActivated: FMulticastScriptDelegate
+
+    /**
+     * OnComponentDeactivated
+     * @type {FMulticastScriptDelegate}
+     * @public
+     */
+    public OnComponentDeactivated: FMulticastScriptDelegate
+
+    /**
+     * UCSModifiedProperties
+     * @type {Array<FSimpleMemberReference>}
+     * @public
+     */
+    public UCSModifiedProperties: FSimpleMemberReference[]
 }

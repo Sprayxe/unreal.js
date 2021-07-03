@@ -229,14 +229,14 @@ export class PakPackage extends Package {
     /**
      * Finds an object by index
      * @param {?FPackageIndex} index Index to find
-     * @returns {?any} Object or null
+     * @returns {?Lazy<any>} Object or null
      * @public
      */
-    findObject<T>(index?: FPackageIndex): T {
+    findObject<T>(index?: FPackageIndex): Lazy<T> {
         return (index === null || index.isNull()) ? null :
-            index.isImport() ? this.findImport(this.importMap[index.toImport()]) as unknown as T :
-                index.isExport() ? this.exportMap[index.toExport()]?.exportObject as unknown as T :
-                    null
+            index.isImport() ? this.findImport(this.importMap[index.toImport()]) as any :
+            index.isExport() ? this.exportMap[index.toExport()]?.exportObject as any :
+            null
     }
 
     /**
@@ -247,19 +247,19 @@ export class PakPackage extends Package {
      */
     loadImport(imp?: FObjectImport) {
         if (!imp) return null
-        return this.findImport(imp) || null
+        return this.findImport(imp)?.value || null
     }
 
     /**
      * Finds an import
      * @param {?FObjectImport} imp Import to load
-     * @returns {?UObject} Object or null
+     * @returns {?Lazy<UObject>} Object or null
      * @public
      */
-    findImport(imp?: FObjectImport): UObject {
+    findImport(imp?: FObjectImport): Lazy<UObject> {
         if (!imp) return null
         if (imp.className.text === "Class") {
-            const lazy = () => {
+            return new Lazy<UObject>(() => {
                 const structName = imp.objectName
                 let struct = this.provider?.mappingsProvider?.getStruct(structName)
                 if (!struct) {
@@ -269,8 +269,7 @@ export class PakPackage extends Package {
                     struct = new UScriptStruct(ObjectTypeRegistry.get(structName.text), structName)
                 }
                 return struct
-            }
-            return lazy()
+            })
         }
         // The needed export is located in another asset, try to load it
         if (!this.getImportObject(imp.outerIndex)) return null
@@ -285,15 +284,15 @@ export class PakPackage extends Package {
      * Finds an object by name
      * @param {string} objectName Name of object
      * @param {?string} className Class name of object
-     * @returns {?UObject} Object or null
+     * @returns {?Lazy<UObject>} Object or null
      * @public
      */
-    findObjectByName(objectName: string, className?: string) {
+    findObjectByName(objectName: string, className?: string): Lazy<UObject> {
         const exp = this.exportMap.find(it => {
             return it.objectName.text === objectName
                 && (className == null || (this.getImportObject(it.classIndex))?.objectName?.text === className)
         })
-        return exp?.exportObject?.value
+        return exp?.exportObject
     }
 
     /**

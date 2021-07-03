@@ -1,3 +1,7 @@
+/**
+ * EPakVersion
+ * @enum
+ */
 export enum EPakVersion {
     PakVersion_Initial = 1,
     PakVersion_NoTimestamps = 2,

@@ -11,85 +11,94 @@ import { UnrealArray } from "../../../../util/UnrealArray";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { Game } from "../../../versions/Game";
 
-export class UTexture2D extends UTexture {
-    @UProperty() public LevelIndex?: number = null
-    @UProperty() public FirstResourceMemMip?: number = null
-    @UProperty() public bTemporarilyDisableStreaming?: boolean = null
-    @UProperty() public AddressX?: ETextureAddress = null
-    @UProperty() public AddressY?: ETextureAddress = null
-    @UProperty() public ImportedSize?: FIntPoint = null
-    public flag1: FStripDataFlags = null
-    public flag2: FStripDataFlags = null
-    public cooked: boolean = true
-    public textures: UnrealMap<FTexturePlatformData, FName> = null
-
-    deserialize(Ar: FAssetArchive, validPos: number) {
-        super.deserialize(Ar, validPos)
-        this.flag1 = new FStripDataFlags(Ar)
-        this.flag2 = new FStripDataFlags(Ar)
-        this.cooked = Ar.readBoolean()
-        this.textures = new UnrealMap<FTexturePlatformData, FName>()
-        if (this.cooked) {
-            while (true) {
-                const pixelFormat = Ar.readFName()
-                if (pixelFormat.isNone()) break
-                const skipOffset = Number(Ar.readInt64())
-                this.textures.set(new FTexturePlatformData(Ar), pixelFormat)
-                if (Ar.relativePos() !== skipOffset) {
-                    console.warn(`Texture read incorrectly. Current relative pos ${Ar.relativePos()}, skip offset ${skipOffset}`)
-                    Ar.seekRelative(skipOffset)
-                }
-            }
-        }
-    }
-
-    getFirstMip() {
-        return this.getFirstTexture().getFirstMip()
-    }
-
-    getFirstTexture() {
-        const tex = this.textures.firstKey()
-        if (!tex) throw new Error("No textures found in this UTexture2D")
-        return tex
-    }
-
-    serialize(Ar: FAssetArchiveWriter) {
-        super.serialize(Ar)
-        this.flag1.serialize(Ar)
-        this.flag2.serialize(Ar)
-        Ar.writeBoolean(this.cooked)
-        this.textures.forEach((pixelFormat, texture) => {
-            Ar.writeFName(pixelFormat)
-            const tempAr = Ar.setupByteArrayWriter()
-            texture.serialize(tempAr)
-            const textureData = tempAr.toByteArray()
-            Ar.writeInt64(tempAr.relativePos() + 8) //new skip offset
-            Ar.write(textureData)
-        })
-        const name = FName.getByNameMap("None", Ar.nameMap)
-        if (!name)
-            throw new ParserException("NameMap must contain \"None\"", Ar)
-        Ar.writeFName(name)
-    }
-}
-
+/**
+ * ETextureAddress
+ * @enum
+ */
 export enum ETextureAddress {
     TA_Wrap,
     TA_Clamp,
     TA_Mirror
 }
 
+/**
+ * FTexturePlatformData
+ */
 export class FTexturePlatformData {
+    /**
+     * X Size
+     * @type {number}
+     * @public
+     */
     public sizeX: number
+
+    /**
+     * Y Size
+     * @type {number}
+     * @public
+     */
     public sizeY: number
+
+    /**
+     * Amount of slices
+     * @type {number}
+     * @public
+     */
     public numSlices: number
+
+    /**
+     * Pixel format
+     * @type {string}
+     * @public
+     */
     public pixelFormat: string
+
+    /**
+     * Index of first mip
+     * @type {number}
+     * @see {mips}
+     * @see {getFirstMip}
+     * @public
+     */
     public firstMip: number
+
+    /**
+     * Mips
+     * @type {Array<FTexture2DMipMap>}
+     * @public
+     */
     public mips: FTexture2DMipMap[]
+
+    /**
+     * Wether virtual
+     * @type {boolean}
+     * @public
+     */
     public isVirtual: boolean = false
 
+    /**
+     * Creates an instance using an UE4 Asset Reader
+     * @param {FAssetArchive} Ar Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} sizeX X Size
+     * @param {number} sizeY Y Size
+     * @param {number} numSlices Amount of slices
+     * @param {string} pixelFormat Pixel format
+     * @param {number} firstMip Index of first mip
+     * @param {Array<FTexture2DMipMap>} mips Mips
+     * @param {boolean} isVirtual Wether virtual
+     * @constructor
+     * @public
+     */
     constructor(sizeX: number, sizeY: number, numSlices: number, pixelFormat: string, firstMip: number, mips: FTexture2DMipMap[], isVirtual: boolean)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg = args[0]
         if (arg instanceof FAssetArchive) {
@@ -118,14 +127,30 @@ export class FTexturePlatformData {
         }
     }
 
+    /**
+     * Gets first mip
+     * @returns {FTexture2DMipMap}
+     * @public
+     */
     getFirstMip() {
         return this.mips[this.firstMip]
     }
 
+    /**
+     * Gets first loaded mip
+     * @returns {FTexture2DMipMap}
+     * @public
+     */
     getFirstLoadedMip() {
         return this.mips.find(m => m.data.isBulkDataLoaded)
     }
 
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FAssetArchiveWriter) {
         Ar.writeInt32(this.sizeX)
         Ar.writeInt32(this.sizeY)
@@ -141,16 +166,74 @@ export class FTexturePlatformData {
     }
 }
 
+/**
+ * FTexture2DMipMap
+ */
 export class FTexture2DMipMap {
+    /**
+     * Wether cooked
+     * @type {boolean}
+     * @public
+     */
     public cooked: boolean
+
+    /**
+     * Data
+     * @type {FByteBulkData}
+     * @public
+     */
     public data: FByteBulkData
+
+    /**
+     * X Size
+     * @type {number}
+     * @public
+     */
     public sizeX: number
+
+    /**
+     * Y Size
+     * @type {number}
+     * @public
+     */
     public sizeY: number
+
+    /**
+     * Z Size
+     * @type {number}
+     * @public
+     */
     public sizeZ: number
+
+    /**
+     * U
+     * @type {?string}
+     * @public
+     */
     public u?: string = null
 
+    /**
+     * Creates an instance using an UE4 Asset Reader
+     * @param {FAssetArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {boolean} cooked Wether cooked
+     * @param {FByteBulkData} data Data
+     * @param {number} sizeX X Size
+     * @param {number} sizeY Y Size
+     * @param {number} sizeZ Z Size
+     * @param {?string} u U
+     * @constructor
+     * @public
+     */
     constructor(cooked: boolean, data: FByteBulkData, sizeX: number, sizeY: number, sizeZ: number, u?: string)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg = args[0]
         if (arg instanceof FAssetArchive) {
@@ -170,11 +253,165 @@ export class FTexture2DMipMap {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FAssetArchiveWriter) {
         Ar.writeBoolean(this.cooked)
         this.data.serialize(Ar)
         Ar.writeInt32(this.sizeX)
         Ar.writeInt32(this.sizeY)
         Ar.writeInt32(this.sizeZ)
+    }
+}
+
+/**
+ * Represents an UE4 2D Texture
+ * @extends {UTexture}
+ */
+export class UTexture2D extends UTexture {
+    /**
+     * Level index
+     * @type {?number}
+     * @public
+     */
+    @UProperty() public LevelIndex?: number = null
+
+    /**
+     * First resource mem mip
+     * @type {?number}
+     * @public
+     */
+    @UProperty() public FirstResourceMemMip?: number = null
+
+    /**
+     * Wether streaming is temporarily disabled
+     * @type {?boolean}
+     * @public
+     */
+    @UProperty() public bTemporarilyDisableStreaming?: boolean = null
+
+    /**
+     * X Address
+     * @type {?ETextureAddress}
+     * @public
+     */
+    @UProperty() public AddressX?: ETextureAddress = null
+
+    /**
+     * Y Address
+     * @type {?ETextureAddress}
+     * @public
+     */
+    @UProperty() public AddressY?: ETextureAddress = null
+
+    /**
+     * Imported size
+     * @type {?FIntPoint}
+     * @public
+     */
+    @UProperty() public ImportedSize?: FIntPoint = null
+
+    /**
+     * 1st flag
+     * @type {FStripDataFlags}
+     * @public
+     */
+    public flag1: FStripDataFlags = null
+
+    /**
+     * 2nd flag
+     * @type {FStripDataFlags}
+     * @public
+     */
+    public flag2: FStripDataFlags = null
+
+    /**
+     * Wether cooked
+     * @type {boolean}
+     * @public
+     */
+    public cooked: boolean = true
+
+    /**
+     * Textures
+     * @type {UnrealMap<FTexturePlatformData, FName>}
+     * @public
+     */
+    public textures: UnrealMap<FTexturePlatformData, FName> = null
+
+    /**
+     * Deserializes this
+     * @param {FAssetArchive} Ar UE4 Reader to use
+     * @param {number} validPos Valid end position
+     * @returns {void}
+     * @public
+     */
+    deserialize(Ar: FAssetArchive, validPos: number) {
+        super.deserialize(Ar, validPos)
+        this.flag1 = new FStripDataFlags(Ar)
+        this.flag2 = new FStripDataFlags(Ar)
+        this.cooked = Ar.readBoolean()
+        this.textures = new UnrealMap<FTexturePlatformData, FName>()
+        if (this.cooked) {
+            while (true) {
+                const pixelFormat = Ar.readFName()
+                if (pixelFormat.isNone()) break
+                const skipOffset = Number(Ar.readInt64())
+                this.textures.set(new FTexturePlatformData(Ar), pixelFormat)
+                if (Ar.relativePos() !== skipOffset) {
+                    console.warn(`Texture read incorrectly. Current relative pos ${Ar.relativePos()}, skip offset ${skipOffset}`)
+                    Ar.seekRelative(skipOffset)
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets first mip
+     * @returns {FTexture2DMipMap} Mip
+     * @public
+     */
+    getFirstMip() {
+        return this.getFirstTexture().getFirstMip()
+    }
+
+    /**
+     * Gets first texture
+     * @returns {FTexturePlatformData} Texture
+     * @public
+     */
+    getFirstTexture() {
+        const tex = this.textures.firstKey()
+        if (!tex) throw new Error("No textures found in this UTexture2D")
+        return tex
+    }
+
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
+    serialize(Ar: FAssetArchiveWriter) {
+        super.serialize(Ar)
+        this.flag1.serialize(Ar)
+        this.flag2.serialize(Ar)
+        Ar.writeBoolean(this.cooked)
+        this.textures.forEach((pixelFormat, texture) => {
+            Ar.writeFName(pixelFormat)
+            const tempAr = Ar.setupByteArrayWriter()
+            texture.serialize(tempAr)
+            const textureData = tempAr.toByteArray()
+            Ar.writeInt64(tempAr.relativePos() + 8) //new skip offset
+            Ar.write(textureData)
+        })
+        const name = FName.getByNameMap("None", Ar.nameMap)
+        if (!name)
+            throw new ParserException("NameMap must contain \"None\"", Ar)
+        Ar.writeFName(name)
     }
 }

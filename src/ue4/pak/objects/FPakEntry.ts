@@ -39,9 +39,10 @@ export class FPakEntry {
         this.size = Number(Ar.readInt64())
         this.uncompressedSize = Number(Ar.readInt64())
         if (pakInfo.version >= EPakVersion.PakVersion_FNameBasedCompressionMethod) {
-            this.compressionMethod = pakInfo.compressionMethods[Ar.readInt32()] || Ar.game === Game.GAME_VALORANT ? "None" : "Unknown"
+            const int = Ar.readInt32()
+            this.compressionMethod = pakInfo.compressionMethods[int] || (Ar.game === Game.GAME_VALORANT ? "None" : "Unknown")
         } else {
-            this.compressionMethod = ["None", "Unknown", "Unknown", "Unknown", "Oodle"][Ar.readInt32()] || Ar.game === Game.GAME_VALORANT ? "None" : "Unknown"
+            this.compressionMethod = ["None", undefined, undefined, undefined, "Oodle"][Ar.readInt32()] || (Ar.game === Game.GAME_VALORANT ? "None" : "Unknown")
         }
         if (pakInfo.version < EPakVersion.PakVersion_NoTimestamps)
             Ar.pos += 8
@@ -50,7 +51,7 @@ export class FPakEntry {
         this.compressionBlocks = []
         if (pakInfo.version >= EPakVersion.PakVersion_CompressionEncryption) {
             if (this.compressionMethod !== "None")
-                this.compressionBlocks = Ar.readArray(() => new FPakCompressedBlock(0, 0))
+                this.compressionBlocks = Ar.readArray(() => new FPakCompressedBlock(Ar))
             this.isEncrypted = Ar.readFlag()
             //Looks like Valorant sets the encryption flag to false although inis are encrypted
             if (Ar.game === Game.GAME_VALORANT && this.name.endsWith(".ini"))
@@ -64,10 +65,10 @@ export class FPakEntry {
             this.compressionBlockSize = Ar.readInt32()
         }
         if (pakInfo.version >= EPakVersion.PakVersion_RelativeChunkOffsets) {
-            this.compressionBlocks.forEach((it) => {
+            for (const it of this.compressionBlocks) {
                 it.compressedStart += this.pos
                 it.compressedEnd += this.pos
-            })
+            }
         }
     }
 }

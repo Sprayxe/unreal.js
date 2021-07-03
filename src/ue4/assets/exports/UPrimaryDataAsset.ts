@@ -1,5 +1,7 @@
 import { UDataAsset } from "./UDataAsset";
 
-export class UPrimaryDataAsset extends UDataAsset {
-
-}
+/**
+ * UPrimaryDataAsset
+ * @extends {UDataAsset}
+ */
+export class UPrimaryDataAsset extends UDataAsset { }

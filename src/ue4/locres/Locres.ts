@@ -1,7 +1,7 @@
 import { FnLanguage } from "./FnLanguage";
 import { FByteArchive } from "../reader/FByteArchive";
 import { FTextLocalizationResource } from "../objects/core/i18n/FTextLocalizationResource";
-import { UnrealMap } from "../../util/UnrealMap";
+import Collection from "@discordjs/collection";
 
 /**
  * UE4 Text Localization (.locres)
@@ -60,8 +60,8 @@ export class Locres {
     mergeInto(target: Locres) {
         this.texts.stringData.forEach((content, namespace) => {
             let targetNamespace = target.texts.stringData.get(namespace)
-            if (targetNamespace) {
-                const newNameSpace = new UnrealMap<string, string>()
+            if (!targetNamespace) {
+                const newNameSpace = new Collection<string, string>()
                 target.texts.stringData.set(namespace, newNameSpace)
                 targetNamespace = newNameSpace
             }

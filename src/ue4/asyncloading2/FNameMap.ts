@@ -7,10 +7,30 @@ import { createIoChunkId, EIoChunkType, FIoChunkId } from "../io/IoDispatcher";
 import { FName } from "../objects/uobject/FName";
 import { FMinimalName, FNameEntryId } from "../objects/uobject/NameTypes";
 
+/**
+ * FNameMap
+ */
 export class FNameMap {
+    /**
+     * nameEntries
+     * @type {Array<string>}
+     * @public
+     */
     nameEntries: string[] = []
+
+    /**
+     * nameMapType
+     * @type {FMappedName_EType}
+     * @public
+     */
     nameMapType = FMappedName_EType.Global
 
+    /**
+     * Loads global
+     * @param {FileProvider} provider Provider to use
+     * @returns {void}
+     * @public
+     */
     loadGlobal(provider: FileProvider ) {
         if (this.nameEntries.length)
             throw new Error("Nameentries must be empty")
@@ -24,12 +44,36 @@ export class FNameMap {
         this.load(nameBuffer, hashBuffer, FMappedName_EType.Global)
     }
 
+    /**
+     * Length
+     * @type {number}
+     * @public
+     */
     get length() {
         return this.nameEntries.length
     }
 
+    /**
+     * Loads name entries
+     * @param {Buffer} nameBuffer Name buffer
+     * @param {Buffer} hashBuffer Hash buffer
+     * @param {FMappedName_EType} nameMapType Type
+     * @returns {void}
+     * @public
+     */
     load(nameBuffer: Buffer, hashBuffer: Buffer, nameMapType: FMappedName_EType)
+
+    /**
+     * Loads name entries
+     * @param {FArchive} nameBuffer UE4 Reader
+     * @param {FArchive} hashBuffer UE4 Reader
+     * @param {FMappedName_EType} nameMapType Type
+     * @returns {void}
+     * @public
+     */
     load(nameBuffer: FArchive, hashBuffer: FArchive, nameMapType: FMappedName_EType)
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
     load(nameBuffer: any, hashBuffer: any, nameMapType: FMappedName_EType) {
         if (nameBuffer instanceof FArchive) {
             this.nameEntries = loadNameBatch(nameBuffer, hashBuffer)
@@ -40,6 +84,13 @@ export class FNameMap {
         }
     }
 
+    /**
+     * Gets name
+     * @param {FMappedName} mappedName Mapped name to look for
+     * @returns {FName} Name
+     * @public
+     * @throws {Error}
+     */
     getName(mappedName: FMappedName): FName {
         if (mappedName.getType() !== this.nameMapType)
             throw new Error("FMappedName type must be equal to this type")
@@ -49,17 +100,12 @@ export class FNameMap {
         return FName.createFromDisplayId(nameEntry, mappedName.num)
     }
 
-    getNameOrNull(mappedName: FMappedName): FName {
-        if (mappedName.getType() !== this.nameMapType)
-            throw new Error("FMappedName type must be equal to this type")
-        const index = mappedName.getIndex()
-        if (index < this.nameEntries.length) {
-            const nameEntry = this.nameEntries[mappedName.getIndex()]
-            return FName.createFromDisplayId(nameEntry, mappedName.num)
-        }
-        return null
-    }
-
+    /**
+     * Gets minimal name
+     * @param {FMappedName} mappedName Mapped name to look for
+     * @returns {FMinimalName} Minimal name
+     * @public
+     */
     getMinimalName(mappedName: FMappedName): FMinimalName {
         if (mappedName.getType() !== this.nameMapType)
             throw new Error("FMappedName type must be equal to this type")

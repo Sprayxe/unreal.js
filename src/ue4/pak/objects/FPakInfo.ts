@@ -120,7 +120,7 @@ export class FPakInfo {
                 for (let i = 0; i < maxNumCompressionMethods; ++i) {
                     const d = Ar.readBuffer(32)
                     const str = Buffer.from(Utils.takeWhile(d, (it) => it !== 0)).toString("utf8")
-                    if (/\s/g.test(str))
+                    if (str === "")
                         return
                     this.compressionMethods.push(str)
                 }

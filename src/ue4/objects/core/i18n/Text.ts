@@ -10,6 +10,10 @@ import { UStringTable } from "../../../assets/exports/UStringTable";
 import { FAssetArchiveWriter } from "../../../assets/writer/FAssetArchiveWriter";
 import { Locres } from "../../../locres/Locres";
 
+/**
+ * EFormatArgumentType
+ * @enum
+ */
 export enum EFormatArgumentType {
     Int,
     UInt,
@@ -19,17 +23,87 @@ export enum EFormatArgumentType {
     Gender
 }
 
+/**
+ * FText
+ */
 export class FText {
+    /**
+     * flags
+     * @type {number}
+     * @public
+     */
     flags: number
+
+    /**
+     * historyType
+     * @type {ETextHistoryType}
+     * @public
+     */
     historyType: ETextHistoryType
+
+    /**
+     * textHistory
+     * @type {FTextHistory}
+     * @public
+     */
     textHistory: FTextHistory
+
+    /**
+     * text
+     * @type {string}
+     * @public
+     */
     text: string
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using source string
+     * @param {string} sourceString Source string to use
+     * @constructor
+     * @public
+     */
     constructor(sourceString: string)
+
+    /**
+     * Creates an instance using namespace, key, sourceString
+     * @param {string} namespace Namespace to use
+     * @param {string} key Key to use
+     * @param {string} sourceString Source string to use
+     * @constructor
+     * @public
+     */
     constructor(namespace: string, key: string, sourceString: string)
+
+    /**
+     * Creates an instance using values
+     * @param {string} namespace Namespace to use
+     * @param {string} key Key to use
+     * @param {string} sourceString Source string to use
+     * @param {number} flags Flags to use
+     * @param {ETextHistoryType} historyType History type to use
+     * @constructor
+     * @public
+     */
     constructor(namespace: string, key: string, sourceString: string, flags: number, historyType: ETextHistoryType)
+
+    /**
+     * Creates an instance using flags, historyType, textHistory
+     * @param {number} flags Flags to use
+     * @param {ETextHistoryType | number} historyType History type to use
+     * @param {FTextHistory} textHistory Text history to use
+     * @constructor
+     * @public
+     */
     constructor(flags: number, historyType: number, textHistory: FTextHistory)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...params) {
         const x = params[0]
         if (x instanceof FArchive) {
@@ -65,61 +139,144 @@ export class FText {
         }
     }
 
+    /**
+     * Copies values
+     * @returns {FText} Copied instance
+     * @public
+     */
     copy() {
         return new FText(this.flags, this.historyType, this.textHistory)
     }
 
+    /**
+     * Gets text for provided locres
+     * @param {?Locres} locres Locres to use
+     * @returns {string} Text
+     * @public
+     */
     textForLocres(locres?: Locres): string {
         const history = this.textHistory
-        return history instanceof FTextHistoryBase ?
-            locres?.texts?.stringData?.get(history.namespace)?.get(history.key) || this.text :
-            this.text
+        return history instanceof FTextHistoryBase
+            ? locres?.texts?.stringData?.get(history.namespace)?.get(history.key) || this.text
+            : this.text
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeUInt32(this.flags)
         Ar.writeInt8(this.historyType)
         this.textHistory.serialize(Ar)
     }
 
+    /**
+     * Turns this into string
+     * @returns {string}
+     * @public
+     */
     toString() {
         return this.text
     }
 
-    toJson() {
+    /**
+     * Turns this into json
+     * @param {?Locres} locres Locres to use
+     * @returns {any} Json
+     * @public
+     */
+    toJson(locres?: Locres) {
         const enums = Object.keys(ETextHistoryType)
             .splice(13)
             .filter(e => e !== "-1") // Lol this is so dumb
         return {
             historyType: enums[this.historyType + 1],
-            finalText: this.text,
+            finalText: this.textForLocres(locres),
             value: this.textHistory.toJson()
         }
     }
 }
 
+/**
+ * FTextHistory
+ * @abstract
+ */
 export abstract class FTextHistory {
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     * @abstract
+     */
     abstract serialize(Ar: FArchiveWriter)
 
+    /**
+     * Text
+     * @type {string}
+     * @public
+     * @abstract
+     */
     abstract text: string
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     * @abstract
+     */
     abstract toJson(): any
 
+    /**
+     * @class OrderedFormat
+     * @public
+     */
     OrderedFormat = class {
         sourceFmt: FText
         arguments
     }
 }
 
+/**
+ * FTextHistoryNone
+ * @extends {FTextHistory}
+ */
 export class FTextHistoryNone extends FTextHistory {
+    /**
+     * cultureInvariantString
+     * @type {string}
+     * @public
+     */
     cultureInvariantString: string = null
 
+    /**
+     * Text
+     * @type {string}
+     * @public
+     */
     get text(): string {
         return this.cultureInvariantString || ""
     }
 
+    /**
+     * Creates an empty instance
+     * @constructor
+     * @public
+     */
     constructor()
+
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any) {
         super()
         if (x) {
@@ -130,6 +287,12 @@ export class FTextHistoryNone extends FTextHistory {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         const bHasCultureInvariantString = !!this.cultureInvariantString
         Ar.writeBoolean(bHasCultureInvariantString)
@@ -138,22 +301,53 @@ export class FTextHistoryNone extends FTextHistory {
         }
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson() {
         return {cultureInvariantString: this.cultureInvariantString}
     }
 }
 
+/**
+ * FTextHistoryBase
+ * @extends {FTextHistory}
+ */
 export class FTextHistoryBase extends FTextHistory {
     namespace: string
     key: string
     sourceString: string
 
+    /**
+     * Text
+     * @type {string}
+     * @public
+     */
     get text() {
         return this.sourceString
     }
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using namespace, key, sourceString
+     * @param {string} namespace Namespace to use
+     * @param {string} key Key to use
+     * @param {string} sourceString Source string to use
+     * @constructor
+     * @public
+     */
     constructor(namespace: string, key: string, sourceString: string)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...params) {
         super()
         const x = params[0]
@@ -168,12 +362,23 @@ export class FTextHistoryBase extends FTextHistory {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeString(this.namespace)
         Ar.writeString(this.key)
         Ar.writeString(this.sourceString)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             namespace: this.namespace,
@@ -183,18 +388,73 @@ export class FTextHistoryBase extends FTextHistory {
     }
 }
 
+/**
+ * FTextHistoryDateTime
+ * @extends {FTextHistory}
+ */
 export class FTextHistoryDateTime extends FTextHistory {
+    /**
+     * sourceDateTime
+     * @type {FDateTime}
+     * @public
+     */
     sourceDateTime: FDateTime
+
+    /**
+     * dateStyle
+     * @type {EDateTimeStyle}
+     * @public
+     */
     dateStyle: EDateTimeStyle
+
+    /**
+     * timeStyle
+     * @type {EDateTimeStyle}
+     * @public
+     */
     timeStyle: EDateTimeStyle
+
+    /**
+     * timeZone
+     * @type {string}
+     * @public
+     */
     timeZone: string
+
+    /**
+     * targetCulture
+     * @type {string}
+     * @public
+     */
     targetCulture: string
 
+    /**
+     * Text
+     * @type {string}
+     * @public
+     */
     get text() {
         return `${this.timeZone}: ${this.sourceDateTime.date}`
     }
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {FDateTime} sourceDateTime Source date time to use
+     * @param {EDateTimeStyle} dateStyle Date style to use
+     * @param {EDateTimeStyle} timeStyle Time style to use
+     * @param {string} timeZone Time zone to use
+     * @param {string} targetCulture Targeted culture
+     * @constructor
+     * @public
+     */
     constructor(
         sourceDateTime: FDateTime,
         dateStyle: EDateTimeStyle,
@@ -202,6 +462,8 @@ export class FTextHistoryDateTime extends FTextHistory {
         timeZone: string,
         targetCulture: string
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...params) {
         super()
         const x = params[0]
@@ -220,6 +482,12 @@ export class FTextHistoryDateTime extends FTextHistory {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         this.sourceDateTime.serialize(Ar)
         Ar.writeInt8(this.dateStyle)
@@ -228,6 +496,11 @@ export class FTextHistoryDateTime extends FTextHistory {
         Ar.writeString(this.targetCulture)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         const obj = Object.keys(EDateTimeStyle)
         return {
@@ -240,16 +513,52 @@ export class FTextHistoryDateTime extends FTextHistory {
     }
 }
 
+/**
+ * FTextHistoryOrderedFormat
+ * @extends {FTextHistory}
+ */
 export class FTextHistoryOrderedFormat extends FTextHistory {
+    /**
+     * sourceFmt
+     * @type {FText}
+     * @public
+     */
     sourceFmt: FText
+
+    /**
+     * args
+     * @type {Array<FFormatArgumentValue>}
+     * @public
+     */
     args: FFormatArgumentValue[]
 
+    /**
+     * Text
+     * @type {string}
+     * @public
+     */
     get text() {
         return this.sourceFmt.text
     }
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {FText} sourceFmt Source fmt to use
+     * @param {Array<FFormatArgumentValue>} args Args to use
+     * @constructor
+     * @public
+     */
     constructor(sourceFmt: FText, args: FFormatArgumentValue[])
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any) {
         super()
         if (x instanceof FArchive) {
@@ -261,32 +570,86 @@ export class FTextHistoryOrderedFormat extends FTextHistory {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         this.sourceFmt.serialize(Ar)
         Ar.writeTArray(this.args, (it) => it.serialize(Ar))
     }
 
-    toJson(): any {
+    /**
+     * Turns this into json
+     * @param {?Locres} locres Locres to use
+     * @returns {any} Json
+     * @public
+     */
+    toJson(locres?: Locres): any {
         return {
-            sourceFmt: this.sourceFmt.toJson(),
-            args: this.args.map(a => a.toJson())
+            sourceFmt: this.sourceFmt.toJson(locres),
+            args: this.args.map(a => a.toJson(locres))
         }
     }
 }
 
+/**
+ * FTextHistoryFormatNumber
+ * @extends {FTextHistory}
+ */
 export class FTextHistoryFormatNumber extends FTextHistory {
-    /** The source value to format from */
+    /**
+     * The source value to format from
+     * @type {FFormatArgumentValue}
+     * @public
+     */
+
     sourceValue: FFormatArgumentValue
-    /** The culture to format using */
+
+    /**
+     * The time zone to format using
+     * @type {string}
+     * @public
+     */
     timeZone: string
+
+    /**
+     * The culture to format using
+     * @type {string}
+     * @public
+     */
     targetCulture: string
 
+    /**
+     * Text
+     * @type {string}
+     * @public
+     */
     get text(): string {
         return this.sourceValue.toString()
     }
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {FFormatArgumentValue} sourceValue Source value to use
+     * @param {string} timeZone Time zone to use
+     * @param {string} targetCulture Targeted culture
+     * @constructor
+     * @public
+     */
     constructor(sourceValue: FFormatArgumentValue, timeZone: string, targetCulture: string)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any, z?: any) {
         super()
         if (x instanceof FArchive) {
@@ -300,12 +663,23 @@ export class FTextHistoryFormatNumber extends FTextHistory {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         this.sourceValue.serialize(Ar)
         Ar.writeString(this.timeZone)
         Ar.writeString(this.targetCulture)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             sourceValue: this.sourceValue.toJson(),
@@ -315,13 +689,51 @@ export class FTextHistoryFormatNumber extends FTextHistory {
     }
 }
 
+/**
+ * FTextHistoryStringTableEntry
+ * @extends {FTextHistory}
+ */
 export class FTextHistoryStringTableEntry extends FTextHistory {
+    /**
+     * Table ID
+     * @type {FName}
+     * @public
+     */
     tableId: FName
+
+    /**
+     * Key
+     * @type {string}
+     * @public
+     */
     key: string
+
+    /**
+     * Text
+     * @type {string}
+     * @public
+     */
     text: string
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {FName} tableId Table ID to use
+     * @param {string} key Key to use
+     * @param {string} text Text to use
+     * @constructor
+     * @public
+     */
     constructor(tableId: FName, key: string, text: string)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any, z?: any) {
         super()
         if (x instanceof FArchive) {
@@ -342,6 +754,12 @@ export class FTextHistoryStringTableEntry extends FTextHistory {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         if (Ar instanceof FAssetArchiveWriter) {
             Ar.writeFName(this.tableId)
@@ -351,6 +769,11 @@ export class FTextHistoryStringTableEntry extends FTextHistory {
         }
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             tableId: this.tableId.text,
@@ -361,26 +784,59 @@ export class FTextHistoryStringTableEntry extends FTextHistory {
 }
 
 export class FFormatArgumentValue {
+    /**
+     * Type
+     * @type {EFormatArgumentType}
+     * @public
+     */
     type: EFormatArgumentType
+
+    /**
+     * Value
+     * @type {any}
+     * @public
+     */
     value: any
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {EFormatArgumentType} type Type to use
+     * @param {any} value Value to use
+     * @constructor
+     * @public
+     */
     constructor(type: EFormatArgumentType, value: any)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any) {
         if (x instanceof FArchive) {
             this.type = EDateTimeStyle[Object.keys(EDateTimeStyle)[x.readInt8()]]
             this.value = this.type === EFormatArgumentType.Int ? Number(x.readInt64()) :
                 this.type === EFormatArgumentType.UInt ? Number(x.readInt64()) :
-                    this.type === EFormatArgumentType.Float ? x.readFloat32() :
-                        this.type === EFormatArgumentType.Double ? x.readDouble() :
-                            this.type === EFormatArgumentType.Text ? new FText(x) :
-                                null // this.type === EFormatArgumentType.Gender
+                this.type === EFormatArgumentType.Float ? x.readFloat32() :
+                this.type === EFormatArgumentType.Double ? x.readDouble() :
+                this.type === EFormatArgumentType.Text ? new FText(x) :
+                null // this.type === EFormatArgumentType.Gender
         } else {
             this.type = x
             this.value = y
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeInt8(this.type)
         switch (this.type) {
@@ -401,17 +857,30 @@ export class FFormatArgumentValue {
                 break
             case EFormatArgumentType.Gender:
                 throw new Error("Gender Argument not supported yet")
-                break
         }
     }
 
+    /**
+     * Turns this into string
+     * @returns {string} String
+     * @public
+     */
     toString() {
         return `[Object FFormatArgumentValue]`
     }
 
-    toJson() {
-        return this.value.toJson
-            ? this.value.toJson()
-            : this.value.toString()
+    /**
+     * Turns this into json
+     * @param {?Locres} locres Locres to use
+     * @returns {any} Json
+     * @public
+     */
+    toJson(locres?: Locres) {
+        return {
+            value: this.value.toJson
+                ? this.value.toJson(locres)
+                : this.value,
+            type: Object.keys(EFormatArgumentType).filter(k => k.length > 1)[this.type]
+        }
     }
 }

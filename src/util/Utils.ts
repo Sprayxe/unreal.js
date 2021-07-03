@@ -56,4 +56,15 @@ export class Utils {
         }
         return Buffer.from(bytes)
     }
+
+    static takeWhileStr(str: string, filter: (char: string) => boolean) {
+        const loop = str.split("")
+        let res = ""
+        for (const char of loop) {
+            if (!filter(char))
+                break
+            res += char
+        }
+        return res
+    }
 }

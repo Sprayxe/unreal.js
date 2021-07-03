@@ -1,3 +1,7 @@
+/**
+ * EDateTimeStyle
+ * @enum
+ */
 export enum EDateTimeStyle {
     Default,
     Short,

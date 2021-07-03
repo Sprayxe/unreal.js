@@ -1,3 +1,7 @@
+/**
+ * EBlendMode
+ * @enum
+ */
 export enum EBlendMode {
     BLEND_Opaque,
     BLEND_Masked,

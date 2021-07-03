@@ -1,3 +1,7 @@
+/**
+ * ETextureChannel
+ * @enum
+ */
 export enum ETextureChannel {
     TC_NONE,
     TC_R,

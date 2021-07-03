@@ -1,3 +1,7 @@
+/**
+ * EBulkDataFlags
+ * @enum
+ */
 export enum EBulkDataFlags {
     /** Empty flag set. */
     BULKDATA_None = 0,

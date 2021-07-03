@@ -6,14 +6,35 @@ import { UTexture } from "../tex/UTexture";
 import { FLinearColor } from "../../../objects/core/math/FColor";
 import { UUnrealMaterial } from "./interfaces/UUnrealMaterial";
 
+/**
+ * UMaterialInstanceConstant
+ */
 export class UMaterialInstanceConstant extends UMaterialInstance {
+    /**
+     * PhysMaterialMask
+     * @type {?FPackageIndex}
+     * @public
+     */
     public PhysMaterialMask?: FPackageIndex /*PhysicalMaterialMask*/ = null
 
+    /**
+     * Deserializes this
+     * @param {FAssetArchive} Ar UE4 Reader to use
+     * @param {number} validPos Valid position
+     * @returns {void}
+     * @public
+     */
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
         Ar.pos = validPos
     }
 
+    /**
+     * Gets material params
+     * @param {CMaterialParams} params Params to load
+     * @returns {void}
+     * @public
+     */
     getParams(params: CMaterialParams) {
         // get params from linked UMaterial3
         const parent = this.Parent?.value
@@ -135,6 +156,13 @@ export class UMaterialInstanceConstant extends UMaterialInstance {
             params.diffuse = this.TextureParameterValues[0].ParameterValue?.value
     }
 
+    /**
+     * Appends textures
+     * @param {Array<UUnrealMaterial>} outTextures Array to modify
+     * @param {boolean} onlyRendered Wether only rendered
+     * @returns {void}
+     * @public
+     */
     appendReferencedTextures(outTextures: UUnrealMaterial[], onlyRendered: boolean) {
         if (onlyRendered) {
             super.appendReferencedTextures(outTextures, true)

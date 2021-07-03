@@ -1,3 +1,7 @@
+/**
+ * EMobileSpecularMask
+ * @enum
+ */
 export enum EMobileSpecularMask {
     MSM_Constant,
     MSM_Luminance,

@@ -202,7 +202,7 @@ export class UObject implements IPropertyHolder {
             const tagValue = pTag.prop
             if (!tagValue)
                 return
-            ob[camelCase(pTag.name.text)] = tagValue.toJsonValue()
+            ob[camelCase(pTag.name.text)] = tagValue.toJsonValue(locres)
         })
         return ob
     }

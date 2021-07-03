@@ -1,3 +1,7 @@
+/**
+ * ESoundWaveLoadingBehavior
+ * @enum
+ */
 export enum ESoundWaveLoadingBehavior {
     Inherited,
     RetainOnLoad,

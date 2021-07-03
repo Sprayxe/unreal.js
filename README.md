@@ -39,7 +39,7 @@ SOON...
 The file provider is basically the heart of the library and from there you control basically all features.
 
 **IMPORTANT**: When using the library with **Fortnite V14.40 and above**, you need `oo2core_8_win64.dll` present in your working directory (you can download it using `Oodle.downloadDLL()`). You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version.\
-You will also experience longer mounting times than e.g VALORANT. The first export may take up to 3 seconds, if you don't want this, put `provider.globalPackageStore.value` after `await provider.initialize()` to instantly load the needed resources (we are working on optimizing fortnite).
+You will also experience longer mounting times than e.g VALORANT.
 - **Usage with Fortnite**
     ```js
     // Create new instance

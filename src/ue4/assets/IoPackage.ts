@@ -125,14 +125,12 @@ export class IoPackage extends Package {
      * Creates an instance
      * @param {Buffer} uasset Uasset data of package
      * @param {bigint} packageId ID of package
-     * @param {FPackageStoreEntry} storeEntry Store entry of package
      * @param {FPackageStore} globalPackageStore Package store
      * @param {FileProvider} provider Instance of file provider
      * @param {Ue4Version} game Version of package
      */
     constructor(uasset: Buffer,
                 packageId: bigint,
-                storeEntry: FPackageStoreEntry,
                 globalPackageStore: FPackageStore,
                 provider: FileProvider,
                 game: Ue4Version = provider.game
@@ -160,21 +158,34 @@ export class IoPackage extends Package {
 
         // Import map
         Ar.pos = this.summary.importMapOffset
-        const importMapSize = this.summary.exportMapOffset - this.summary.importMapOffset
-        const importCount = importMapSize / 8
+        const importCount = (this.summary.exportMapOffset - this.summary.importMapOffset) / 8
         this.importMap = new UnrealArray(importCount, () => new FPackageObjectIndex(Ar))
 
         // Export map
-        Ar.pos = this.summary.exportMapOffset
-        const exportCount = storeEntry.exportCount
+        const exportCount = (this.summary.exportBundlesOffset - this.summary.exportMapOffset) / 72
         this.exportMap = new UnrealArray(exportCount, () => new FExportMapEntry(Ar))
         this.exportsLazy = new Array<Lazy<UObject>>(exportCount)
 
         // Export bundles
         Ar.pos = this.summary.exportBundlesOffset
-        const exportBundleCount = storeEntry.exportBundleCount
-        this.exportBundleHeaders = new UnrealArray(exportBundleCount, () => new FExportBundleHeader(Ar))
-        this.exportBundleEntries = new UnrealArray(exportCount * 2, () => new FExportBundleEntry(Ar))
+        let remainingBundleEntryCount = (this.summary.graphDataOffset - this.summary.exportBundlesOffset) / 8
+        let foundBundlesCount = 0
+        const foundBundleHeaders = []
+        while (foundBundlesCount < remainingBundleEntryCount) {
+            // This location is occupied by header, so it is not a bundle entry
+            remainingBundleEntryCount--
+            const bundleHeader = new FExportBundleHeader(Ar)
+            foundBundlesCount += Math.floor(bundleHeader.entryCount)
+            foundBundleHeaders.push(bundleHeader)
+        }
+        if (foundBundlesCount !== remainingBundleEntryCount)
+            throw new Error(`foundBundlesCount (${foundBundlesCount}) !== remainingBundleEntryCount ${remainingBundleEntryCount}`)
+
+        // Load export bundles into arrays
+        this.exportBundleHeaders = foundBundleHeaders
+        this.exportBundleEntries = []
+        for (let i = 0; i < foundBundlesCount; ++i)
+            this.exportBundleEntries.push(new FExportBundleEntry(Ar))
 
         // Graph data
         Ar.pos = this.summary.graphDataOffset
@@ -294,7 +305,7 @@ export class IoPackage extends Package {
      * Finds an object by name
      * @param {string} objectName Name of object
      * @param {?string} className Class name of object
-     * @returns {?UObject} Object or null
+     * @returns {?Lazy<UObject>} Object or null
      * @public
      */
     findObjectByName(objectName: string, className?: string) {
@@ -304,7 +315,7 @@ export class IoPackage extends Package {
             if (is) exportIndex = k
             return is
         })
-        return exportIndex !== -1 ? this.exportsLazy[exportIndex].value : null
+        return exportIndex !== -1 ? this.exportsLazy[exportIndex] : null
     }
 
     /**

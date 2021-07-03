@@ -59,7 +59,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerValorant() {
-        // const p = process.cwd()
+        //const p = process.cwd()
         const p = process.cwd() + "/node_modules/unreal.js"
         const dir1 = (await fs.readdir(p + "/dist/valorant/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir1) {

@@ -287,12 +287,12 @@ export class FArchive {
         if (length < 0) {
             const utf16length = -length
             const arrLength = utf16length - 1
-            const dat = new Array(arrLength)
+            const dat = []
             for (let i = 0; i < arrLength; ++i)
                 dat.push(this.readUInt16())
             if (this.readUInt16() !== 0)
                 throw new ParserException("Serialized FString is not null-terminated", this)
-            return dat.toString().slice(0, utf16length - 1)
+            return String(Buffer.from(dat))
         } else {
             if (length === 0) return ""
             const str = this.readBuffer(length - 1).toString("utf-8")

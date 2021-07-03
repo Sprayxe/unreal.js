@@ -4,12 +4,44 @@ import { FByteArchive } from "../reader/FByteArchive";
 import { FIoDirectoryIndexHandle } from "./IoDispatcher";
 import { Utils } from "../../util/Utils";
 
+/**
+ * FIoDirectoryIndexEntry
+ */
 export class FIoDirectoryIndexEntry {
+    /**
+     * name
+     * @type {number}
+     * @public
+     */
     name = 0xFFFFFFFF
+
+    /**
+     * firstChildEntry
+     * @type {number}
+     * @public
+     */
     firstChildEntry = 0xFFFFFFFF
+
+    /**
+     * nextSiblingEntry
+     * @type {number}
+     * @public
+     */
     nextSiblingEntry = 0xFFFFFFFF
+
+    /**
+     * firstFileEntry
+     * @type {number}
+     * @public
+     */
     firstFileEntry = 0xFFFFFFFF
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive) {
         this.name = Ar.readUInt32()
         this.firstChildEntry = Ar.readUInt32()
@@ -18,11 +50,37 @@ export class FIoDirectoryIndexEntry {
     }
 }
 
+/**
+ * FIoFileIndexEntry
+ */
 export class FIoFileIndexEntry {
+    /**
+     * name
+     * @type {number}
+     * @public
+     */
     name = 0xFFFFFFFF
+
+    /**
+     * nextFileEntry
+     * @type {number}
+     * @public
+     */
     nextFileEntry = 0xFFFFFFFF
+
+    /**
+     * userData
+     * @type {number}
+     * @public
+     */
     userData = 0
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive) {
         this.name = Ar.readUInt32()
         this.nextFileEntry = Ar.readUInt32()
@@ -30,12 +88,44 @@ export class FIoFileIndexEntry {
     }
 }
 
+/**
+ * FIoDirectoryIndexResource
+ */
 export class FIoDirectoryIndexResource {
+    /**
+     * mountPoint
+     * @type {string}
+     * @public
+     */
     mountPoint: string
+
+    /**
+     * directoryEntries
+     * @type {Array<FIoDirectoryIndexEntry>}
+     * @public
+     */
     directoryEntries: FIoDirectoryIndexEntry[]
+
+    /**
+     * fileEntries
+     * @type {Array<FIoFileIndexEntry>}
+     * @public
+     */
     fileEntries: FIoFileIndexEntry[]
+
+    /**
+     * stringTable
+     * @type {Array<string>}
+     * @public
+     */
     stringTable: string[]
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive) {
         const s = Ar.readString()
         this.mountPoint = s.substring(s.indexOf("../../../") + "../../../".length)
@@ -45,17 +135,46 @@ export class FIoDirectoryIndexResource {
     }
 }
 
+/**
+ * FDirectoryIndexVisitorFunction
+ */
 type FDirectoryIndexVisitorFunction = (filename: string, tocEntryIndex: number) => boolean
 
+/**
+ * FIoDirectoryIndexReader
+ */
 export class FIoDirectoryIndexReader {
+    /**
+     * Buffer to read
+     * @type {Buffer}
+     * @public
+     */
     buffer: Buffer
+
+    /**
+     * Decryption key to use
+     * @type {Buffer}
+     * @public
+     */
     decryptionKey: Buffer
 
+    /**
+     * Creates an instance using buffers
+     * @param {Buffer} buffer Buffer to read
+     * @param {Buffer} decryptionKey Decryption key to use
+     * @constructor
+     * @public
+     */
     constructor(buffer: Buffer, decryptionKey: Buffer) {
         this.buffer = buffer
         this.decryptionKey = decryptionKey
     }
 
+    /**
+     * directoryIndex
+     * @returns {FIoDirectoryIndexResource} Index
+     * @public
+     */
     get directoryIndex() {
         if (!this.buffer || !this.buffer.length) {
             throw new Error("Invalid code")
@@ -66,10 +185,21 @@ export class FIoDirectoryIndexReader {
         return new FIoDirectoryIndexResource(new FByteArchive(this.buffer))
     }
 
-    getMountPoint() {
+    /**
+     * mountPoint
+     * @returns {string} Mount point
+     * @public
+     */
+    get mountPoint() {
         return this.directoryIndex.mountPoint
     }
 
+    /**
+     * Gets child directory
+     * @param {FIoDirectoryIndexHandle} directory Directory to look in
+     * @returns {FIoDirectoryIndexHandle} Child directory
+     * @public
+     */
     getChildDirectory(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && !this.isValidIndex()) {
             return FIoDirectoryIndexHandle.fromIndex(this.getDirectoryEntry(directory).firstChildEntry)
@@ -78,6 +208,12 @@ export class FIoDirectoryIndexReader {
         }
     }
 
+    /**
+     * Gets next directory
+     * @param {FIoDirectoryIndexHandle} directory Directory to look in
+     * @returns {FIoDirectoryIndexHandle} Next directory
+     * @public
+     */
     getNextDirectory(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
             return FIoDirectoryIndexHandle.fromIndex(this.getDirectoryEntry(directory).nextSiblingEntry)
@@ -86,6 +222,12 @@ export class FIoDirectoryIndexReader {
         }
     }
 
+    /**
+     * Gets file
+     * @param {FIoDirectoryIndexHandle} directory Directory to look in
+     * @returns {FIoDirectoryIndexHandle} File
+     * @public
+     */
     getFile(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
             return FIoDirectoryIndexHandle.fromIndex(this.getDirectoryEntry(directory).firstFileEntry)
@@ -94,6 +236,12 @@ export class FIoDirectoryIndexReader {
         }
     }
 
+    /**
+     * Gets next file
+     * @param {FIoDirectoryIndexHandle} directory Directory to look in
+     * @returns {FIoDirectoryIndexHandle} File
+     * @public
+     */
     getNextFile(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
             return FIoDirectoryIndexHandle.fromIndex(this.getFileEntry(directory).nextFileEntry)
@@ -102,6 +250,12 @@ export class FIoDirectoryIndexReader {
         }
     }
 
+    /**
+     * Gets directory name
+     * @param {FIoDirectoryIndexHandle} directory Directory to get name from
+     * @returns {string} Directory name
+     * @public
+     */
     getDirectoryName(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
             const nameIndex = this.getDirectoryEntry(directory).name
@@ -111,6 +265,12 @@ export class FIoDirectoryIndexReader {
         }
     }
 
+    /**
+     * Gets file name
+     * @param {FIoDirectoryIndexHandle} directory Directory of file to get name from
+     * @returns {string} File name
+     * @public
+     */
     getFileName(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
             const nameIndex = this.getFileEntry(directory)?.name
@@ -120,6 +280,12 @@ export class FIoDirectoryIndexReader {
         }
     }
 
+    /**
+     * Gets file data
+     * @param {FIoDirectoryIndexHandle} file File to get data from
+     * @returns {number} Data
+     * @public
+     */
     getFileData(file: FIoDirectoryIndexHandle) {
         if (file.isValid() && this.isValidIndex()) {
             return this.directoryIndex.fileEntries[file.toIndex()]?.userData
@@ -128,6 +294,14 @@ export class FIoDirectoryIndexReader {
         }
     }
 
+    /**
+     * Iterates through directory index
+     * @param {FIoDirectoryIndexHandle} directoryIndexHandle Directory to iterate through
+     * @param {string} path Path to directory
+     * @param {FDirectoryIndexVisitorFunction} visit Method to call
+     * @returns {boolean}
+     * @public
+     */
     iterateDirectoryIndex(directoryIndexHandle: FIoDirectoryIndexHandle, path: string, visit: FDirectoryIndexVisitorFunction) {
         let file = this.getFile(directoryIndexHandle)
         while (file.isValid()) {
@@ -135,7 +309,7 @@ export class FIoDirectoryIndexReader {
             const fileName = this.getFileName(file)
             if (!fileName)
                 break
-            const filePath = this.getMountPoint() + `${path !== "" ? path + "/" : ""}` + fileName
+            const filePath = this.mountPoint + `${path !== "" ? path + "/" : ""}` + fileName
             if (!visit(filePath, tocEntryIndex)) {
                 return false
             }

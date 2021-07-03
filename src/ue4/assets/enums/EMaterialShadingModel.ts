@@ -1,3 +1,7 @@
+/**
+ * EMaterialShadingModel
+ * @enum
+ */
 export enum EMaterialShadingModel {
     MSM_Unlit,
     MSM_DefaultLit,

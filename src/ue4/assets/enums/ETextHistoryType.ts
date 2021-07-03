@@ -1,3 +1,7 @@
+/**
+ * ETextHistoryType
+ * @enum
+ */
 export enum ETextHistoryType {
     None = -1,
     Base = 0,

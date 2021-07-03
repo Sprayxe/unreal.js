@@ -3,15 +3,53 @@ import { FArchive } from "../../../reader/FArchive";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 import { UnrealMap } from "../../../../util/UnrealMap";
+import Collection from "@discordjs/collection";
 
+/**
+ * FTextLocalizationResource
+ */
 export class FTextLocalizationResource {
+    /**
+     * locResMagic
+     * @type {FGuid}
+     * @public
+     */
     locResMagic = new FGuid(0x7574140E, 0xFC034A67, 0x9D90154A, 0x1B7F37C3)
+
+    /**
+     * indexNone
+     * @type {number}
+     * @public
+     */
     indexNone = -1
 
+    /**
+     * version
+     * @type {version}
+     * @public
+     */
     version: number
-    strArrayOffset: number
-    stringData: UnrealMap<string, UnrealMap<string, string>>
 
+    /**
+     * strArrayOffset
+     * @type {number}
+     * @public
+     */
+    strArrayOffset: number
+
+    /**
+     * stringData
+     * @type {Collection<string, Collection<string, string>>}
+     * @public
+     */
+    stringData: Collection<string, Collection<string, string>>
+
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive) {
         const magic = new FGuid(Ar)
         if (!magic.equals(this.locResMagic))
@@ -30,36 +68,61 @@ export class FTextLocalizationResource {
 
         Ar.readUInt32() // entryCount
         const nameSpaceCount = Ar.readUInt32()
-        this.stringData = new UnrealMap()
+        this.stringData = new Collection()
 
-        let i = 0
-        while (i < nameSpaceCount) {
+        for (let i = 0; i < nameSpaceCount; ++i) {
             const nameSpace = new FTextKey(Ar)
             const keyCount = Ar.readUInt32()
-
-            const strings = new UnrealMap<string, string>()
-            let x = 0
-            while (x < keyCount) {
+            const strings = new Collection<string, string>()
+            for (let x = 0; x < keyCount; ++x) {
                 const textKey = new FTextKey(Ar)
                 Ar.readUInt32() // source hash
                 const stringIndex = Ar.readInt32()
                 if (stringIndex > 0 && stringIndex < localizedStrings.length) {
                     strings.set(textKey.text, localizedStrings[stringIndex].data)
                 }
-                ++x
             }
             this.stringData.set(nameSpace.text, strings)
-            ++i
         }
     }
 }
 
+/**
+ * FTextLocalizationResourceString
+ */
 export class FTextLocalizationResourceString {
+    /**
+     * Data
+     * @type {string}
+     * @public
+     */
     data: string
+
+    /**
+     * refCount
+     * @type {number}
+     * @public
+     */
     refCount: number
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {string} data Data to use
+     * @param {number} refCount Ref count to use
+     * @constructor
+     * @public
+     */
     constructor(data: string, refCount: number)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any) {
         if (x instanceof FArchive) {
             this.data = x.readString()
@@ -70,19 +133,54 @@ export class FTextLocalizationResourceString {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeString(this.data)
         Ar.writeInt32(this.refCount)
     }
 }
 
-
+/**
+ * FTextKey
+ */
 export class FTextKey {
+    /**
+     * stringHash
+     * @type {number}
+     * @public
+     */
     stringHash: number
+
+    /**
+     * text
+     * @type {string}
+     * @public
+     */
     text: string
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} stringHash String hash to use
+     * @param {string} text Text to use
+     * @constructor
+     * @public
+     */
     constructor(stringHash: number, text: string)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any) {
         if (x instanceof FArchive) {
             this.stringHash = x.readUInt32()
@@ -93,6 +191,12 @@ export class FTextKey {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeUInt32(this.stringHash)
         Ar.writeString(this.text)

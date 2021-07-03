@@ -138,7 +138,7 @@ export abstract class Package extends UObject {
      * @abstract
      * @public
      */
-    abstract findObject<T>(index: FPackageIndex): T
+    abstract findObject<T>(index: FPackageIndex): Lazy<T>
 
     /**
      * Loads an object by index
@@ -147,7 +147,7 @@ export abstract class Package extends UObject {
      * @public
      */
     loadObject<T>(index: FPackageIndex) {
-        return this.findObject<T>(index)
+        return this.findObject<T>(index)?.value
     }
 
     /**
@@ -158,7 +158,7 @@ export abstract class Package extends UObject {
      * @abstract
      * @public
      */
-    abstract findObjectByName(objectName: string, className?: string): UObject
+    abstract findObjectByName(objectName: string, className?: string): Lazy<UObject>
 
     /**
      * Turns this package to json

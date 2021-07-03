@@ -3,6 +3,7 @@ import { FArchive } from "../reader/FArchive"
 import { createFIoContainerId } from "./IoContainerId"
 import * as fs from "fs"
 import {
+    EIoChunkType,
     EIoContainerFlags,
     FIoChunkHash,
     FIoChunkId,
@@ -18,10 +19,10 @@ import { Utils } from "../../util/Utils"
 import { GameFile } from "../pak/GameFile";
 import { FIoDirectoryIndexReader } from "./IoDirectoryIndex";
 import { Lazy } from "../../util/Lazy";
-import Collection from "@discordjs/collection";
 
 /**
  * I/O store container format version
+ * @enum
  */
 export enum EIoStoreTocVersion {
     Invalid = 0,
@@ -36,30 +37,167 @@ export enum EIoStoreTocVersion {
  * I/O Store TOC header
  */
 export class FIoStoreTocHeader {
+    /**
+     * Toc magic template
+     * @type {string}
+     * @public
+     * @static
+     */
     static TocMagicImg = "-==--==--==--==-"
 
+    /**
+     * Toc magic
+     * @type {Buffer}
+     * @public
+     */
     tocMagic = Buffer.alloc(16)
+
+    /**
+     * Version
+     * @type {EIoStoreTocVersion}
+     * @public
+     */
     version: EIoStoreTocVersion
+
+    /**
+     * Reserved0
+     * @type {number}
+     * @public
+     */
     reserved0: uint8
+
+    /**
+     * Reserved1
+     * @type {number}
+     * @public
+     */
     reserved1: uint16
+
+    /**
+     * Toc header size
+     * @type {number}
+     * @public
+     */
     tocHeaderSize: uint32
+
+    /**
+     * Toc entry count
+     * @type {number}
+     * @public
+     */
     tocEntryCount: uint32
+
+    /**
+     * Toc compressed block entry count
+     * @type {number}
+     * @public
+     */
     tocCompressedBlockEntryCount: uint32
+
+    /**
+     * Toc compressed block entry size
+     * @type {number}
+     * @public
+     */
     tocCompressedBlockEntrySize: uint32 // For sanity checking
+
+    /**
+     * Compression method name count
+     * @type {number}
+     * @public
+     */
     compressionMethodNameCount: uint32
+
+    /**
+     * Compression method name length
+     * @type {number}
+     * @public
+     */
     compressionMethodNameLength: uint32
+
+    /**
+     * Compression block size
+     * @type {number}
+     * @public
+     */
     compressionBlockSize: uint32
+
+    /**
+     * Director index size
+     * @type {number}
+     * @public
+     */
     directoryIndexSize: uint32
+
+    /**
+     * Partition count
+     * @type {number}
+     * @public
+     */
     partitionCount: uint32
+
+    /**
+     * Container id
+     * @type {bigint}
+     * @public
+     */
     containerId: bigint
+
+    /**
+     * Encryption key guid
+     * @type {number}
+     * @public
+     */
     encryptionKeyGuid: FGuid
+
+    /**
+     * Container flags
+     * @type {EIoContainerFlags}
+     * @public
+     */
     containerFlags: EIoContainerFlags
+
+    /**
+     * Reserved3
+     * @type {number}
+     * @public
+     */
     reserved3: uint8
+
+    /**
+     * Reserved4
+     * @type {number}
+     * @public
+     */
     reserved4: uint16
+
+    /**
+     * Reserved5
+     * @type {number}
+     * @public
+     */
     reserved5: uint32
+
+    /**
+     * Partition size
+     * @type {bigint}
+     * @public
+     */
     partitionSize: uint64
+
+    /**
+     * Reserved6
+     * @type {Array<bigint>}
+     * @public
+     */
     reserved6 = new Array<bigint>(6)
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive) {
         Ar.readToBuffer(this.tocMagic)
         if (!this.checkMagic())
@@ -88,10 +226,20 @@ export class FIoStoreTocHeader {
         }
     }
 
+    /**
+     * Creates toc magic
+     * @returns {Buffer} Magic
+     * @public
+     */
     makeMagic() {
         this.tocMagic = Buffer.from(FIoStoreTocHeader.TocMagicImg)
     }
 
+    /**
+     * Checks magic
+     * @returns {boolean} Result
+     * @public
+     */
     checkMagic(): boolean {
         return this.tocMagic.equals(Buffer.from(FIoStoreTocHeader.TocMagicImg))
     }
@@ -101,15 +249,30 @@ export class FIoStoreTocHeader {
  * Combined offset and length
  */
 export class FIoOffsetAndLength {
-    // We use 5 bytes for offset and size, this is enough to represent
-    // an offset and size of 1PB
-    offsetAndLength = Buffer.alloc(5 + 5)
+    /**
+     * We use 5 bytes for offset and size, this is enough to represent
+     * an offset and size of 1PB
+     * @type {Buffer}
+     * @public
+     */
+    offsetAndLength: Buffer
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive = null) {
-        this.offsetAndLength = Buffer.from(new ArrayBuffer(5 + 5))
+        this.offsetAndLength = Buffer.alloc(5 + 5)
         if (Ar) Ar.readToBuffer(this.offsetAndLength)
     }
 
+    /**
+     * Offset
+     * @returns {bigint}
+     * @public
+     */
     get offset(): uint64 {
         return BigInt(this.offsetAndLength[4])
             | BigInt(this.offsetAndLength[3]) << 8n
@@ -118,6 +281,11 @@ export class FIoOffsetAndLength {
             | BigInt(this.offsetAndLength[0]) << 32n
     }
 
+    /**
+     * Length
+     * @returns {bigint}
+     * @public
+     */
     get length(): uint64 {
         return BigInt(this.offsetAndLength[9])
             | BigInt(this.offsetAndLength[8]) << 8n
@@ -127,6 +295,10 @@ export class FIoOffsetAndLength {
     }
 }
 
+/**
+ * FIoStoreTocEntryMetaFlags
+ * @enum
+ */
 export enum FIoStoreTocEntryMetaFlags {
     None,
     Compressed = (1 << 0),
@@ -137,9 +309,26 @@ export enum FIoStoreTocEntryMetaFlags {
  * TOC entry meta data
  */
 export class FIoStoreTocEntryMeta {
+    /**
+     * Chunk hash
+     * @type {FIoChunkHash}
+     * @public
+     */
     chunkHash: FIoChunkHash
+
+    /**
+     * Flags
+     * @type {FIoStoreTocEntryMetaFlags}
+     * @public
+     */
     flags: FIoStoreTocEntryMetaFlags
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive) {
         this.chunkHash = new FIoChunkHash(Ar)
         this.flags = Ar.readUInt8()
@@ -150,34 +339,99 @@ export class FIoStoreTocEntryMeta {
  * Compression block entry
  */
 export class FIoStoreTocCompressedBlockEntry {
+    /**
+     * OffsetBits
+     * @type {number}
+     * @public
+     * @static
+     */
     static OffsetBits = 40
+
+    /**
+     * OffsetMask
+     * @type {bigint}
+     * @public
+     * @static
+     */
     static OffsetMask = (1n << BigInt(FIoStoreTocCompressedBlockEntry.OffsetBits)) - 1n
+
+    /**
+     * SizeBits
+     * @type {number}
+     * @public
+     * @static
+     */
     static SizeBits = 24
+
+    /**
+     * SizeMask
+     * @type {number}
+     * @public
+     * @static
+     */
     static SizeMask = (1 << FIoStoreTocCompressedBlockEntry.SizeBits) - 1
+
+    /**
+     * SizeShift
+     * @type {number}
+     * @public
+     * @static
+     */
     static SizeShift = 8
 
-    /* 5 bytes offset, 3 bytes for size / uncompressed size and 1 byte for compresseion method. */
+    /**
+     * Data
+     * 5 bytes offset, 3 bytes for size / uncompressed size and 1 byte for compression method -> Buffer size
+     * @type {Buffer}
+     * @public
+     */
     data = Buffer.alloc(5 + 3 + 3 + 1)
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive) {
         Ar.readToBuffer(this.data)
     }
 
+    /**
+     * Offset
+     * @returns {bigint}
+     * @public
+     */
     get offset(): uint64 {
         const offset = this.data.readBigUInt64LE()
         return offset & FIoStoreTocCompressedBlockEntry.OffsetMask
     }
 
+    /**
+     * Compressed size
+     * @returns {number}
+     * @public
+     */
     get compressedSize(): uint32 {
         const size = this.data.readUInt32LE(4)
         return size >> FIoStoreTocCompressedBlockEntry.SizeShift
     }
 
+    /**
+     * Uncompressed size
+     * @returns {number}
+     * @public
+     */
     get uncompressedSize(): uint32 {
         const size = this.data.readUInt32LE(2 * 4)
         return size & FIoStoreTocCompressedBlockEntry.SizeMask
     }
 
+    /**
+     * Compression method index
+     * @returns {number}
+     * @public
+     */
     get compressionMethodIndex(): uint8 {
         const index = this.data.readUInt32LE(2 * 4)
         return index >> FIoStoreTocCompressedBlockEntry.SizeBits
@@ -185,7 +439,8 @@ export class FIoStoreTocCompressedBlockEntry {
 }
 
 /**
- * TOC resource read options.
+ * TOC resource read options
+ * @enum
  */
 export enum EIoStoreTocReadOptions {
     Default,
@@ -195,21 +450,87 @@ export enum EIoStoreTocReadOptions {
 }
 
 /**
- * Container TOC data.
+ * Container TOC data
  */
 export class FIoStoreTocResource {
+    /**
+     * CompressionMethodNameLen
+     * @type {number}
+     * @public
+     * @static
+     */
     static CompressionMethodNameLen = 32
 
+    /**
+     * Header
+     * @type {FIoStoreTocHeader}
+     * @public
+     */
     header: FIoStoreTocHeader
-    chunkIds: FIoChunkId[]
-    chunkOffsetLengths: FIoOffsetAndLength[]
-    compressionBlocks: FIoStoreTocCompressedBlockEntry[]
-    compressionMethods: string[]
-    chunkBlockSignatures: Buffer[] //FSHAHash[]
-    chunkMetas: FIoStoreTocEntryMeta[]
-    directoryIndexBuffer: Buffer
-    chunkIdToIndex = {} // new Collection<string, number>()
 
+    /**
+     * chunkIds
+     * @type {Array<FIoChunkId>}
+     * @public
+     */
+    chunkIds: FIoChunkId[]
+
+    /**
+     * chunkOffsetLengths
+     * @type {Array<FIoOffsetAndLength>}
+     * @public
+     */
+    chunkOffsetLengths: FIoOffsetAndLength[]
+
+    /**
+     * compressionBlocks
+     * @type {Array<FIoStoreTocCompressedBlockEntry>}
+     * @public
+     */
+    compressionBlocks: FIoStoreTocCompressedBlockEntry[]
+
+    /**
+     * compressionMethods
+     * @type {Array<string>}
+     * @public
+     */
+    compressionMethods: string[]
+
+    /**
+     * chunkBlockSignatures
+     * @type {Array<Buffer>}
+     * @public
+     */
+    chunkBlockSignatures: Buffer[] //FSHAHash[]
+
+    /**
+     * chunkMetas
+     * @type {Array<FIoStoreTocEntryMeta>}
+     * @public
+     */
+    chunkMetas: FIoStoreTocEntryMeta[]
+
+    /**
+     * directoryIndexBuffer
+     * @type {Array<Buffer>}
+     * @public
+     */
+    directoryIndexBuffer: Buffer
+
+    /**
+     * chunkIdToIndex (sort of: Collection<string, number>)
+     * @type {object}
+     * @public
+     */
+    chunkIdToIndex = {}
+
+    /**
+     * Reads a toc buffer
+     * @param {FArchive} tocBuffer Toc buffer to read
+     * @param {EIoStoreTocReadOptions} readOptions Config for reading
+     * @returns {void}
+     * @public
+     */
     read(tocBuffer: FArchive, readOptions: EIoStoreTocReadOptions) {
         // Header
         this.header = new FIoStoreTocHeader(tocBuffer)
@@ -299,20 +620,58 @@ export class FIoStoreTocResource {
         }
     }
 
+    /**
+     * getTocEntryIndex
+     * @param {FIoChunkId} chunkId Chunk ID
+     * @returns {number} Index
+     * @public
+     */
     getTocEntryIndex(chunkId: FIoChunkId) {
         return this.chunkIdToIndex[chunkId.id.toString("base64")] || -1
     }
 
+    /**
+     * getOffsetAndLength
+     * @param {FIoChunkId} chunkId Chunk ID
+     * @returns {FIoOffsetAndLength} Offset and length
+     * @public
+     */
     getOffsetAndLength(chunkId: FIoChunkId): FIoOffsetAndLength {
         const index = this.chunkIdToIndex[chunkId.id.toString("base64")]
         return index != null ? this.chunkOffsetLengths[index] : null
     }
 }
 
+/**
+ * FIoStoreReader
+ */
 export class FIoStoreReader {
+    /**
+     * Toc
+     * @type {FIoStoreTocResource}
+     * @private
+     */
     private toc = new FIoStoreTocResource()
+
+    /**
+     * decryptionKey
+     * @type {?Buffer}
+     * @private
+     */
     private decryptionKey?: Buffer = null
+
+    /**
+     * containerFileHandles
+     * @type {Array<number>}
+     * @private
+     */
     private containerFileHandles: number[]
+
+    /**
+     * directoryIndexReader
+     * @type {Lazy<FIoDirectoryIndexReader>}
+     * @public
+     */
     directoryIndexReader: Lazy<FIoDirectoryIndexReader> = new Lazy<FIoDirectoryIndexReader>(() => {
         const out = new FIoDirectoryIndexReader(this.toc.directoryIndexBuffer, this.decryptionKey)
         this.toc.directoryIndexBuffer = null
@@ -321,8 +680,21 @@ export class FIoStoreReader {
     /*private threadBuffers = object : ThreadLocal<FThreadBuffers>() {
         override fun initialValue() = FThreadBuffers()
     }*/
+
+    /**
+     * Environment
+     * @type {FIoStoreEnvironment}
+     * @public
+     */
     environment: FIoStoreEnvironment
 
+    /**
+     * Initializes this
+     * @param {FIoStoreEnvironment} environment Environment to use
+     * @param {UnrealMap<FGuid, Buffer>} decryptionKeys Decryption keys to use
+     * @returns {void}
+     * @public
+     */
     initialize(environment: FIoStoreEnvironment, decryptionKeys: UnrealMap<FGuid, Buffer>) {
         this.environment = environment
         const tocFilePath = this.environment.path + ".utoc"
@@ -358,18 +730,39 @@ export class FIoStoreReader {
             this.toc.header.version)
     }
 
+    /**
+     * Container ID
+     * @returns {bigint} ID
+     * @public
+     */
     get containerId() {
         return this.toc.header.containerId
     }
 
+    /**
+     * Container Flags
+     * @returns {EIoContainerFlags} flags
+     * @public
+     */
     get containerFlags() {
         return this.toc.header.containerFlags
     }
 
+    /**
+     * Encryption key guid
+     * @returns {FGuid} Guid
+     * @public
+     */
     get encryptionKeyGuid() {
         return this.toc.header.encryptionKeyGuid
     }
 
+    /**
+     * Reads chunk id
+     * @param {FIoChunkId} chunkId ID to read
+     * @returns {Buffer} Read bytes
+     * @public
+     */
     read(chunkId: FIoChunkId/*, options: FIoReadOptions = FIoReadOptions()*/): Buffer {
         const offsetAndLength = this.toc.getOffsetAndLength(chunkId)
         if (!offsetAndLength)
@@ -426,17 +819,25 @@ export class FIoStoreReader {
         return dst
     }
 
+    /**
+     * Gets files
+     * @returns {Array<GameFile>} Files
+     * @public
+     */
     getFiles(): GameFile[] {
         const files = new Array<GameFile>()
         this.directoryIndexReader.value.iterateDirectoryIndex(
             FIoDirectoryIndexHandle.rootDirectory(),
             "",
             (filename, tocEntryIndex) => {
-                files.push(GameFile.createFromIoStoreFile(
-                    filename,
-                    this.environment.path,
-                    new FByteArchive(this.toc.chunkIds[tocEntryIndex].id).readUInt64())
-                )
+                const chunkId = this.toc.chunkIds[tocEntryIndex]
+                if (chunkId.chunkType === EIoChunkType.ExportBundleData) {
+                    files.push(GameFile.createFromIoStoreFile(
+                        filename,
+                        this.environment.path,
+                        new FByteArchive(this.toc.chunkIds[tocEntryIndex].id).readUInt64())
+                    )
+                }
                 return true
             }
         )
@@ -444,7 +845,21 @@ export class FIoStoreReader {
     }
 }
 
+/**
+ * FThreadBuffers
+ */
 class FThreadBuffers {
+    /**
+     * uncompressedBuffer
+     * @type {Buffer}
+     * @public
+     */
     uncompressedBuffer: Buffer
+
+    /**
+     * compressedBuffer
+     * @type {Buffer}
+     * @public
+     */
     compressedBuffer: Buffer
 }
