@@ -29,7 +29,8 @@ This library is in VERY early development so it might be unstable. Please also k
 - Python, Visual C++ Build Tools (node-gyp dependencies)
 
 ### Installation 
-`npm i unreal.js --save`
+`npm i unreal.js`\
+This library has optional dependencies like `canvas` and `dxt-js` which are used in ue4 texture conversion. If you don't want to install these dependencies, use: `npm i unreal.js --no-optional`.
 
 ### Documentation
 SOON...

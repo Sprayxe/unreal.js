@@ -1,10 +1,12 @@
-import { createCanvas, NodeCanvasRenderingContext2D } from "canvas"
-import { FTexture2DMipMap, FTexturePlatformData, UTexture2D } from "../../assets/exports/tex/UTexture2D";
-import * as dxt from "dxt-js"
-import { readBC5 } from "./BC5";
+const optionalRequire = require("optional-require")(require)
+const canvas = optionalRequire("canvas") || null
+const dxt = optionalRequire("dxt-js") || null
+import { FTexture2DMipMap, FTexturePlatformData, UTexture2D } from "../../assets/exports/tex/UTexture2D"
+import { readBC5 } from "./BC5"
 
 export class Image {
     static convert(tex: UTexture2D, texture?: FTexturePlatformData, mip?: FTexture2DMipMap, config?: ImageConfig): Buffer {
+        checkResources()
         if (!texture) {
             texture = tex.getFirstTexture()
             return this.convert(tex, texture, mip || texture.getFirstLoadedMip())
@@ -181,8 +183,21 @@ export class PixelFormatInfo {
     // static PF_ASTC_12x12  = new PixelFormatInfo(12, 12, 16, 0, 0, false)
 }
 
+function checkResources() {
+    let err = ""
+    const missingCanvas = canvas == null
+    const missingDxt = dxt == null
+    if (missingCanvas)
+        err += "Module 'canvas' is required for image conversion. Please install it using 'npm i canvas'!"
+    if (missingDxt)
+        err += ((missingCanvas ? "\n" : "") + "Module 'dxt-js' is required for image conversion. Please install it using 'npm i dxt-js'!")
+    if (err !== "")
+        throw new Error(err)
+}
+
 function rgbaBufferToImage(rgba: Buffer, width: number, height: number, config?: ImageConfig) {
-    const img = createCanvas(width, height)
+    checkResources()
+    const img = canvas.createCanvas(width, height)
     const ctx = img.getContext("2d")
     applyConfig(ctx, config)
     const imageData = ctx.createImageData(width, height)
@@ -202,7 +217,8 @@ function rgbaBufferToImage(rgba: Buffer, width: number, height: number, config?:
 }
 
 function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: ImageConfig) {
-    const img = createCanvas(width, height)
+    checkResources()
+    const img = canvas.createCanvas(width, height)
     const ctx = img.getContext("2d")
     applyConfig(ctx, config)
     const imageData = ctx.createImageData(width, height)
@@ -240,7 +256,7 @@ export interface ImageConfig {
     quality?: "fast" | "good" | "best" | "nearest" | "bilinear"
 }
 
-function applyConfig(ctx: NodeCanvasRenderingContext2D, config?: ImageConfig) {
+function applyConfig(ctx: any, config?: ImageConfig) {
     ctx.imageSmoothingEnabled = config?.imageSmoothingEnabled || false
     ctx.imageSmoothingQuality = config?.imageSmoothingQuality || "medium"
     ctx.quality = config?.quality || "good"
