@@ -1,0 +1,32 @@
+import { FortWorkerType } from "./FortWorkerType";
+import { FSoftObjectPath } from "../../ue4/objects/uobject/SoftObjectPath";
+import { FPackageIndex } from "../../ue4/objects/uobject/ObjectResource";
+import { FText } from "../../ue4/objects/core/i18n/Text";
+import { FDataTableRowHandle } from "../../ue4/objects/FDataTableRowHandle";
+import { FGameplayTagContainer } from "../../ue4/objects/gameplaytags/FGameplayTagContainer";
+import { FortAttributeInitializationKey } from "../objects/FortAttributeInitializationKey";
+import { GameplayEffectApplicationInfo } from "../objects/GameplayEffectApplicationInfo";
+export declare class FortHeroType extends FortWorkerType {
+    bForceShowHeadAccessory: boolean;
+    bForceShowBackpack: boolean;
+    Specializations: FSoftObjectPath[];
+    DefaultMontageLookupTable: FSoftObjectPath;
+    OverrideMontageLookupTable: FSoftObjectPath;
+    CombinedStatGEs: GameplayEffectApplicationInfo[];
+    RequiredGPTags: FGameplayTagContainer;
+    MaleOverrideFeedback: FSoftObjectPath;
+    FemaleOverrideFeedback: FSoftObjectPath;
+    OverridePawnClass: FSoftObjectPath;
+    HeroGameplayDefinition: FPackageIndex;
+    HeroCosmeticOutfitDefinition: FPackageIndex;
+    HeroCosmeticBackblingDefinition: FPackageIndex;
+    FrontEndAnimClass: FSoftObjectPath;
+    ItemPreviewAnimClass: FSoftObjectPath;
+    FrontendAnimMontageIdleOverride: FSoftObjectPath;
+    FrontEndBackPreviewRotationOffset: number;
+    Subtype: FText;
+    AttributeInitKey: FortAttributeInitializationKey;
+    LegacyStatHandle: FDataTableRowHandle;
+    ItemPreviewMontage_Male: FSoftObjectPath;
+    ItemPreviewMontage_Female: FSoftObjectPath;
+}

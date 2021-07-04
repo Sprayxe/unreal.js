@@ -1,5 +1,0 @@
-/**
- * FTableRowBase
- */
-export class FTableRowBase {
-}
