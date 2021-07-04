@@ -158,7 +158,7 @@ export class FCurveTableRowHandle {
      * Evaluate the curve if it is valid
      * @param {number} xValue The input X value to the curve
      * @param {?FloatRef} yValue The output Y value from the curve
-     * @returns {boolean} Wether it filled out yValue with a valid number, false otherwise
+     * @returns {boolean} Whether it filled out yValue with a valid number, false otherwise
      * @public
      */
     eval(xValue: number, yValue: FloatRef): boolean

@@ -6,19 +6,88 @@ import { FVector } from "../core/math/FVector";
 import { FVector2D } from "../core/math/FVector2D";
 import { IStructType } from "../../assets/objects/UScriptStruct";
 
+/**
+ * FExpressionInput
+ * @implements {IStructType}
+ */
 export class FExpressionInput implements IStructType {
-    /** Index into Expression's outputs array that this input is connected to. */
+    /**
+     * Index into Expression's outputs array that this input is connected to.
+     * @type {number}
+     * @public
+     */
     public outputIndex: number
+
+    /**
+     * inputName
+     * @type {FName}
+     * @public
+     */
     public inputName: FName
+
+    /**
+     * mask
+     * @type {number}
+     * @public
+     */
     public mask: number
+
+    /**
+     * maskR
+     * @type {number}
+     * @public
+     */
     public maskR: number
+
+    /**
+     * maskG
+     * @type {number}
+     * @public
+     */
     public maskG: number
+
+    /**
+     * maskB
+     * @type {number}
+     * @public
+     */
     public maskB: number
+
+    /**
+     * maskA
+     * @type {number}
+     * @public
+     */
     public maskA: number
-    /** Material expression name that this input is connected to, or None if not connected. Used only in cooked builds */
+
+    /**
+     * Material expression name that this input is connected to, or None if not connected. Used only in cooked builds
+     * @type {FName}
+     * @public
+     */
     public expressionName: FName
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using a value
+     * @param {number} outputIndex Output index to use
+     * @param {FName} inputName Input name to use
+     * @param {number} mask Mask to use
+     * @param {number} maskR R Mask to use
+     * @param {number} maskG G Mask to use
+     * @param {number} maskB B Mask to use
+     * @param {number} maskA A Mask to use
+     * @param {FName} expressionName Expression name to use
+     * @constructor
+     * @public
+     */
     constructor(
         outputIndex: number,
         inputName: FName,
@@ -29,6 +98,8 @@ export class FExpressionInput implements IStructType {
         maskA: number,
         expressionName: FName
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg1 = args[0]
         if (arg1 instanceof FArchive) {
@@ -52,6 +123,12 @@ export class FExpressionInput implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {Array<any>} args Args to use (default: FArchiveWriter)
+     * @returns {void}
+     * @public
+     */
     serialize(...args) {
         const Ar = args[0] as FArchiveWriter
         Ar.writeInt32(this.outputIndex)
@@ -64,6 +141,11 @@ export class FExpressionInput implements IStructType {
         Ar.writeFName(this.expressionName)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             outputIndex: this.outputIndex,
@@ -78,11 +160,50 @@ export class FExpressionInput implements IStructType {
     }
 }
 
-export class FMaterialInput<T> extends FExpressionInput implements IStructType {
+/**
+ * FMaterialInput
+ * @extends {FExpressionInput}
+ */
+export class FMaterialInput<T> extends FExpressionInput {
+    /**
+     * useConstant
+     * @type {boolean}
+     * @public
+     */
     public useConstant: boolean
+
+    /**
+     * constant
+     * @type {any}
+     * @public
+     */
     public constant: T
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @param {any} init Method to use
+     * @example new FMaterialInput(Ar, () => Ar.readFName())
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive, init: () => T)
+
+    /**
+     * Creates an instance using values
+     * @param {number} outputIndex Output index to use
+     * @param {FName} inputName Input name to use
+     * @param {number} mask Mask to use
+     * @param {number} maskR R Mask to use
+     * @param {number} maskG G Mask to use
+     * @param {number} maskB B Mask to use
+     * @param {number} maskA A Mask to use
+     * @param {FName} expressionName Expression name to use
+     * @param {boolean} useConstant Whether to use constant
+     * @param {any} constant Constant to use
+     * @constructor
+     * @public
+     */
     constructor(
         outputIndex: number,
         inputName: FName,
@@ -95,6 +216,8 @@ export class FMaterialInput<T> extends FExpressionInput implements IStructType {
         useConstant: boolean,
         constant: T
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg1 = args[0]
         if (arg1 instanceof FArchive) {
@@ -108,12 +231,25 @@ export class FMaterialInput<T> extends FExpressionInput implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @param {any} write Write method to use
+     * @example <FMaterialInput>.serialize(Ar, (fvector) => fvector.serialize(Ar))
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter, write: (type: T) => void) {
         super.serialize(Ar)
         Ar.writeUInt32(this.useConstant ? 1 : 0)
         write(this.constant)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         const obj = super.toJson()
         obj.useConstant = this.useConstant
@@ -122,8 +258,34 @@ export class FMaterialInput<T> extends FExpressionInput implements IStructType {
     }
 }
 
+/**
+ * FColorMaterialInput
+ * @extends {FMaterialInput<FColor>}
+ */
 export class FColorMaterialInput extends FMaterialInput<FColor> {
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} outputIndex Output index to use
+     * @param {FName} inputName Input name to use
+     * @param {number} mask Mask to use
+     * @param {number} maskR R Mask to use
+     * @param {number} maskG G Mask to use
+     * @param {number} maskB B Mask to use
+     * @param {number} maskA A Mask to use
+     * @param {FName} expressionName Expression name to use
+     * @param {boolean} useConstant Whether to use constant
+     * @param {FColor} constant Constant to use
+     * @constructor
+     * @public
+     */
     constructor(
         outputIndex: number,
         inputName: FName,
@@ -136,6 +298,8 @@ export class FColorMaterialInput extends FMaterialInput<FColor> {
         useConstant: boolean,
         constant: FColor
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg1 = args[0]
         if (arg1 instanceof FArchive) {
@@ -145,10 +309,21 @@ export class FColorMaterialInput extends FMaterialInput<FColor> {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         super.serialize(Ar, (it) => it.serialize(Ar))
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         const obj = super.toJson()
         obj.constant = this.constant.toJson()
@@ -156,8 +331,34 @@ export class FColorMaterialInput extends FMaterialInput<FColor> {
     }
 }
 
+/**
+ * FScalarMaterialInput
+ * @extends {FMaterialInput<number>}
+ */
 export class FScalarMaterialInput extends FMaterialInput<number> {
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} outputIndex Output index to use
+     * @param {FName} inputName Input name to use
+     * @param {number} mask Mask to use
+     * @param {number} maskR R Mask to use
+     * @param {number} maskG G Mask to use
+     * @param {number} maskB B Mask to use
+     * @param {number} maskA A Mask to use
+     * @param {FName} expressionName Expression name to use
+     * @param {boolean} useConstant Whether to use constant
+     * @param {number} constant Constant to use
+     * @constructor
+     * @public
+     */
     constructor(
         outputIndex: number,
         inputName: FName,
@@ -168,8 +369,10 @@ export class FScalarMaterialInput extends FMaterialInput<number> {
         maskA: number,
         expressionName: FName,
         useConstant: boolean,
-        constant: FColor
+        constant: number
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg1 = args[0]
         if (arg1 instanceof FArchive) {
@@ -179,13 +382,45 @@ export class FScalarMaterialInput extends FMaterialInput<number> {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         super.serialize(Ar, (it) => Ar.writeFloat32(it))
     }
 }
 
+/**
+ * FVectorMaterialInput
+ * @extends {FMaterialInput<FVector>}
+ */
 export class FVectorMaterialInput extends FMaterialInput<FVector> {
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} outputIndex Output index to use
+     * @param {FName} inputName Input name to use
+     * @param {number} mask Mask to use
+     * @param {number} maskR R Mask to use
+     * @param {number} maskG G Mask to use
+     * @param {number} maskB B Mask to use
+     * @param {number} maskA A Mask to use
+     * @param {FName} expressionName Expression name to use
+     * @param {boolean} useConstant Whether to use constant
+     * @param {FVector} constant Constant to use
+     * @constructor
+     * @public
+     */
     constructor(
         outputIndex: number,
         inputName: FName,
@@ -196,8 +431,10 @@ export class FVectorMaterialInput extends FMaterialInput<FVector> {
         maskA: number,
         expressionName: FName,
         useConstant: boolean,
-        constant: FColor
+        constant: FVector
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg1 = args[0]
         if (arg1 instanceof FArchive) {
@@ -207,10 +444,21 @@ export class FVectorMaterialInput extends FMaterialInput<FVector> {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         super.serialize(Ar, (it) => it.serialize(Ar))
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         const obj = super.toJson()
         obj.constant = this.constant.toJson()
@@ -218,8 +466,34 @@ export class FVectorMaterialInput extends FMaterialInput<FVector> {
     }
 }
 
+/**
+ * FVector2MaterialInput
+ * @extends {FMaterialInput<FVector2D>}
+ */
 export class FVector2MaterialInput extends FMaterialInput<FVector2D> {
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} outputIndex Output index to use
+     * @param {FName} inputName Input name to use
+     * @param {number} mask Mask to use
+     * @param {number} maskR R Mask to use
+     * @param {number} maskG G Mask to use
+     * @param {number} maskB B Mask to use
+     * @param {number} maskA A Mask to use
+     * @param {FName} expressionName Expression name to use
+     * @param {boolean} useConstant Whether to use constant
+     * @param {FVector2D} constant Constant to use
+     * @constructor
+     * @public
+     */
     constructor(
         outputIndex: number,
         inputName: FName,
@@ -230,8 +504,10 @@ export class FVector2MaterialInput extends FMaterialInput<FVector2D> {
         maskA: number,
         expressionName: FName,
         useConstant: boolean,
-        constant: FColor
+        constant: FVector2D
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg1 = args[0]
         if (arg1 instanceof FArchive) {
@@ -241,10 +517,21 @@ export class FVector2MaterialInput extends FMaterialInput<FVector2D> {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         super.serialize(Ar, (it) => it.serialize(Ar))
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         const obj = super.toJson()
         obj.constant = this.constant.toJson()
@@ -252,8 +539,32 @@ export class FVector2MaterialInput extends FMaterialInput<FVector2D> {
     }
 }
 
+/**
+ * FMaterialAttributesInput
+ * @extends {FExpressionInput}
+ */
 export class FMaterialAttributesInput extends FExpressionInput {
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} outputIndex Output index to use
+     * @param {FName} inputName Input name to use
+     * @param {number} mask Mask to use
+     * @param {number} maskR R Mask to use
+     * @param {number} maskG G Mask to use
+     * @param {number} maskB B Mask to use
+     * @param {number} maskA A Mask to use
+     * @param {FName} expressionName Expression name to use
+     * @constructor
+     * @public
+     */
     constructor(
         outputIndex: number,
         inputName: FName,
@@ -264,6 +575,8 @@ export class FMaterialAttributesInput extends FExpressionInput {
         maskA: number,
         expressionName: FName
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg1 = args[0]
         if (arg1 instanceof FArchive) {

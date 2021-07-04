@@ -54,7 +54,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
 
     /**
      * Reloads mappings
-     * @returns {boolean} Wether if it was successful or not
+     * @returns {boolean} Whether if it was successful or not
      * @public
      */
     reload(): boolean {

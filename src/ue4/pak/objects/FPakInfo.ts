@@ -7,7 +7,11 @@ import { EPakVersion } from "../enums/PakVersion";
 import { Utils } from "../../../util/Utils";
 
 // source 'https://github.com/FabianFG/CUE4Parse/blob/master/CUE4Parse/UE4/Pak/Objects/FPakInfo.cs'
-// thanks cue4parse <3
+
+/**
+ * OffsetsToTry
+ * @enum
+ */
 enum OffsetsToTry {
     size = /*sizeof(int)*/ 4 * 2 + /*sizeof(long)*/ 8 * 2 + 20 + /* new fields */ 1 + 16, // sizeof(FGuid)
     // Just to be sure
@@ -24,6 +28,11 @@ enum OffsetsToTry {
     sizeMax = sizeLast - 1
 }
 
+/**
+ * Gets max amount of compression methods by offset
+ * @param {OffsetsToTry} offset
+ * @returns {number} Max amount of compression methods
+ */
 function getMaxNumCompressionMethods(offset: OffsetsToTry) {
     if (offset === OffsetsToTry.size8a)
         return 5
@@ -38,9 +47,23 @@ function getMaxNumCompressionMethods(offset: OffsetsToTry) {
     return 4
 }
 
+/**
+ * FPakInfo
+ */
 export class FPakInfo {
+    /**
+     * PAK_MAGIC
+     * @type {number}
+     * @public
+     * @static
+     */
     public static readonly PAK_MAGIC = 0x5A6F12E1
 
+    /**
+     * Offsets to try
+     * @type {Array<OffsetsToTry>}
+     * @private
+     */
     private static readonly _offsetsToTry: OffsetsToTry[] = [
         OffsetsToTry.size8a,
         OffsetsToTry.size8,
@@ -52,6 +75,12 @@ export class FPakInfo {
         OffsetsToTry.size8_3
     ]
 
+    /**
+     * Reads pak info
+     * @param {FArchive} Ar UE4 Reader to use
+     * @returns {FPakInfo} Instance
+     * @public
+     */
     static readPakInfo(Ar: FArchive) {
         const path = Ar instanceof FFileArchive ? Ar.path : "UNKNOWN"
         const size = Ar.size
@@ -73,16 +102,76 @@ export class FPakInfo {
         throw new ParserException(`File '${path}' has an unknown format`, Ar)
     }
 
+    /**
+     * magic
+     * @type {number}
+     * @public
+     */
     magic: number
+
+    /**
+     * encryptionKeyGuid
+     * @type {FGuid}
+     * @public
+     */
     encryptionKeyGuid: FGuid
+
+    /**
+     * encryptedIndex
+     * @type {boolean}
+     * @public
+     */
     encryptedIndex: boolean
+
+    /**
+     * version
+     * @type {EPakVersion}
+     * @public
+     */
     version: EPakVersion
+
+    /**
+     * indexOffset
+     * @type {number}
+     * @public
+     */
     indexOffset: number
+
+    /**
+     * indexSize
+     * @type {number}
+     * @public
+     */
     indexSize: number
+
+    /**
+     * indexHash
+     * @type {Buffer}
+     * @public
+     */
     indexHash: Buffer
+
+    /**
+     * compressionMethods
+     * @type {Array<string>}
+     * @public
+     */
     compressionMethods: string[]
+
+    /**
+     * indexIsFrozen
+     * @type {boolean}
+     * @public
+     */
     indexIsFrozen: boolean = false
 
+    /**
+     * Creates an instance using values
+     * @param {FArchive} Ar UE4 Reader to use
+     * @param {OffsetsToTry} offsetToTry Offset to try
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive, offsetToTry: OffsetsToTry) {
         // New FPakInfo fields
         this.encryptionKeyGuid = new FGuid(Ar) // PakFile_Version_EncryptionKeyGuid

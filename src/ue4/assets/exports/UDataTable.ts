@@ -24,7 +24,7 @@ export class UDataTable extends UObject {
     public RowStruct: UScriptStruct = null
 
     /**
-     * Wether strip from client builds
+     * Whether strip from client builds
      * @type {?boolean}
      * @public
      */
@@ -32,7 +32,7 @@ export class UDataTable extends UObject {
     public bStripFromClientBuilds?: boolean = null
 
     /**
-     * Wether ignore extra fields
+     * Whether ignore extra fields
      * @type {?boolean}
      * @public
      */
@@ -40,7 +40,7 @@ export class UDataTable extends UObject {
     public bIgnoreExtraFields?: boolean = null
 
     /**
-     * Wether ignore missing fields
+     * Whether ignore missing fields
      * @type {?boolean}
      * @public
      */

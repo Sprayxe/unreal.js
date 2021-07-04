@@ -9,7 +9,10 @@ import { IStructType } from "../../../assets/objects/UScriptStruct";
 import { UProperty } from "../../../../util/decorators/UProperty";
 import { FStructFallback } from "../../../assets/objects/FStructFallback";
 
-/** If using RCIM_Cubic, this enum describes how the tangents should be controlled in editor. */
+/**
+ * If using RCIM_Cubic, this enum describes how the tangents should be controlled in editor.
+ * @enum
+ */
 export enum ERichCurveTangentMode {
     /** Automatically calculates tangents to create smooth curves between values. */
     RCTM_Auto,
@@ -21,7 +24,10 @@ export enum ERichCurveTangentMode {
     RCTM_None
 }
 
-/** Enumerates tangent weight modes. */
+/**
+ * Enumerates tangent weight modes
+ * @enum
+ */
 export enum ERichCurveTangentWeightMode {
     /** Don't take tangent weights into account. */
     RCTWM_WeightedNone,
@@ -33,36 +39,96 @@ export enum ERichCurveTangentWeightMode {
     RCTWM_WeightedBoth
 }
 
-/** One key in a rich, editable float curve */
+/**
+ * One key in a rich, editable float curve
+ * @implements {IStructType}
+ */
 export class FRichCurveKey implements IStructType {
-    /** Interpolation mode between this key and the next */
+    /**
+     * Interpolation mode between this key and the next
+     * @type {ERichCurveInterpMode}
+     * @public
+     */
     public interpMode: ERichCurveInterpMode
 
-    /** Mode for tangents at this key */
+    /**
+     * Mode for tangents at this key
+     * @type {ERichCurveTangentMode}
+     * @public
+     */
     public tangentMode: ERichCurveTangentMode
 
-    /** If either tangent at this key is 'weighted' */
+    /**
+     * If either tangent at this key is 'weighted'
+     * @type {ERichCurveTangentWeightMode}
+     * @public
+     */
     public tangentWeightMode: ERichCurveTangentWeightMode
 
-    /** Time at this key */
+    /**
+     * Time at this key
+     * @type {number}
+     * @public
+     */
     public time: number
 
-    /** Value at this key */
+    /**
+     * Value at this key
+     * @type {number}
+     * @public
+     */
     public value: number
 
-    /** If RCIM_Cubic, the arriving tangent at this key */
+    /**
+     * If RCIM_Cubic, the arriving tangent at this key
+     * @type {number}
+     * @public
+     */
     public arriveTangent: number
 
-    /** If RCTWM_WeightedArrive or RCTWM_WeightedBoth, the weight of the left tangent */
+    /**
+     * If RCTWM_WeightedArrive or RCTWM_WeightedBoth, the weight of the left tangent
+     * @type {number}
+     * @public
+     */
     public arriveTangentWeight: number
 
-    /** If RCIM_Cubic, the leaving tangent at this key */
+    /**
+     * If RCIM_Cubic, the leaving tangent at this key
+     * @type {number}
+     * @public
+     */
     public leaveTangent: number
 
-    /** If RCTWM_WeightedLeave or RCTWM_WeightedBoth, the weight of the right tangent */
+    /**
+     * If RCTWM_WeightedLeave or RCTWM_WeightedBoth, the weight of the right tangent
+     * @type {number}
+     * @public
+     */
     public leaveTangentWeight: number
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {ERichCurveInterpMode} interpMode
+     * @param {ERichCurveTangentMode} tangentMode
+     * @param {ERichCurveTangentWeightMode} tangentWeightMode
+     * @param {number} time
+     * @param {number} value
+     * @param {number} arriveTangent
+     * @param {number} arriveTangentWeight
+     * @param {number} leaveTangent
+     * @param {number} leaveTangentWeight
+     * @constructor
+     * @public
+     */
     constructor(
         interpMode: ERichCurveInterpMode,
         tangentMode: ERichCurveTangentMode,
@@ -74,6 +140,8 @@ export class FRichCurveKey implements IStructType {
         leaveTangent: number,
         leaveTangentWeight: number
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...args) {
         const arg = args[0]
         if (arg instanceof FArchive) {
@@ -121,6 +189,12 @@ export class FRichCurveKey implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.write(this.interpMode)
         Ar.write(this.tangentMode)
@@ -133,6 +207,11 @@ export class FRichCurveKey implements IStructType {
         Ar.writeFloat32(this.leaveTangentWeight)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         const key = (v, k) => Object.keys(k)[v]
         return {
@@ -149,12 +228,25 @@ export class FRichCurveKey implements IStructType {
     }
 }
 
-/** A rich, editable float curve */
+/**
+ * A rich, editable float curve
+ * @extends {FRealCurve}
+ * */
 export class FRichCurve extends FRealCurve {
-    /** Sorted array of keys */
+    /**
+     * Sorted array of keys
+     * @type {Array<FRichCurveKey>}
+     */
     @UProperty({ name: "Keys" })
-    public keys = new Array<FRichCurveKey>()
+    public keys: FRichCurveKey[] = []
 
+    /**
+     * Applies values from FStructFallback
+     * @param {FStructFallback} fallback Fallback to use
+     * @returns {FRichCurve} Object
+     * @public
+     * @static
+     */
     static loadFromFallback(fallback: FStructFallback) {
         const obj = new FRichCurve()
         super.loadFromFallback(fallback, obj)
@@ -162,7 +254,13 @@ export class FRichCurve extends FRealCurve {
         return obj
     }
 
-    /** Remap inTime based on pre and post infinity extrapolation values */
+    /**
+     * Remaps inTime based on pre and post infinity extrapolation values
+     * @param {FloatRef} inTime In time
+     * @param {FloatRef} cycleValueOffset Cycle value offset
+     * @returns {void}
+     * @public
+     */
     remapTimeValue(inTime: FloatRef, cycleValueOffset: FloatRef) {
         const numKeys = this.keys.length
         if (numKeys < 2)
@@ -207,7 +305,13 @@ export class FRichCurve extends FRealCurve {
         }
     }
 
-    /** Evaluate this rich curve at the specified time */
+    /**
+     * Evaluates this curve at the specified time
+     * @param {number} inTime In time
+     * @param {number} inDefaultValue In default value
+     * @returns {number} Result
+     * @public
+     */
     eval(inTime: number, inDefaultValue: number = 0.0): number {
         // Remap time if extrapolation is present and compute offset value to use if cycling
         let cycleValueOffset = 0
@@ -279,12 +383,26 @@ export class FRichCurve extends FRealCurve {
         return interpVal + cycleValueOffset
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson() {
         const obj = this.toJson() as any
         obj.keys = this.keys.map(k => k.toJson())
         return obj
     }
 
+    /**
+     * Evals for two keys
+     * @param {FRichCurveKey} key1 First key
+     * @param {FRichCurveKey} key2 Second key
+     * @param {number} inTime In time
+     * @returns {number} Result
+     * @private
+     * @static
+     */
     private static evalForTwoKeys(key1: FRichCurveKey, key2: FRichCurveKey, inTime: number): number {
         const diff = key2.time - key1.time
 
@@ -315,7 +433,7 @@ export class FRichCurve extends FRealCurve {
     }
 }
 
-export function bezierInterp(p0: number, p1: number, p2: number, p3: number, alpha: number): number {
+function bezierInterp(p0: number, p1: number, p2: number, p3: number, alpha: number): number {
     const p01 = lerp(p0, p1, alpha)
     const p12 = lerp(p1, p2, alpha)
     const p23 = lerp(p2, p3, alpha)
@@ -324,7 +442,7 @@ export function bezierInterp(p0: number, p1: number, p2: number, p3: number, alp
     return lerp(p012, p123, alpha)
 }
 
-export function bezierToPower(
+function bezierToPower(
     a1: number, b1: number, c1: number,
     d1: number, out: number[]
 ) {
@@ -338,7 +456,7 @@ export function bezierToPower(
     /*d2*/ out[0] = a1
 }
 
-export function weightedEvalForTwoKeys(
+function weightedEvalForTwoKeys(
     key1Value: number, key1Time: number, key1LeaveTangent: number, key1LeaveTangentWeight: number, key1TangentWeightMode: ERichCurveTangentWeightMode,
     key2Value: number, key2Time: number, key2ArriveTangent: number, key2ArriveTangentWeight: number, key2TangentWeightMode: ERichCurveTangentWeightMode,
     inTime: number
@@ -395,7 +513,7 @@ export function weightedEvalForTwoKeys(
     const coeff = new Array<number>(4) // DoubleArray
     const results = new Array<number>(3) // DoubleArray
 
-    //Convert Bezier to Power basis, also float to double for precision for root finding.
+    // Convert Bezier to Power basis, also float to double for precision for root finding.
     bezierToPower(
         0.0, normalizedX1, normalizedX2, 1.0,
         coeff

@@ -2,11 +2,11 @@ import { FArchive } from "../../../reader/FArchive";
 import { sprintf } from "sprintf-js";
 import { Utils } from "../../../../util/Utils";
 import { IStructType } from "../../../assets/objects/UScriptStruct";
-
-// tslint:disable:no-bitwise
+import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 
 /**
- * Enumerates known GUID formats.
+ * Enumerates known GUID formats
+ * @enum
  */
 export enum EGuidFormats {
     /**
@@ -66,25 +66,82 @@ export enum EGuidFormats {
     Base36Encoded = "Base36Encoded"
 }
 
+/**
+ * FGuid
+ * @implements {IStructType}
+ */
 export class FGuid implements IStructType {
+    /**
+     * Main guid
+     * @type {FGuid}
+     * @public
+     * @static
+     */
     static mainGuid = new FGuid()
 
-    /** Holds the first component. */
+    /**
+     * Holds the first component
+     * @type {number}
+     * @public
+     */
     a: number
 
-    /** Holds the second component. */
+    /**
+     * Holds the second component
+     * @type {number}
+     * @public
+     */
     b: number
 
-    /** Holds the third component. */
+    /**
+     * Holds the third component
+     * @type {number}
+     * @public
+     */
     c: number
 
-    /** Holds the fourth component. */
+    /**
+     * Holds the fourth component
+     * @type {number}
+     * @public
+     */
     d: number
 
+    /**
+     * Creates an empty instance
+     * @constructor
+     * @public
+     */
     constructor()
+
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} a A value
+     * @param {number} b B value
+     * @param {number} c C value
+     * @param {number} d D value
+     * @constructor
+     * @public
+     */
     constructor(a: number, b: number, c: number, d: number)
+
+    /**
+     * Creates an instance using a hex string
+     * @param {string} hexString HEX string to use
+     * @constructor
+     * @public
+     */
     constructor(hexString: string)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...params) {
         if (!params.length) {
             this.a = 0
@@ -124,10 +181,9 @@ export class FGuid implements IStructType {
     }
 
     /**
-     * Provides read-only access to the GUIDs components.
-     *
-     * @param index The index of the component to return (0...3).
-     * @returns {number} The component.
+     * Provides read-only access to the GUIDs components
+     * @param {number} index The index of the component to return (0...3)
+     * @returns {number} The component
      */
     get(index: number) {
         if (index === 0)
@@ -143,11 +199,11 @@ export class FGuid implements IStructType {
     }
 
     /**
-     * Serializes a GUID from or into an archive.
-     *
-     * @param Ar The archive to serialize into.
+     * Serializes a GUID from or into an archive
+     * @param {FArchiveWriter} Ar The archive to serialize into
+     * @returns {void}
      */
-    serialize(Ar: any) {
+    serialize(Ar: FArchiveWriter) {
         Ar.writeUInt32(this.a)
         Ar.writeUInt32(this.b)
         Ar.writeUInt32(this.c)
@@ -155,8 +211,8 @@ export class FGuid implements IStructType {
     }
 
     /**
-     * Invalidates the GUID.
-     *
+     * Invalidates the GUID
+     * @returns {void}
      * @see isValid
      */
     invalidate() {
@@ -168,10 +224,8 @@ export class FGuid implements IStructType {
 
     /**
      * Checks whether this GUID is valid or not.
-     *
      * A GUID that has all its components set to zero is considered invalid.
-     *
-     * @returns {boolean} Wether valid
+     * @returns {boolean} Whether valid
      * @see invalidate
      */
     isValid() {
@@ -180,8 +234,7 @@ export class FGuid implements IStructType {
 
     /**
      * Converts this GUID to its string representation using the specified format.
-     *
-     * @param format The string format to use.
+     * @param {EGuidFormats} format The string format to use.
      * @returns {string} The string representation.
      */
     toString(format: EGuidFormats = EGuidFormats.Digits) {
@@ -243,6 +296,11 @@ export class FGuid implements IStructType {
         }
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return this.toString(EGuidFormats.DigitsWithHyphens)
     }

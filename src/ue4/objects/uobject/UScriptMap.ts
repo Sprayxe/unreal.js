@@ -15,10 +15,10 @@ export class UScriptMap {
         if (x instanceof FAssetArchive) {
             this.numKeysToRemove = x.readInt32()
             if (this.numKeysToRemove !== 0) {
-                let i = 0
-                while (i < this.numKeysToRemove) {
+                let _i = 0
+                while (_i < this.numKeysToRemove) {
                     FProperty.readPropertyValue(x, y.innerType, ReadType.MAP)
-                    ++i
+                    ++_i
                 }
             }
             const length = x.readInt32()

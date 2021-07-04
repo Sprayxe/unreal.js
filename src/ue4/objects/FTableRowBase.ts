@@ -1,2 +1,5 @@
+/**
+ * FTableRowBase
+ */
 export class FTableRowBase {
 }

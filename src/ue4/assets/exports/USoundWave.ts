@@ -46,21 +46,21 @@ export class USoundWave extends USoundBase {
     @UProperty() public SoundGroup: ESoundGroup = null
 
     /**
-     * Wether looped
+     * Whether looped
      * @type {boolean}
      * @public
      */
     @UProperty() public bLooping = false
 
     /**
-     * Wether streamed
+     * Whether streamed
      * @type {boolean}
      * @public
      */
     @UProperty() public bStreaming = false
 
     /**
-     * Wether seekable stream
+     * Whether seekable stream
      * @type {boolean}
      * @public
      */
@@ -74,28 +74,28 @@ export class USoundWave extends USoundBase {
     @UProperty() public LoadingBehavior: ESoundWaveLoadingBehavior = null
 
     /**
-     * Wether mature
+     * Whether mature
      * @type {boolean}
      * @public
      */
     @UProperty() public bMature = false
 
     /**
-     * Wether manual word wrap
+     * Whether manual word wrap
      * @type {boolean}
      * @public
      */
     @UProperty() public bManualWordWrap = false
 
     /**
-     * Wether single line
+     * Whether single line
      * @type {boolean}
      * @public
      */
     @UProperty() public bSingleLine = false
 
     /**
-     * Wether ambisonics
+     * Whether ambisonics
      * @type {boolean}
      * @public
      */
@@ -193,7 +193,7 @@ export class USoundWave extends USoundBase {
     @UProperty() public InternalCurves: FPackageIndex /*UCurveTable*/ = null
 
     /**
-     * Wether cooked
+     * Whether cooked
      * @type {boolean}
      * @public
      */
@@ -276,7 +276,7 @@ export class USoundWave extends USoundBase {
     }
 
     /**
-     * Wether is streaming
+     * Whether is streaming
      * @type {boolean}
      * @public
      */
@@ -419,7 +419,7 @@ class FSubtitleCue {
  */
 class FStreamedAudioChunk {
     /**
-     * Wether cooked
+     * Whether cooked
      * @type {boolean}
      * @public
      */
@@ -456,7 +456,7 @@ class FStreamedAudioChunk {
 
     /**
      * Creates an instance using values
-     * @param {boolean} bCooked Wether cooked
+     * @param {boolean} bCooked Whether cooked
      * @param {FByteBulkData} data Data
      * @param {number} dataSize Data size
      * @param {number} audioDataSize Audio data size

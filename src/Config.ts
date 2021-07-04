@@ -7,28 +7,28 @@ export class Config implements IConfig {
 
 export interface IConfig {
     /**
-     * Wether to check dummy names in export archive
+     * Whether to check dummy names in export archive
      * @type {boolean}
      * @default false
      */
     GExportArchiveCheckDummyName?: boolean
 
     /**
-     * Wether to debug properties
+     * Whether to debug properties
      * @type {boolean}
      * @default false
      */
     GDebugProperties?: boolean
 
     /**
-     * Wether it is fatal if a property couldn't be deserialized
+     * Whether it is fatal if a property couldn't be deserialized
      * @type {boolean}
      * @default false
      */
     GFatalUnknownProperty?: boolean
 
     /**
-     * Wether to supress missing schema errors
+     * Whether to supress missing schema errors
      * @type {boolean}
      * @default false
      */

@@ -49,7 +49,7 @@ export class FileProvider extends EventEmitter {
     folder: string
 
     /**
-     * Wether global data is loaded or not
+     * Whether global data is loaded or not
      * @type {boolean}
      * @protected
      */
@@ -135,7 +135,7 @@ export class FileProvider extends EventEmitter {
     localFiles = new Set<string>()
 
     /**
-     * Wether to populate I/O store files
+     * Whether to populate I/O store files
      * @type {boolean}
      * @see {globalPackageStore}
      * @public

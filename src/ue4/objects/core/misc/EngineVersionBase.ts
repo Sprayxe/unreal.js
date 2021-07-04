@@ -4,14 +4,14 @@
  */
 export enum EVersionComponent {
     /** Major version increments introduce breaking API changes. */
-    Major = "Major",
+    Major,
     /** Minor version increments add additional functionality without breaking existing APIs. */
-    Minor = "Minor",
+    Minor,
     /** Patch version increments fix existing functionality without changing the API. */
-    Patch = "Patch",
+    Patch,
     /** The pre-release field adds additional versioning through a series of comparable dotted strings or numbers. */
-    ChangeList = "ChangeList",
-    Branch = "Branch"
+    ChangeList,
+    Branch
 }
 
 /**
@@ -19,9 +19,9 @@ export enum EVersionComponent {
  * @enum
  */
 export enum EVersionComparison {
-    Neither = "Neither",
-    First = "First",
-    Second = "Second"
+    Neither,
+    First,
+    Second
 }
 
 /**

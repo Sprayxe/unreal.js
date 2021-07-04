@@ -205,7 +205,7 @@ export class UMaterialInterface extends UObject implements UUnrealMaterial {
 
     // No default in typescript interfaces
     /**
-     * Wether this is texture cube
+     * Whether this is texture cube
      * @returns {boolean}
      * @public
      */
@@ -216,7 +216,7 @@ export class UMaterialInterface extends UObject implements UUnrealMaterial {
     /**
      * Appends textures
      * @param {Array<UUnrealMaterial>} outTextures Textures to modify
-     * @param {boolean} onlyRendered Wether only rendered
+     * @param {boolean} onlyRendered Whether only rendered
      * @returns {void}
      * @public
      */

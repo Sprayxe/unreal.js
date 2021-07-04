@@ -3,13 +3,51 @@ import { FArchive } from "../../reader/FArchive";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
 import { IStructType } from "../../assets/objects/UScriptStruct";
 
+/**
+ * FLevelSequenceLegacyObjectReference
+ * @implements {IStructType}
+ */
 export class FLevelSequenceLegacyObjectReference implements IStructType {
+    /**
+     * keyGuid
+     * @type {FGuid}
+     * @public
+     */
     public keyGuid: FGuid
+
+    /**
+     * objectId
+     * @type {FGuid}
+     * @public
+     */
     public objectId: FGuid
+
+    /**
+     * objectPath
+     * @type {string}
+     * @public
+     */
     public objectPath: string
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {FGuid} keyGuid Key guid to use
+     * @param {FGuid} objectId Object id to use
+     * @param {string} objectPath Object path to use
+     * @constructor
+     * @public
+     */
     constructor(keyGuid: FGuid, objectId: FGuid, objectPath: string)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any, y?: any, z?: any) {
         if (x instanceof FArchive) {
             this.keyGuid = new FGuid(x)
@@ -22,12 +60,23 @@ export class FLevelSequenceLegacyObjectReference implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         this.keyGuid.serialize(Ar)
         this.objectId.serialize(Ar)
         Ar.writeString(this.objectPath)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             keyGuid: this.keyGuid.toJson(),

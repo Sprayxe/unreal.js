@@ -100,7 +100,7 @@ export class PakFileReader {
     }
 
     /**
-     * Wether if it is encrypted or not
+     * Whether if it is encrypted or not
      * @returns {boolean}
      * @public
      */
@@ -440,7 +440,7 @@ export class PakFileReader {
     /**
      * Reads and decrypts data
      * @param {number} num Amount of bytes to read
-     * @param {boolean} isEncrypted Wether if those are encrypted
+     * @param {boolean} isEncrypted Whether if those are encrypted
      * @returns {Buffer} Bytes
      * @private
      */
@@ -530,10 +530,10 @@ export class PakFileReader {
     }
 
     /**
-     * Wether if pak has valid index
+     * Whether if pak has valid index
      * @param {Buffer} bytes Bytes to read from
-     * @returns {boolean}
-     * @param
+     * @returns {boolean} Result
+     * @public
      */
     isValidIndex(bytes: Buffer): boolean {
         const testAr = new FByteArchive(bytes)

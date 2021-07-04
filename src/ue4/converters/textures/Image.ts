@@ -239,7 +239,7 @@ function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: I
 
 export interface ImageConfig {
     /**
-     * - Wether to use image smoothing for canvas image or not
+     * - Whether to use image smoothing for canvas image or not
      * @default false
      */
     imageSmoothingEnabled?: boolean,

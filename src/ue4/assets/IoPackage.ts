@@ -245,7 +245,7 @@ export class IoPackage extends Package {
     /**
      * Resolves an object index
      * @param {FPackageObjectIndex} index Object index to resolve
-     * @param {boolean} throwIfNotFound (default: true) Wether to throw an error if it wasn't found
+     * @param {boolean} throwIfNotFound (default: true) Whether to throw an error if it wasn't found
      * @returns {ResolvedExportObject | ResolvedScriptObject | null} Object
      * @public
      */

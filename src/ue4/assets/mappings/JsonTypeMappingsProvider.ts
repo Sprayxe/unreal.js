@@ -13,7 +13,7 @@ export abstract class JsonTypeMappingsProvider extends TypeMappingsProvider {
     /**
      * Adds a struct
      * @param {object} json JSON data
-     * @returns {boolean} Wether if it was successful or not
+     * @returns {boolean} Whether if it was successful or not
      * @protected
      */
     protected addStructs(json: any): boolean {
@@ -34,7 +34,7 @@ export abstract class JsonTypeMappingsProvider extends TypeMappingsProvider {
     /**
      * Adds an enum
      * @param {object} json JSON data
-     * @returns {boolean} Wether if it was successful or not
+     * @returns {boolean} Whether if it was successful or not
      * @protected
      */
     protected addEnums(json: any): boolean {

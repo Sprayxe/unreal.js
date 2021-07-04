@@ -193,14 +193,14 @@ export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial 
     public SRGB: boolean
 
     /**
-     * Wether tilting applies to texture
+     * Whether tilting applies to texture
      * @type {boolean}
      * @public
      */
     public bNoTiling: boolean
 
     /**
-     * Wether this texture is virtually streamed
+     * Whether this texture is virtually streamed
      * @type {boolean}
      * @public
      */
@@ -214,14 +214,14 @@ export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial 
     public CompressionYCoCg: boolean
 
     /**
-     * Wether this is not offline processed
+     * Whether this is not offline processed
      * @type {boolean}
      * @public
      */
     public bNotOfflineProcessed: boolean
 
     /**
-     * Wether an async resource release was started
+     * Whether an async resource release was started
      * @type {boolean}
      * @public
      */
@@ -256,7 +256,7 @@ export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial 
     /**
      * Appends textures
      * @param {Array<UUnrealMaterial>} outTextures Array to mofify
-     * @param {boolean} onlyRendered Wether only rendered
+     * @param {boolean} onlyRendered Whether only rendered
      * @returns {void}
      * @public
      */
@@ -267,7 +267,7 @@ export class UTexture extends UStreamableRenderAsset implements UUnrealMaterial 
     }
 
     /**
-     * Wether is texture cube
+     * Whether is texture cube
      * @returns {boolean}
      * @public
      */

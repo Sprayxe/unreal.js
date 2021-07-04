@@ -12,20 +12,43 @@ import {
 } from "../../versions/Versions";
 import { Ue4Version } from "../../versions/Game";
 
+/**
+ * FGenerationInfo
+ */
 export class FGenerationInfo {
     /**
-     * Number of exports in the linker's ExportMap for this generation.
+     * Number of exports in the linker's ExportMap for this generation
+     * @type {number}
+     * @public
      */
     exportCount: number
 
     /**
-     * Number of names in the linker's NameMap for this generation.
+     * Number of names in the linker's NameMap for this generation
+     * @type {number}
+     * @public
      */
     nameCount: number
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {number} exportCount Export count to use
+     * @param {number} nameCount Name count to use
+     * @constructor
+     * @public
+     */
     constructor(exportCount: number, nameCount: number)
-    constructor(x?: any, y?: any) {
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
+    constructor(x: any, y?: any) {
         if (x instanceof FArchive) {
             this.exportCount = x.readInt32()
             this.nameCount = x.readInt32()
@@ -35,6 +58,12 @@ export class FGenerationInfo {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeInt32(this.exportCount)
         Ar.writeInt32(this.nameCount)
@@ -45,178 +74,326 @@ export class FGenerationInfo {
  * A "table of contents" for an Unreal package file.  Stored at the top of the file.
  */
 export class FPackageFileSummary {
+    /**
+     * tag
+     * @type {number}
+     * @public
+     */
     tag: number
+
+    /**
+     * legacyFileVersion
+     * @type {number}
+     * @public
+     */
     legacyFileVersion: number
+
+    /**
+     * legacyUE3Version
+     * @type {number}
+     * @public
+     */
     legacyUE3Version: number
+
+    /**
+     * fileVersionUE4
+     * @type {number}
+     * @public
+     */
     fileVersionUE4: number
+
+    /**
+     * fileVersionLicenseUE4
+     * @type {number}
+     * @public
+     */
     fileVersionLicenseUE4: number
+
+    /**
+     * customVersionContainer
+     * @type {Array<FCustomVersion>}
+     * @public
+     */
     customVersionContainer: FCustomVersion[]
+
+    /**
+     * totalHeaderSize
+     * @type {number}
+     * @public
+     */
     totalHeaderSize: number
+
+    /**
+     * folderName
+     * @type {string}
+     * @public
+     */
     folderName: string
+
+    /**
+     * packageFlags
+     * @type {number}
+     * @public
+     */
     packageFlags: number
+
+    /**
+     * nameCount
+     * @type {number}
+     * @public
+     */
     nameCount: number
+
+    /**
+     * nameOffset
+     * @type {number}
+     * @public
+     */
     nameOffset: number
+
+    /**
+     * gatherableTextDataCount
+     * @type {number}
+     * @public
+     */
     gatherableTextDataCount: number
+
+    /**
+     * gatherableTextDataOffset
+     * @type {number}
+     * @public
+     */
     gatherableTextDataOffset: number
+
+    /**
+     * exportCount
+     * @type {number}
+     * @public
+     */
     exportCount: number
+
+    /**
+     * exportOffset
+     * @type {number}
+     * @public
+     */
     exportOffset: number
+
+    /**
+     * importCount
+     * @type {number}
+     * @public
+     */
     importCount: number
+
+    /**
+     * importOffset
+     * @type {number}
+     * @public
+     */
     importOffset: number
+
+    /**
+     * dependsOffset
+     * @type {number}
+     * @public
+     */
     dependsOffset: number
+
+    /**
+     * softPackageReferencesCount
+     * @type {number}
+     * @public
+     */
     softPackageReferencesCount: number
+
+    /**
+     * softPackageReferencesOffset
+     * @type {number}
+     * @public
+     */
     softPackageReferencesOffset: number
+
+    /**
+     * searchableNamesOffset
+     * @type {number}
+     * @public
+     */
     searchableNamesOffset: number
+
+    /**
+     * thumbnailTableOffset
+     * @type {number}
+     * @public
+     */
     thumbnailTableOffset: number
+
+    /**
+     * guid
+     * @type {FGuid}
+     * @public
+     */
     guid: FGuid
-    generations: Array<FGenerationInfo>
+
+    /**
+     * generations
+     * @type {Array<FGenerationInfo>}
+     * @public
+     */
+    generations: FGenerationInfo[]
+
+    /**
+     * savedByEngineVersion
+     * @type {FEngineVersion}
+     * @public
+     */
     savedByEngineVersion: FEngineVersion
+
+    /**
+     * compatibleWithEngineVersion
+     * @type {FEngineVersion}
+     * @public
+     */
     compatibleWithEngineVersion: FEngineVersion
+
+    /**
+     * compressionFlags
+     * @type {number}
+     * @public
+     */
     compressionFlags: number
+
+    /**
+     * compressedChunks
+     * @type {Array<FCompressedChunk>}
+     * @public
+     */
     compressedChunks: FCompressedChunk[]
+
+    /**
+     * packageSource
+     * @type {number}
+     * @public
+     */
     packageSource: number
+
+    /**
+     * additionalPackagesToCook
+     * @type {Array<string>}
+     * @public
+     */
     additionalPackagesToCook: string[]
+
+    /**
+     * assetRegistryDataOffset
+     * @type {number}
+     * @public
+     */
     assetRegistryDataOffset: number
+
+    /**
+     * bulkDataStartOffset
+     * @type {number}
+     * @public
+     */
     bulkDataStartOffset: number
+
+    /**
+     * worldTileInfoDataOffset
+     * @type {number}
+     * @public
+     */
     worldTileInfoDataOffset: number
+
+    /**
+     * chunkIds
+     * @type {Array<number>}
+     * @public
+     */
     chunkIds: number[]
+
+    /**
+     * preloadDependencyCount
+     * @type {number}
+     * @public
+     */
     preloadDependencyCount: number
+
+    /**
+     * preloadDependencyOffset
+     * @type {number}
+     * @public
+     */
     preloadDependencyOffset: number
 
-    constructor(Ar: FArchive)
-    constructor(
-        tag: number,
-        legacyFileVersion: number,
-        legacyUE3Version: number,
-        fileVersionUE4: number,
-        fileVersionLicenseUE4: number,
-        customVersionContainer: FCustomVersion[],
-        totalHeaderSize: number,
-        folderName: string,
-        packageFlags: number,
-        nameCount: number,
-        nameOffset: number,
-        gatherableTextDataCount: number,
-        gatherableTextDataOffset: number,
-        exportCount: number,
-        exportOffset: number,
-        importCount: number,
-        importOffset: number,
-        dependsOffset: number,
-        softPackageReferencesCount: number,
-        softPackageReferencesOffset: number,
-        searchableNamesOffset: number,
-        thumbnailTableOffset: number,
-        guid: FGuid,
-        generations: FGenerationInfo[],
-        savedByEngineVersion: FEngineVersion,
-        compatibleWithEngineVersion: FEngineVersion,
-        compressionFlags: number,
-        compressedChunks: FCompressedChunk[],
-        packageSource: number,
-        additionalPackagesToCook: string[],
-        assetRegistryDataOffset: number,
-        bulkDataStartOffset: number,
-        worldTileInfoDataOffset: number,
-        chunkIds: number[],
-        preloadDependencyCount: number,
-        preloadDependencyOffset: number
-    )
-    constructor(...params) {
-        if (params[0] instanceof FArchive) {
-            const Ar = params[0]
-            this.tag = Ar.readUInt32()
-            this.legacyFileVersion = Ar.readInt32()
-            this.legacyUE3Version = Ar.readInt32()
-            this.fileVersionUE4 = Ar.readInt32()
-            this.fileVersionLicenseUE4 = Ar.readInt32()
-            this.customVersionContainer = Ar.readArray(() => new FCustomVersion(Ar))
-            this.totalHeaderSize = Ar.readInt32()
-            this.folderName = Ar.readString()
-            this.packageFlags = Ar.readUInt32()
-            if ((this.packageFlags & EPackageFlags.PKG_FilterEditorOnly) !== 0) {
-                Ar.isFilterEditorOnly = true
-            }
-            this.nameCount = Ar.readInt32()
-            this.nameOffset = Ar.readInt32()
-            if (!Ar.isFilterEditorOnly) {
-                if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_SUMMARY_LOCALIZATION_ID) {
-                    const localizationId = Ar.readString()
-                }
-            }
-            this.gatherableTextDataCount = Ar.readInt32()
-            this.gatherableTextDataOffset = Ar.readInt32()
-            this.exportCount = Ar.readInt32()
-            this.exportOffset = Ar.readInt32()
-            this.importCount = Ar.readInt32()
-            this.importOffset = Ar.readInt32()
-            this.dependsOffset = Ar.readInt32()
-            this.softPackageReferencesCount = Ar.readInt32()
-            this.softPackageReferencesOffset = Ar.readInt32()
-            this.searchableNamesOffset = Ar.readInt32()
-            this.thumbnailTableOffset = Ar.readInt32()
-            if (Ar.game === Ue4Version.GAME_VALORANT.game) Ar.pos += 8
-            this.guid = new FGuid(Ar)
-            if (!Ar.isFilterEditorOnly) {
-                if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_OWNER) {
-                    const persistentGuid = new FGuid(Ar)
-                }
-                if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_OWNER && VER_UE4_ADDED_PACKAGE_OWNER < VER_UE4_NON_OUTER_PACKAGE_IMPORT) {
-                    const ownerPersistentGuid = new FGuid(Ar)
-                }
-            }
-            this.generations = Ar.readArray(() => new FGenerationInfo(Ar))
-            this.savedByEngineVersion = new FEngineVersion(Ar)
-            this.compatibleWithEngineVersion = new FEngineVersion(Ar)
-            this.compressionFlags = Ar.readUInt32()
-            this.compressedChunks = Ar.readArray(() => new FCompressedChunk(Ar))
-            this.packageSource = Ar.readUInt32()
-            this.additionalPackagesToCook = Ar.readArray(() => Ar.readString())
-            this.assetRegistryDataOffset = Ar.readInt32()
-            this.bulkDataStartOffset = Ar.readInt32()
-            this.worldTileInfoDataOffset = Ar.readInt32()
-            this.chunkIds = Ar.readArray(() => Ar.readInt32())
-            this.preloadDependencyCount = Ar.readInt32()
-            this.preloadDependencyOffset = Ar.readInt32()
-        } else {
-            this.tag = params[0]
-            this.legacyFileVersion = params[1]
-            this.legacyUE3Version = params[2]
-            this.fileVersionUE4 = params[3]
-            this.fileVersionLicenseUE4 = params[4]
-            this.customVersionContainer = params[5]
-            this.totalHeaderSize = params[6]
-            this.folderName = params[7]
-            this.packageFlags = params[8]
-            this.nameCount = params[9]
-            this.nameOffset = params[10]
-            this.gatherableTextDataCount = params[11]
-            this.gatherableTextDataOffset = params[12]
-            this.exportCount = params[13]
-            this.exportOffset = params[14]
-            this.importCount = params[15]
-            this.importOffset = params[16]
-            this.dependsOffset = params[17]
-            this.softPackageReferencesCount = params[18]
-            this.softPackageReferencesOffset = params[19]
-            this.searchableNamesOffset = params[20]
-            this.thumbnailTableOffset = params[21]
-            this.guid = params[22]
-            this.generations = params[23]
-            this.savedByEngineVersion = params[24]
-            this.compatibleWithEngineVersion = params[25]
-            this.compressionFlags = params[26]
-            this.compressedChunks = params[27]
-            this.packageSource = params[28]
-            this.additionalPackagesToCook = params[29]
-            this.assetRegistryDataOffset = params[30]
-            this.bulkDataStartOffset = params[31]
-            this.worldTileInfoDataOffset = params[32]
-            this.chunkIds = params[33]
-            this.preloadDependencyCount = params[34]
-            this.preloadDependencyOffset = params[25]
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
+    constructor(Ar: FArchive) {
+        this.tag = Ar.readUInt32()
+        this.legacyFileVersion = Ar.readInt32()
+        this.legacyUE3Version = Ar.readInt32()
+        this.fileVersionUE4 = Ar.readInt32()
+        this.fileVersionLicenseUE4 = Ar.readInt32()
+        this.customVersionContainer = Ar.readArray(() => new FCustomVersion(Ar))
+        this.totalHeaderSize = Ar.readInt32()
+        this.folderName = Ar.readString()
+        this.packageFlags = Ar.readUInt32()
+        if ((this.packageFlags & EPackageFlags.PKG_FilterEditorOnly) !== 0) {
+            Ar.isFilterEditorOnly = true
         }
+        this.nameCount = Ar.readInt32()
+        this.nameOffset = Ar.readInt32()
+        if (!Ar.isFilterEditorOnly) {
+            if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_SUMMARY_LOCALIZATION_ID) {
+                const localizationId = Ar.readString()
+            }
+        }
+        this.gatherableTextDataCount = Ar.readInt32()
+        this.gatherableTextDataOffset = Ar.readInt32()
+        this.exportCount = Ar.readInt32()
+        this.exportOffset = Ar.readInt32()
+        this.importCount = Ar.readInt32()
+        this.importOffset = Ar.readInt32()
+        this.dependsOffset = Ar.readInt32()
+        this.softPackageReferencesCount = Ar.readInt32()
+        this.softPackageReferencesOffset = Ar.readInt32()
+        this.searchableNamesOffset = Ar.readInt32()
+        this.thumbnailTableOffset = Ar.readInt32()
+        if (Ar.game === Ue4Version.GAME_VALORANT.game) Ar.pos += 8
+        this.guid = new FGuid(Ar)
+        if (!Ar.isFilterEditorOnly) {
+            if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_OWNER) {
+                const persistentGuid = new FGuid(Ar)
+            }
+            if (this.fileVersionUE4 >= VER_UE4_ADDED_PACKAGE_OWNER && VER_UE4_ADDED_PACKAGE_OWNER < VER_UE4_NON_OUTER_PACKAGE_IMPORT) {
+                const ownerPersistentGuid = new FGuid(Ar)
+            }
+        }
+        this.generations = Ar.readArray(() => new FGenerationInfo(Ar))
+        this.savedByEngineVersion = new FEngineVersion(Ar)
+        this.compatibleWithEngineVersion = new FEngineVersion(Ar)
+        this.compressionFlags = Ar.readUInt32()
+        this.compressedChunks = Ar.readArray(() => new FCompressedChunk(Ar))
+        this.packageSource = Ar.readUInt32()
+        this.additionalPackagesToCook = Ar.readArray(() => Ar.readString())
+        this.assetRegistryDataOffset = Ar.readInt32()
+        this.bulkDataStartOffset = Ar.readInt32()
+        this.worldTileInfoDataOffset = Ar.readInt32()
+        this.chunkIds = Ar.readArray(() => Ar.readInt32())
+        this.preloadDependencyCount = Ar.readInt32()
+        this.preloadDependencyOffset = Ar.readInt32()
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeUInt32(this.tag)
         Ar.writeInt32(this.legacyFileVersion)

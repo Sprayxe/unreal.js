@@ -144,42 +144,42 @@ export class USoundBase extends UObject {
     public SoundClassObject: FPackageIndex /*USoundClass*/ = null
 
     /**
-     * Wether debug
+     * Whether debug
      * @type {boolean}
      * @public
      */
     public bDebug: boolean = null
 
     /**
-     * Wether override concurrency
+     * Whether override concurrency
      * @type {boolean}
      * @public
      */
     public bOverrideConcurrency: boolean = null
 
     /**
-     * Wether output to bus only
+     * Whether output to bus only
      * @type {boolean}
      * @public
      */
     public bOutputToBusOnly: boolean = null
 
     /**
-     * Wether has delay node
+     * Whether has delay node
      * @type {boolean}
      * @public
      */
     public bHasDelayNode: boolean = null
 
     /**
-     * Wether has concatenator node
+     * Whether has concatenator node
      * @type {boolean}
      * @public
      */
     public bHasConcatenatorNode: boolean = null
 
     /**
-     * Wether bypass volume scale for priority
+     * Whether bypass volume scale for priority
      * @type {boolean}
      * @public
      */

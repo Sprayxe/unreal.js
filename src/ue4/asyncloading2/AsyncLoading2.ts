@@ -52,7 +52,7 @@ export class FMappedName {
     }
 
     /**
-     * Wether is resolved to minimal name
+     * Whether is resolved to minimal name
      * @param {FMinimalName} minimalName Minimal name to check
      * @returns {boolean}
      * @public
@@ -90,7 +90,7 @@ export class FMappedName {
     }
 
     /**
-     * Wether is valid
+     * Whether is valid
      * @returns {boolean} Result
      * @public
      */
@@ -108,7 +108,7 @@ export class FMappedName {
     }
 
     /**
-     * Wether is global
+     * Whether is global
      * @returns {boolean} Result
      * @public
      */
@@ -126,7 +126,7 @@ export class FMappedName {
     }
 
     /**
-     * Wether equals another object
+     * Whether equals another object
      * @param {?any} other Object to check
      * @returns {boolean}
      * @public
@@ -340,7 +340,7 @@ export class FPackageObjectIndex {
     }
 
     /**
-     * Wether is null
+     * Whether is null
      * @returns {boolean} Result
      * @public
      */
@@ -349,7 +349,7 @@ export class FPackageObjectIndex {
     }
 
     /**
-     * Wether is export
+     * Whether is export
      * @returns {boolean} Result
      * @public
      */
@@ -358,7 +358,7 @@ export class FPackageObjectIndex {
     }
 
     /**
-     * Wether is import
+     * Whether is import
      * @returns {boolean} Result
      * @public
      */
@@ -367,7 +367,7 @@ export class FPackageObjectIndex {
     }
 
     /**
-     * Wether is script import
+     * Whether is script import
      * @returns {boolean} Result
      * @public
      */
@@ -376,7 +376,7 @@ export class FPackageObjectIndex {
     }
 
     /**
-     * Wether is package import
+     * Whether is package import
      * @returns {boolean} Result
      * @public
      */
@@ -414,7 +414,7 @@ export class FPackageObjectIndex {
     }
 
     /**
-     * Wether equals other object
+     * Whether equals other object
      * @param {?any} other Object to check
      * @returns {boolean} Result
      * @public

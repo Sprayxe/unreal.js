@@ -70,7 +70,7 @@ export class FTexturePlatformData {
     public mips: FTexture2DMipMap[]
 
     /**
-     * Wether virtual
+     * Whether virtual
      * @type {boolean}
      * @public
      */
@@ -92,7 +92,7 @@ export class FTexturePlatformData {
      * @param {string} pixelFormat Pixel format
      * @param {number} firstMip Index of first mip
      * @param {Array<FTexture2DMipMap>} mips Mips
-     * @param {boolean} isVirtual Wether virtual
+     * @param {boolean} isVirtual Whether virtual
      * @constructor
      * @public
      */
@@ -171,7 +171,7 @@ export class FTexturePlatformData {
  */
 export class FTexture2DMipMap {
     /**
-     * Wether cooked
+     * Whether cooked
      * @type {boolean}
      * @public
      */
@@ -222,7 +222,7 @@ export class FTexture2DMipMap {
 
     /**
      * Creates an instance using values
-     * @param {boolean} cooked Wether cooked
+     * @param {boolean} cooked Whether cooked
      * @param {FByteBulkData} data Data
      * @param {number} sizeX X Size
      * @param {number} sizeY Y Size
@@ -288,7 +288,7 @@ export class UTexture2D extends UTexture {
     @UProperty() public FirstResourceMemMip?: number = null
 
     /**
-     * Wether streaming is temporarily disabled
+     * Whether streaming is temporarily disabled
      * @type {?boolean}
      * @public
      */
@@ -330,7 +330,7 @@ export class UTexture2D extends UTexture {
     public flag2: FStripDataFlags = null
 
     /**
-     * Wether cooked
+     * Whether cooked
      * @type {boolean}
      * @public
      */

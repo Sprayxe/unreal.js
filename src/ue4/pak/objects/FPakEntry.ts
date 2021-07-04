@@ -4,17 +4,77 @@ import { FArchive } from "../../reader/FArchive";
 import { EPakVersion } from "../enums/PakVersion";
 import { Game } from "../../versions/Game";
 
+/**
+ * FPakEntry
+ */
 export class FPakEntry {
+    /**
+     * name
+     * @type {string}
+     * @public
+     */
     name: string
+
+    /**
+     * pos
+     * @type {number}
+     * @public
+     */
     pos: number
+
+    /**
+     * size
+     * @type {number}
+     * @public
+     */
     size: number
+
+    /**
+     * uncompressedSize
+     * @type {number}
+     * @public
+     */
     uncompressedSize: number
+
+    /**
+     * compressionMethod
+     * @type {string}
+     * @public
+     */
     compressionMethod: string
+
     //hash: Buffer
+
+    /**
+     * compressionBlocks
+     * @type {Array<FPakCompressedBlock>}
+     * @public
+     */
     compressionBlocks: FPakCompressedBlock[]
+
+    /**
+     * isEncrypted
+     * @type {boolean}
+     * @public
+     */
     isEncrypted: boolean
+
+    /**
+     * compressionBlockSize
+     * @type {number}
+     * @public
+     */
     compressionBlockSize: number
 
+    /**
+     * Calculates serialized size from specified values
+     * @param {?number} version Version to use
+     * @param {?number} compressionMethod Compression method to use
+     * @param {?number} compressionBlocksCount Compression block count to use
+     * @returns {number} Calculated size
+     * @public
+     * @static
+     */
     static getSerializedSize(version: number, compressionMethod: number = 0, compressionBlocksCount: number = 0): number {
         let serializedSize = /*this.pos*/ 8 + /*this.size*/ 8 + /*this.uncompressedSize*/ 8 + /*this.hash*/ 20
         serializedSize += 4
@@ -32,6 +92,14 @@ export class FPakEntry {
         return serializedSize
     }
 
+    /**
+     * Creates an instance using values
+     * @param {?FArchive} Ar UE4 Reader to use
+     * @param {?FPakInfo} pakInfo Pak info
+     * @param {?boolean} inIndex Whether in index
+     * @constructor
+     * @public
+     */
     constructor(Ar?: FArchive, pakInfo?: FPakInfo, inIndex?: boolean) {
         if (!Ar) return
         this.name = inIndex ? Ar.readString() : ""

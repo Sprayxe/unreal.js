@@ -107,7 +107,7 @@ export class FBox implements IStructType {
 
     /**
      * Compares two boxes for equality
-     * @returns {boolean} Wether the boxes are equal, false otherwise
+     * @returns {boolean} Whether the boxes are equal, false otherwise
      * @public
      */
     equals(other: any): boolean {
@@ -119,7 +119,7 @@ export class FBox implements IStructType {
 
     /**
      * Adds to this bounding box to include a new bounding volume
-     * @param other the bounding volume to increase the bounding volume to
+     * @param {FBox} other the bounding volume to increase the bounding volume to
      * @returns {void} Reference to this bounding volume after resizing to include the other bounding volume
      * @public
      */
@@ -143,7 +143,7 @@ export class FBox implements IStructType {
 
     /**
      * Adds to this bounding box to include a given point
-     * @param other the point to increase the bounding volume to
+     * @param {FVector} other the point to increase the bounding volume to
      * @returns {void} Reference to this bounding box after resizing to include the other point
      * @public
      */
@@ -167,7 +167,7 @@ export class FBox implements IStructType {
 
     /**
      * Gets the result of addition to this bounding volume
-     * @param other The other volume to add to this
+     * @param {FBox} other The other volume to add to this
      * @returns {FBox} A new bounding volume
      * @public
      */
@@ -179,7 +179,7 @@ export class FBox implements IStructType {
 
     /**
      * Gets the result of addition to this bounding volume
-     * @param other The other point to add to this
+     * @param {FVector} other The other point to add to this
      * @returns {FBox} A new bounding volume
      * @public
      */
@@ -191,7 +191,7 @@ export class FBox implements IStructType {
 
     /**
      * Gets the min or max of this bounding volume
-     * @param index the index into points of the bounding volume
+     * @param {number} index the index into points of the bounding volume
      * @returns {FVector} a point of the bounding volume
      * @public
      */
@@ -205,7 +205,7 @@ export class FBox implements IStructType {
 
     /**
      * Calculates the distance of a point to this box
-     * @param point The point
+     * @param {FVector} point The point
      * @returns {number} The distance
      * @public
      */
@@ -215,7 +215,7 @@ export class FBox implements IStructType {
 
     /**
      * Increases the box size
-     * @param v The size to increase the volume by
+     * @param {FVector} v The size to increase the volume by
      * @returns {FBox} A new bounding box
      * @public
      */
@@ -225,7 +225,7 @@ export class FBox implements IStructType {
 
     /**
      * Increases the box size
-     * @param w The size to increase the volume by
+     * @param {number} w The size to increase the volume by
      * @returns {FBox} A new bounding box
      * @public
      */
@@ -236,8 +236,8 @@ export class FBox implements IStructType {
 
     /**
      * Increases the box size
-     * @param neg The size to increase the volume by in the negative direction (positive values move the bounds outwards)
-     * @param pos The size to increase the volume by in the positive direction (positive values move the bounds outwards)
+     * @param {FVector} neg The size to increase the volume by in the negative direction (positive values move the bounds outwards)
+     * @param {FVector} pos The size to increase the volume by in the positive direction (positive values move the bounds outwards)
      * @returns {FBox} A new bounding box
      * @public
      */
@@ -247,7 +247,7 @@ export class FBox implements IStructType {
 
     /**
      * Shifts the bounding box position
-     * @param offset The vector to shift the box by
+     * @param {FVector} offset The vector to shift the box by
      * @returns {FBox} A new bounding box
      * @public
      */
@@ -256,8 +256,8 @@ export class FBox implements IStructType {
     }
 
     /**
-     * - Moves the center of bounding box to new destination
-     * @param destination The destination point to move center of box to
+     * Moves the center of bounding box to new destination
+     * @param {FVector} destination The destination point to move center of box to
      * @returns {FBox} A new bounding box
      * @public
      */
@@ -281,8 +281,8 @@ export class FBox implements IStructType {
 
     /**
      * Gets the center and extents of this box.
-     * @param center(out) Will contain the box center point.
-     * @param extents(out) Will contain the extent around the center.
+     * @param {FVector} center(out) Will contain the box center point.
+     * @param {FVector} extents(out) Will contain the extent around the center.
      * @returns {void}
      * @public
      * @see {getCenter}
@@ -297,7 +297,7 @@ export class FBox implements IStructType {
 
     /**
      * Calculates the closest point on or inside the box to a given point in space
-     * @param point The point in space
+     * @param {FVector} point The point in space
      * @returns {FVector} The closest point on or inside the box
      * @public
      */
@@ -371,7 +371,7 @@ export class FBox implements IStructType {
     /**
      * Checks whether the given bounding box intersects this bounding box
      * @param {FBox} other The bounding box to intersect with
-     * @returns {boolean} Wether the boxes intersect, false otherwise
+     * @returns {boolean} Whether the boxes intersect, false otherwise
      * @public
      */
     intersect(other: FBox): boolean {
@@ -385,7 +385,7 @@ export class FBox implements IStructType {
     /**
      * Checks whether the given bounding box intersects this bounding box in the XY plane
      * @param {FBox} other The bounding box to test intersection
-     * @returns {boolean} Wether the boxes intersect in the XY Plane, false otherwise
+     * @returns {boolean} Whether the boxes intersect in the XY Plane, false otherwise
      * @public
      */
     intersectXY(other: FBox): boolean {
@@ -429,7 +429,7 @@ export class FBox implements IStructType {
     /**
      * Checks whether a given box is fully encapsulated by this box
      * @param {FBox} other The box to test for encapsulation within the bounding volume
-     * @returns {FBox} Wether box is inside this volume
+     * @returns {FBox} Whether box is inside this volume
      * @public
      */
     isInside0(other: FBox) {
@@ -439,7 +439,7 @@ export class FBox implements IStructType {
     /**
      * Checks whether the given location is inside this box
      * @param {FVector} _in The location to test for inside the bounding volume
-     * @returns {boolean} Wether location is inside this volume
+     * @returns {boolean} Whether location is inside this volume
      * @public
      * @see {isInsideXY1}
      */
@@ -451,8 +451,8 @@ export class FBox implements IStructType {
 
     /**
      * Checks whether the given location is inside or on this box
-     * @param _in The location to test for inside the bounding volume
-     * @returns {boolean} Wether location is inside this volume
+     * @param {FVector} _in The location to test for inside the bounding volume
+     * @returns {boolean} Whether location is inside this volume
      * @public
      * @see {isInsideXY1}
      */
@@ -464,8 +464,8 @@ export class FBox implements IStructType {
 
     /**
      * Checks whether the given box is fully encapsulated by this box in the XY plane
-     * @param other The box to test for encapsulation within the bounding box
-     * @returns {boolean} Wether is inside this box in the XY plane
+     * @param {FBox} other The box to test for encapsulation within the bounding box
+     * @returns {boolean} Whether is inside this box in the XY plane
      * @public
      */
     isInsideXY0(other: FBox): boolean {
@@ -474,8 +474,8 @@ export class FBox implements IStructType {
 
     /**
      * - Checks whether the given location is inside this box in the XY plane
-     * @param _in The location to test for inside the bounding box
-     * @returns {boolean} Wether location is inside this box in the XY plane
+     * @param {FVector} _in The location to test for inside the bounding box
+     * @returns {boolean} Whether location is inside this box in the XY plane
      * @public
      * @see {isInside1}
      */
@@ -492,7 +492,7 @@ export class FBox implements IStructType {
 
     /**
      * Turns this into string
-     * @returns {string}
+     * @returns {string} Result
      * @public
      */
     toString() {
@@ -501,7 +501,7 @@ export class FBox implements IStructType {
 
     /**
      * Turns this into json
-     * @returns {any}
+     * @returns {any} Json
      * @public
      */
     toJson() {

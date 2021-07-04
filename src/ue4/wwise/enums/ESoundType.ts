@@ -1,3 +1,7 @@
+/**
+ * ESoundType
+ * @enum
+ */
 export enum ESoundType {
     SoundSfx,
     SoundVoice,

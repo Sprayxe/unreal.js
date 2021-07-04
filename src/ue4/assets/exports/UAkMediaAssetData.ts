@@ -15,7 +15,7 @@ export class FAkMediaDataChunk {
     public readonly bulkData: FByteBulkData
 
     /**
-     * Wether is prefetch
+     * Whether is prefetch
      * @type {boolean}
      * @public
      */
@@ -51,14 +51,14 @@ export class FAkMediaDataChunk {
  */
 export class UAkMediaAssetData extends UObject {
     /**
-     * Wether is streamed
+     * Whether is streamed
      * @type {boolean}
      * @public
      */
     public isStreamed = false
 
     /**
-     * Wether use device memory
+     * Whether use device memory
      * @type {boolean}
      * @public
      */

@@ -24,7 +24,7 @@ export class FByteBulkData {
     public data: Buffer
 
     /**
-     * Wether bulk data is loaded
+     * Whether bulk data is loaded
      * @type {boolean}
      * @public
      */

@@ -54,7 +54,7 @@ export class FFileArchive extends FArchive {
      * Reads a range of bytes
      * @param {number} begin Where to begin
      * @param {number} end Where to stop
-     * @param {boolean} copy Wether to remove bytes from buffer
+     * @param {boolean} copy Whether to remove bytes from buffer
      */
     readRange(begin: number, end: number, copy: boolean = false): Buffer {
         const length = end - begin

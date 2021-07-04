@@ -14,7 +14,7 @@ export function square(a: number) {
  * Checks if a floating point number is nearly zero.
  * @param {number} value Num to compare
  * @param {number} errorTolerance Maximum allowed difference for considering Value as 'nearly zero'
- * @returns {boolean} Wether value is nearly zero
+ * @returns {boolean} Whether value is nearly zero
  */
 export function isNearlyZero(value: number, errorTolerance: number = SMALL_NUMBER) {
     return Math.abs(value) <= errorTolerance

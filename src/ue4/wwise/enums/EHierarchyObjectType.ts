@@ -1,3 +1,7 @@
+/**
+ * EHierarchyObjectType
+ * @enum
+ */
 export enum EHierarchyObjectType {
     Settings,
     SoundSfxVoice,

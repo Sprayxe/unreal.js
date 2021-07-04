@@ -2,7 +2,6 @@ import { Package } from "../../assets/Package";
 import { FName } from "./FName";
 import { PakPackage } from "../../assets/PakPackage";
 import { FAssetArchive } from "../../assets/reader/FAssetArchive";
-import { Utils } from "../../../util/Utils";
 import { FGuid } from "../core/misc/Guid";
 import { UObject } from "../../assets/exports/UObject";
 import {
@@ -15,10 +14,29 @@ import { FAssetArchiveWriter } from "../../assets/writer/FAssetArchiveWriter";
 import { IoPackage } from "../../assets/IoPackage";
 import { Lazy } from "../../../util/Lazy";
 
+/**
+ * FPackageIndex
+ */
 export class FPackageIndex {
+    /**
+     * index
+     * @type {number}
+     * @public
+     */
     index: number
+
+    /**
+     * Owner
+     * @type {Package}
+     * @public
+     */
     owner: Package = null
 
+    /**
+     * Name
+     * @type {FName}
+     * @public
+     */
     get name(): FName {
         let name;
         if (this.owner instanceof PakPackage) {
@@ -30,9 +48,31 @@ export class FPackageIndex {
         return name || FName.NAME_None
     }
 
+    /**
+     * Creates an empty instance
+     * @constructor
+     * @public
+     */
     constructor()
+
+    /**
+     * Creates an instance using an UE4 Asset Reader
+     * @param {FAssetArchive} Ar UE4 Asset Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive)
+
+    /**
+     * Creates instance using values
+     * @param {number} index Index to use
+     * @param {?Package} owner Package to use
+     * @constructor
+     * @public
+     */
     constructor(index: number, owner?: Package)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x?: any, y?: any) {
         if (x instanceof FAssetArchive) {
             this.index = x.readInt32()
@@ -45,30 +85,61 @@ export class FPackageIndex {
         }
     }
 
+    /**
+     * Whether is import
+     * @returns {boolean} Result
+     * @public
+     */
     isImport() {
         return this.index < 0
     }
 
+    /**
+     * Whether is export
+     * @returns {boolean} Result
+     * @public
+     */
     isExport() {
         return this.index > 0
     }
 
+    /**
+     * Whether is null
+     * @returns {boolean} Result
+     * @public
+     */
     isNull() {
         return this.index === 0
     }
 
+    /**
+     * Turns this to import
+     * @returns {number} Import value
+     * @public
+     */
     toImport(): number {
         if (!this.isImport())
             throw new Error("Object is not an import.")
         return -this.index - 1
     }
 
+    /**
+     * Turns this to export
+     * @returns {number} Export value
+     * @public
+     */
     toExport(): number {
         if (!this.isExport())
             throw new Error("Object is not an export.")
         return this.index - 1
     }
 
+    /**
+     * Whether equals other object
+     * @param {?any} other Object to check
+     * @returns {boolean} Result
+     * @public
+     */
     equals(other: any): boolean {
         if (this === other) return true
         if (!(other instanceof FPackageIndex)) return false
@@ -80,10 +151,21 @@ export class FPackageIndex {
 
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeInt32(this.index)
     }
 
+    /**
+     * Turns this into string
+     * @returns {string} Result
+     * @public
+     */
     toString() {
         if (this.isImport()) {
             return `Import: ${this.toImport()}`
@@ -94,38 +176,182 @@ export class FPackageIndex {
         }
     }
 
+    /**
+     * Loads object (WARNING: MIGHT BE RECURSIVE, TRY TO AVOID THIS)
+     * @returns {UObject} Object
+     * @public
+     */
     load<T extends UObject>(): T {
         return this.owner?.loadObject<T>(this)
     }
 }
 
+/**
+ * FObjectResource
+ * @abstract
+ */
 export abstract class FObjectResource {
+    /**
+     * objectName
+     * @type {FName}
+     * @public
+     */
     objectName: FName
+
+    /**
+     * outerIndex
+     * @type {FPackageIndex}
+     * @public
+     */
     outerIndex: FPackageIndex
 }
 
+/**
+ * FObjectExport
+ * @extends {FObjectResource}
+ */
 export class FObjectExport extends FObjectResource {
+    /**
+     * classIndex
+     * @type {FPackageIndex}
+     * @public
+     */
     classIndex: FPackageIndex
+
+    /**
+     * superIndex
+     * @type {FPackageIndex}
+     * @public
+     */
     superIndex: FPackageIndex
+
+    /**
+     * templateIndex
+     * @type {FPackageIndex}
+     * @public
+     */
     templateIndex: FPackageIndex
+
+    /**
+     * objectFlags
+     * @type {number}
+     * @public
+     */
     objectFlags: number
+
+    /**
+     * serialSize
+     * @type {number}
+     * @public
+     */
     serialSize: number
+
+    /**
+     * serialOffset
+     * @type {number}
+     * @public
+     */
     serialOffset: number
+
+    /**
+     * forcedExport
+     * @type {boolean}
+     * @public
+     */
     forcedExport: boolean
+
+    /**
+     * notForClient
+     * @type {boolean}
+     * @public
+     */
     notForClient: boolean
+
+    /**
+     * notForServer
+     * @type {boolean}
+     * @public
+     */
     notForServer: boolean
+
+    /**
+     * packageGuid
+     * @type {FGuid}
+     * @public
+     */
     packageGuid: FGuid
+
+    /**
+     * packageFlags
+     * @type {number}
+     * @public
+     */
     packageFlags: number
+
+    /**
+     * notAlwaysLoadedForEditorGame
+     * @type {boolean}
+     * @public
+     */
     notAlwaysLoadedForEditorGame: boolean
+
+    /**
+     * isAsset
+     * @type {boolean}
+     * @public
+     */
     isAsset: boolean
+
+    /**
+     * firstExportDependency
+     * @type {number}
+     * @public
+     */
     firstExportDependency: number
+
+    /**
+     * serializationBeforeSerializationDependencies
+     * @type {number}
+     * @public
+     */
     serializationBeforeSerializationDependencies: number
+
+    /**
+     * createBeforeSerializationDependencies
+     * @type {number}
+     * @public
+     */
     createBeforeSerializationDependencies: number
+
+    /**
+     * serializationBeforeCreateDependencies
+     * @type {number}
+     * @public
+     */
     serializationBeforeCreateDependencies: number
+
+    /**
+     * createBeforeCreateDependencies
+     * @type {number}
+     * @public
+     */
     createBeforeCreateDependencies: number
+
+    /**
+     * exportObject
+     * @type {Lazy<UObject>}
+     * @public
+     */
     exportObject: Lazy<UObject>
 
+    /**
+     * Creates an instance using an UE4 Asset Reader
+     * @param {FAssetArchive} Ar UE4 Asset Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive)
+
     constructor(
         classIndex: FPackageIndex,
         superIndex: FPackageIndex,
@@ -148,6 +374,8 @@ export class FObjectExport extends FObjectResource {
         serializationBeforeCreateDependencies: number,
         createBeforeCreateDependencies: number
     )
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...params) {
         super()
         if (params[0] instanceof FAssetArchive) {
@@ -212,10 +440,21 @@ export class FObjectExport extends FObjectResource {
         }
     }
 
+    /**
+     * Turns this into string
+     * @returns {string} Result
+     * @public
+     */
     toString() {
         return this.objectName.text
     }
 
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar UE4 Asset Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FAssetArchiveWriter) {
         this.classIndex.serialize(Ar)
         this.superIndex.serialize(Ar)
@@ -250,12 +489,45 @@ export class FObjectExport extends FObjectResource {
     }
 }
 
+/**
+ * FObjectImport
+ * @extends {FObjectResource}
+ */
 export class FObjectImport extends FObjectResource {
+    /**
+     * classPackage
+     * @type {FName}
+     * @public
+     */
     classPackage: FName
+
+    /**
+     * className
+     * @type {FName}
+     * @public
+     */
     className: FName
 
+    /**
+     * Creates an instance using an UE4 Asset Reader
+     * @param {FAssetArchive} Ar UE4 Asset Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FAssetArchive)
+
+    /**
+     * Creates an instance using values
+     * @param {FName} classPackage Class package to use
+     * @param {FName} className Class name to use
+     * @param {FPackageIndex} outerIndex Outer index to use
+     * @param {FName} objectName Object name to use
+     * @constructor
+     * @public
+     */
     constructor(classPackage: FName, className: FName, outerIndex: FPackageIndex, objectName: FName)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(...params) {
         super()
         if (params[0] instanceof FAssetArchive) {
@@ -275,13 +547,24 @@ export class FObjectImport extends FObjectResource {
         }
     }
 
-    serialize(Ar: any) {
+    /**
+     * Serializes this
+     * @param {FAssetArchiveWriter} Ar UE4 Asset Writer to use
+     * @returns {void}
+     * @public
+     */
+    serialize(Ar: FAssetArchiveWriter) {
         Ar.writeFName(this.classPackage)
         Ar.writeFName(this.className)
         this.outerIndex.serialize(Ar)
         Ar.writeFName(this.objectName)
     }
 
+    /**
+     * Turns this into string
+     * @returns {string} Result
+     * @public
+     */
     toString() {
         return this.objectName.text
     }

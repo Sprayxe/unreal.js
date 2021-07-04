@@ -75,7 +75,7 @@ export class FIoContainerId {
     }
 
     /**
-     * Wether valid
+     * Whether valid
      * @returns {boolean} Result
      * @public
      */
@@ -84,7 +84,7 @@ export class FIoContainerId {
     }
 
     /**
-     * Wether equals other object
+     * Whether equals other object
      * @param {?any} other Object to check
      * @returns {boolean} Result
      * @public

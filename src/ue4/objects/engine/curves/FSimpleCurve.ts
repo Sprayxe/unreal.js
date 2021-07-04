@@ -8,15 +8,43 @@ import { FLOAT_MAX_VALUE } from "../../../../util/Const";
 import { UProperty } from "../../../../util/decorators/UProperty";
 import { FStructFallback } from "../../../assets/objects/FStructFallback";
 
-/** One key in a rich, editable float curve */
+/**
+ * One key in a rich, editable float curve
+ * @implements {IStructType}
+ */
 export class FSimpleCurveKey implements IStructType {
-    /** Time at this key */
+    /**
+     * Time at this key
+     * @type {number}
+     * @public
+     */
     public time: number = 0
-    /** Value at this key */
+
+    /**
+     * Value at this key
+     * @type {number}
+     * @public
+     */
     public value: number = 0
 
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @constructor
+     * @public
+     */
     constructor(Ar: FArchive)
+
+    /**
+     * Creates an instance using a value
+     * @param {number} time Time to use
+     * @param {number} value Value to use
+     * @constructor
+     * @public
+     */
     constructor(time: number, value: number)
+
+    /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any, y?: any) {
         if (x instanceof FArchive) {
             this.time = x.readFloat32()
@@ -27,11 +55,22 @@ export class FSimpleCurveKey implements IStructType {
         }
     }
 
+    /**
+     * Serializes this
+     * @param {FArchiveWriter} Ar UE4 Writer to use
+     * @returns {void}
+     * @public
+     */
     serialize(Ar: FArchiveWriter) {
         Ar.writeFloat32(this.time)
         Ar.writeFloat32(this.value)
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson(): any {
         return {
             time: this.time,
@@ -40,15 +79,34 @@ export class FSimpleCurveKey implements IStructType {
     }
 }
 
-/** A rich, editable float curve */
+/**
+ * A rich, editable float curve
+ * @extends {FRealCurve}
+ */
 export class FSimpleCurve extends FRealCurve {
-    /** Interpolation mode between this key and the next */
+    /**
+     * Interpolation mode between this key and the next
+     * @type {ERichCurveInterpMode}
+     * @public
+     */
     @UProperty({ name: "InterpMode" })
     public interpMode = ERichCurveInterpMode.RCIM_Linear
-    /** Sorted array of keys */
-    @UProperty({ name: "Keys" })
-    public keys = new Array<FSimpleCurveKey>()
 
+    /**
+     * Sorted array of keys
+     * @type {Array<FSimpleCurveKey>}
+     * @public
+     */
+    @UProperty({ name: "Keys" })
+    public keys: FSimpleCurveKey[] = []
+
+    /**
+     * Applies values from FStructFallback
+     * @param {FStructFallback} fallback Fallback to use
+     * @returns {FSimpleCurve} Object
+     * @public
+     * @static
+     */
     static loadFromFallback(fallback: FStructFallback) {
         const obj = new FSimpleCurve()
         super.loadFromFallback(fallback, obj)
@@ -58,7 +116,13 @@ export class FSimpleCurve extends FRealCurve {
         return obj
     }
 
-    /** Get range of input time values. Outside this region curve continues constantly the start/end values. */
+    /**
+     * Get range of input time values. Outside this region curve continues constantly the start/end values
+     * @param {FloatRef} minTime Min time
+     * @param {FloatRef} maxTime Max time
+     * @returns {void}
+     * @public
+     */
     getTimeRange(minTime: FloatRef, maxTime: FloatRef) {
         if (this.keys.length === 0) {
             minTime.element = 0
@@ -69,7 +133,13 @@ export class FSimpleCurve extends FRealCurve {
         }
     }
 
-    /** Get range of output values. */
+    /**
+     * Get range of output values
+     * @param {FloatRef} minValue Min value
+     * @param {FloatRef} maxValue Max value
+     * @returns {void}
+     * @public
+     */
    getValueRange(minValue: FloatRef, maxValue: FloatRef) {
         if (this.keys.length === 0) {
             minValue.element = 0
@@ -85,12 +155,22 @@ export class FSimpleCurve extends FRealCurve {
         }
    }
 
-    /** Clear all keys. */
+    /**
+     * Clear all keys.
+     * @returns {void}
+     * @public
+     */
     reset() {
         this.keys = []
     }
 
-    /** Remap inTime based on pre and post infinity extrapolation values */
+    /**
+     * Remaps inTime based on pre and post infinity extrapolation values
+     * @param {FloatRef} inTime In time
+     * @param {FloatRef} cycleValueOffset Cycle value offset
+     * @returns {void}
+     * @public
+     */
     remapTimeValue(inTime: FloatRef, cycleValueOffset: FloatRef) {
         const numKeys = this.keys.length
         if (numKeys < 2)
@@ -135,7 +215,13 @@ export class FSimpleCurve extends FRealCurve {
         }
     }
 
-    /** Evaluate this curve at the specified time */
+    /**
+     * Evaluates this curve at the specified time
+     * @param {number} inTime In time
+     * @param {number} inDefaultValue In default value
+     * @returns {number} Result
+     * @public
+     */
     eval(inTime: number, inDefaultValue: number): number {
         // Remap time if extrapolation is present and compute offset value to use if cycling
         let cycleValueOffset = 0
@@ -200,6 +286,11 @@ export class FSimpleCurve extends FRealCurve {
         return interpVal + cycleValueOffset
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson() {
         const obj = super.toJson() as any
         obj.interpMode = Object.keys(ERichCurveInterpMode).filter(k => k.length > 1)[this.interpMode]
@@ -207,6 +298,14 @@ export class FSimpleCurve extends FRealCurve {
         return obj
     }
 
+    /**
+     * Evals for two keys
+     * @param {FRichCurveKey} key1 First key
+     * @param {FRichCurveKey} key2 Second key
+     * @param {number} inTime In time
+     * @returns {number} Result
+     * @private
+     */
     private evalForTwoKeys(key1: FSimpleCurveKey, key2: FSimpleCurveKey, inTime: number) {
         const diff = key2.time - key1.time
         if (diff > 0 && this.interpMode !== ERichCurveInterpMode.RCIM_Constant) {

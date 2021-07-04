@@ -1,9 +1,12 @@
-/** Method of interpolation between this key and the next. */
 import { FloatRef, IntRef, ObjectRef } from "../../../../util/ObjectRef";
 import { FLOAT_MAX_VALUE } from "../../../../util/Const";
 import { UProperty } from "../../../../util/decorators/UProperty";
 import { FStructFallback } from "../../../assets/objects/FStructFallback";
 
+/**
+ * Method of interpolation between this key and the next
+ * @enum
+ */
 export enum ERichCurveInterpMode {
     /** Use linear interpolation between values. */
     RCIM_Linear,
@@ -15,7 +18,10 @@ export enum ERichCurveInterpMode {
     RCIM_None
 }
 
-/** Enumerates extrapolation options. */
+/**
+ * Enumerates extrapolation options.
+ * @enum
+ */
 export enum ERichCurveExtrapolation {
     /** Repeat the curve without an offset. */
     RCCE_Cycle,
@@ -31,35 +37,89 @@ export enum ERichCurveExtrapolation {
     RCCE_None
 }
 
-/** A rich, editable float curve */
+/**
+ * A rich, editable float curve
+ */
 export class FRealCurve {
-    /** Default value */
+    /**
+     * Default value
+     * @type {number}
+     * @public
+     */
     @UProperty({ name: "DefaultValue" })
     defaultValue = FLOAT_MAX_VALUE
-    /** Pre-infinity extrapolation state */
+
+    /**
+     * Pre-infinity extrapolation state
+     * @type {ERichCurveExtrapolation}
+     * @public
+     */
     @UProperty({ name: "PreInfinityExtrap" })
     preInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
-    /** Post-infinity extrapolation state */
+
+    /**
+     * Post-infinity extrapolation state
+     * @type {ERichCurveExtrapolation}
+     * @public
+     */
     @UProperty({ name: "PostInfinityExtrap" })
     postInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
 
-    /** Get range of input time values. Outside this region curve continues constantly the start/end values. */
+    /**
+     * Get range of input time values. Outside this region curve continues constantly the start/end values
+     * @param {FloatRef} minTime Min time
+     * @param {FloatRef} maxTime Max time
+     * @returns {void}
+     * @public
+     */
     getTimeRange(minTime: FloatRef, maxTime: FloatRef) { }
 
-    /** Get range of output values. */
+    /**
+     * Get range of output values
+     * @param {FloatRef} minValue Min value
+     * @param {FloatRef} maxValue Max value
+     * @returns {void}
+     * @public
+     */
     getValueRange(minValue: FloatRef, maxValue: FloatRef) { }
 
-    /** Clear all keys. */
+    /**
+     * Clear all keys.
+     * @returns {void}
+     * @public
+     */
     reset() { }
 
-    /** Remap inTime based on pre and post infinity extrapolation values */
+    /**
+     * Remaps inTime based on pre and post infinity extrapolation values
+     * @param {FloatRef} inTime In time
+     * @param {FloatRef} cycleValueOffset Cycle value offset
+     * @returns {void}
+     * @public
+     */
     remapTimeValue(inTime: FloatRef, cycleValueOffset: FloatRef) { }
 
-    /** Evaluate this curve at the specified time */
+    /**
+     * Evaluates this curve at the specified time
+     * @param {number} inTime In time
+     * @param {number} inDefaultValue In default value
+     * @returns {number} Result
+     * @public
+     */
     eval(inTime: number, inDefaultValue: number = 0.0) {
         return 0
     }
 
+    /**
+     * Cycles time
+     * @param {number} minTime Min time
+     * @param {number} maxTime Max time
+     * @param {FloatRef} inTime In time
+     * @param {IntRef} cycleCount Cycle count
+     * @returns {void}
+     * @protected
+     * @static
+     */
     protected static cycleTime(minTime: number, maxTime: number, inTime: FloatRef, cycleCount: IntRef) {
         const initTime = inTime.element
         const duration = maxTime - minTime
@@ -83,6 +143,14 @@ export class FRealCurve {
         cycleCount.element = Math.abs(cycleCount.element)
     }
 
+    /**
+     * Applies values from FStructFallback
+     * @param {FStructFallback} fallback Fallback to use
+     * @param {FRealCurve} obj Object to apply values to
+     * @returns {FRealCurve} Object
+     * @public
+     * @static
+     */
     static loadFromFallback(fallback: FStructFallback, obj: FRealCurve = new FRealCurve()) {
         obj.defaultValue = fallback.get("DefaultValue")
         obj.preInfinityExtrap = ERichCurveExtrapolation[fallback.get<any>("PreInfinityExtrap").text.split(":").pop()] as any
@@ -90,6 +158,11 @@ export class FRealCurve {
         return obj
     }
 
+    /**
+     * Turns this into json
+     * @returns {any} Json
+     * @public
+     */
     toJson() {
         return {
             defaultValue: this.defaultValue,

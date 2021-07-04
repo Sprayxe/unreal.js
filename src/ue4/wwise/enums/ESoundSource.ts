@@ -1,3 +1,7 @@
+/**
+ * ESoundSource
+ * @enum
+ */
 export enum ESoundSource {
     Embedded,
     Streamed,

@@ -270,7 +270,7 @@ export class FIoOffsetAndLength {
 
     /**
      * Offset
-     * @returns {bigint}
+     * @type {bigint}
      * @public
      */
     get offset(): uint64 {
@@ -283,7 +283,7 @@ export class FIoOffsetAndLength {
 
     /**
      * Length
-     * @returns {bigint}
+     * @type {bigint}
      * @public
      */
     get length(): uint64 {
@@ -399,7 +399,7 @@ export class FIoStoreTocCompressedBlockEntry {
 
     /**
      * Offset
-     * @returns {bigint}
+     * @type {bigint}
      * @public
      */
     get offset(): uint64 {
@@ -409,7 +409,7 @@ export class FIoStoreTocCompressedBlockEntry {
 
     /**
      * Compressed size
-     * @returns {number}
+     * @type {number}
      * @public
      */
     get compressedSize(): uint32 {
@@ -419,7 +419,7 @@ export class FIoStoreTocCompressedBlockEntry {
 
     /**
      * Uncompressed size
-     * @returns {number}
+     * @type {number}
      * @public
      */
     get uncompressedSize(): uint32 {
@@ -429,7 +429,7 @@ export class FIoStoreTocCompressedBlockEntry {
 
     /**
      * Compression method index
-     * @returns {number}
+     * @type {number}
      * @public
      */
     get compressionMethodIndex(): uint8 {
@@ -732,7 +732,7 @@ export class FIoStoreReader {
 
     /**
      * Container ID
-     * @returns {bigint} ID
+     * @type {bigint}
      * @public
      */
     get containerId() {
@@ -741,7 +741,7 @@ export class FIoStoreReader {
 
     /**
      * Container Flags
-     * @returns {EIoContainerFlags} flags
+     * @type {EIoContainerFlags}
      * @public
      */
     get containerFlags() {
@@ -750,7 +750,7 @@ export class FIoStoreReader {
 
     /**
      * Encryption key guid
-     * @returns {FGuid} Guid
+     * @type {FGuid}
      * @public
      */
     get encryptionKeyGuid() {

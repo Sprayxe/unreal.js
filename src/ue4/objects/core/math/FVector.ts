@@ -325,7 +325,7 @@ export class FVector implements IStructType {
     }
 
     /**
-     * Checks wether all components are equal
+     * Checks Whether all components are equal
      * @param {number} tolerance Tolerance to use
      * @returns {boolean}
      * @public
@@ -560,7 +560,7 @@ export class FVector implements IStructType {
     /**
      * Checks whether vector is near to zero within a specified tolerance
      * @param {number} tolerance Error tolerance
-     * @returns {boolean} Wether the vector is near to zero, false otherwise
+     * @returns {boolean} Whether the vector is near to zero, false otherwise
      * @public
      */
     isNearlyZero(tolerance: number = KINDA_SMALL_NUMBER): boolean {
@@ -579,7 +579,7 @@ export class FVector implements IStructType {
     /**
      * Check if the vector is of unit length, with specified tolerance
      * @param {number} lengthSquaredTolerance Tolerance against squared length
-     * @returns {boolean} Wether the vector is a unit vector within the specified tolerance
+     * @returns {boolean} Whether the vector is a unit vector within the specified tolerance
      * @public
      */
     isUnit(lengthSquaredTolerance: number = KINDA_SMALL_NUMBER): boolean {

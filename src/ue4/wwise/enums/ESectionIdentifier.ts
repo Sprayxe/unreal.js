@@ -1,3 +1,7 @@
+/**
+ * ESectionIdentifier
+ * @enum
+ */
 export enum ESectionIdentifier {
     AKPK = 0x4B504B41,
     BKHD = 0x44484B42,

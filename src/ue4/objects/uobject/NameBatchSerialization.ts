@@ -3,6 +3,13 @@ import { Utils } from "../../../util/Utils";
 import { FSerializedNameHeader, loadNameHeader } from "./UnrealNames";
 import { UnrealArray } from "../../../util/UnrealArray";
 
+/**
+ * Loads name batch
+ * @param {FArchive} nameDataAr Name data UE4 Reader
+ * @param {?FArchive} hashDataAr Hash data UE4 Reader
+ * @returns {Array<any>} Name batch
+ * @export
+ */
 export function loadNameBatch(nameDataAr: FArchive, hashDataAr?: FArchive) {
     if (hashDataAr) {
         const hashDataSize = hashDataAr.size - hashDataAr.pos

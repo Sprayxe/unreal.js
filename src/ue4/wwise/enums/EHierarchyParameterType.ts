@@ -1,3 +1,7 @@
+/**
+ * EHierarchyParameterType
+ * @enum
+ */
 export enum EHierarchyParameterType {
     VoiceVolume,
     VoicePitch = 0x02,

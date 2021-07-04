@@ -159,7 +159,7 @@ export class UMaterialInstanceConstant extends UMaterialInstance {
     /**
      * Appends textures
      * @param {Array<UUnrealMaterial>} outTextures Array to modify
-     * @param {boolean} onlyRendered Wether only rendered
+     * @param {boolean} onlyRendered Whether only rendered
      * @returns {void}
      * @public
      */

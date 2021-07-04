@@ -102,7 +102,7 @@ export class FPropertyTag {
     structGuid?: FGuid = null
 
     /**
-     * Wether if the property has a guid or not
+     * Whether if the property has a guid or not
      * @type {boolean}
      * @public
      * @see {propertyGuid}
@@ -135,7 +135,7 @@ export class FPropertyTag {
     /**
      * Creates an instance using FAssetArchive and readData
      * @param {FAssetArchive} Ar FAssetArchive to use
-     * @param {boolean} readData Wether to read data or no
+     * @param {boolean} readData Whether to read data or no
      * @constructor
      * @public
      */
@@ -237,7 +237,7 @@ export class FPropertyTag {
     /**
      * Serializes this
      * @param {FAssetArchiveWriter} Ar FAssetArchiveWriter to use
-     * @param {boolean} writeData Wether to write data or not
+     * @param {boolean} writeData Whether to write data or not
      * @public
      */
     serialize(Ar: FAssetArchiveWriter, writeData: boolean) {

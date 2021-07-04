@@ -172,7 +172,7 @@ export class FIoDirectoryIndexReader {
 
     /**
      * directoryIndex
-     * @returns {FIoDirectoryIndexResource} Index
+     * @type {FIoDirectoryIndexResource}
      * @public
      */
     get directoryIndex() {
@@ -187,7 +187,7 @@ export class FIoDirectoryIndexReader {
 
     /**
      * mountPoint
-     * @returns {string} Mount point
+     * @type {string}
      * @public
      */
     get mountPoint() {
@@ -329,14 +329,31 @@ export class FIoDirectoryIndexReader {
         return true
     }
 
+    /**
+     * Gets directory entry
+     * @param {FIoDirectoryIndexHandle} directory Directory to look in
+     * @returns {FIoDirectoryIndexEntry} Entry
+     * @private
+     */
     private getDirectoryEntry(directory: FIoDirectoryIndexHandle) {
         return this.directoryIndex.directoryEntries[directory.toIndex()]
     }
 
+    /**
+     * Gets file entry
+     * @param {FIoDirectoryIndexHandle} file File to look in
+     * @returns {FIoFileIndexEntry} Entry
+     * @private
+     */
     private getFileEntry(file: FIoDirectoryIndexHandle) {
         return this.directoryIndex.fileEntries[file.toIndex()]
     }
 
+    /**
+     * Whether valid index
+     * @returns {boolean} Result
+     * @private
+     */
     private isValidIndex() {
         return !!this.directoryIndex.directoryEntries?.length
     }

@@ -1,3 +1,7 @@
+/**
+ * EPackageFlags
+ * @enum
+ */
 export enum EPackageFlags {
     PKG_None =					     0x00000000,	/// < No flags
     PKG_NewlyCreated =		         0x00000001,	/// < Newly created package, not saved yet. In editor only.

@@ -2,8 +2,19 @@ import { FName } from "./FName";
 import { FArchive } from "../../reader/FArchive";
 import { CityHash } from "../../../util/CityHash";
 
+/**
+ * INVALID_ID
+ * @type {string}
+ * @export
+ */
 export const INVALID_ID = (~0).toString()
 
+/**
+ * Creates an I/O package ID
+ * @param {FName} name FName to use
+ * @returns {bigint} ID
+ * @export
+ */
 export function createFPackageId(name: FName): bigint {
     const nameStr = name.toString().toLowerCase()
     const nameBuf = Buffer.from(nameStr, "utf16le")

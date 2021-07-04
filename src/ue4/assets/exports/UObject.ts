@@ -220,7 +220,7 @@ export class UObject implements IPropertyHolder {
     /**
      * Checks if this has provided flags
      * @param {number} flagsToCheck Flags to check for
-     * @returns {boolean} Wether if flags matched or not
+     * @returns {boolean} Whether if flags matched or not
      * @public
      */
     hasAnyFlags(flagsToCheck: number) {
@@ -230,7 +230,7 @@ export class UObject implements IPropertyHolder {
     /**
      * Gets full name
      * @param {UObject} stopOuter Outer object
-     * @param {boolean} includeClassPackage Wether to include class
+     * @param {boolean} includeClassPackage Whether to include class
      * @returns {string} Full name
      * @public
      */
@@ -240,7 +240,7 @@ export class UObject implements IPropertyHolder {
      * Gets full name with an existing string builder
      * @param {UObject} stopOuter Outer object
      * @param {StringBuilder} resultString String builder to use
-     * @param {boolean} includeClassPackage Wether to include class
+     * @param {boolean} includeClassPackage Whether to include class
      * @returns {string} Full name
      * @public
      */

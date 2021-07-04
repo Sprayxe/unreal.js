@@ -46,28 +46,28 @@ export class FArchive {
     protected position = 0
 
     /**
-     * Wether to use unversioned property serialization (DO NOT OVERRIDE THIS)
+     * Whether to use unversioned property serialization (DO NOT OVERRIDE THIS)
      * @type {boolean}
      * @public
      */
     useUnversionedPropertySerialization = false
 
     /**
-     * Wether if this is a filter editor
+     * Whether if this is a filter editor
      * @type {boolean}
      * @public
      */
     isFilterEditorOnly = true
 
     /**
-     * Wether to use little endian
+     * Whether to use little endian
      * @type {boolean}
      * @public
      */
     littleEndian = true
 
     /**
-     * Returns current position
+     * Current position
      * @type {number}
      * @public
      */
@@ -75,11 +75,6 @@ export class FArchive {
         return this.position
     }
 
-    /**
-     * Sets the current position
-     * @param {number} v Position to set to
-     * @public
-     */
     set pos(v: number) {
         this.position = v
     }
@@ -94,7 +89,7 @@ export class FArchive {
     }
 
     /**
-     * Wether if this reader is the the end
+     * Whether if this reader is the the end
      * @type {boolean}
      * @public
      */
@@ -117,7 +112,7 @@ export class FArchive {
     /**
      * Reads an amount of bytes and returns them
      * @param {number} num Amount to read
-     * @param {boolean} copy Wether to remove these bytes from the reader's buffer (default: false)
+     * @param {boolean} copy Whether to remove these bytes from the reader's buffer (default: false)
      * @returns {Buffer} Read bytes
      * @public
      */
@@ -129,7 +124,7 @@ export class FArchive {
      * Reads a range of bytes and returns them
      * @param {number} begin Where to begin
      * @param {number} end Where to end
-     * @param {boolean} copy Wether to remove these bytes from the reader's buffer (default: false)
+     * @param {boolean} copy Whether to remove these bytes from the reader's buffer (default: false)
      * @returns {Buffer} Read bytes
      * @public
      */

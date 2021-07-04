@@ -13,7 +13,7 @@ export interface UUnrealMaterial {
     getParams(params: CMaterialParams): void
 
     /**
-     * Wether this is a texture cube
+     * Whether this is a texture cube
      * @returns {boolean}
      * @public
      */
@@ -22,7 +22,7 @@ export interface UUnrealMaterial {
     /**
      * Appends textures
      * @param {Array<UUnrealMaterial>} outTextures Texture array which will be modified
-     * @param {boolean} onlyRendered Wether only rendered textures
+     * @param {boolean} onlyRendered Whether only rendered textures
      * @returns {void}
      * @public
      */

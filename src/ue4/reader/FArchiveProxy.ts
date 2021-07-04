@@ -13,7 +13,7 @@ export class FArchiveProxy extends FArchive {
     wrappedAr: FArchive
 
     /**
-     * Wether to use little endian
+     * Whether to use little endian
      * @type {boolean}
      * @public
      */
@@ -41,26 +41,21 @@ export class FArchiveProxy extends FArchive {
     }
 
     /**
-     * Returns this current position
-     * @returns {number}
+     * Current position
+     * @type {number}
      * @public
      */
     get pos(): number {
         return this.wrappedAr.pos
     }
 
-    /**
-     * Sets this current position
-     * @param {number} pos Position to set to
-     * @public
-     */
     set pos(pos: number) {
         this.wrappedAr.pos = pos
     }
 
     /**
      * Size of this reader
-     * @returns {number}
+     * @type {number}
      * @public
      */
     get size(): number  {

@@ -85,7 +85,7 @@ export class FIoChunkId {
     }
 
     /**
-     * Wether this equals other object
+     * Whether this equals other object
      * @param {FIoChunkId} other Other chunk id
      * @returns {boolean} Result
      * @public
@@ -256,7 +256,7 @@ export class FIoDirectoryIndexHandle {
     }
 
     /**
-     * Wether valid
+     * Whether valid
      * @returns {boolean} Result
      * @see {INVALID_HANDLE}
      * @public
@@ -266,7 +266,7 @@ export class FIoDirectoryIndexHandle {
     }
 
     /**
-     * Wether equals other object
+     * Whether equals other object
      * @param {?any} other Other object to check
      * @returns {boolean} Result
      * @public

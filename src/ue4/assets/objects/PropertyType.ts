@@ -30,7 +30,7 @@ export class PropertyType {
     structName = FName.NAME_None
 
     /**
-     * Wether if its a bool
+     * Whether if its a bool
      * @type {boolean}
      * @public
      */
@@ -44,7 +44,7 @@ export class PropertyType {
     enumName = FName.NAME_None
 
     /**
-     * Wether it is an enum as byte
+     * Whether it is an enum as byte
      * @type {boolean}
      * @public
      */

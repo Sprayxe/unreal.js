@@ -52,7 +52,7 @@ export class GameFile {
     compressionBlockSize: number = 0
 
     /**
-     * Wether this file is encrypted
+     * Whether this file is encrypted
      * @type {boolean}
      * @public
      */
@@ -135,7 +135,7 @@ export class GameFile {
     }
 
     /**
-     * Wether if this is an UE4 Package
+     * Whether if this is an UE4 Package
      * @returns {boolean}
      * @public
      */
@@ -145,7 +145,7 @@ export class GameFile {
     }
 
     /**
-     * Wether if this is a locres file
+     * Whether if this is a locres file
      * @returns {boolean}
      * @public
      */
@@ -154,7 +154,7 @@ export class GameFile {
     }
 
     /**
-     * Wether if this is an asset registry
+     * Whether if this is an asset registry
      * @returns {boolean}
      * @public
      */
@@ -164,7 +164,7 @@ export class GameFile {
     }
 
     /**
-     * Wether if this has uexp data
+     * Whether if this has uexp data
      * @returns {boolean}
      * @public
      */
@@ -173,7 +173,7 @@ export class GameFile {
     }
 
     /**
-     * Wether if this has ubulk data
+     * Whether if this has ubulk data
      * @returns {boolean}
      * @public
      */
@@ -182,7 +182,7 @@ export class GameFile {
     }
 
     /**
-     * Wether if this is compressed
+     * Whether if this is compressed
      * @returns {boolean}
      * @public
      */
@@ -228,7 +228,7 @@ export class GameFile {
     }
 
     /**
-     * Wether this equals another object
+     * Whether this equals another object
      * @param {?any} other Object to check
      * @returns {boolean}
      */
