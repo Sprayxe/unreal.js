@@ -33,7 +33,7 @@ This library is in VERY early development so it might be unstable. Please also k
 This library has optional dependencies like `canvas` and `dxt-js` which are used in ue4 texture conversion. If you don't want to install these dependencies, use: `npm i unreal.js --no-optional`.
 
 ### Documentation
-SOON...
+[Here](https://unreal.js.org)
 
 ### Usage
 #### Basics: FileProvider
