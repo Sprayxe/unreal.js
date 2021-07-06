@@ -8,7 +8,7 @@ export class Lazy<T> {
 
     get value() {
         if (this._value == null) {
-            this._value = this.initializer()
+            this._value = this.initializer != null ? this.initializer() : null
             this.initializer = null
         }
         return this._value

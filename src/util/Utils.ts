@@ -1,6 +1,4 @@
 import { StringBuilder } from "./StringBuilder";
-import BitSet from "bitset";
-import { INDEX_NONE } from "./Const";
 
 export class Utils {
     static clamp(self: number, min: number, max: number) {

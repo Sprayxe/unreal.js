@@ -3,6 +3,7 @@ import { Aes } from "../../encryption/aes/Aes";
 import { FByteArchive } from "../reader/FByteArchive";
 import { FIoDirectoryIndexHandle } from "./IoDispatcher";
 import { Utils } from "../../util/Utils";
+import { Lazy } from "../../util/Lazy";
 
 /**
  * FIoDirectoryIndexEntry
@@ -172,18 +173,18 @@ export class FIoDirectoryIndexReader {
 
     /**
      * directoryIndex
-     * @type {FIoDirectoryIndexResource}
+     * @type {Lazy<FIoDirectoryIndexResource>}
      * @public
      */
-    get directoryIndex() {
-        if (!this.buffer || !this.buffer.length) {
+    directoryIndex = new Lazy<FIoDirectoryIndexResource>(() => {
+        if (!this.buffer.length) {
             throw new Error("Invalid code")
         }
         if (this.decryptionKey) {
             this.buffer = Aes.decrypt(this.buffer, this.decryptionKey)
         }
         return new FIoDirectoryIndexResource(new FByteArchive(this.buffer))
-    }
+    })
 
     /**
      * mountPoint
@@ -191,7 +192,7 @@ export class FIoDirectoryIndexReader {
      * @public
      */
     get mountPoint() {
-        return this.directoryIndex.mountPoint
+        return this.directoryIndex.value.mountPoint
     }
 
     /**
@@ -259,7 +260,7 @@ export class FIoDirectoryIndexReader {
     getDirectoryName(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
             const nameIndex = this.getDirectoryEntry(directory).name
-            return this.directoryIndex.stringTable[nameIndex]
+            return this.directoryIndex.value.stringTable[nameIndex]
         } else {
             return ""
         }
@@ -274,7 +275,7 @@ export class FIoDirectoryIndexReader {
     getFileName(directory: FIoDirectoryIndexHandle) {
         if (directory.isValid() && this.isValidIndex()) {
             const nameIndex = this.getFileEntry(directory)?.name
-            return this.directoryIndex.stringTable[nameIndex]
+            return this.directoryIndex.value.stringTable[nameIndex]
         } else {
             return ""
         }
@@ -288,7 +289,7 @@ export class FIoDirectoryIndexReader {
      */
     getFileData(file: FIoDirectoryIndexHandle) {
         if (file.isValid() && this.isValidIndex()) {
-            return this.directoryIndex.fileEntries[file.toIndex()]?.userData
+            return this.directoryIndex.value.fileEntries[file.toIndex()]?.userData
         } else {
             return ~0
         }
@@ -336,7 +337,7 @@ export class FIoDirectoryIndexReader {
      * @private
      */
     private getDirectoryEntry(directory: FIoDirectoryIndexHandle) {
-        return this.directoryIndex.directoryEntries[directory.toIndex()]
+        return this.directoryIndex.value.directoryEntries[directory.toIndex()]
     }
 
     /**
@@ -346,7 +347,7 @@ export class FIoDirectoryIndexReader {
      * @private
      */
     private getFileEntry(file: FIoDirectoryIndexHandle) {
-        return this.directoryIndex.fileEntries[file.toIndex()]
+        return this.directoryIndex.value.fileEntries[file.toIndex()]
     }
 
     /**
@@ -355,6 +356,6 @@ export class FIoDirectoryIndexReader {
      * @private
      */
     private isValidIndex() {
-        return !!this.directoryIndex.directoryEntries?.length
+        return !!this.directoryIndex.value.directoryEntries?.length
     }
 }

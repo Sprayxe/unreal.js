@@ -601,17 +601,18 @@ export class FIoStoreTocResource {
         }*/
 
         // Directory index
-        if (readOptions & EIoStoreTocReadOptions.ReadDirectoryIndex
-            && this.header.containerFlags & EIoContainerFlags.Indexed
+        if (this.header.containerFlags & EIoContainerFlags.Indexed
             && this.header.directoryIndexSize > 0) {
-            this.directoryIndexBuffer = tocBuffer.readBuffer(this.header.directoryIndexSize)
-        } else {
-            tocBuffer.pos += this.header.directoryIndexSize
+            if (readOptions & EIoStoreTocReadOptions.ReadDirectoryIndex) {
+                this.directoryIndexBuffer = tocBuffer.readBuffer(this.header.directoryIndexSize & 0xFFFFFFFF)
+            } else {
+                tocBuffer.pos += this.header.directoryIndexSize
+            }
         }
 
         // Meta
         if ((readOptions & EIoStoreTocReadOptions.ReadTocMeta)) {
-            this.chunkMetas = new Array(this.header.tocEntryCount)
+            this.chunkMetas = []
             for (let i = 0; i < this.header.tocEntryCount; i++) {
                 this.chunkMetas[i] = new FIoStoreTocEntryMeta(tocBuffer)
             }
@@ -672,10 +673,13 @@ export class FIoStoreReader {
      * @type {Lazy<FIoDirectoryIndexReader>}
      * @public
      */
-    directoryIndexReader: Lazy<FIoDirectoryIndexReader> = new Lazy<FIoDirectoryIndexReader>(() => {
-        const out = new FIoDirectoryIndexReader(this.toc.directoryIndexBuffer, this.decryptionKey)
-        this.toc.directoryIndexBuffer = null
-        return out
+    directoryIndexReader = new Lazy<FIoDirectoryIndexReader>(() => {
+        if ((this.toc.header.containerFlags & EIoContainerFlags.Indexed) && this.toc.directoryIndexBuffer != null) {
+            const out = new FIoDirectoryIndexReader(this.toc.directoryIndexBuffer, this.decryptionKey)
+            this.toc.directoryIndexBuffer = null
+            return out
+        }
+        return null
     })
     /*private threadBuffers = object : ThreadLocal<FThreadBuffers>() {
         override fun initialValue() = FThreadBuffers()
@@ -692,13 +696,14 @@ export class FIoStoreReader {
      * Initializes this
      * @param {FIoStoreEnvironment} environment Environment to use
      * @param {UnrealMap<FGuid, Buffer>} decryptionKeys Decryption keys to use
+     * @param {number} readOptions Options for reading io store toc
      * @returns {void}
      * @public
      */
-    initialize(environment: FIoStoreEnvironment, decryptionKeys: UnrealMap<FGuid, Buffer>) {
+    initialize(environment: FIoStoreEnvironment, decryptionKeys: UnrealMap<FGuid, Buffer>, readOptions: number) {
         this.environment = environment
         const tocFilePath = this.environment.path + ".utoc"
-        this.toc.read(new FByteArchive(fs.readFileSync(tocFilePath)), EIoStoreTocReadOptions.ReadAll)
+        this.toc.read(new FByteArchive(fs.readFileSync(tocFilePath)), readOptions)
 
         this.containerFileHandles = new Array(this.toc.header.partitionCount)
         for (let partitionIndex = 0; partitionIndex < this.toc.header.partitionCount; ++partitionIndex) {
@@ -826,7 +831,7 @@ export class FIoStoreReader {
      */
     getFiles(): GameFile[] {
         const files = new Array<GameFile>()
-        this.directoryIndexReader.value.iterateDirectoryIndex(
+        this.directoryIndexReader.value?.iterateDirectoryIndex(
             FIoDirectoryIndexHandle.rootDirectory(),
             "",
             (filename, tocEntryIndex) => {
@@ -835,7 +840,7 @@ export class FIoStoreReader {
                     files.push(GameFile.createFromIoStoreFile(
                         filename,
                         this.environment.path,
-                        new FByteArchive(this.toc.chunkIds[tocEntryIndex].id).readUInt64())
+                        new FByteArchive(chunkId.id).readUInt64())
                     )
                 }
                 return true

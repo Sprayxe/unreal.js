@@ -7,7 +7,6 @@
   "scripts": {
     "compile": "tsc",
     "start": "tsc && node dist/index.js",
-    "dev": "tsc --sourceMap && node dist/test.js",
     "test": "tsc && node dist/test.js",
     "restart": "node dist/index.js"
   },

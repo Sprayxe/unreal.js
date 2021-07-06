@@ -17,7 +17,7 @@ import { UnrealMap } from "../util/UnrealMap";
 import { PakPackage } from "../ue4/assets/PakPackage";
 import { FName } from "../ue4/objects/uobject/FName";
 import { PakFileReader } from "../ue4/pak/PakFileReader";
-import { FIoStoreReader } from "../ue4/io/IoStore";
+import { EIoStoreTocReadOptions, FIoStoreReader } from "../ue4/io/IoStore";
 import { FGuid } from "../ue4/objects/core/misc/Guid";
 import { FNameMap } from "../ue4/asyncloading2/FNameMap";
 import { FPackageStore } from "../ue4/asyncloading2/FPackageStore";
@@ -135,12 +135,12 @@ export class FileProvider extends EventEmitter {
     localFiles = new Set<string>()
 
     /**
-     * Whether to populate I/O store files
-     * @type {boolean}
-     * @see {globalPackageStore}
+     * Whether to read io store toc directory index
+     * Set to 0 to skip reading directory index
+     * @type {EIoStoreTocReadOptions}
      * @public
      */
-    populateIoStoreFiles = false
+    ioStoreTocReadOptions = EIoStoreTocReadOptions.ReadAll
 
     /**
      * Creates a new instance of the file provider
@@ -633,10 +633,8 @@ export class FileProvider extends EventEmitter {
             const ioStoreEnvironment = new FIoStoreEnvironment(absolutePath)
             try {
                 const ioStoreReader = new FIoStoreReader()
-                ioStoreReader.initialize(ioStoreEnvironment, this.keys)
-                if (this.populateIoStoreFiles) {
-                    ioStoreReader.getFiles().forEach((it) => this.files.set(it.path.toLowerCase(), it))
-                }
+                ioStoreReader.initialize(ioStoreEnvironment, this.keys, this.ioStoreTocReadOptions)
+                ioStoreReader.getFiles().forEach((it) => this.files.set(it.path.toLowerCase(), it))
                 this.mountedIoStoreReaders.push(ioStoreReader)
                 /*if (this.globalPackageStore.isInitialized) {
                     this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
@@ -705,7 +703,7 @@ export class FileProvider extends EventEmitter {
         this.globalDataLoaded = true
         try {
             const ioStoreReader = new FIoStoreReader()
-            ioStoreReader.initialize(new FIoStoreEnvironment(path), this.keys)
+            ioStoreReader.initialize(new FIoStoreEnvironment(path), this.keys, this.ioStoreTocReadOptions)
             this.mountedIoStoreReaders.push(ioStoreReader)
             console.log("Initialized I/O store")
             this.emit("mounted:iostore", ioStoreReader)
