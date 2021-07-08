@@ -666,7 +666,7 @@ export class FIoStoreReader {
      * @type {Array<number>}
      * @private
      */
-    private containerFileHandles: number[]
+    private containerFileHandles: number[] = []
 
     /**
      * directoryIndexReader
@@ -702,10 +702,8 @@ export class FIoStoreReader {
      */
     initialize(environment: FIoStoreEnvironment, decryptionKeys: UnrealMap<FGuid, Buffer>, readOptions: number) {
         this.environment = environment
-        const tocFilePath = this.environment.path + ".utoc"
-        this.toc.read(new FByteArchive(fs.readFileSync(tocFilePath)), readOptions)
+        this.toc.read(new FByteArchive(fs.readFileSync(this.environment.path + ".utoc")), readOptions)
 
-        this.containerFileHandles = new Array(this.toc.header.partitionCount)
         for (let partitionIndex = 0; partitionIndex < this.toc.header.partitionCount; ++partitionIndex) {
             let containerFilePath = ""
             containerFilePath += this.environment.path
