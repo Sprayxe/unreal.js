@@ -1,9 +1,9 @@
 import BitSet from "bitset";
 import { INDEX_NONE } from "./Const";
 
-export class BitSetExtensions {
+export class BitSetExt {
     private static ADDRESS_BITS_PER_WORD = 6
-    private static BITS_PER_WORD = 1 << BitSetExtensions.ADDRESS_BITS_PER_WORD
+    private static BITS_PER_WORD = 1 << BitSetExt.ADDRESS_BITS_PER_WORD
 
     static indexOfFirst(bitSet: BitSet, value: boolean | number) {
         const size = this.size(bitSet)
@@ -17,6 +17,6 @@ export class BitSetExtensions {
 
     static size(bitSet: BitSet) {
         const data = (bitSet as any).data
-        return data.length * BitSetExtensions.BITS_PER_WORD
+        return data.length * BitSetExt.BITS_PER_WORD
     }
 }
