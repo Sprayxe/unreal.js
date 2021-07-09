@@ -215,7 +215,7 @@ export class FIoDirectoryIndexHandle {
      * @public
      * @static
      */
-    static INVALID_HANDLE = ~0
+    static INVALID_HANDLE = 0xFFFFFFFF
 
     /**
      * ROOT_HANDLE

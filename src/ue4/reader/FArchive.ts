@@ -307,12 +307,12 @@ export class FArchive {
      * @public
      */
     readArray<T>(init: (index: number) => T, length?: number): T[] {
-        const num = length ? length : this.readInt32();
-        const array = new Array(num);
+        const num = length != null ? length : this.readInt32()
+        const array = new Array(num)
         for (let i = 0; i < num; i++) {
-            array[i] = init(i);
+            array[i] = init(i)
         }
-        return array;
+        return array
     }
 
     /**

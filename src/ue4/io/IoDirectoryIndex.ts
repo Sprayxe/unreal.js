@@ -14,28 +14,28 @@ export class FIoDirectoryIndexEntry {
      * @type {number}
      * @public
      */
-    name = ~0
+    name = 0xFFFFFFFF
 
     /**
      * firstChildEntry
      * @type {number}
      * @public
      */
-    firstChildEntry = ~0
+    firstChildEntry = 0xFFFFFFFF
 
     /**
      * nextSiblingEntry
      * @type {number}
      * @public
      */
-    nextSiblingEntry = ~0
+    nextSiblingEntry = 0xFFFFFFFF
 
     /**
      * firstFileEntry
      * @type {number}
      * @public
      */
-    firstFileEntry = ~0
+    firstFileEntry = 0xFFFFFFFF
 
     /**
      * Creates an instance using an UE4 Reader
@@ -202,7 +202,7 @@ export class FIoDirectoryIndexReader {
      * @public
      */
     getChildDirectory(directory: FIoDirectoryIndexHandle) {
-        if (directory.isValid() && !this.isValidIndex()) {
+        if (directory.isValid() && this.isValidIndex()) {
             return FIoDirectoryIndexHandle.fromIndex(this.getDirectoryEntry(directory).firstChildEntry)
         } else {
             return FIoDirectoryIndexHandle.invalid()
