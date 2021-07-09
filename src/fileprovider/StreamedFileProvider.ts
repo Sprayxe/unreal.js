@@ -1,6 +1,5 @@
 import { FileProvider } from "./FileProvider";
 import { Ue4Version } from "../ue4/versions/Game";
-import { StringExt } from "../util/StringExt";
 import { PakFileReader } from "../ue4/pak/PakFileReader";
 import { EIoStoreTocReadOptions, FIoStoreReader } from "../ue4/io/IoStore";
 
@@ -44,7 +43,7 @@ export class StreamedFileProvider extends FileProvider {
      * @public
      */
     public async initialize(file: string = "", stream: Buffer[] = null): Promise<void> {
-        const ext = StringExt.substringAfter(file, ".").toLowerCase()
+        const ext = file.substring(file.indexOf(".") + 1)
         if (ext === "") return
         if (ext === "pak") {
             try {

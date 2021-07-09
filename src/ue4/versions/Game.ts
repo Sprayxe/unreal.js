@@ -35,6 +35,22 @@ export class Game {
     static LATEST_SUPPORTED_UE4_VERSION = 27
 
     /**
+     * SOD 2
+     * @type {number}
+     * @public
+     * @static
+     */
+    static GAME_SOD2 = Game.GAME_UE4(13) + 1
+
+    /**
+     * Borderlands 3
+     * @type {number}
+     * @public
+     * @static
+     */
+    static GAME_BORDERLANDS3  = Game.GAME_UE4(20) + 1
+
+    /**
      * Valorant
      * @type {number}
      * @public
@@ -327,6 +343,20 @@ export class Ue4Version {
 
     // bytes: 01.00.0N.NX : 01=UE4, 00=masked by GAME_ENGINE, NN=UE4 subversion, X=game (4 bits, 0=base engine)
     // const val GAME_Borderlands3 = GAME_UE4(20) + 2
+
+    /**
+     * SOD 2
+     * @type {Ue4Version}
+     * @public
+     */
+    static GAME_SOD2 = new Ue4Version(Game.GAME_SOD2)
+
+    /**
+     * Borderlands 3
+     * @type {Ue4Version}
+     * @public
+     */
+    static GAME_BORDERLANDS3 = new Ue4Version(Game.GAME_BORDERLANDS3)
 
     /**
      * Valorant

@@ -85,7 +85,7 @@ export class PakFileReader {
      */
     constructor(path: string, game?: number, source?: Buffer) {
         this.path = path
-        this.Ar = Buffer != null ? new FByteArchive(source) : new FFileArchive(path)
+        this.Ar = source != null ? new FByteArchive(source) : new FFileArchive(path)
         this.Ar.game = this.game = game || Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
         this.Ar.ver = Game.GAME_UE4_GET_AR_VER(this.game)
         this.pakInfo = FPakInfo.readPakInfo(this.Ar)
