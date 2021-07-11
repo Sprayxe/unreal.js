@@ -118,8 +118,13 @@ export class FPakEntry {
 
         this.compressionBlocks = []
         if (pakInfo.version >= EPakVersion.PakVersion_CompressionEncryption) {
-            if (this.compressionMethod !== "None")
-                this.compressionBlocks = Ar.readArray(() => new FPakCompressedBlock(Ar))
+            if (this.compressionMethod !== "None") {
+                const len = Ar.readInt32()
+                this.compressionBlocks = new Array(len)
+                for (let i = 0; i < len; ++i) {
+                    this.compressionBlocks[i] = new FPakCompressedBlock(Ar)
+                }
+            }
             this.isEncrypted = Ar.readFlag()
             //Looks like Valorant sets the encryption flag to false although inis are encrypted
             if (Ar.game === Game.GAME_VALORANT && this.name.endsWith(".ini"))

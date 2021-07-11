@@ -4,6 +4,7 @@ import { ParserException } from "../../../exceptions/Exceptions";
 import { FName, FNameEntry } from "../../objects/uobject/FName";
 import { FAssetData } from "../objects/FAssetData";
 import { FAssetBundleData } from "../objects/AssetBundleData";
+import { UnrealMap } from "../../../util/UnrealMap";
 
 export class FNameTableArchiveReader extends FAssetRegistryArchive {
     nameMap: FNameEntry[]
@@ -59,12 +60,11 @@ export class FNameTableArchiveReader extends FAssetRegistryArchive {
     serializeTagsAndBundles(out: FAssetData) {
         // This is actually a FAssetDataTagMapSharedView which just contains a FAssetDataTagMap
         // which is just a TSortedMap<FName, FString>
-        out.tagsAndValues = this.readTMap(this.readInt32(), () => {
-            return {
-                key: this.readFName(),
-                value: this.readString()
-            }
-        })
+        const len = this.readInt32()
+        out.tagsAndValues = new UnrealMap()
+        for (let i = 0; i < len; ++i) {
+            out.tagsAndValues.set(this.readFName(), this.readString())
+        }
         out.taggedAssetBundles = new FAssetBundleData([])
     }
 }

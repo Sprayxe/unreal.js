@@ -48,7 +48,11 @@ export class FFieldPath {
     constructor(x?: any, y?: any) {
         if (x) {
             if (x instanceof FAssetArchive) {
-                this.path = x.readArray(() => x.readFName())
+                const len = x.readInt32()
+                this.path = new Array(len)
+                for (let i = 0; i < len; ++i) {
+                    this.path[i] = x.readFName()
+                }
                 if (this.path.length === 1 && this.path[0] === FName.NAME_None) {
                     this.path = []
                 }

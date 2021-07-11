@@ -7,8 +7,6 @@ import { FNameTableArchiveReader } from "./reader/NameTableArchive";
 import { FAssetData } from "./objects/FAssetData";
 import { FDependsNode } from "./objects/FDependsNode";
 import { FAssetPackageData } from "./objects/FAssetPackageData";
-import { Utils } from "../../util/Utils";
-import { UnrealArray } from "../../util/UnrealArray";
 
 export class AssetRegistry {
     preallocatedAssetDataBuffer: FAssetData[]
@@ -33,25 +31,40 @@ export class AssetRegistry {
             Ar = new FAssetRegistryReader(this.originalAr)
         }
 
-        this.preallocatedAssetDataBuffer = Ar.readArray(() => new FAssetData(Ar))
+        const _len1 = Ar.readInt32()
+        this.preallocatedAssetDataBuffer = new Array(_len1)
+        for (let i = 0; i < _len1; ++i) {
+            this.preallocatedAssetDataBuffer[i] = new FAssetData(Ar)
+        }
 
         if (version.version <= Type.AddedDependencyFlags) {
             const localNumDependsNodes = Ar.readInt32()
-            this.preallocatedDependsNodeDataBuffer = new UnrealArray(localNumDependsNodes, () => new FDependsNode())
+            this.preallocatedDependsNodeDataBuffer = new Array(localNumDependsNodes)
+            for (let i = 0; i < localNumDependsNodes; ++i) {
+                this.preallocatedDependsNodeDataBuffer[i] = new FDependsNode()
+            }
             if (localNumDependsNodes > 0)
                 this.loadDependenciesBeforeFlags(Ar, version)
         } else {
             const dependencySectionSize = Number(Ar.readInt64())
             const dependencySectionEnd = Ar.pos + dependencySectionSize
             const localNumDependsNodes = Ar.readInt32()
-            this.preallocatedDependsNodeDataBuffer = new UnrealArray(localNumDependsNodes, () => new FDependsNode())
+            this.preallocatedDependsNodeDataBuffer = new Array(localNumDependsNodes)
+            for (let i = 0; i < localNumDependsNodes; ++i) {
+                this.preallocatedDependsNodeDataBuffer[i] = new FDependsNode()
+            }
             if (localNumDependsNodes > 0)
                 this.loadDependencies(Ar)
             Ar.pos = dependencySectionEnd
         }
 
         const serializeHash = version.version < Type.AddedCookedMD5Hash
-        this.preallocatedPackageDataBuffer = Ar.readArray(() => new FAssetPackageData(Ar, serializeHash))
+
+        const _len2 = Ar.readInt32()
+        this.preallocatedPackageDataBuffer = new Array(_len2)
+        for (let i = 0; i < _len2; ++i) {
+            this.preallocatedPackageDataBuffer[i] = new FAssetPackageData(Ar, serializeHash)
+        }
     }
 
     private loadDependencies(Ar: FArchive) {

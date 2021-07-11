@@ -563,7 +563,11 @@ export class FTextHistoryOrderedFormat extends FTextHistory {
         super()
         if (x instanceof FArchive) {
             this.sourceFmt = new FText(x)
-            this.args = x.readArray(() => new FFormatArgumentValue(x))
+            const argLen = x.readInt32()
+            this.args = new Array(argLen)
+            for (let i = 0; i < argLen; ++i) {
+                this.args[i] = new FFormatArgumentValue(x)
+            }
         } else {
             this.sourceFmt = x
             this.args = y

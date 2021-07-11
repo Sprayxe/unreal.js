@@ -4,6 +4,7 @@ import { FAssetArchive } from "../reader/FAssetArchive";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { UnrealMap } from "../../../util/UnrealMap";
 import { Locres } from "../../locres/Locres";
+import Collection from "@discordjs/collection";
 
 /**
  * Represents UE4 String Table
@@ -22,14 +23,14 @@ export class UStringTable extends UObject {
      * @type {UnrealMap<string, string>}
      * @public
      */
-    entries: UnrealMap<string, string> = null
+    entries: Collection<string, string> = null
 
     /**
      * Keys to meta data
      * @type {UnrealMap<string, UnrealMap<FName, string>>}
      * @public
      */
-    keysToMetadata: UnrealMap<string, UnrealMap<FName, string>> = null
+    keysToMetadata: Collection<string, UnrealMap<FName, string>> = null
 
     /**
      * Deserializes this
@@ -41,20 +42,22 @@ export class UStringTable extends UObject {
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
         this.tableNamespace = Ar.readString()
-        this.entries = Ar.readTMap(null, () => {
-            return {
-                key: Ar.readString(),
-                value: Ar.readString()
-            }
-        })
-        this.keysToMetadata = Ar.readTMap(null, () => {
+        const len1 = Ar.readInt32()
+        this.entries = new Collection<string, string>()
+        for (let i = 0; i < len1; ++i) {
+            this.entries.set(Ar.readString(), Ar.readString())
+        }
+        const len2 = Ar.readInt32()
+        this.keysToMetadata = new Collection<string, UnrealMap<FName, string>>()
+        for (let i = 0; i < len2; ++i) {
+            const key = Ar.readString()
             const map = new UnrealMap<FName, string>()
-            map.set(Ar.readFName(), Ar.readString())
-            return {
-                key: Ar.readString(),
-                value: map
+            const len3 = Ar.readInt32()
+            for (let x = 0; x < len3; ++x) {
+                map.set(Ar.readFName(), Ar.readString())
             }
-        })
+            this.keysToMetadata.set(key, map)
+        }
     }
 
     /**

@@ -130,9 +130,21 @@ export class FIoDirectoryIndexResource {
     constructor(Ar: FArchive) {
         const s = Ar.readString()
         this.mountPoint = s.substring(s.indexOf("../../../") + "../../../".length)
-        this.directoryEntries = Ar.readArray(() => new FIoDirectoryIndexEntry(Ar))
-        this.fileEntries = Ar.readArray(() => new FIoFileIndexEntry(Ar))
-        this.stringTable = Ar.readArray(() => Ar.readString())
+        const dirLen = Ar.readInt32()
+        this.directoryEntries = new Array(dirLen)
+        for (let i = 0; i < dirLen; ++i) {
+            this.directoryEntries[i] = new FIoDirectoryIndexEntry(Ar)
+        }
+        const fileLen = Ar.readInt32()
+        this.fileEntries = new Array(fileLen)
+        for (let i = 0; i < fileLen; ++i) {
+            this.fileEntries[i] = new FIoFileIndexEntry(Ar)
+        }
+        const strLen = Ar.readInt32()
+        this.stringTable = new Array(strLen)
+        for (let i = 0; i < strLen; ++i) {
+            this.stringTable[i] = Ar.readString()
+        }
     }
 }
 

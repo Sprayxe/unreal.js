@@ -134,12 +134,16 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
 
     /**
      * Parses data
-     * @param {FUsmapNameTableArchive} FArchive to use
+     * @param {FUsmapNameTableArchive} Ar FArchive to use
      * @returns {void}
      * @private
      */
     private parseData(Ar: FUsmapNameTableArchive) {
-        Ar.nameMap = Ar.readArray(() => Ar.readBuffer(Ar.readUInt8()).toString())
+        const nameMapLen = Ar.readInt32()
+        Ar.nameMap = new Array(nameMapLen)
+        for (let i = 0; i < nameMapLen; ++i) {
+            Ar.nameMap[i] = Ar.readBuffer(Ar.readUInt8()).toString()
+        }
         const max0 = Ar.readInt32()
         for (let y = 0; y < max0; ++y) {
             const enumName = Ar.readFName().text

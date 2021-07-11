@@ -57,7 +57,11 @@ export class UStruct extends UObject {
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
         this.superStruct = Ar.readObject()
-        this.children = Ar.readArray(() => new FPackageIndex(Ar))
+        const childrenLen = Ar.readInt32()
+        this.children = new Array(childrenLen)
+        for (let i = 0; i < childrenLen; ++i) {
+            this.children[i] = new FPackageIndex(Ar)
+        }
         this.deserializeProperties(Ar)
         // region FStructScriptLoader::FStructScriptLoader
         const bytecodeBufferSize = Ar.readInt32()
@@ -75,16 +79,18 @@ export class UStruct extends UObject {
      * @protected
      */
     protected deserializeProperties(Ar: FAssetArchive) {
-        this.childProperties = Ar.readArray((it: number) => {
+        const childPropLen = Ar.readInt32()
+        this.childProperties = new Array(childPropLen)
+        for (let i = 0; i < childPropLen; ++i) {
             const propertyTypeName = Ar.readFName()
             const prop = FField.construct(propertyTypeName)
             if (!prop)
                 throw new ParserException(`Unsupported serialized property type ${propertyTypeName}`, Ar)
             prop.deserialize(Ar)
             if (Config.GDebugProperties)
-                console.info(`${it} = ${propertyTypeName} ${prop.name}`)
-            return prop
-        })
+                console.info(`${i} = ${propertyTypeName} ${prop.name}`)
+            this.childProperties[i] = prop
+        }
     }
 }
 

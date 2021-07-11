@@ -90,9 +90,13 @@ export class FLevelSequenceObjectReferenceMap implements IStructType {
     public mapData: FLevelSequenceLegacyObjectReference[]
 
     constructor(arg: FArchive | FLevelSequenceLegacyObjectReference[]) {
-        this.mapData = arg instanceof FArchive
-            ? arg.readArray(() => new FLevelSequenceLegacyObjectReference(arg))
-            : arg
+        if (arg instanceof FArchive) {
+            const len = arg.readInt32()
+            this.mapData = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                this.mapData[i] = new FLevelSequenceLegacyObjectReference(arg)
+            }
+        } else this.mapData = arg
     }
 
     serialize(Ar: FArchiveWriter) {

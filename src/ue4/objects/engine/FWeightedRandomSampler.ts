@@ -49,8 +49,16 @@ export class FWeightedRandomSampler implements IStructType {
     /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any, y?: any, z?: any) {
         if (x instanceof FArchive) {
-            this.prob = x.readArray(() => x.readFloat32())
-            this.alias = x.readArray(() => x.readInt32())
+            const len1 = x.readInt32()
+            this.prob = new Array(len1)
+            for (let i = 0; i < len1; ++i) {
+                this.prob[i] = x.readFloat32()
+            }
+            const len2 = x.readInt32()
+            this.alias = new Array(len2)
+            for (let i = 0; i < len1; ++i) {
+                this.alias[i] = x.readInt32()
+            }
             this.totalWeight = x.readFloat32()
         } else {
             this.prob = x

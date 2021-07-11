@@ -92,7 +92,11 @@ export class FManifestMeta {
         this.buildVersion = Ar.readString()
         this.launchExe = Ar.readString()
         this.launchCommand = Ar.readString()
-        this.prereqIds = Ar.readArray(() => Ar.readString())
+        const len = Ar.readInt32()
+        this.prereqIds = new Array(len)
+        for (let i = 0; i < len; ++i) {
+            this.prereqIds[i] = Ar.readString()
+        }
         this.prereqName = Ar.readString()
         this.prereqPath = Ar.readString()
         this.prereqArgs = Ar.readString()

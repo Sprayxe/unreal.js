@@ -59,7 +59,8 @@ export class UCurveTable extends UObject {
         super.deserialize(Ar, validPos);
         const numRows = Ar.readInt32()
         this.curveTableMode = Ar.readUInt8()
-        this.rowMap = Ar.readTMap(numRows, () => {
+        this.rowMap = new UnrealMap<FName, FRealCurve>()
+        for (let i = 0; i < numRows; ++i) {
             const key = Ar.readFName()
             let instance: any
             let curve: string
@@ -74,8 +75,8 @@ export class UCurveTable extends UObject {
             }
             const fallback = new FStructFallback(Ar, FName.dummy(curve))
             const value = instance.loadFromFallback(fallback)
-            return {key, value}
-        })
+            this.rowMap.set(key, value)
+        }
     }
 
     /**

@@ -22,12 +22,11 @@ export class FFormatContainer {
      * @public
      */
     constructor(Ar: FAssetArchive) {
-        this.formats = Ar.readTMap(null, () => {
-            return {
-                key: Ar.readFName(),
-                value: new FByteBulkData(Ar)
-            }
-        })
+        const len = Ar.readInt32()
+        this.formats = new UnrealMap<FName, FByteBulkData>()
+        for (let i = 0; i < len; ++i) {
+            this.formats.set(Ar.readFName(), new FByteBulkData(Ar))
+        }
     }
 
     /**

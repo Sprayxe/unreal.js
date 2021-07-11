@@ -1,6 +1,6 @@
 {
   "name": "unreal.js",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A pak reader for games like VALORANT & Fortnite written in Node.JS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,10 @@
     "fortnite",
     "paks",
     "valorant",
-    "pakreader"
+    "pakreader",
+    "unreal engine",
+    "javascript",
+    "typescript"
   ],
   "author": "Sprayxe",
   "license": "MIT",

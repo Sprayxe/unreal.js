@@ -299,11 +299,13 @@ export class FArchive {
 
     /**
      * Reads an array
+     * - DEPRECATED: Lambdas may impact performance, use for loop
      * @param {any} init Callable method for array entries
      * @param {number} length Length to read
      * @returns {Array<any>} Result
      * @example readArray((index) => new Class(index))
      * @example readArray((index) => new Class(index), 69420)
+     * @deprecated
      * @public
      */
     readArray<T>(init: (index: number) => T, length?: number): T[] {
@@ -317,11 +319,13 @@ export class FArchive {
 
     /**
      * Reads a map
+     * - DEPRECATED: Lambdas may impact performance, use for loop
      * @param {number} length Length to read
      * @param {any} init Callable method for map entries
      * @returns {UnrealMap<any, any>} Result
      * @example readTMap(null, (Ar) => { return { key: Ar.readFName(), value: Ar.readObject() } })
      * @example readTMap(69420, (Ar) => { return { key: Ar.readFName(), value: Ar.readObject() } })
+     * @deprecated
      * @public
      */
     readTMap<K, V>(length: number = this.readInt32(), init: (it: FArchive) => Pair<K, V>): UnrealMap<K, V> {

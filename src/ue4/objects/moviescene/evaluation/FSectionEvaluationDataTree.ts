@@ -29,7 +29,14 @@ export class FSectionEvaluationDataTree implements IStructType {
     constructor(arg: FAssetArchive | TMovieSceneEvaluationTree<FStructFallback>) {
         this.tree = arg instanceof FAssetArchive
             ? new TMovieSceneEvaluationTree(
-                arg, () => arg.readArray(() => new FStructFallback(arg, FName.dummy("SectionEvaluationData"))))
+                arg, () => {
+                    const len = arg.readInt32()
+                    const arr = new Array(len)
+                    for (let i = 0; i < len; ++i) {
+                        arr[i] = new FStructFallback(arg, FName.dummy("SectionEvaluationData"))
+                    }
+                    return arr
+                })
             : arg
     }
 

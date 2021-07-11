@@ -86,7 +86,11 @@ export class FMulticastScriptDelegate {
     /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any) {
         if (x instanceof FAssetArchive) {
-            this.invocationList = x.readArray(() => new FScriptDelegate(x))
+            const len = x.readInt32()
+            this.invocationList = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                this.invocationList[i] = new FScriptDelegate(x)
+            }
         } else {
             this.invocationList = x
         }

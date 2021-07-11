@@ -3,7 +3,7 @@ import { FileProvider } from "../../fileprovider/FileProvider";
 import { FArchive } from "../reader/FArchive";
 import { loadNameBatch } from "../objects/uobject/NameBatchSerialization";
 import { FByteArchive } from "../reader/FByteArchive";
-import { createIoChunkId, EIoChunkType, FIoChunkId } from "../io/IoDispatcher";
+import { createIoChunkId, EIoChunkType } from "../io/IoDispatcher";
 import { FName } from "../objects/uobject/FName";
 import { FMinimalName, FNameEntryId } from "../objects/uobject/NameTypes";
 

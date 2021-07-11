@@ -12,7 +12,6 @@ import { FArchive } from "../reader/FArchive";
 import { EPakVersion } from "./enums/PakVersion";
 import { Game } from "../versions/Game";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
-import { UnrealArray } from "../../util/UnrealArray";
 import Collection from "@discordjs/collection";
 
 /**
@@ -70,10 +69,10 @@ export class PakFileReader {
 
     /**
      * Files in this pak
-     * @type {Collection<string, GameFile>}
+     * @type {Array<GameFile>}
      * @public
      */
-    files: Collection<string, GameFile>
+    files: GameFile[]
 
     /**
      * Creates an instance
@@ -175,13 +174,23 @@ export class PakFileReader {
 
     /**
      * Reads index of pak
-     * @returns {Map<string, GameFile>} Files
+     * @returns {Array<GameFile>} Files
      * @public
      */
-    readIndex(): Map<string, GameFile> {
+    readIndex(): GameFile[] {
         this.encryptedFileCount = 0
         this.Ar.pos = this.pakInfo.indexOffset
-        const indexAr = new FByteArchive(this.readAndDecrypt(this.pakInfo.indexSize))
+
+        // this.readAndDecrypt()
+        let buf = this.Ar.readBuffer(this.pakInfo.indexSize)
+        if (this.isEncrypted()) {
+            const key = this.aesKey
+            if (!key)
+                throw new ParserException("Reading this pak requires an encryption key")
+            buf = Aes.decrypt(buf, key)
+        }
+        const indexAr = new FByteArchive(buf)
+
         let mountPoint: string
         try {
             mountPoint = indexAr.readString()
@@ -194,7 +203,7 @@ export class PakFileReader {
         const files = this.pakInfo.version >= EPakVersion.PakVersion_PathHashIndex ? this.readIndexUpdated(indexAr) : this.readIndexLegacy(indexAr)
 
         // Print statistics
-        let stats = sprintf("Pak \"%s\": %d files", this.path, this.files.size)
+        let stats = sprintf("Pak \"%s\": %d files", this.path, this.files.length)
         if (this.encryptedFileCount)
             stats += sprintf(" (%d encrypted)", this.encryptedFileCount)
         if (this.mountPoint.includes("/"))
@@ -206,10 +215,10 @@ export class PakFileReader {
 
     /**
      * Reads index of old pak
-     * @returns {Map<string, GameFile>} Files
+     * @returns {Array<GameFile>} Files
      * @public
      */
-    private readIndexLegacy(indexAr: FByteArchive): Map<string, GameFile> {
+    private readIndexLegacy(indexAr: FByteArchive): GameFile[] {
         const fileCount = indexAr.readInt32()
 
         const tempMap = new Map<string, GameFile>()
@@ -221,29 +230,29 @@ export class PakFileReader {
             tempMap.set(gameFile.path.toLowerCase(), gameFile)
         }
 
-        const files = new Collection<string, GameFile>()
-        tempMap.forEach((it, k) => {
+        const files = []
+        for (const [_, it] of tempMap) {
             if (it.isUE4Package()) {
-                const uexp = tempMap.get(PakFileReader.extension(k, ".uexp"))
+                const uexp = tempMap.get(PakFileReader.extension(_, ".uexp"))
                 if (uexp != null) it.uexp = uexp;
-                const ubulk = tempMap.get(PakFileReader.extension(k, ".ubulk"))
+                const ubulk = tempMap.get(PakFileReader.extension(_, ".ubulk"))
                 if (ubulk != null) it.uexp = ubulk;
-                files.set(k, it)
+                files.push(it)
             } else {
                 if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
-                    files.set(k, it)
+                    files.push(it)
             }
-        })
+        }
 
         return this.files = files
     }
 
     /**
      * Reads index of new pak
-     * @returns {Map<string, GameFile>} Files
+     * @returns {Array<GameFile>} Files
      * @public
      */
-    private readIndexUpdated(primaryIndexAr: FByteArchive): Map<string, GameFile> {
+    private readIndexUpdated(primaryIndexAr: FByteArchive): GameFile[] {
         const fileCount = primaryIndexAr.readInt32()
         primaryIndexAr.pos += 8 // PathHashSeed
 
@@ -267,7 +276,17 @@ export class PakFileReader {
             throw new ParserException("Corrupt pak PrimaryIndex detected!", primaryIndexAr)
 
         this.Ar.pos = directoryIndexOffset
-        const directoryIndexAr = new FByteArchive(this.readAndDecrypt(directoryIndexSize))
+
+        // this.readAndDecrypt()
+        let buf = this.Ar.readBuffer(directoryIndexSize)
+        if (this.isEncrypted()) {
+            const key = this.aesKey
+            if (!key)
+                throw new ParserException("Reading this pak requires an encryption key")
+            buf = Aes.decrypt(buf, key)
+        }
+        const directoryIndexAr = new FByteArchive(buf)
+
         const directoryIndexNum = directoryIndexAr.readInt32()
         const tempMap = new Map<string, GameFile>()
         for (let i = 0; i < directoryIndexNum; i++) {
@@ -285,19 +304,19 @@ export class PakFileReader {
             }
         }
 
-        const files = new Collection<string, GameFile>()
-        tempMap.forEach((it, k) => {
+        const files = []
+        for (const [_, it] of tempMap) {
             if (it.isUE4Package()) {
-                const uexp = tempMap.get(PakFileReader.extension(k, ".uexp"))
+                const uexp = tempMap.get(PakFileReader.extension(_, ".uexp"))
                 if (uexp != null) it.uexp = uexp;
-                const ubulk = tempMap.get(PakFileReader.extension(k, ".ubulk"))
+                const ubulk = tempMap.get(PakFileReader.extension(_, ".ubulk"))
                 if (ubulk != null) it.uexp = ubulk;
-                files.set(k, it)
+                files.push(it)
             } else {
                 if (!it.path.endsWith(".uexp") && !it.path.endsWith(".ubulk"))
-                    files.set(k, it)
+                    files.push(it)
             }
-        })
+        }
 
         return this.files = files
     }
@@ -370,7 +389,10 @@ export class PakFileReader {
         // passed in entry.
         const compressionBlocksCount = (value >> 6) & 0xffff
 
-        compressionBlocks = new UnrealArray(compressionBlocksCount, () => new FPakCompressedBlock(0, 0))
+        compressionBlocks = new Array(compressionBlocksCount)
+        for (let i = 0; i < compressionBlocksCount; ++i) {
+            compressionBlocks[i] = new FPakCompressedBlock(0, 0)
+        }
 
         // Filter the compression block size or use the UncompressedSize if less that 64k.
         compressionBlockSize = 0
@@ -408,10 +430,10 @@ export class PakFileReader {
         }
 
         //TODO There is some kind of issue here, compression blocks are sometimes going to far by one byte
-        compressionBlocks.forEach((it) => {
+        for (const it of compressionBlocks) {
             it.compressedStart = it.compressedStart + offset
             it.compressedEnd = it.compressedEnd + offset
-        })
+        }
 
         const entry = new FPakEntry()
         entry.pos = offset
@@ -440,10 +462,12 @@ export class PakFileReader {
 
     /**
      * Reads and decrypts data
+     * - DEPRECATED: Inline this method
      * @param {number} num Amount of bytes to read
      * @param {boolean} isEncrypted Whether if those are encrypted
      * @returns {Buffer} Bytes
      * @private
+     * @deprecated
      */
     private readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted()): Buffer {
         let data = this.Ar.readBuffer(num)

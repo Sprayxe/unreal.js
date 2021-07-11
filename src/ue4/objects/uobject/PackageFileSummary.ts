@@ -338,7 +338,11 @@ export class FPackageFileSummary {
         this.legacyUE3Version = Ar.readInt32()
         this.fileVersionUE4 = Ar.readInt32()
         this.fileVersionLicenseUE4 = Ar.readInt32()
-        this.customVersionContainer = Ar.readArray(() => new FCustomVersion(Ar))
+        const cvConLen = Ar.readInt32()
+        this.customVersionContainer = new Array(cvConLen)
+        for (let i = 0; i < cvConLen; ++i) {
+            this.customVersionContainer[i] = new FCustomVersion(Ar)
+        }
         this.totalHeaderSize = Ar.readInt32()
         this.folderName = Ar.readString()
         this.packageFlags = Ar.readUInt32()
@@ -373,17 +377,33 @@ export class FPackageFileSummary {
                 const ownerPersistentGuid = new FGuid(Ar)
             }
         }
-        this.generations = Ar.readArray(() => new FGenerationInfo(Ar))
+        const genLen = Ar.readInt32()
+        this.generations = new Array(genLen)
+        for (let i = 0; i < genLen; ++i) {
+            this.generations[i] = new FGenerationInfo(Ar)
+        }
         this.savedByEngineVersion = new FEngineVersion(Ar)
         this.compatibleWithEngineVersion = new FEngineVersion(Ar)
         this.compressionFlags = Ar.readUInt32()
-        this.compressedChunks = Ar.readArray(() => new FCompressedChunk(Ar))
+        const comFlagsLen = Ar.readInt32()
+        this.compressedChunks = new Array(comFlagsLen)
+        for (let i = 0; i < comFlagsLen; ++i) {
+            this.compressedChunks[i] = new FCompressedChunk(Ar)
+        }
         this.packageSource = Ar.readUInt32()
-        this.additionalPackagesToCook = Ar.readArray(() => Ar.readString())
+        const addPkgLen = Ar.readInt32()
+        this.additionalPackagesToCook = new Array(addPkgLen)
+        for (let i = 0; i < comFlagsLen; ++i) {
+            this.additionalPackagesToCook[i] = Ar.readString()
+        }
         this.assetRegistryDataOffset = Ar.readInt32()
         this.bulkDataStartOffset = Ar.readInt32()
         this.worldTileInfoDataOffset = Ar.readInt32()
-        this.chunkIds = Ar.readArray(() => Ar.readInt32())
+        const chunkIdsLen = Ar.readInt32()
+        this.chunkIds = new Array(chunkIdsLen)
+        for (let i = 0; i < chunkIdsLen; ++i) {
+            this.chunkIds[i] = Ar.readInt32()
+        }
         this.preloadDependencyCount = Ar.readInt32()
         this.preloadDependencyOffset = Ar.readInt32()
     }

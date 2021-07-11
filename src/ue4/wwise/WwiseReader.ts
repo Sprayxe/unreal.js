@@ -6,7 +6,6 @@ import Collection from "@discordjs/collection";
 import { FArchive } from "../reader/FArchive";
 import { ESectionIdentifier } from "./enums/ESectionIdentifier";
 import { ParserException } from "../../exceptions/Exceptions";
-import { UnrealArray } from "../../util/UnrealArray";
 import { AkEntry } from "./objects/AkEntry";
 
 export class WwiseReader {
@@ -32,10 +31,16 @@ export class WwiseReader {
                     if (!Ar.readBoolean())
                         throw new ParserException(`FArchive reader has unsupported endianness.`, Ar)
                     Ar.pos += 16
-                    this.folders = Ar.readArray(() => new AkFolder(Ar))
+                    const _len1 = Ar.readInt32()
+                    this.folders = new Array(_len1)
+                    for (let i = 0; i < _len1; ++i) {
+                        this.folders[i] = new AkFolder(Ar)
+                    }
                     this.folders.forEach((folder) => folder.populateName(Ar))
                     for (const folder of this.folders) {
-                        folder.entries = new UnrealArray(Ar.readUInt32(), () => {
+                        const len = Ar.readUInt32()
+                        folder.entries = new Array(len)
+                        for (let i = 0; i < len; ++i) {
                             const entry = new AkEntry(Ar)
                             entry.path = this.folders[entry.folderId].name
                             const savePos = Ar.pos
@@ -44,36 +49,45 @@ export class WwiseReader {
                             Ar.pos -= 4
                             entry.data = Ar.readBuffer(entry.size)
                             Ar.pos = savePos
-                            return entry
-                        })
+                            folder.entries[i] = entry
+                        }
                     }
                     break
                 case ESectionIdentifier.BKHD:
                     this.header = new BankHeader(Ar)
                     break
                 case ESectionIdentifier.INIT:
-                    this.initialization = Ar.readArray(() => {
+                    const _len2 = Ar.readInt32()
+                    this.initialization = new Array(_len2)
+                    for (let i = 0; i < _len2; ++i) {
                         Ar.pos += 4
-                        return Ar.readString()
-                    })
+                        this.initialization[i] = Ar.readString()
+                    }
                     break
                 case ESectionIdentifier.DIDX:
-                    this.wemIndexes = Ar.readArray(() => new DataIndex(Ar), sectionLength / 12)
+                    const _len3 = sectionLength / 12
+                    this.wemIndexes = new Array(_len3)
+                    for (let i = 0; i < _len3; ++i) {
+                        this.wemIndexes[i] = new DataIndex(Ar)
+                    }
                     break
                 case ESectionIdentifier.HIRC:
-                    this.hierarchy = Ar.readArray(() => new Hierarchy(Ar))
+                    const _len4 = Ar.readInt32()
+                    this.hierarchy = new Array(_len4)
+                    for (let i = 0; i < _len4; ++i) {
+                        this.hierarchy[i] = new Hierarchy(Ar)
+                    }
                     break
                 case ESectionIdentifier.RIFF:
                     // read byte[sectionLength] it's simply a wem file
                     break
                 case ESectionIdentifier.STID:
                     Ar.pos += 4
-                    Ar.readTMap(null, () => {
-                        return {
-                            key: Ar.readUInt32(),
-                            value: Ar.readString()
-                        }
-                    })
+                    const len = Ar.readInt32()
+                    for (let i = 0; i < len; ++i) {
+                        Ar.readUInt32()
+                        Ar.readString()
+                    }
                     break
                 case ESectionIdentifier.STMG:
                     break

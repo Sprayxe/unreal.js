@@ -63,7 +63,11 @@ export class FTextLocalizationResource {
         const cOffset = Ar.pos
 
         Ar.pos = this.strArrayOffset
-        const localizedStrings = Ar.readArray(() => new FTextLocalizationResourceString(Ar))
+        const len = Ar.readInt32()
+        const localizedStrings = new Array<FTextLocalizationResourceString>(len)
+        for (let i = 0; i < len; ++i) {
+            localizedStrings[i] = new FTextLocalizationResourceString(Ar)
+        }
         Ar.pos = cOffset
 
         Ar.readUInt32() // entryCount

@@ -42,6 +42,7 @@ import { FSectionEvaluationDataTree } from "../../objects/moviescene/evaluation/
 import { FRichCurveKey } from "../../objects/engine/curves/FRichCurve";
 import { FSimpleCurveKey } from "../../objects/engine/curves/FSimpleCurve";
 import { Config } from "../../../Config";
+import { FPerQualityLevelInt } from "../../objects/engine/PerQualityLevelProperties";
 
 /**
  * UScriptStruct
@@ -84,22 +85,23 @@ export class UScriptStruct {
     constructor(x?: any, y?: any, z?: any) {
         if (x instanceof FAssetArchive) {
             this.structName = y.structName
+            const nz = z !== ReadType.ZERO
             switch (this.structName.text) {
                 case "Box":
-                    this.structType = z !== ReadType.ZERO ? new FBox(x) : new FBox()
+                    this.structType = nz ? new FBox(x) : new FBox()
                     break
                 case "Box2D":
-                    this.structType = z !== ReadType.ZERO ? new FBox2D(x) : new FBox2D()
+                    this.structType = nz ? new FBox2D(x) : new FBox2D()
                     break
                 case "Color":
-                    this.structType = z !== ReadType.ZERO ? new FColor(x) : new FColor()
+                    this.structType = nz ? new FColor(x) : new FColor()
                     break
                 case "ColorMaterialInput":
                     this.structType = new FColorMaterialInput(x)
                     break
                 case "DateTime":
                 case "Timespan":
-                    this.structType = z !== ReadType.ZERO ? new FDateTime(x) : new FDateTime()
+                    this.structType = nz ? new FDateTime(x) : new FDateTime()
                     break
                 case "ExpressionInput":
                     this.structType = new FExpressionInput(x)
@@ -108,10 +110,11 @@ export class UScriptStruct {
                     this.structType = new FFrameNumber(x)
                     break
                 case "GameplayTagContainer":
-                    this.structType = z !== ReadType.ZERO ? new FGameplayTagContainer(x) : new FGameplayTagContainer()
+                    this.structType = nz ? new FGameplayTagContainer(x) : new FGameplayTagContainer()
                     break
+                case "GUID":
                 case "Guid":
-                    this.structType = z !== ReadType.ZERO ? new FGuid(x) : new FGuid()
+                    this.structType = nz ? new FGuid(x) : new FGuid()
                     break
                 case "IntPoint":
                     this.structType = new FIntPoint(x)
@@ -123,7 +126,7 @@ export class UScriptStruct {
                     this.structType = new FLevelSequenceObjectReferenceMap(x)
                     break
                 case "LinearColor":
-                    this.structType = z !== ReadType.ZERO ? new FLinearColor(x) : new FLinearColor()
+                    this.structType = nz ? new FLinearColor(x) : new FLinearColor()
                     break
                 case "MaterialAttributesInput":
                     this.structType = new FMaterialAttributesInput(x)
@@ -173,6 +176,9 @@ export class UScriptStruct {
                 case "PerPlatformInt":
                     this.structType = new FPerPlatformInt(x)
                     break
+                case "PerQualityLevelInt":
+                    this.structType = new FPerQualityLevelInt(x)
+                    break
                 case "Quat":
                     this.structType = new FQuat(x)
                     break
@@ -180,7 +186,7 @@ export class UScriptStruct {
                     this.structType = new FRichCurveKey(x)
                     break
                 case "Rotator":
-                    this.structType = z !== ReadType.ZERO ? new FRotator(x) : new FRotator()
+                    this.structType = nz ? new FRotator(x) : new FRotator()
                     break
                 case "ScalarMaterialInput":
                     this.structType = new FScalarMaterialInput(x)
@@ -198,26 +204,26 @@ export class UScriptStruct {
                     this.structType = new FSmartName(x)
                     break
                 case "SoftObjectPath":
-                    const softObjectPath = z !== ReadType.ZERO ? new FSoftObjectPath(x) : new FSoftObjectPath()
+                    const softObjectPath = nz ? new FSoftObjectPath(x) : new FSoftObjectPath()
                     softObjectPath.owner = x.owner
                     this.structType = softObjectPath
                     break
                 case "SoftClassPath":
-                    const softClassPath = z !== ReadType.ZERO ? new FSoftClassPath(x) : new FSoftClassPath()
+                    const softClassPath = nz ? new FSoftClassPath(x) : new FSoftClassPath()
                     softClassPath.owner = x.owner
                     this.structType = softClassPath
                     break
                 case "Vector":
-                    this.structType = z !== ReadType.ZERO ? new FVector(x) : new FVector()
+                    this.structType = nz ? new FVector(x) : new FVector()
                     break
                 case "Vector2D":
-                    this.structType = z !== ReadType.ZERO ? new FVector2D(x) : new FVector2D()
+                    this.structType = nz ? new FVector2D(x) : new FVector2D()
                     break
                 case "Vector2MaterialInput":
                     this.structType = new FVector2MaterialInput(x)
                     break
                 case "Vector4":
-                    this.structType = z !== ReadType.ZERO ? new FVector4(x) : new FVector4()
+                    this.structType = nz ? new FVector4(x) : new FVector4()
                     break
                 case "VectorMaterialInput":
                     this.structType = new FVectorMaterialInput(x)

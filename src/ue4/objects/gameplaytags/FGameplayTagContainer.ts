@@ -1,6 +1,5 @@
 import { FName } from "../uobject/FName";
 import { FArchive } from "../../reader/FArchive";
-import { UnrealArray } from "../../../util/UnrealArray";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";
 import { IStructType } from "../../assets/objects/UScriptStruct";
 
@@ -45,7 +44,11 @@ export class FGameplayTagContainer implements Iterable<FName>, IStructType {
         if (!arg) {
             this.gameplayTags = []
         } else if (arg instanceof FArchive) {
-            this.gameplayTags = new UnrealArray(arg.readUInt32(), () => arg.readFName())
+            const len = arg.readUInt32()
+            this.gameplayTags = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                this.gameplayTags[i] = arg.readFName()
+            }
         } else {
             this.gameplayTags = arg
         }

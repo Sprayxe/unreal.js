@@ -83,7 +83,9 @@ export class UDataTable extends UObject {
      */
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
-        this.rows = Ar.readTMap(null, () => {
+        this.rows = new UnrealMap<FName, UObject>()
+        const len = Ar.readInt32()
+        for (let i = 0; i < len; ++i) {
             const key = Ar.readFName()
             const rowProperties = []
             if (Ar.useUnversionedPropertySerialization) {
@@ -92,8 +94,8 @@ export class UDataTable extends UObject {
                 deserializeVersionedTaggedProperties(rowProperties, Ar)
             }
             const value = new UObject(rowProperties)
-            return {key, value}
-        })
+            this.rows.set(key, value)
+        }
     }
 
     /**

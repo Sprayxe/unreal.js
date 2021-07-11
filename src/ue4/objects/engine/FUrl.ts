@@ -83,7 +83,11 @@ export class FUrl {
             this.host = Ar.readString()
             this.map = Ar.readString()
             this.portal = Ar.readString()
-            this.op = Ar.readArray(() => Ar.readString())
+            const opLen = Ar.readInt32()
+            this.op = new Array(opLen)
+            for (let i = 0; i < opLen; ++i) {
+                this.op[i] = Ar.readString()
+            }
             this.port = Ar.readInt32()
             this.valid = Ar.readInt32()
         } else {

@@ -4,7 +4,6 @@ import { createFIoContainerId } from "../io/IoContainerId";
 import { Pair } from "../../util/Pair";
 import { CityHash } from "../../util/CityHash";
 import Long from "long";
-import { UnrealArray } from "../../util/UnrealArray";
 import Collection from "@discordjs/collection";
 
 export type FSourceToLocalizedPackageIdMap = Pair<bigint, bigint>[]
@@ -230,7 +229,10 @@ export class FPackageStoreEntry {
         }
         const continuePos = Ar.pos
         Ar.pos = initialPos + offsetToDataFromThis
-        const result = new UnrealArray(arrayNum, () => init(Ar))
+        const result = []
+        for (let i = 0; i < arrayNum; ++i) {
+            result.push(init(Ar))
+        }
         Ar.pos = continuePos
         return result
     }
@@ -556,20 +558,34 @@ export class FContainerHeader {
         this.packageCount = Ar.readUInt32()
         this.names = Ar.readBuffer(Ar.readInt32())
         this.nameHashes = Ar.readBuffer(Ar.readInt32())
-        this.packageIds = Ar.readArray(() => Ar.readUInt64())
+        const packageIdsNum = Ar.readInt32()
+        this.packageIds = new Array(packageIdsNum)
+        for (let i = 0; i < packageIdsNum; ++i) {
+            this.packageIds[i] = Ar.readUInt64()
+        }
         const storeEntriesNum = Ar.readInt32()
         const storeEntriesEnd = Ar.pos + storeEntriesNum
-        this.storeEntries = new UnrealArray(this.packageCount, () =>  new FPackageStoreEntry(Ar))
+        this.storeEntries = new Array(this.packageCount)
+        for (let i = 0; i < this.packageCount; ++i) {
+            this.storeEntries[i] = new FPackageStoreEntry(Ar)
+        }
         Ar.pos = storeEntriesEnd
-        this.culturePackageMap = Ar.readTMap(null, () => {
-            return {
-                key: Ar.readString(),
-                value: Ar.readArray(() =>
-                    new Pair(Ar.readUInt64(), Ar.readUInt64()))
+        const len = Ar.readInt32()
+        this.culturePackageMap = new Collection<string, FSourceToLocalizedPackageIdMap>()
+        for (let i = 0; i < len; ++i) {
+            const k = Ar.readString()
+            const vLen = Ar.readInt32()
+            const v = new Array(vLen)
+            for (let i = 0; i < vLen; ++i) {
+                v[i] = new Pair(Ar.readUInt64(), Ar.readUInt64())
             }
-        })
-        this.packageRedirects = Ar.readArray(() =>
-            new Pair(Ar.readUInt64(), Ar.readUInt64()))
+            this.culturePackageMap.set(k, v)
+        }
+        const pkgRecLen = Ar.readInt32()
+        this.packageRedirects = new Array(pkgRecLen)
+        for (let i = 0; i < pkgRecLen; ++i) {
+            this.packageRedirects[i] = new Pair(Ar.readUInt64(), Ar.readUInt64())
+        }
     }
 }
 
@@ -684,7 +700,7 @@ export class FPackageSummary {
     constructor(Ar: FArchive) {
         this.name = new FMappedName(Ar)
         this.sourceName = new FMappedName(Ar)
-        this.packageFlags = -~Ar.readUInt32() - 1 // TODO is this right? following original code this gives inaccurate output
+        this.packageFlags = -~Ar.readUInt32() - 1 // TODO is this right? following original code gives inaccurate output
         this.cookedHeaderSize = Ar.readUInt32()
         this.nameMapNamesOffset = Ar.readInt32()
         this.nameMapNamesSize = Ar.readInt32()

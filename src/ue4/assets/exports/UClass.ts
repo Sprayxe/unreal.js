@@ -125,12 +125,11 @@ export class UClass extends UStruct {
         super.deserialize(Ar, validPos)
 
         // serialize the function map
-        this.funcMap = Ar.readTMap(null, () => {
-            return {
-                key: Ar.readFName(),
-                value: Ar.readObject()
-            }
-        })
+        this.funcMap = new UnrealMap<FName, UFunction>()
+        const len = Ar.readInt32()
+        for (let i = 0; i < len; ++i) {
+            this.funcMap.set(Ar.readFName(), Ar.readObject<UFunction>())
+        }
 
         // Class flags first.
         this.classFlags = Ar.readUInt32()
@@ -142,7 +141,11 @@ export class UClass extends UStruct {
         this.classGeneratedBy = new FPackageIndex(Ar)
 
         // Load serialized interface classes
-        this.interfaces = Ar.readArray(() => new FImplementedInterface(Ar))
+        const interLen = Ar.readInt32()
+        this.interfaces = new Array(interLen)
+        for (let i = 0; i < interLen; ++i) {
+            this.interfaces[i] = new FImplementedInterface(Ar)
+        }
 
         const bDeprecatedScriptOrder = Ar.readBoolean()
         const dummy = Ar.readFName()

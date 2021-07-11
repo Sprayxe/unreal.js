@@ -32,8 +32,20 @@ export class FFileManifestList {
         for (const fileManifest of this.fileList) fileManifest.symlinkTarget = Ar.readString()
         for (const fileManifest of this.fileList) fileManifest.fileHash = Ar.readBuffer(20)
         for (const fileManifest of this.fileList) fileManifest.fileMetaFlags = Ar.readUInt8()
-        for (const fileManifest of this.fileList) fileManifest.installTags = Ar.readArray(() => Ar.readString())
-        for (const fileManifest of this.fileList) fileManifest.chunkParts = Ar.readArray(() => new FChunkPart(Ar))
+        for (const fileManifest of this.fileList) {
+            const len = Ar.readInt32()
+            fileManifest.installTags = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                fileManifest.installTags[i] = Ar.readString()
+            }
+        }
+        for (const fileManifest of this.fileList) {
+            const len = Ar.readInt32()
+            fileManifest.chunkParts = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                fileManifest.chunkParts[i] = new FChunkPart(Ar)
+            }
+        }
         Ar.pos = startPos + dataSize
     }
 

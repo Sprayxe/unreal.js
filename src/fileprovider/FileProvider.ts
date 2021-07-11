@@ -624,8 +624,10 @@ export class FileProvider extends EventEmitter {
      * @protected
      */
     protected mount(reader: PakFileReader) {
-        reader.readIndex()
-        reader.files.forEach((it) => this.files.set(it.path.toLowerCase(), it))
+        const index = reader.readIndex()
+        for (const it of index) {
+            this.files.set(it.path.toLowerCase(), it)
+        }
         this.mountedPaks.push(reader)
 
         if (this.globalDataLoaded && reader.Ar instanceof FFileArchive) {
@@ -634,7 +636,10 @@ export class FileProvider extends EventEmitter {
             try {
                 const ioStoreReader = new FIoStoreReader()
                 ioStoreReader.initialize(ioStoreEnvironment, this.keys, this.ioStoreTocReadOptions)
-                ioStoreReader.getFiles().forEach((it) => this.files.set(it.path.toLowerCase(), it))
+                const files = ioStoreReader.getFiles()
+                for (const it of files) {
+                    this.files.set(it.path.toLowerCase(), it)
+                }
                 this.mountedIoStoreReaders.push(ioStoreReader)
                 /*if (this.globalPackageStore.isInitialized) {
                     this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))

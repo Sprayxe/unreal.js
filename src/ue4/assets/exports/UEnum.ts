@@ -8,9 +8,9 @@ import { FAssetArchive } from "../reader/FAssetArchive";
  * @enum
  */
 export enum ECppForm {
-    Regular = "Regular",
-    Namespaced = "Namespaced",
-    EnumClass = "EnumClass"
+    Regular,
+    Namespaced,
+    EnumClass
 }
 
 /**
@@ -41,12 +41,12 @@ export class UEnum extends UObject {
      */
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
-        this.names = Ar.readArray(() => {
-            return {
-                key: Ar.readFName(),
-                value: Number(Ar.readInt64())
-            }
-        })
-        this.cppForm = Object.values(ECppForm)[Ar.readUInt8()]
+        const nameLen = Ar.readInt32()
+        this.names = new Array(nameLen)
+        for (let i = 0; i < nameLen; ++i) {
+            this.names[i] =
+                new Pair<FName, number>(Ar.readFName(), Number(Ar.readInt64()))
+        }
+        this.cppForm = Ar.readUInt8()
     }
 }

@@ -84,7 +84,7 @@ export class FPackageStore extends FOnContainerMountedListener {
      * @type {Array<FScriptObjectEntry>}
      * @public
      */
-    scriptObjectEntries: FScriptObjectEntry[] = []
+    scriptObjectEntries: FScriptObjectEntry[]
 
     /**
      * Script object entries map
@@ -99,8 +99,7 @@ export class FPackageStore extends FOnContainerMountedListener {
      * @public
      */
     setupCulture() {
-        this.currentCultureNames = []
-        this.currentCultureNames.push(osLocale.sync().toString().replace("_", "-"))
+        this.currentCultureNames = [osLocale.sync().toString().replace("_", "-")]
     }
 
     /**
@@ -112,6 +111,7 @@ export class FPackageStore extends FOnContainerMountedListener {
         const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
         const numScriptObjects = initialLoadArchive.readInt32()
+        this.scriptObjectEntries = new Array(numScriptObjects)
         for (let i = 0; i < numScriptObjects; ++i) {
             const obj = new FScriptObjectEntry(initialLoadArchive, this.globalNameMap.nameEntries)
             const mappedName = FMappedName.fromMinimalName(obj.objectName)
@@ -119,7 +119,7 @@ export class FPackageStore extends FOnContainerMountedListener {
                 throw new ParserException("FMappedName must be global", initialLoadArchive)
             obj.objectName = this.globalNameMap.getMinimalName(mappedName)
             this.scriptObjectEntriesMap.set(obj.globalIndex, obj)
-            this.scriptObjectEntries.push(obj)
+            this.scriptObjectEntries[i] = obj
         }
     }
 

@@ -119,7 +119,11 @@ export class FMovieSceneSegment implements IStructType {
             this.range = new TRange(arg, () => new FFrameNumber(arg))
             this.id = arg.readInt32()
             this.allowEmpty = arg.readBoolean()
-            this.impls = arg.readArray(() => new FStructFallback(arg, FName.dummy("SectionEvaluationData")))
+            const len = arg.readInt32()
+            this.impls = new Array(len)
+            for (let i = 0; i< len; ++i) {
+                this.impls[i] = new FStructFallback(arg, FName.dummy("SectionEvaluationData"))
+            }
         } else {
             this.range = arg
             this.id = args[1]

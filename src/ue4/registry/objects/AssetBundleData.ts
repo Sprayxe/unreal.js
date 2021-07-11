@@ -14,7 +14,11 @@ export class FAssetBundleEntry {
     constructor(x?: any, y?: any) {
         if (x instanceof FArchive) {
             this.bundleName = x.readFName()
-            this.bundleAssets = x.readArray(() => new FSoftObjectPath(x))
+            const len = x.readInt32()
+            this.bundleAssets = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                this.bundleAssets[i] = new FSoftObjectPath(x)
+            }
         } else {
             this.bundleName = x
             this.bundleAssets = y
@@ -31,7 +35,11 @@ export class FAssetBundleData {
     constructor(bundles: FAssetBundleEntry[])
     constructor(x?: any) {
         if (x instanceof FArchive) {
-            this.bundles = x.readArray(() => new FAssetBundleEntry(x))
+            const len = x.readInt32()
+            this.bundles = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                this.bundles[i] = new FAssetBundleEntry(x)
+            }
         } else {
             this.bundles = x
         }

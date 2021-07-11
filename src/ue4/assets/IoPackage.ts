@@ -7,7 +7,6 @@ import {
     FExportMapEntry,
     FMappedName_EType,
     FPackageObjectIndex,
-    FPackageStoreEntry,
     FPackageSummary,
     FScriptObjectEntry
 } from "../asyncloading2/AsyncLoading2";
@@ -27,7 +26,6 @@ import { UStruct } from "./exports/UStruct";
 import { FExportArchive } from "./reader/FExportArchive";
 import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { Locres } from "../locres/Locres";
-import { UnrealArray } from "../../util/UnrealArray";
 import { Lazy } from "../../util/Lazy";
 import { Ue4Version } from "../versions/Game";
 import { Config } from "../../Config";
@@ -159,11 +157,17 @@ export class IoPackage extends Package {
         // Import map
         Ar.pos = this.summary.importMapOffset
         const importCount = (this.summary.exportMapOffset - this.summary.importMapOffset) / 8
-        this.importMap = new UnrealArray(importCount, () => new FPackageObjectIndex(Ar))
+        this.importMap = new Array(importCount)
+        for (let i = 0; i < importCount; ++i) {
+            this.importMap.push(new FPackageObjectIndex(Ar))
+        }
 
         // Export map
         const exportCount = (this.summary.exportBundlesOffset - this.summary.exportMapOffset) / 72
-        this.exportMap = new UnrealArray(exportCount, () => new FExportMapEntry(Ar))
+        this.exportMap = new Array(exportCount)
+        for (let i = 0; i < exportCount; ++i) {
+            this.exportMap[i] = new FExportMapEntry(Ar)
+        }
         this.exportsLazy = new Array<Lazy<UObject>>(exportCount)
 
         // Export bundles
@@ -183,13 +187,17 @@ export class IoPackage extends Package {
 
         // Load export bundles into arrays
         this.exportBundleHeaders = foundBundleHeaders
-        this.exportBundleEntries = []
+        this.exportBundleEntries = new Array(foundBundlesCount)
         for (let i = 0; i < foundBundlesCount; ++i)
-            this.exportBundleEntries.push(new FExportBundleEntry(Ar))
+            this.exportBundleEntries[i] = new FExportBundleEntry(Ar)
 
         // Graph data
         Ar.pos = this.summary.graphDataOffset
-        this.graphData = Ar.readArray(() => new FImportedPackage(Ar))
+        const graphDataLen = Ar.readInt32()
+        this.graphData = new Array(graphDataLen)
+        for (let i = 0; i < graphDataLen; ++i) {
+            this.graphData[i] = new FImportedPackage(Ar)
+        }
 
         // Preload dependencies
         this.importedPackages = new Lazy<IoPackage[]>(() => this.graphData.map(it => provider.loadGameFile(it.importedPackageId)))
@@ -362,7 +370,11 @@ export class FImportedPackage {
 
     constructor(Ar: FArchive) {
         this.importedPackageId = Ar.readUInt64()
-        this.externalArcs = Ar.readArray(() => new FArc(Ar))
+        const len = Ar.readInt32()
+        this.externalArcs = new Array(len)
+        for (let i = 0; i < len; ++i) {
+            this.externalArcs[i] = new FArc(Ar)
+        }
     }
 }
 
@@ -456,7 +468,10 @@ export class ResolvedScriptObject extends ResolvedObject {
                 }
                 const enm = new UEnum()
                 enm.name = name.text
-                enm.names = new UnrealArray(enumValues.length, (it) => new Pair<FName, number>(FName.dummy(`${name}::${enumValues[it]}`), it))
+                enm.names = new Array(enumValues.length)
+                for (let i = 0; i < enumValues.length; ++i) {
+                    enm.names.push(new Pair<FName, number>(FName.dummy(`${name}::${enumValues[i]}`), i))
+                }
                 return enm
             } else {
                 let struct = this.pkg.provider?.mappingsProvider?.getStruct(name)

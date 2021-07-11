@@ -1,4 +1,8 @@
-// this is a mess
+/**
+ * String Builder
+ * - DEPRECATED: use a normal string
+ * @deprecated
+ */
 export class StringBuilder {
 	value: any[] = []
 

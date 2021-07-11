@@ -29,7 +29,11 @@ export class FDependsNode {
             const sortIndexes: number[] = []
             let numFlagBits = 0
 
-            const inDependencies = Ar.readArray(() => Ar.readInt32())
+            const inDepLen = Ar.readInt32()
+            const inDependencies = new Array(inDepLen)
+            for (let i = 0; i < inDepLen; ++i) {
+                inDependencies[i] = Ar.readInt32()
+            }
             const numDependencies = inDependencies.length
             if (outFlagBits) {
                 numFlagBits = flagSetWidth * numDependencies

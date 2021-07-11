@@ -83,7 +83,11 @@ export class UAkMediaAssetData extends UObject {
         // UObject Properties
         this.isStreamed = this.getOrDefault("IsStreamed", false)
         this.useDeviceMemory = this.getOrDefault("UseDeviceMemory", false)
-        this.dataChunks = Ar.readArray(() => new FAkMediaDataChunk(Ar))
+        const chunkLen = Ar.readInt32()
+        this.dataChunks = new Array(chunkLen)
+        for (let i = 0; i < chunkLen; ++i) {
+            this.dataChunks[i] = new FAkMediaDataChunk(Ar)
+        }
     }
 
     /**

@@ -158,7 +158,11 @@ export class TEvaluationTreeEntryContainer<T> {
     /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any, y: any) {
         if (x instanceof FArchive) {
-            this.entries = x.readArray(() => new FEntry(x))
+            const len = x.readInt32()
+            this.entries = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                this.entries[i] = new FEntry(x)
+            }
             this.items = y()
         } else {
             this.entries = x
@@ -386,7 +390,14 @@ export class FMovieSceneEvaluationTree {
             this.rootNode = new FMovieSceneEvaluationTreeNode(x)
             this.childNodes = new TEvaluationTreeEntryContainer(
                 x,
-                () => x.readArray(() => new FMovieSceneEvaluationTreeNode(x))
+                () => {
+                    const len = x.readInt32()
+                    const arr = new Array(len)
+                    for (let i = 0; i < len; ++i) {
+                        arr[i] = new FMovieSceneEvaluationTreeNode(x)
+                    }
+                    return arr
+                }
             )
         }
     }

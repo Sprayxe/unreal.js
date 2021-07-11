@@ -26,7 +26,11 @@ export class FAssetData {
 
         Ar.serializeTagsAndBundles(this)
 
-        this.chunkIds = Ar.readArray(() => Ar.readInt32())
+        const chunkLen = Ar.readInt32()
+        this.chunkIds = new Array(chunkLen)
+        for (let i = 0; i < chunkLen; ++i) {
+            this.chunkIds[i] = Ar.readInt32()
+        }
         this.packageFlags = Ar.readUInt32()
     }
 }

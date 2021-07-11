@@ -7,7 +7,6 @@ import { FStripDataFlags } from "../../../objects/engine/FStripDataFlags";
 import { FByteBulkData } from "../../objects/FByteBulkData";
 import { FAssetArchive } from "../../reader/FAssetArchive";
 import { FAssetArchiveWriter } from "../../writer/FAssetArchiveWriter";
-import { UnrealArray } from "../../../../util/UnrealArray";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { Game } from "../../../versions/Game";
 
@@ -108,8 +107,10 @@ export class FTexturePlatformData {
             this.pixelFormat = arg.readString()
             this.firstMip = arg.readInt32()
             const mipCount = arg.readInt32()
-            this.mips = new UnrealArray(mipCount, () => new FTexture2DMipMap(arg))
-
+            this.mips = new Array(mipCount)
+            for (let i = 0; i < mipCount; ++i) {
+                this.mips[i] = new FTexture2DMipMap(arg)
+            }
             if (arg.game >= Game.GAME_UE4(23)) {
                 this.isVirtual = arg.readBoolean()
                 if (this.isVirtual) {

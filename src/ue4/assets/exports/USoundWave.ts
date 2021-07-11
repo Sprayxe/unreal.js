@@ -5,7 +5,6 @@ import { FByteBulkData } from "../objects/FByteBulkData";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
 import { FName } from "../../objects/uobject/FName";
-import { UnrealArray } from "../../../util/UnrealArray";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { ESoundWaveLoadingBehavior } from "../enums/ESoundWaveLoadingBehavior";
 import { FGuid } from "../../objects/core/misc/Guid";
@@ -535,7 +534,10 @@ class FStreamedAudioPlatformData {
     constructor(Ar: FAssetArchive) {
         this.numChunks = Ar.readInt32()
         this.audioFormat = Ar.readFName()
-        this.chunks = new UnrealArray(this.numChunks, () => new FStreamedAudioChunk(Ar))
+        this.chunks = new Array(this.numChunks)
+        for (let i = 0; i < this.numChunks; ++i) {
+            this.chunks[i] = new FStreamedAudioChunk(Ar)
+        }
     }
 
     /**

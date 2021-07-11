@@ -117,8 +117,16 @@ export class FPrecomputedVisibilityBucket {
      */
     constructor(Ar: FArchive) {
         this.cellDataSize = Ar.readInt32()
-        this.cells = Ar.readArray(() => new FPrecomputedVisibilityCell(Ar))
-        this.cellDataChunks = Ar.readArray(() => new FCompressedVisibilityChunk(Ar))
+        const len1 = Ar.readInt32()
+        this.cells = new Array(len1)
+        for (let i = 0; i < len1; ++i) {
+            this.cells[i] = new FPrecomputedVisibilityCell(Ar)
+        }
+        const len2 = Ar.readInt32()
+        this.cellDataChunks = new Array(len2)
+        for (let i = 0; i < len1; ++i) {
+            this.cellDataChunks[i] = new FCompressedVisibilityChunk(Ar)
+        }
     }
 }
 
@@ -180,7 +188,11 @@ export class FPrecomputedVisibilityHandler {
         this.precomputedVisibilityCellSizeZ = Ar.readFloat32()
         this.precomputedVisibilityCellBucketSizeXY = Ar.readInt32()
         this.precomputedVisibilityNumCellBuckets = Ar.readInt32()
-        this.precomputedVisibilityCellBuckets = Ar.readArray(() => new FPrecomputedVisibilityBucket(Ar))
+        const len = Ar.readInt32()
+        this.precomputedVisibilityCellBuckets = new Array(len)
+        for (let i = 0; i < len; ++i) {
+            this.precomputedVisibilityCellBuckets[i] = new FPrecomputedVisibilityBucket(Ar)
+        }
     }
 }
 
@@ -242,7 +254,11 @@ export class FPrecomputedVolumeDistanceField {
         this.volumeSizeX = Ar.readInt32()
         this.volumeSizeY = Ar.readInt32()
         this.volumeSizeZ = Ar.readInt32()
-        this.data = Ar.readArray(() => new FColor(Ar))
+        const len = Ar.readInt32()
+        this.data = new Array(len)
+        for (let i = 0; i < len; ++i) {
+            this.data[i] = new FColor(Ar)
+        }
     }
 }
 
@@ -314,10 +330,18 @@ export class ULevel extends ULevel_Properties {
      */
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
-        this.actors = Ar.readArray(() => Ar.readObject())
+        const len1 = Ar.readInt32()
+        this.actors = new Array(len1)
+        for (let i = 0; i < len1; ++i) {
+            this.actors[i] = Ar.readObject()
+        }
         this.url = new FUrl(Ar)
         this.model = Ar.readObject()
-        this.modelComponents = Ar.readArray(() => Ar.readObject())
+        const len2 = Ar.readInt32()
+        this.modelComponents = new Array(len2)
+        for (let i = 0; i < len2; ++i) {
+            this.modelComponents[i] = Ar.readObject()
+        }
         this.levelScriptActor = Ar.readObject()
         this.navListStart = Ar.readObject()
         this.navListEnd = Ar.readObject()

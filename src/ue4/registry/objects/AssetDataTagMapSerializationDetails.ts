@@ -11,7 +11,6 @@ import { FNameEntryId } from "../../objects/uobject/NameTypes";
 import { FAssetRegistryReader } from "../reader/AssetRegistryArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { Utils } from "../../../util/Utils";
-import { UnrealArray } from "../../../util/UnrealArray";
 
 export const OLD_BEGIN_MAGIC = 0x12345678
 export const BEGIN_MAGIC = 0x12345679
@@ -30,29 +29,78 @@ export class FStore {
         if (!order)
             throw new ParserException("Bad init magic", Ar)
 
-        const nums = new UnrealArray(11, () => Ar.readInt32())
+        const nums = new Array(11)
+        for (let i = 0; i < 11; ++i) {
+            nums[i] = Ar.readInt32()
+        }
 
         if (order === ELoadOrder.TextFirst) {
             const textDataBytes = Ar.readUInt32()
-            this.texts = new UnrealArray(nums[4], () => Ar.readString())
+            const len = nums[4]
+            this.texts = new Array(len)
+            for (let i = 0; i < len; ++i) {
+                this.texts[i] = Ar.readString()
+            }
         }
 
-        this.numberlessNames = new UnrealArray(nums[0], () => new FNameEntryId(Ar))
-        this.names = new UnrealArray(nums[1], () => Ar.readFName())
-        this.numberlessExportPaths = new UnrealArray(nums[2], () => new FNumberlessExportPath(Ar, this.nameMap))
-        this.exportPaths = new UnrealArray(nums[3], () => new FAssetRegistryExportPath(Ar))
+        const len1 = nums[0]
+        this.numberlessNames = new Array(len1)
+        for (let i = 0; i < len1; ++i) {
+            this.numberlessNames[i] = new FNameEntryId(Ar)
+        }
+
+        const len2 = nums[1]
+        this.names = new Array(len2)
+        for (let i = 0; i < len2; ++i) {
+            this.names[i] = Ar.readFName()
+        }
+
+        const len3 = nums[2]
+        this.numberlessExportPaths = new Array(len3)
+        for (let i = 0; i < len3; ++i) {
+            this.numberlessExportPaths[i] = new FNumberlessExportPath(Ar, this.nameMap)
+        }
+
+        const len4 = nums[3]
+        this.exportPaths = new Array(len4)
+        for (let i = 0; i < len4; ++i) {
+            this.exportPaths[i] = new FAssetRegistryExportPath(Ar)
+        }
 
         if (order === ELoadOrder.Member) {
-            this.texts = new UnrealArray(nums[4], () => Ar.readString())
+            const _len = nums[4]
+            this.texts = new Array(_len)
+            for (let i = 0; i < _len; ++i) {
+                this.texts[i] = Ar.readString()
+            }
         }
 
-        this.ansiStringOffsets = new UnrealArray(nums[5], () => Ar.readUInt32())
-        this.wideStringOffsets = new UnrealArray(nums[6], () => Ar.readUInt32())
+        const len5 = nums[5]
+        this.ansiStringOffsets = new Array(len5)
+        for (let i = 0; i < len5; ++i) {
+            this.ansiStringOffsets[i] = Ar.readUInt32()
+        }
+
+        const len6 = nums[6]
+        this.wideStringOffsets = new Array(len6)
+        for (let i = 0; i < len6; ++i) {
+            this.wideStringOffsets[i] = Ar.readUInt32()
+        }
+
         this.ansiStrings = Ar.readBuffer(nums[7])
         this.wideStrings = Ar.wrappedAr.readBuffer(nums[8] * 2)
 
-        this.numberlessPairs = new UnrealArray(nums[9], () => new FNumberlessPair(Ar))
-        this.pairs = new UnrealArray(nums[10], () => new FNumberedPair(Ar))
+        const len7 = nums[9]
+        this.numberlessPairs = new Array(len7)
+        for (let i = 0; i < len7; ++i) {
+            this.numberlessPairs[i] = new FNumberlessPair(Ar)
+        }
+
+        const len8 = nums[10]
+        this.pairs = new Array(len8)
+        for (let i = 0; i < len8; ++i) {
+            this.pairs[i] = new FNumberedPair(Ar)
+        }
 
         if (Ar.readUInt32() !== END_MAGIC)
             throw new Error("Bytes did not match 'END_MAGIC' at end")

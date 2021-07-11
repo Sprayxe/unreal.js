@@ -47,8 +47,11 @@ You will also experience longer mounting times than e.g VALORANT.
     const usmap = new UsmapTypeMappingsProvider(readFileSync("USMAPPATH"))
     const provider = new FileProvider("GAMEPATH", VERSION, usmap)
     provider.mappingsProvider.reload() // Loads .usmap
+    // Setting this to '0' will skip reading directory index
+    // Means it will not populate .utoc file entries, so <FIoStoreReader>.getFiles() will be empty
+    // Leaving it to default value will slightly increase pak mounting time
+    provider.ioStoreTocReadOptions = 0
     // 'start' the provider
-    provider.populateIoStoreFiles = true
     await provider.initialize()
     // submit aes key to decrypt paks
     await provider.submitKey(FGuid.mainGuid, "KEY")

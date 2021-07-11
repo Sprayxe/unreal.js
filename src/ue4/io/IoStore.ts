@@ -554,28 +554,29 @@ export class FIoStoreTocResource {
         }
 
         // Chunk IDs
-        this.chunkIds = []
-        for (let i = 0; i < this.header.tocEntryCount; i++) {
+        const _len1 = this.header.tocEntryCount
+        this.chunkIds = new Array(_len1)
+        for (let i = 0; i < _len1; i++) {
             const id = new FIoChunkId(tocBuffer)
             this.chunkIds[i] = id
             this.chunkIdToIndex[id.id.toString("base64")] = i
         }
 
         // Chunk offsets
-        this.chunkOffsetLengths = []
-        for (let i = 0; i < this.header.tocEntryCount; i++) {
+        this.chunkOffsetLengths = new Array(_len1)
+        for (let i = 0; i < _len1; i++) {
             this.chunkOffsetLengths[i] = new FIoOffsetAndLength(tocBuffer)
         }
 
         // Compression blocks
-        this.compressionBlocks = []
-        for (let i = 0; i < this.header.tocCompressedBlockEntryCount; i++) {
+        const _len2 = this.header.tocCompressedBlockEntryCount
+        this.compressionBlocks = new Array(_len2)
+        for (let i = 0; i < _len2; i++) {
             this.compressionBlocks[i] = new FIoStoreTocCompressedBlockEntry(tocBuffer)
         }
 
         // Compression methods
-        this.compressionMethods = []
-        this.compressionMethods[0] = "None"
+        this.compressionMethods = ["None"]
         for (let i = 0; i < this.header.compressionMethodNameCount; i++) {
             const compressionMethodName = tocBuffer.readBuffer(this.header.compressionMethodNameLength)
             let length = 0
@@ -613,8 +614,8 @@ export class FIoStoreTocResource {
 
         // Meta
         if ((readOptions & EIoStoreTocReadOptions.ReadTocMeta)) {
-            this.chunkMetas = []
-            for (let i = 0; i < this.header.tocEntryCount; i++) {
+            this.chunkMetas = new Array(_len1)
+            for (let i = 0; i < _len1; i++) {
                 this.chunkMetas[i] = new FIoStoreTocEntryMeta(tocBuffer)
             }
         } else {
