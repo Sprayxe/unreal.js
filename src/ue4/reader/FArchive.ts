@@ -1,139 +1,96 @@
+import { Game } from "../../index";
 import { ParserException } from "../../exceptions/Exceptions";
 import { FName } from "../objects/uobject/FName";
-import { UnrealMap } from "../../util/UnrealMap";
-import { Game } from "../versions/Game";
 
 /**
- * UE4 Reader
+ * Generic UE4 Reader
+ * @abstract
  */
-export class FArchive {
-    /**
-     * Stores the buffer data
-     * @type {Buffer}
-     * @public
-     */
-    data: Buffer // TODO please keep this in FByteArchive
-
-    /**
-     * Creates an instance
-     * @param {Buffer} data Buffer to read
-     * @constructor
-     * @public
-     */
-    constructor(data?: Buffer) {
-        this.data = data || Buffer.alloc(0)
-    }
-
+export abstract class FArchive {
     /**
      * Game that is used with this reader
      * @type {number}
      * @public
      */
-    game = Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
+    public game = Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
 
     /**
      * Version that is used with this reader
      * @type {number}
      * @public
      */
-    ver = Game.GAME_UE4_GET_AR_VER(this.game)
+    public ver = Game.GAME_UE4_GET_AR_VER(this.game)
 
     /**
-     * Position of the reader
+     * Whether tagged property serialization is replaced by faster unversioned serialization
+     * This assumes writer and reader share the same property definitions
+     * @type {boolean}
+     * @public
+     */
+    public useUnversionedPropertySerialization = false
+
+    /**
+     * Whether editor only properties are being filtered from the archive (or has been filtered)
+     * @type {boolean}
+     * @public
+     */
+    public isFilterEditorOnly = false
+
+    /**
+     * Whether to use little endian order
+     * @type {boolean}
+     * @public
+     * @abstract
+     */
+    public abstract littleEndian: boolean
+
+    /**
+     * Clones this
+     * @returns {FArchive} Clone
+     * @public
+     * @abstract
+     */
+    public abstract clone(): FArchive
+
+    /**
+     * Size of data
      * @type {number}
-     * @protected
-     */
-    protected position = 0
-
-    /**
-     * Whether to use unversioned property serialization (DO NOT OVERRIDE THIS)
-     * @type {boolean}
      * @public
+     * @abstract
      */
-    useUnversionedPropertySerialization = false
-
-    /**
-     * Whether if this is a filter editor
-     * @type {boolean}
-     * @public
-     */
-    isFilterEditorOnly = true
-
-    /**
-     * Whether to use little endian
-     * @type {boolean}
-     * @public
-     */
-    littleEndian = true
+    public abstract get size(): number
 
     /**
      * Current position
      * @type {number}
      * @public
+     * @abstract
      */
-    get pos(): number {
-        return this.position
-    }
-
-    set pos(v: number) {
-        this.position = v
-    }
+    public abstract get pos(): number
+    public abstract set pos(pos: number)
 
     /**
-     * Returns this reader's size
-     * @type {number}
-     * @public
-     */
-    get size(): number {
-        return this.data.length
-    }
-
-    /**
-     * Whether if this reader is the the end
-     * @type {boolean}
-     * @public
-     */
-    get isAtStopper(): boolean {
-        return this.pos >= this.size
-    }
-
-    /**
-     * Copies to a buffer
+     * Reads to a buffer
      * @param {Buffer} b Destination
      * @param {number} off Offset
      * @param {number} len Length
      * @returns {void}
      * @public
+     * @abstract
      */
-    readToBuffer(b: Buffer, off: number = 0, len: number = b.length): void {
-        this.data.copy(b, off, this.position, this.position += len)
-    }
+    public abstract readToBuffer(b: Buffer, off?: number, len?: number): void
 
     /**
      * Reads an amount of bytes and returns them
-     * @param {number} num Amount to read
-     * @param {boolean} copy Whether to remove these bytes from the reader's buffer (default: false)
-     * @returns {Buffer} Read bytes
+     * @param {number} size Amount to read
+     * @returns {Buffer} Read bytes or a byte if size not provided
      * @public
+     * @abstract
      */
-    readBuffer(num: number, copy: boolean = false): Buffer {
-        return this.readRange(this.position, this.position += num, copy)
-    }
-
-    /**
-     * Reads a range of bytes and returns them
-     * @param {number} begin Where to begin
-     * @param {number} end Where to end
-     * @param {boolean} copy Whether to remove these bytes from the reader's buffer (default: false)
-     * @returns {Buffer} Read bytes
-     * @public
-     */
-    readRange(begin: number, end: number, copy: boolean = false): Buffer {
-        if (copy) {
-            return this.data.slice(begin, end)
-        } else {
-            return this.data.subarray(begin, end)
-        }
+    public read(size: number): Buffer {
+        const res = Buffer.alloc(size)
+        this.readToBuffer(res)
+        return res
     }
 
     /**
@@ -141,21 +98,16 @@ export class FArchive {
      * @returns {number} Result
      * @public
      */
-    readInt8(): number {
-        const localPos = this.position
-        this.position += 1
-        return this.data.readInt8(localPos)
+    public readInt8(): number {
+        return this.read(1).readInt8()
     }
-
     /**
      * Reads an unsigned 8-bit integer
      * @returns {number} Result
      * @public
      */
-    readUInt8(): number {
-        const localPos = this.position
-        this.position += 1
-        return this.data.readUInt8(localPos)
+    public readUInt8(): number {
+        return this.read(1).readUInt8()
     }
 
     /**
@@ -163,21 +115,22 @@ export class FArchive {
      * @returns {number} Result
      * @public
      */
-    readInt16(): number {
-        const localPos = this.position
-        this.position += 2
-        return this.littleEndian ? this.data.readInt16LE(localPos) : this.data.readInt16BE(localPos)
+    public readInt16(): number {
+        const b = this.read(2)
+        return this.littleEndian
+            ? b.readInt16LE()
+            : b.readInt16BE()
     }
-
     /**
      * Reads an unsigned 16-bit integer
      * @returns {number} Result
      * @public
      */
-    readUInt16(): number {
-        const localPos = this.position
-        this.position += 2
-        return this.littleEndian ? this.data.readUInt16LE(localPos) : this.data.readUInt16BE(localPos)
+    public readUInt16(): number {
+        const b = this.read(2)
+        return this.littleEndian
+            ? b.readUInt16LE()
+            : b.readUInt16BE()
     }
 
     /**
@@ -185,21 +138,22 @@ export class FArchive {
      * @returns {number} Result
      * @public
      */
-    readInt32(): number {
-        const localPos = this.position
-        this.position += 4
-        return this.littleEndian ? this.data.readInt32LE(localPos) : this.data.readInt32BE(localPos)
+    public readInt32(): number {
+        const b = this.read(4)
+        return this.littleEndian
+            ? b.readInt32LE()
+            : b.readInt32BE()
     }
-
     /**
      * Reads an unsigned 32-bit integer
      * @returns {number} Result
      * @public
      */
-    readUInt32(): number {
-        const localPos = this.position
-        this.position += 4
-        return this.littleEndian ? this.data.readUInt32LE(localPos) : this.data.readUInt32BE(localPos)
+    public readUInt32(): number {
+        const b = this.read(4)
+        return this.littleEndian
+            ? b.readUInt32LE()
+            : b.readUInt32BE()
     }
 
     /**
@@ -207,32 +161,49 @@ export class FArchive {
      * @returns {bigint} Result
      * @public
      */
-    readInt64(): bigint {
-        const localPos = this.position
-        this.position += 8
-        return this.littleEndian ? this.data.readBigInt64LE(localPos) : this.data.readBigInt64BE(localPos)
+    public readInt64(): bigint {
+        const b = this.read(8)
+        return this.littleEndian
+            ? b.readBigInt64LE()
+            : b.readBigInt64BE()
     }
-
     /**
      * Reads an unsigned 64-bit integer
-     * @returns {number} Result
+     * @returns {bigint} Result
      * @public
      */
-    readUInt64(): bigint {
-        const localPos = this.position
-        this.position += 8
-        return this.littleEndian ? this.data.readBigUInt64LE(localPos) : this.data.readBigUInt64BE(localPos)
+    public readUInt64(): bigint {
+        const b = this.read(8)
+        return this.littleEndian
+            ? b.readBigUInt64LE()
+            : b.readBigUInt64BE()
     }
 
     /**
-     * Reads a float
+     * Reads bits
+     * @param {Buffer} b Buffer to read
+     * @param {number} offBytes Offset to use
+     * @param {number} lenBits Amount of bits to read
+     * @returns {void}
+     * @public
+     */
+    public readBits(b: Buffer, offBytes: number, lenBits: number): void {
+        this.readToBuffer(b, offBytes, (lenBits + 7) / 8)
+        if (lenBits % 8) {
+            b[offBytes + lenBits / 8] = b[offBytes + lenBits / 8] & (1 << (lenBits & 7)) - 1
+        }
+    }
+
+    /**
+     * Reads a 32-bit float
      * @returns {number} Result
      * @public
      */
-    readFloat32(): number {
-        const localPos = this.position
-        this.position += 4
-        return this.littleEndian ? this.data.readFloatLE(localPos) : this.data.readFloatBE(localPos)
+    public readFloat32(): number {
+        const b = this.read(4)
+        return this.littleEndian
+            ? b.readFloatLE()
+            : b.readFloatBE()
     }
 
     /**
@@ -240,10 +211,11 @@ export class FArchive {
      * @returns {number} Result
      * @public
      */
-    readDouble(): number {
-        const localPos = this.position
-        this.position += 8
-        return this.littleEndian ? this.data.readDoubleLE(localPos) : this.data.readDoubleBE(localPos)
+    public readDouble(): number {
+        const b = this.read(8)
+        return this.littleEndian
+            ? b.readDoubleLE()
+            : b.readDoubleBE()
     }
 
     /**
@@ -251,8 +223,8 @@ export class FArchive {
      * @returns {boolean} Result
      * @public
      */
-    readBoolean(): boolean {
-        const int = this.readInt32();
+    public readBoolean(): boolean {
+        const int = this.readInt32()
         if (int !== 0 && int !== 1)
             throw new ParserException(`Invalid boolean value (${int})`, this)
         return int !== 0
@@ -263,7 +235,7 @@ export class FArchive {
      * @returns {boolean} Result
      * @public
      */
-    readFlag(): boolean {
+    public readFlag(): boolean {
         const int = this.readUInt8()
         if (int !== 0 && int !== 1)
             throw new ParserException(`Invalid boolean value (${int})`, this)
@@ -271,11 +243,29 @@ export class FArchive {
     }
 
     /**
+     * Reads 32-bit int packed
+     * @returns {number} Int
+     * @public
+     */
+    public readIntPacked(): number {
+        let value = 0
+        let cnt = 0
+        let more = true
+        while (more) {
+            let nextByte = this.readUInt8()
+            more = (nextByte & 1) != 0         // Check 1 bit to see if theres more after this
+            nextByte = nextByte >> 1           // Shift to get actual 7 bit value
+            value += nextByte << (7 * cnt++)  // Add to total value
+        }
+        return value
+    }
+
+    /**
      * Reads a FString
      * @returns {string} Result
      * @public
      */
-    readString(): string {
+    public readString(): string {
         const length = this.readInt32()
         if (length < -65536 || length > 65536)
             throw new ParserException(`Invalid String length '${length}'`, this)
@@ -290,7 +280,7 @@ export class FArchive {
             return String(Buffer.from(dat))
         } else {
             if (length === 0) return ""
-            const str = this.readBuffer(length - 1).toString("utf-8")
+            const str = this.read(length - 1).toString("utf-8")
             if (this.readUInt8() !== 0)
                 throw new ParserException("Serialized FString is not null-terminated", this)
             return str
@@ -298,52 +288,11 @@ export class FArchive {
     }
 
     /**
-     * Reads an array
-     * - DEPRECATED: Lambdas may impact performance, use for loop
-     * @param {any} init Callable method for array entries
-     * @param {number} length Length to read
-     * @returns {Array<any>} Result
-     * @example readArray((index) => new Class(index))
-     * @example readArray((index) => new Class(index), 69420)
-     * @deprecated
-     * @public
-     */
-    readArray<T>(init: (index: number) => T, length?: number): T[] {
-        const num = length != null ? length : this.readInt32()
-        const array = new Array(num)
-        for (let i = 0; i < num; i++) {
-            array[i] = init(i)
-        }
-        return array
-    }
-
-    /**
-     * Reads a map
-     * - DEPRECATED: Lambdas may impact performance, use for loop
-     * @param {number} length Length to read
-     * @param {any} init Callable method for map entries
-     * @returns {UnrealMap<any, any>} Result
-     * @example readTMap(null, (Ar) => { return { key: Ar.readFName(), value: Ar.readObject() } })
-     * @example readTMap(69420, (Ar) => { return { key: Ar.readFName(), value: Ar.readObject() } })
-     * @deprecated
-     * @public
-     */
-    readTMap<K, V>(length: number = this.readInt32(), init: (it: FArchive) => Pair<K, V>): UnrealMap<K, V> {
-        if (length == null) length = this.readInt32()
-        const map = new UnrealMap<K, V>()
-        for (let i = 0; i < length; ++i) {
-            const {key, value} = init(this)
-            map.set(key, value)
-        }
-        return map
-    }
-
-    /**
      * Reads FName
      * @returns {FName}
      * @public
      */
-    readFName(): FName {
+    public readFName(): FName {
         return FName.NAME_None
     }
 
@@ -351,14 +300,7 @@ export class FArchive {
      * Returns FArchive info for error
      * @returns {string}
      * @public
+     * @abstract
      */
-    printError(): string {
-        return `FArchive Info: pos ${this.position}, stopper ${this.size}`
-    }
+    public abstract printError(): string
 }
-
-export interface Pair<K, V> {
-    key: K
-    value: V
-}
-

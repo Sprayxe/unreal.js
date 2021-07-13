@@ -74,7 +74,7 @@ export class FManifestHeader {
         this.headerSize = Ar.readUInt32()
         this.dataSizeUncompressed = Ar.readUInt32()
         this.dataSizeCompressed = Ar.readUInt32()
-        this.shaHash = Ar.readBuffer(20)
+        this.shaHash = Ar.read(20)
         this.storedAs = Ar.readUInt8()
         this.version = Ar.readInt32()
         Ar.pos = startPos + this.headerSize

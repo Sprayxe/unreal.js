@@ -38,8 +38,8 @@ export function loadNameBatch(nameDataAr: FArchive, hashDataAr?: FArchive) {
             const header = headers[i]
             const len = header.len()
             arr[i] = header.isUtf16()
-                ? Buffer.from(nameDataAr.readBuffer(len * 2)).toString("utf16le")
-                : Buffer.from(nameDataAr.readBuffer(len)).toString("utf-8")
+                ? Buffer.from(nameDataAr.read(len * 2)).toString("utf16le")
+                : Buffer.from(nameDataAr.read(len)).toString("utf-8")
         }
 
         return arr

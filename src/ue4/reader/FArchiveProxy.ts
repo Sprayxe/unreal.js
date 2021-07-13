@@ -1,43 +1,50 @@
 import { FArchive } from "./FArchive";
 
 /**
- * Proxy for UE4 Reader
- * @extends {FArchive}
+ * Proxy for UE4 Generic Reader
  */
 export class FArchiveProxy extends FArchive {
-    /**
-     * The FArchive
-     * @type {FArchive}
-     * @public
-     */
-    wrappedAr: FArchive
+    public wrappedAr: FArchive
 
     /**
-     * Whether to use little endian
+     * Whether to use little endian order
      * @type {boolean}
      * @public
      */
-    littleEndian: boolean
+    public get littleEndian() {
+        return this.wrappedAr.littleEndian
+    }
+    public set littleEndian(value: boolean) {
+        this.wrappedAr.littleEndian = value
+    }
 
     /**
      * Creates an instance
-     * @param {FArchive} wrappedAr FArchive instance
+     * @param {FArchive} wrappedAr Ar to proxy
      * @constructor
      * @public
      */
     constructor(wrappedAr: FArchive) {
         super()
         this.wrappedAr = wrappedAr
-        this.littleEndian = this.wrappedAr.littleEndian
     }
 
     /**
-     * Clones this instance
-     * @returns {FArchiveProxy}
+     * Clones this
+     * @returns {FArchiveProxy} Clone
      * @public
      */
-    clone(): FArchiveProxy {
+    public clone(): FArchiveProxy {
         return new FArchiveProxy(this.wrappedAr)
+    }
+
+    /**
+     * Size of data
+     * @type {number}
+     * @public
+     */
+    public get size(): number {
+        return this.wrappedAr.size
     }
 
     /**
@@ -45,30 +52,42 @@ export class FArchiveProxy extends FArchive {
      * @type {number}
      * @public
      */
-    get pos(): number {
+    public get pos(): number {
         return this.wrappedAr.pos
     }
-
-    set pos(pos: number) {
+    public set pos(pos: number) {
         this.wrappedAr.pos = pos
     }
 
     /**
-     * Size of this reader
-     * @type {number}
+     * Reads to a buffer
+     * @param {Buffer} b Destination
+     * @param {number} off Offset
+     * @param {number} len Length
+     * @returns {void}
      * @public
      */
-    get size(): number  {
-        return this.wrappedAr.size
+    public readToBuffer(b: Buffer, off: number = 0, len: number = b.length) {
+        return this.wrappedAr.readToBuffer(b, off, len)
     }
 
-    // Only overriding these to keep optimal performance with FByteArchive
+    /**
+     * Returns FArchive info for error
+     * @returns {string}
+     * @public
+     */
+    public printError(): string {
+        return this.wrappedAr.printError()
+    }
+
+    // Overriding these to keep optimal performance with FByteArchive
+
     /**
      * Reads an 8-bit integer
      * @returns {number} Result
      * @public
      */
-    readInt8(): number {
+    public readInt8(): number {
         return this.wrappedAr.readInt8()
     }
 
@@ -77,7 +96,7 @@ export class FArchiveProxy extends FArchive {
      * @returns {number} Result
      * @public
      */
-    readInt16(): number {
+    public readInt16(): number {
         return this.wrappedAr.readInt16()
     }
 
@@ -86,25 +105,25 @@ export class FArchiveProxy extends FArchive {
      * @returns {number} Result
      * @public
      */
-    readInt32(): number {
+    public readInt32(): number {
         return this.wrappedAr.readInt32()
     }
 
     /**
      * Reads a 64-bit integer
-     * @returns {number} Result
+     * @returns {bigint} Result
      * @public
      */
-    readInt64(): bigint {
+    public readInt64(): bigint {
         return this.wrappedAr.readInt64()
     }
 
     /**
-     * Reads a float
+     * Reads a 32-bit float
      * @returns {number} Result
      * @public
      */
-    readFloat32(): number {
+    public readFloat32(): number {
         return this.wrappedAr.readFloat32()
     }
 
@@ -113,18 +132,7 @@ export class FArchiveProxy extends FArchive {
      * @returns {number} Result
      * @public
      */
-    readDouble(): number {
+    public readDouble(): number {
         return this.wrappedAr.readDouble()
-    }
-
-    /**
-     * Creates a string with FArchive info for error
-     * @returns {string} Result
-     * @public
-     */
-    printError(): string {
-        // 5head /s
-        return super.printError()
-            .replace("FArchive", "FArchiveProxy")
     }
 }

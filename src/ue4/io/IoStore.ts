@@ -578,7 +578,7 @@ export class FIoStoreTocResource {
         // Compression methods
         this.compressionMethods = ["None"]
         for (let i = 0; i < this.header.compressionMethodNameCount; i++) {
-            const compressionMethodName = tocBuffer.readBuffer(this.header.compressionMethodNameLength)
+            const compressionMethodName = tocBuffer.read(this.header.compressionMethodNameLength)
             let length = 0
             while (compressionMethodName[length] !== 0) {
                 ++length
@@ -589,11 +589,11 @@ export class FIoStoreTocResource {
         // Chunk block signatures
         if (this.header.containerFlags & EIoContainerFlags.Signed) {
             const hashSize = tocBuffer.readInt32()
-            tocBuffer.pos += hashSize // actually: const tocSignature = tocBuffer.readBuffer(hashSize)
-            tocBuffer.pos += hashSize // actually: const blockSignature = tocBuffer.readBuffer(hashSize)
+            tocBuffer.pos += hashSize // actually: const tocSignature = tocBuffer.read(hashSize)
+            tocBuffer.pos += hashSize // actually: const blockSignature = tocBuffer.read(hashSize)
             /*this.chunkBlockSignatures = new Array(this.header.tocCompressedBlockEntryCount)
             for (let i = 0; i < this.header.tocCompressedBlockEntryCount; i++) {
-                this.chunkBlockSignatures[i] = tocBuffer.readBuffer(20)
+                this.chunkBlockSignatures[i] = tocBuffer.read(20)
             }*/
             tocBuffer.pos += this.header.tocCompressedBlockEntryCount * 20
 
@@ -606,7 +606,7 @@ export class FIoStoreTocResource {
         if (this.header.containerFlags & EIoContainerFlags.Indexed
             && this.header.directoryIndexSize > 0) {
             if (readOptions & EIoStoreTocReadOptions.ReadDirectoryIndex) {
-                this.directoryIndexBuffer = tocBuffer.readBuffer(this.header.directoryIndexSize & 0xFFFFFFFF)
+                this.directoryIndexBuffer = tocBuffer.read(this.header.directoryIndexSize & 0xFFFFFFFF)
             } else {
                 tocBuffer.pos += this.header.directoryIndexSize
             }

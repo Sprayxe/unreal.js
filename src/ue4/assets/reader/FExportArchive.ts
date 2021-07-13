@@ -16,21 +16,21 @@ export class FExportArchive extends FAssetArchive {
      * @type {Buffer}
      * @public
      */
-    data: Buffer
+    public data: Buffer
 
     /**
      * UObject of this reader
      * @type {UObject}
      * @public
      */
-    obj: UObject
+    public obj: UObject
 
     /**
      * I/O Package of this reader
      * @type {IoPackage}
      * @public
      */
-    pkg: IoPackage
+    public pkg: IoPackage
 
     /**
      * Creates an instance
@@ -56,7 +56,7 @@ export class FExportArchive extends FAssetArchive {
      * @returns {FAssetArchive} Reader
      * @public
      */
-    getPayload(type: PayloadType): FAssetArchive {
+    public getPayload(type: PayloadType): FAssetArchive {
         if (this.provider == null)
             throw new ParserException(`Lazy loading a ${Object.keys(PayloadType)[type]} requires a file provider`)
         let ioChunkType: EIoChunkType
@@ -79,7 +79,7 @@ export class FExportArchive extends FAssetArchive {
      * @returns {void}
      * @public
      */
-    checkDummyName(dummyName: string) {
+    public checkDummyName(dummyName: string) {
         if (Config.GExportArchiveCheckDummyName && !(dummyName in this.pkg.nameMap.nameEntries)) {
             console.warn(`${dummyName} is not in the package name map. There must be something wrong.`)
         }
@@ -90,7 +90,7 @@ export class FExportArchive extends FAssetArchive {
      * @returns {string}
      * @public
      */
-    printError(): string {
+    public printError(): string {
         return super.printError()
             .replace("FAssetArchive", "FExportArchive")
     }

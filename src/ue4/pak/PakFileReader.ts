@@ -12,7 +12,6 @@ import { FArchive } from "../reader/FArchive";
 import { EPakVersion } from "./enums/PakVersion";
 import { Game } from "../versions/Game";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
-import Collection from "@discordjs/collection";
 
 /**
  * UE4 Pak File Reader
@@ -143,11 +142,11 @@ export class PakFileReader {
                         throw new ParserException("Decrypting a encrypted file requires an encryption key to be set")
                     }
                     srcSize = Utils.align(srcSize, Aes.BLOCK_SIZE)
-                    const buf = exAr.readBuffer(srcSize)
+                    const buf = exAr.read(srcSize)
                     compressedBuffer = Aes.decrypt(buf, this.aesKey)
                 } else {
                     // Read the block data
-                    compressedBuffer = exAr.readBuffer(srcSize)
+                    compressedBuffer = exAr.read(srcSize)
                 }
                 // Calculate the uncompressed size,
                 // its either just the compression block size
@@ -165,10 +164,10 @@ export class PakFileReader {
             // AES is block encryption, all encrypted blocks need to be 16 bytes long,
             // fix the game file length by growing it to the next multiple of 16 bytes
             const newLength = Utils.align(gameFile.size, Aes.BLOCK_SIZE)
-            const buffer = Aes.decrypt(exAr.readBuffer(newLength), this.aesKey)
+            const buffer = Aes.decrypt(exAr.read(newLength), this.aesKey)
             return buffer.subarray(0, gameFile.size)
         } else {
-            return exAr.readBuffer(gameFile.size)
+            return exAr.read(gameFile.size)
         }
     }
 
@@ -182,7 +181,7 @@ export class PakFileReader {
         this.Ar.pos = this.pakInfo.indexOffset
 
         // this.readAndDecrypt()
-        let buf = this.Ar.readBuffer(this.pakInfo.indexSize)
+        let buf = this.Ar.read(this.pakInfo.indexSize)
         if (this.isEncrypted()) {
             const key = this.aesKey
             if (!key)
@@ -269,7 +268,7 @@ export class PakFileReader {
         primaryIndexAr.pos += 20 // Directory Index hash
 
         const encodedPakEntriesSize = primaryIndexAr.readInt32()
-        const encodedPakEntries = primaryIndexAr.readBuffer(encodedPakEntriesSize)
+        const encodedPakEntries = primaryIndexAr.read(encodedPakEntriesSize)
         const encodedPakEntriesAr = new FByteArchive(encodedPakEntries)
 
         if (primaryIndexAr.readInt32() < 0)
@@ -278,7 +277,7 @@ export class PakFileReader {
         this.Ar.pos = directoryIndexOffset
 
         // this.readAndDecrypt()
-        let buf = this.Ar.readBuffer(directoryIndexSize)
+        let buf = this.Ar.read(directoryIndexSize)
         if (this.isEncrypted()) {
             const key = this.aesKey
             if (!key)
@@ -470,7 +469,7 @@ export class PakFileReader {
      * @deprecated
      */
     private readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted()): Buffer {
-        let data = this.Ar.readBuffer(num)
+        let data = this.Ar.read(num)
         if (isEncrypted) {
             const key = this.aesKey
             if (!key)
@@ -510,7 +509,7 @@ export class PakFileReader {
      */
     indexCheckBytes(): Buffer {
         this.Ar.pos = this.pakInfo.indexOffset
-        return this.Ar.readBuffer(128)
+        return this.Ar.read(128)
     }
 
     /**

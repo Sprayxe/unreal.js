@@ -30,7 +30,7 @@ export class FChunkDataList {
             this.chunkList[i] = new FChunkInfo()
         for (const chunkInfo of this.chunkList) chunkInfo.guid = new FGuid(Ar)
         for (const chunkInfo of this.chunkList) chunkInfo.hash = Number(Ar.readUInt64())
-        for (const chunkInfo of this.chunkList) chunkInfo.shaHash = Ar.readBuffer(20)
+        for (const chunkInfo of this.chunkList) chunkInfo.shaHash = Ar.read(20)
         for (const chunkInfo of this.chunkList) chunkInfo.groupNumber = Ar.readUInt8()
         for (const chunkInfo of this.chunkList) chunkInfo.windowSize = Ar.readUInt32()
         for (const chunkInfo of this.chunkList) chunkInfo.fileSize = Number(Ar.readInt64())

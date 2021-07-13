@@ -38,7 +38,7 @@ export class FNiagaraVariable extends FNiagaraVariableBase {
     constructor(x: any, y?: any, z?: any) {
         if (x instanceof FAssetArchive) {
             super(x)
-            this.varData = x.readBuffer(x.readInt32())
+            this.varData = x.read(x.readInt32())
         } else {
             super(x, y)
             this.varData = z

@@ -30,7 +30,7 @@ export class FFileManifestList {
             this.fileList[i] = new FFileManifest()
         for (const fileManifest of this.fileList) fileManifest.fileName = Ar.readString()
         for (const fileManifest of this.fileList) fileManifest.symlinkTarget = Ar.readString()
-        for (const fileManifest of this.fileList) fileManifest.fileHash = Ar.readBuffer(20)
+        for (const fileManifest of this.fileList) fileManifest.fileHash = Ar.read(20)
         for (const fileManifest of this.fileList) fileManifest.fileMetaFlags = Ar.readUInt8()
         for (const fileManifest of this.fileList) {
             const len = Ar.readInt32()

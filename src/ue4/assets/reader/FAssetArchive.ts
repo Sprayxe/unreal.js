@@ -1,41 +1,38 @@
-import { FByteArchive } from "../../reader/FByteArchive";
+import { FArchiveProxy } from "../../reader/FArchiveProxy";
 import { FileProvider } from "../../../fileprovider/FileProvider";
+import { FByteArchive } from "../../reader/FByteArchive";
+import { Package } from "../Package";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
+import { FArchive } from "../../reader/FArchive";
 import { PakPackage } from "../PakPackage";
 import { FName, FNameEntry } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
-import { Package } from "../Package";
-import { FArchive } from "../../reader/FArchive";
 
-/**
- * UE4 Asset Reader
- * @extends {FByteArchive}
- */
-export class FAssetArchive extends FByteArchive {
+export class FAssetArchive extends FArchiveProxy {
     /**
      * Buffer to read
      * @type {Buffer}
      * @public
      */
-    data: Buffer
+    public data: Buffer
 
     /**
      * File provider
      * @type {FileProvider}
      * @public
      */
-    provider?: FileProvider
+    public provider?: FileProvider
 
     /**
      * Name of package
      * @type {string}
      * @public
      */
-    pkgName: string
+    public pkgName: string
 
     /**
-     * Creates an instace
+     * Creates an instance
      * @param {Buffer} data Data to read
      * @param {?FileProvider} provider File provider
      * @param {string} pkgName Name of package
@@ -43,7 +40,7 @@ export class FAssetArchive extends FByteArchive {
      * @public
      */
     constructor(data: Buffer, provider: FileProvider = null, pkgName: string) {
-        super(data)
+        super(new FByteArchive(data))
         this.data = data
         this.provider = provider
         this.pkgName = pkgName
@@ -54,7 +51,7 @@ export class FAssetArchive extends FByteArchive {
      * @type {Package}
      * @public
      */
-    owner: Package
+    public owner: Package
 
     /**
      * Payloads
@@ -68,21 +65,21 @@ export class FAssetArchive extends FByteArchive {
      * @type {number}
      * @public
      */
-    uassetSize = 0
+    public uassetSize = 0
 
     /**
      * Size of uexp data
      * @type {number}
      * @public
      */
-    uexpSize = 0
+    public uexpSize = 0
 
     /**
      * Start offset of bulk data
      * @type {number}
      * @public
      */
-    bulkDataStartOffset = 0
+    public bulkDataStartOffset = 0
 
     /**
      * Gets payload
@@ -90,7 +87,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {FArchive} UE4 Reader
      * @public
      */
-    getPayload(type: PayloadType): FArchive {
+    public getPayload(type: PayloadType): FArchive {
         const p = this.payloads.get(type)
         return p ? p : new FByteArchive(Buffer.alloc(0))
     }
@@ -102,7 +99,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {Map<PayloadType, FAssetArchive>} Updated map
      * @public
      */
-    addPayload(type: PayloadType, payload: FAssetArchive) {
+    public addPayload(type: PayloadType, payload: FAssetArchive) {
         if (this.payloads.has(type))
             throw new ParserException(`Can't add a payload that is already attached of type ${type}`)
         return this.payloads.set(type, payload)
@@ -113,16 +110,16 @@ export class FAssetArchive extends FByteArchive {
      * @returns {FAssetArchive} Cloned reader
      * @public
      */
-    clone(): FAssetArchive {
+    public clone(): FAssetArchive {
         const c = new FAssetArchive(this.data, this.provider, this.pkgName)
         c.game = this.game
         c.ver = this.ver
         c.useUnversionedPropertySerialization = this.useUnversionedPropertySerialization
         c.isFilterEditorOnly = this.isFilterEditorOnly
         c.littleEndian = this.littleEndian
-        c.position = this.position
+        c.pos = this.pos
         c.owner = this.owner
-        this.payloads.forEach((v, k) => c.addPayload(k, v))
+        c.payloads = this.payloads
         c.uassetSize = this.uassetSize
         c.uexpSize = this.uexpSize
         c.bulkDataStartOffset = this.bulkDataStartOffset
@@ -135,7 +132,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {void}
      * @public
      */
-    seekRelative(pos: number) {
+    public seekRelative(pos: number) {
         this.pos = pos - this.uassetSize - this.uexpSize
     }
 
@@ -144,7 +141,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {number} Position
      * @public
      */
-    relativePos() {
+    public relativePos() {
         return this.uassetSize + this.uexpSize + this.pos
     }
 
@@ -154,7 +151,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {number} Relative position
      * @public
      */
-    toRelativePos(normalPos: number) {
+    public toRelativePos(normalPos: number) {
         return normalPos + this.uassetSize + this.uexpSize
     }
 
@@ -164,7 +161,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {number} Normal position
      * @public
      */
-    toNormalPos(relativePos: number) {
+    public toNormalPos(relativePos: number) {
         return relativePos - this.uassetSize - this.uexpSize
     }
 
@@ -174,17 +171,17 @@ export class FAssetArchive extends FByteArchive {
      * @throws {ParserException}
      * @public
      */
-    handleBadNameIndex(nameIndex: number) {
+    public handleBadNameIndex(nameIndex: number) {
         throw new ParserException(
             `FName could not be read, requested index ${nameIndex}, name map size ${(this.owner as PakPackage).nameMap.length}`, this)
     }
 
     /**
      * Reads FName
-     * @returns {FName} Read data
+     * @returns {FName} Instance
      * @public
      */
-    readFName(): FName {
+    public readFName(): FName {
         const nameIndex = this.readInt32()
         const extraIndex = this.readInt32()
         const owner = this.owner as any
@@ -203,7 +200,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {string} Info
      * @public
      */
-    printError() {
+    public printError() {
         return `FAssetArchive Info: pos ${this.pos}, stopper ${this.size}, package ${this.pkgName}`
     }
 
@@ -212,7 +209,7 @@ export class FAssetArchive extends FByteArchive {
      * @returns {?any} Read object or null
      * @public
      */
-    readObject<T>(): T {
+    public readObject<T>(): T {
         const it = new FPackageIndex(this)
         const out = this.owner.findObject<T>(it)?.value
         if (!it.isNull() && !out) {

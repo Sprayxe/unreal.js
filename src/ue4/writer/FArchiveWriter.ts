@@ -52,27 +52,17 @@ export abstract class FArchiveWriter {
         this.write(bf)
     }
 
-    writeInt64(i: number) {
+    writeInt64(i: number | bigint) {
         const bf = Buffer.alloc(8)
-        if (this.littleEndian) {
-            bf.writeInt32LE(i >> 8, 0); // write the high order bits (shifted over)
-            bf.writeInt32LE(i & 0x00ff, 4) // write the low order bits
-        } else {
-            bf.writeInt32BE(i >> 8, 0); // write the high order bits (shifted over)
-            bf.writeInt32BE(i & 0x00ff, 4) // write the low order bits
-        }
+        i = typeof i === "number" ? BigInt(i) : i
+        this.littleEndian ? bf.writeBigInt64LE(i) : bf.writeBigInt64BE(i)
         this.write(bf)
     }
 
-    writeUInt64(i: number) {
+    writeUInt64(i: number | bigint) {
         const bf = Buffer.alloc(8)
-        if (this.littleEndian) {
-            bf.writeUInt32LE(i >> 8, 0); // write the high order bits (shifted over)
-            bf.writeUInt32LE(i & 0x00ff, 4) // write the low order bits
-        } else {
-            bf.writeUInt32BE(i >> 8, 0); // write the high order bits (shifted over)
-            bf.writeUInt32BE(i & 0x00ff, 4) // write the low order bits
-        }
+        i = typeof i === "number" ? BigInt(i) : i
+        this.littleEndian ? bf.writeBigUInt64LE(i) : bf.writeBigUInt64BE(i)
         this.write(bf)
     }
 

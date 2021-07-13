@@ -87,8 +87,8 @@ export class FStore {
             this.wideStringOffsets[i] = Ar.readUInt32()
         }
 
-        this.ansiStrings = Ar.readBuffer(nums[7])
-        this.wideStrings = Ar.wrappedAr.readBuffer(nums[8] * 2)
+        this.ansiStrings = Ar.read(nums[7])
+        this.wideStrings = Ar.wrappedAr.read(nums[8] * 2)
 
         const len7 = nums[9]
         this.numberlessPairs = new Array(len7)

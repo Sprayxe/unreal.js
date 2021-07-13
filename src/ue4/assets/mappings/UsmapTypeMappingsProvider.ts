@@ -8,6 +8,7 @@ import { Lazy } from "../../../util/Lazy";
 import { UScriptStruct } from "../exports/UScriptStruct";
 import { PropertyInfo } from "../objects/PropertyInfo";
 import { UStruct } from "../exports/UStruct";
+import { FByteArchive } from "../../reader/FByteArchive";
 
 /**
  * Type mappings provider which uses usmap
@@ -49,7 +50,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
     /** DO NOT USE THIS CONSTRUCTOR, THIS IS FOR THE LIBRARY */
     constructor(x: any) {
         super()
-        this.load = x instanceof Buffer ? () => new FArchive(x) : x
+        this.load = x instanceof Buffer ? () => new FByteArchive(x) : x
     }
 
     /**
@@ -87,7 +88,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
             throw new ParserException("There is not enough data in the .usmap file", Ar)
         }
 
-        const compData = Ar.readBuffer(compSize)
+        const compData = Ar.read(compSize)
         const data = Buffer.alloc(decompSize)
 
         const method = methodInt === 0 ? "None" : methodInt === 1 ? "Oodle" : methodInt === 2 ? "Brotli" : null
@@ -142,7 +143,7 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
         const nameMapLen = Ar.readInt32()
         Ar.nameMap = new Array(nameMapLen)
         for (let i = 0; i < nameMapLen; ++i) {
-            Ar.nameMap[i] = Ar.readBuffer(Ar.readUInt8()).toString()
+            Ar.nameMap[i] = Ar.read(Ar.readUInt8()).toString()
         }
         const max0 = Ar.readInt32()
         for (let y = 0; y < max0; ++y) {
@@ -181,9 +182,9 @@ export class UsmapTypeMappingsProvider extends TypeMappingsProvider {
 
 /**
  * FUsmapNameTableArchive
- * @extends {FArchive}
+ * @extends {FByteArchive}
  */
-class FUsmapNameTableArchive extends FArchive {
+class FUsmapNameTableArchive extends FByteArchive {
     /**
      * Stores (f)names
      * @type {Array<string>}

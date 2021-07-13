@@ -55,7 +55,7 @@ export class FManifestData {
     constructor(Ar: FArchive) {
         const startPos = Ar.pos
         this.header = new FManifestHeader(Ar)
-        let manifestRawData = Ar.readBuffer(this.header.dataSizeCompressed)
+        let manifestRawData = Ar.read(this.header.dataSizeCompressed)
         if (this.header.storedAs & 1) {
             //Compressed, only compression format is ZLib
             manifestRawData = Compression.uncompress0("Zlib", manifestRawData, this.header.dataSizeUncompressed)

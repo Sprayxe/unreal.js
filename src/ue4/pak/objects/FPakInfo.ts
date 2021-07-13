@@ -89,7 +89,7 @@ export class FPakInfo {
             throw new ParserException(`File '${path}' is too small to be a pak file`, Ar)
 
         Ar.pos = size - maxOffset
-        const buffer = Ar.readBuffer(maxOffset)
+        const buffer = Ar.read(maxOffset)
         const reader = new FByteArchive(buffer)
 
         for (const offset of this._offsetsToTry) {
@@ -185,7 +185,7 @@ export class FPakInfo {
         this.version = Ar.readInt32()
         this.indexOffset = Number(Ar.readInt64())
         this.indexSize = Number(Ar.readInt64())
-        this.indexHash = Ar.readBuffer(20)
+        this.indexHash = Ar.read(20)
 
         if (this.version === EPakVersion.PakVersion_FrozenIndex) {
             const bIndexIsFrozen = Ar.readFlag()
@@ -207,7 +207,7 @@ export class FPakInfo {
             this.compressionMethods = ["None"]
             if (this.version >= EPakVersion.PakVersion_FNameBasedCompressionMethod) {
                 for (let i = 0; i < maxNumCompressionMethods; ++i) {
-                    const d = Ar.readBuffer(32)
+                    const d = Ar.read(32)
                     const str = Buffer.from(Utils.takeWhile(d, (it) => it !== 0)).toString("utf8")
                     if (str === "")
                         return

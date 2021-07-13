@@ -47,7 +47,7 @@ export class WwiseReader {
                             Ar.pos = entry.offset
                             entry.isSoundBank = Ar.readUInt32() === ESectionIdentifier.BKHD
                             Ar.pos -= 4
-                            entry.data = Ar.readBuffer(entry.size)
+                            entry.data = Ar.read(entry.size)
                             Ar.pos = savePos
                             folder.entries[i] = entry
                         }

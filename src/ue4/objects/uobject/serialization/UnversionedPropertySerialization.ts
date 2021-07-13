@@ -248,7 +248,7 @@ export class FUnversionedHeader {
      * @protected
      */
     protected loadZeroMaskData(Ar: FArchive, numBits: number) {
-        return new BitSet(Ar.readBuffer(Math.floor(
+        return new BitSet(Ar.read(Math.floor(
             numBits <= 8 ? 1 :
             numBits <= 16 ? 2 :
             Math.floor(numBits / 32) * 4
@@ -472,7 +472,7 @@ export class FIterator {
      * @public
      */
     isNonZero() {
-        return !this.fragments[this.fragmentIt].bHasAnyZeroes || !this.zeroMask.get(Math.floor(this.zeroMaskIndex))
+        return !this.fragments[this.fragmentIt].bHasAnyZeroes || !this.zeroMask.get(this.zeroMaskIndex)
     }
 
     /**
