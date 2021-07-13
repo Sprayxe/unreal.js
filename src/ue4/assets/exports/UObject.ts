@@ -253,7 +253,7 @@ export class UObject implements IPropertyHolder {
             this.getFullName(x, result, y)
             return result.toString()
         } else {
-            if (x) {
+            if (z) {
                 y.append(this.clazz?.getPathName())
             } else {
                 y.append(this.clazz?.name)
