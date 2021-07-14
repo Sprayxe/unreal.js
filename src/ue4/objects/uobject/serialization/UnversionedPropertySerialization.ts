@@ -14,6 +14,7 @@ import { UnrealMap } from "../../../../util/UnrealMap";
 import { PropertyType } from "../../../assets/objects/PropertyType";
 import { Config } from "../../../../Config";
 import { BitSetExt } from "../../../../util/BitSetExt";
+import { Utils } from "../../../../util/Utils";
 
 /**
  * FUnversionedPropertySerializer
@@ -238,7 +239,7 @@ export class FUnversionedHeader {
      * @public
      */
     hasValues() {
-        return this.bHasNonZeroValues || (this.zeroMask.toArray().length)
+        return this.bHasNonZeroValues || !this.zeroMask.isEmpty()
     }
 
     /**
@@ -249,9 +250,9 @@ export class FUnversionedHeader {
      */
     protected loadZeroMaskData(Ar: FArchive, numBits: number) {
         return new BitSet(Ar.read(Math.floor(
-            numBits <= 8 ? 1 :
-            numBits <= 16 ? 2 :
-            Math.floor(numBits / 32) * 4
+            numBits <= 8 ? 1
+            : numBits <= 16 ? 2
+            : Utils.divideAndRoundUp(numBits, 32) * 4
         )))
     }
 }

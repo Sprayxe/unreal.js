@@ -65,4 +65,8 @@ export class Utils {
         }
         return res
     }
+
+    static divideAndRoundUp(int: number, divisor: number) {
+        return Math.floor((int + divisor - 1) / divisor)
+    }
 }

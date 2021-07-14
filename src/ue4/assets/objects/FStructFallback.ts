@@ -55,7 +55,7 @@ export class FStructFallback implements IStructType, IPropertyHolder {
     constructor(x: any, y?: any, z?: any) {
         if (Array.isArray(x)) {
             this.properties = x
-        } else if (x instanceof FAssetArchive && z == null) {
+        } else if (x instanceof FAssetArchive && y instanceof FName) {
             return new FStructFallback(x, new Lazy(() => {
                 let struct = x.provider?.mappingsProvider?.getStruct(y)
                 if (struct == null) {
@@ -72,7 +72,7 @@ export class FStructFallback implements IStructType, IPropertyHolder {
             if (Ar.useUnversionedPropertySerialization) {
                 const structClass = y?.value
                 if (structClass == null)
-                    throw new MissingSchemaException(`Unknown struct ${z}`)
+                    throw new MissingSchemaException(`Unknown struct ${z?.text ?? FName.NAME_None.text}`)
                 deserializeUnversionedProperties(this.properties, structClass, Ar)
             } else {
                 deserializeVersionedTaggedProperties(this.properties, Ar)
