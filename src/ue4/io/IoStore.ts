@@ -696,31 +696,6 @@ export class FIoStoreReader {
 
     /**
      * Initializes this
-     * @param {Buffer} utoc UTOC buffer to use
-     * @param {Buffer} ucas UCAS buffer to use
-     * @param {string} path Path to use
-     * @param {UnrealMap<FGuid, Buffer>} decryptionKeys Decryption keys to use
-     * @param {number} readOptions Options for reading io store toc
-     * @returns {void}
-     * @public
-     */
-    _initialize(utoc: Buffer, ucas: Buffer, path: string, decryptionKeys: UnrealMap<FGuid, Buffer>, readOptions: number) {
-        this.environment = new FIoStoreEnvironment(path)
-        this.toc.read(new FByteArchive(utoc), readOptions)
-        if (this.toc.header.partitionCount > 1) {
-            throw new ParserException("This method does not support IoStore environments with multiple partitions")
-        }
-        // TODO this.containerFileHandles.push()
-        if (this.toc.header.containerFlags & EIoContainerFlags.Encrypted) {
-            const key = decryptionKeys.get(this.toc.header.encryptionKeyGuid)
-            if (!key)
-                throw new ParserException(`Missing decryption key for IoStore environment '${path}'`)
-            this.decryptionKey = key
-        }
-    }
-
-    /**
-     * Initializes this
      * @param {FIoStoreEnvironment} environment Environment to use
      * @param {UnrealMap<FGuid, Buffer>} decryptionKeys Decryption keys to use
      * @param {number} readOptions Options for reading io store toc
