@@ -1,5 +1,6 @@
 # ujs internal
 tsconfig.json
+src/test.ts
 oo2core_8_win64.dll
 vgm/
 
