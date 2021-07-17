@@ -103,7 +103,7 @@ export class FRotator implements IStructType {
      * @returns {FRotator} The result of adding a rotator to this
      * @public
      */
-    plus(r: FRotator): FRotator {
+    "+"(r: FRotator): FRotator {
         return new FRotator(this.pitch + r.pitch, this.yaw + r.yaw, this.roll + r.roll)
     }
 
@@ -113,7 +113,7 @@ export class FRotator implements IStructType {
      * @returns {FRotator} The result of subtracting a rotator from this
      * @public
      */
-    minus(r: FRotator): FRotator {
+    "-"(r: FRotator): FRotator {
         return new FRotator(this.pitch - r.pitch, this.yaw - r.yaw, this.roll - r.roll)
     }
 
@@ -123,7 +123,7 @@ export class FRotator implements IStructType {
      * @returns {number} The result of scaling
      * @public
      */
-    times(scale: number): FRotator {
+    "*"(scale: number): FRotator {
         return new FRotator(this.pitch * scale, this.yaw * scale, this.roll * scale)
     }
 
@@ -133,7 +133,7 @@ export class FRotator implements IStructType {
      * @returns {void}
      * @public
      */
-    timesAssign(scale: number): void {
+    "*="(scale: number): void {
         this.pitch *= scale;
         this.yaw *= scale;
         this.roll *= scale

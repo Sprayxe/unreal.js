@@ -85,7 +85,7 @@ export class FBox implements IStructType {
             this.min = new FVector(0, 0, 0)
             this.min = new FVector(0, 0, 0)
             this.isValid = false
-            // TODO loop thru x
+            x.forEach((it) => this["+="](it))
         } else {
             this.min = x
             this.max = y
@@ -118,50 +118,55 @@ export class FBox implements IStructType {
     }
 
     /**
-     * Adds to this bounding box to include a new bounding volume
-     * @param {FBox} other the bounding volume to increase the bounding volume to
-     * @returns {void} Reference to this bounding volume after resizing to include the other bounding volume
-     * @public
-     */
-    plusAssign0(other: FBox): void {
-        if (this.isValid) {
-            const min = (x, y) => Math.min(x, y)
-            // min
-            this.min.x = min(this.min.x, other.min.x)
-            this.min.y = min(this.min.y, other.min.y)
-            this.min.z = min(this.min.z, other.min.z)
-            // max
-            this.max.x = min(this.max.x, other.max.x)
-            this.max.y = min(this.max.y, other.max.y)
-            this.max.z = min(this.max.z, other.max.z)
-        } else {
-            this.min.set(other.min)
-            this.max.set(other.max)
-            this.isValid = true
-        }
-    }
-
-    /**
      * Adds to this bounding box to include a given point
      * @param {FVector} other the point to increase the bounding volume to
      * @returns {void} Reference to this bounding box after resizing to include the other point
      * @public
      */
-    plusAssign1(other: FVector): void {
-        if (this.isValid) {
-            const min = (x, y) => Math.min(x, y)
-            // min
-            this.min.x = min(this.min.x, other.x)
-            this.min.y = min(this.min.y, other.y)
-            this.min.z = min(this.min.z, other.z)
-            // max
-            this.max.x = min(this.max.x, other.x)
-            this.max.y = min(this.max.y, other.y)
-            this.max.z = min(this.max.z, other.z)
+    "+="(other: FVector): void
+
+    /**
+     * Adds to this bounding box to include a new bounding volume
+     * @param {FBox} other the bounding volume to increase the bounding volume to
+     * @returns {void} Reference to this bounding volume after resizing to include the other bounding volume
+     * @public
+     */
+    "+="(other: FBox): void
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
+    "+="(other: any): void {
+        if (other instanceof FBox) {
+            if (this.isValid) {
+                const min = (x, y) => Math.min(x, y)
+                // min
+                this.min.x = min(this.min.x, other.min.x)
+                this.min.y = min(this.min.y, other.min.y)
+                this.min.z = min(this.min.z, other.min.z)
+                // max
+                this.max.x = min(this.max.x, other.max.x)
+                this.max.y = min(this.max.y, other.max.y)
+                this.max.z = min(this.max.z, other.max.z)
+            } else {
+                this.min.set(other.min)
+                this.max.set(other.max)
+                this.isValid = true
+            }
         } else {
-            this.min.set(other)
-            this.max.set(other)
-            this.isValid = true
+            if (this.isValid) {
+                const min = (x, y) => Math.min(x, y)
+                // min
+                this.min.x = min(this.min.x, other.x)
+                this.min.y = min(this.min.y, other.y)
+                this.min.z = min(this.min.z, other.z)
+                // max
+                this.max.x = min(this.max.x, other.x)
+                this.max.y = min(this.max.y, other.y)
+                this.max.z = min(this.max.z, other.z)
+            } else {
+                this.min.set(other)
+                this.max.set(other)
+                this.isValid = true
+            }
         }
     }
 
@@ -171,11 +176,7 @@ export class FBox implements IStructType {
      * @returns {FBox} A new bounding volume
      * @public
      */
-    plus0(other: FBox): FBox {
-        const box = new FBox(this)
-        box.plusAssign0(other)
-        return box
-    }
+    "+"(other: FBox): FBox
 
     /**
      * Gets the result of addition to this bounding volume
@@ -183,9 +184,17 @@ export class FBox implements IStructType {
      * @returns {FBox} A new bounding volume
      * @public
      */
-    plus1(other: FVector): FBox {
+    "+"(other: FVector): FBox
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
+    "+"(other: any): FBox {
+        if (other instanceof FBox) {
+            const box = new FBox(this)
+            box["+="](other)
+            return box
+        }
         const box = new FBox(this)
-        box.plusAssign1(other)
+        box["+="](other)
         return box
     }
 
@@ -220,7 +229,7 @@ export class FBox implements IStructType {
      * @public
      */
     expandBy0(v: FVector): FBox {
-        return new FBox(this.min.minus0(v), this.max.plus0(v))
+        return new FBox(this.min["-"](v), this.max["+"](v))
     }
 
     /**
@@ -231,7 +240,7 @@ export class FBox implements IStructType {
      */
     expandBy1(w: number): FBox {
         const v = new FVector(w, w, w)
-        return new FBox(this.min.minus0(v), this.max.plus0(v))
+        return new FBox(this.min["-"](v), this.max["+"](v))
     }
 
     /**
@@ -242,7 +251,7 @@ export class FBox implements IStructType {
      * @public
      */
     expandBy2(neg: FVector, pos: FVector): FBox {
-        return new FBox(this.min.minus0(neg), this.max.plus0(pos))
+        return new FBox(this.min["-"](neg), this.max["+"](pos))
     }
 
     /**
@@ -252,7 +261,7 @@ export class FBox implements IStructType {
      * @public
      */
     shiftBy(offset: FVector): FBox {
-        return new FBox(this.min.plus0(offset), this.max.plus0(offset))
+        return new FBox(this.min["+"](offset), this.max["+"](offset))
     }
 
     /**
@@ -262,8 +271,8 @@ export class FBox implements IStructType {
      * @public
      */
     moveTo(destination: FVector): FBox {
-        const offset = destination.minus0(this.getCenter())
-        return new FBox(this.min.plus0(offset), this.max.plus0(offset))
+        const offset = destination["-"](this.getCenter())
+        return new FBox(this.min["+"](offset), this.max["+"](offset))
     }
 
     /**
@@ -276,7 +285,7 @@ export class FBox implements IStructType {
      * @see {getVolume}
      */
     getCenter(): FVector {
-        return this.min.plus0(this.max).times1(0.5)
+        return this.min["+"](this.max)["*"](0.5)
     }
 
     /**
@@ -292,7 +301,7 @@ export class FBox implements IStructType {
      */
     getCenterAndExtents(center: FVector, extents: FVector): void {
         extents.set(this.getExtent())
-        center.set(this.min.plus0(extents))
+        center.set(this.min["+"](extents))
     }
 
     /**
@@ -339,7 +348,7 @@ export class FBox implements IStructType {
      * @see {getVolume}
      */
     getExtent(): FVector {
-        return this.max.minus0(this.max).times1(0.5)
+        return this.max["-"](this.max)["*"](0.5)
     }
 
     /**
@@ -352,7 +361,7 @@ export class FBox implements IStructType {
      * @see {getVolume}
      */
     getSize(): FVector {
-        return this.max.minus0(this.min)
+        return this.max["-"](this.min)
     }
 
     /**
@@ -520,6 +529,6 @@ export class FBox implements IStructType {
      * @public
      */
     static buildAABB(origin: FVector, extent: FVector): FBox {
-        return new FBox(origin.minus0(extent), origin.plus0(extent))
+        return new FBox(origin["-"](extent), origin["+"](extent))
     }
 }

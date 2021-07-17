@@ -217,19 +217,23 @@ export class FVector implements IStructType {
      * @returns {FVector} The result of vector addition
      * @public
      */
-    plus0(v: FVector): FVector {
-        return new FVector(this.x + v.x, this.y + v.y, this.z + v.z)
-    }
+    "+"(v: FVector): FVector
 
     /**
      * Gets the result of adding to each component of the vector
      * @param {number} bias How much to add to each component
-     * @returns {FVector}  The result of addition
+     * @returns {FVector} The result of addition
      * @public
      */
-    plus1(bias: number): FVector {
-        return new FVector(this.x + bias, this.y + bias, this.z + bias)
+    "+"(bias: number): FVector
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
+    "+"(arg: any): FVector {
+        if (arg instanceof FVector)
+            return new FVector(this.x + arg.x, this.y + arg.y, this.z + arg.z)
+        return new FVector(this.x + arg, this.y + arg, this.z + arg)
     }
+
 
     /**
      * Gets the result of component-wise subtraction of this by another vector
@@ -237,9 +241,7 @@ export class FVector implements IStructType {
      * @returns {FVector} The result of vector subtraction
      * @public
      */
-    minus0(v: FVector): FVector {
-        return new FVector(this.x - v.x, this.y - v.y, this.z - v.z)
-    }
+    "-"(v: FVector): FVector
 
     /**
      * Gets the result of subtracting from each component of the vector
@@ -247,9 +249,15 @@ export class FVector implements IStructType {
      * @returns {FVector} The result of subtraction
      * @public
      */
-    minus1(bias: number): FVector {
-        return new FVector(this.x - bias, this.y - bias, this.z - bias)
+    "-"(bias: number): FVector
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
+    "-"(arg: any): FVector {
+        if (arg instanceof FVector)
+            return new FVector(this.x - arg.x, this.y - arg.y, this.z - arg.z)
+        return new FVector(this.x - arg, this.y - arg, this.z - arg)
     }
+
 
     /**
      * Gets the result of component-wise multiplication of this vector by another
@@ -257,9 +265,7 @@ export class FVector implements IStructType {
      * @returns {FVector} The result of multiplication
      * @public
      */
-    times0(v: FVector) {
-        return new FVector(this.x * v.x, this.y * v.y, this.z * v.z)
-    }
+    "*"(v: FVector): FVector
 
     /**
      * Gets the result of scaling the vector (multiplying each component by a value)
@@ -267,9 +273,15 @@ export class FVector implements IStructType {
      * @returns {FVector} The result of multiplication
      * @public
      */
-    times1(scale: number): FVector {
-        return new FVector(this.x * scale, this.y * scale, this.z * scale)
+    "*"(scale: number): FVector
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
+    "*"(arg: any): FVector {
+        if (arg instanceof FVector)
+            return new FVector(this.x * arg.x, this.y * arg.y, this.z * arg.z)
+        return new FVector(this.x * arg, this.y * arg, this.z * arg)
     }
+
 
     /**
      * Gets the result of component-wise division of this vector by another
@@ -277,9 +289,7 @@ export class FVector implements IStructType {
      * @returns {FVector} The result of division
      * @public
      */
-    div0(v: FVector) {
-        return new FVector(this.x / v.x, this.y / v.y, this.z / v.z)
-    }
+    "/"(v: FVector): FVector
 
     /**
      * Gets the result of dividing each component of the vector by a value
@@ -287,8 +297,13 @@ export class FVector implements IStructType {
      * @returns {FVector} The result of division
      * @public
      */
-    div1(scale: number): FVector {
-        const rScale = 1 / scale
+    "/"(scale: number): FVector
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
+    "/"(arg: any): FVector {
+        if (arg instanceof FVector)
+            return new FVector(this.x / arg.x, this.y / arg.y, this.z / arg.z)
+        const rScale = 1 / arg
         return new FVector(this.x * rScale, this.y * rScale, this.z * rScale)
     }
 
@@ -352,7 +367,7 @@ export class FVector implements IStructType {
      * @returns {void}
      * @public
      */
-    plusAssign(v: FVector) {
+    "+="(v: FVector): void {
         this.x += v.x
         this.y += v.y
         this.z += v.z
@@ -365,7 +380,7 @@ export class FVector implements IStructType {
      * @returns {void}
      * @public
      */
-    minusAssign(v: FVector) {
+    "-="(v: FVector): void {
         this.x -= v.x
         this.y -= v.y
         this.z -= v.z
@@ -377,11 +392,7 @@ export class FVector implements IStructType {
      * @returns {void}
      * @public
      */
-    timesAssign0(scale: number) {
-        this.x *= scale
-        this.y *= scale
-        this.z *= scale
-    }
+    "*="(scale: number): void
 
     /**
      * Multiplies the vector with another vector, using component-wise multiplication
@@ -389,10 +400,18 @@ export class FVector implements IStructType {
      * @returns {void}
      * @public
      */
-    timesAssign1(v: FVector) {
-        this.x *= v.x
-        this.y *= v.y
-        this.z *= v.z
+    "*="(v: FVector): void
+
+    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
+    "*="(arg: any): void {
+        if (arg instanceof FVector) {
+            this.x *= arg.x
+            this.y *= arg.y
+            this.z *= arg.z
+        }
+        this.x *= arg
+        this.y *= arg
+        this.z *= arg
     }
 
     /**
@@ -401,7 +420,7 @@ export class FVector implements IStructType {
      * @returns {void}
      * @public
      */
-    divAssign(v: FVector) {
+    "/="(v: FVector) {
         this.x /= v.x
         this.y /= v.y
         this.z /= v.z
