@@ -1201,7 +1201,7 @@ export class TextProperty extends FProperty {
      * @public
      */
     toJsonValue(locres?: Locres): any {
-        return this.text.toJson()
+        return this.text.toJson(locres)
     }
 }
 

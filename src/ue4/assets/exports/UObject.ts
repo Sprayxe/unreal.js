@@ -198,12 +198,12 @@ export class UObject implements IPropertyHolder {
      */
     toJson(locres: Locres = null): any {
         const ob = {}
-        this.properties.forEach((pTag) => {
-            const tagValue = pTag.prop
+        for (const property of this.properties) {
+            const tagValue = property.prop
             if (!tagValue)
                 return
-            ob[camelCase(pTag.name.text)] = tagValue.toJsonValue(locres)
-        })
+            ob[camelCase(property.name.text)] = tagValue.toJsonValue(locres)
+        }
         return ob
     }
 
