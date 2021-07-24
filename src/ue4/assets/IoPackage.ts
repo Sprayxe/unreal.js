@@ -159,7 +159,7 @@ export class IoPackage extends Package {
         const importCount = (this.summary.exportMapOffset - this.summary.importMapOffset) / 8
         this.importMap = new Array(importCount)
         for (let i = 0; i < importCount; ++i) {
-            this.importMap.push(new FPackageObjectIndex(Ar))
+            this.importMap[i] = new FPackageObjectIndex(Ar)
         }
 
         // Export map
@@ -258,7 +258,7 @@ export class IoPackage extends Package {
      * @public
      */
     resolveObjectIndex(index: FPackageObjectIndex, throwIfNotFound: boolean = true) {
-        if (!index)
+        if (index == null)
             return null
 
         if (index.isExport()) {
@@ -317,12 +317,16 @@ export class IoPackage extends Package {
      * @public
      */
     findObjectByName(objectName: string, className?: string) {
+        objectName = objectName.toLowerCase()
+        className = className?.toLowerCase()
         let exportIndex = -1
-        this.exportMap.find((it, k) => {
-            const is = this.nameMap.getName(it.objectName).text === objectName && (className == null || this.resolveObjectIndex(it.classIndex)?.name?.text === className)
-            if (is) exportIndex = k
-            return is
-        })
+        for (let k = 0; k < this.exportMap.length; ++k) {
+            const it = this.exportMap[k]
+            const name = this.nameMap.getName(it.objectName)
+            const obj = name.text.toLowerCase() === objectName
+                && (className == null || this.resolveObjectIndex(it.classIndex, false)?.name?.text?.toLowerCase() === className)
+            if (obj) exportIndex = k
+        }
         return exportIndex !== -1 ? this.exportsLazy[exportIndex] : null
     }
 
@@ -353,7 +357,7 @@ export class IoPackage extends Package {
      * @public
      */
     findObjectMinimal(index?: FPackageIndex): ResolvedExportObject | ResolvedScriptObject {
-        if (!index || index.isNull()) {
+        if (index == null || index.isNull()) {
             return null
         } else if (index.isExport()) {
             return new ResolvedExportObject(index.toExport(), this)
@@ -470,7 +474,7 @@ export class ResolvedScriptObject extends ResolvedObject {
                 enm.name = name.text
                 enm.names = new Array(enumValues.length)
                 for (let i = 0; i < enumValues.length; ++i) {
-                    enm.names.push(new Pair<FName, number>(FName.dummy(`${name}::${enumValues[i]}`), i))
+                    enm.names[i] = new Pair<FName, number>(FName.dummy(`${name}::${enumValues[i]}`), i)
                 }
                 return enm
             } else {
