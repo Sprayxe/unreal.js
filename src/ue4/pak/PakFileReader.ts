@@ -12,6 +12,7 @@ import { FArchive } from "../reader/FArchive";
 import { EPakVersion } from "./enums/PakVersion";
 import { Game } from "../versions/Game";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
+import { Config } from "../../Config";
 
 /**
  * UE4 Pak File Reader
@@ -128,7 +129,7 @@ export class PakFileReader {
             it.compressedEnd += gameFile.pos
         }
         if (gameFile.isCompressed()) {
-            console.debug(`${gameFile.getName()} is compressed with ${gameFile.compressionMethod}`)
+            if (Config.GDebug) console.debug(`${gameFile.getName()} is compressed with ${gameFile.compressionMethod}`)
             const uncompressedBuffer = Buffer.alloc(gameFile.uncompressedSize)
             let uncompressedBufferOff = 0
             for (const block of tempEntry.compressionBlocks) {
@@ -157,7 +158,7 @@ export class PakFileReader {
             }
             return uncompressedBuffer
         } else if (gameFile.isEncrypted) {
-            console.debug(`${gameFile.getName()} is encrypted, decrypting`)
+            if (Config.GDebug) console.debug(`${gameFile.getName()} is encrypted, decrypting`)
             if (this.aesKey) {
                 throw new ParserException("Decrypting a encrypted file requires an encryption key to be set")
             }

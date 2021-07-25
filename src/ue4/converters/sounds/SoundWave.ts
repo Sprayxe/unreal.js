@@ -1,6 +1,7 @@
 import { USoundWave } from "../../assets/exports/USoundWave";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { sum } from "lodash"
+import { Config } from "../../../Config";
 
 export class SoundWave {
     public data: Buffer
@@ -20,16 +21,16 @@ export class SoundWave {
     }
 
     static convert(soundWave: USoundWave): SoundWave {
-        console.debug("Starting to convert USoundWave")
+        if (Config.GDebug) console.debug("Starting to convert USoundWave")
         if (!soundWave.isStreaming) {
             if (soundWave.bCooked) {
-                console.debug("Found cooked sound data, exporting...")
+                if (Config.GDebug) console.debug("Found cooked sound data, exporting...")
                 const compressedFormatData = soundWave.compressedFormatData?.formats
                 if (!compressedFormatData)
                     throw new ParserException("Cooked sounds need compressed format data")
                 if (!compressedFormatData.size)
                     throw new ParserException("Compressed format data may not be empty.")
-                console.debug("Done.")
+                if (Config.GDebug) console.debug("Done.")
                 const firstKey = compressedFormatData.firstKey()
                 const firstValue = compressedFormatData.first()
                 let exportFormat = firstKey.text
@@ -37,11 +38,11 @@ export class SoundWave {
                     exportFormat = "OGG"
                 return new SoundWave(firstValue.data, exportFormat)
             } else {
-                console.debug("Found non-cooked sound data, exporting...")
+                if (Config.GDebug) console.debug("Found non-cooked sound data, exporting...")
                 const rawData = soundWave.rawData
                 if (!rawData)
                     throw new ParserException("Non-cooked sounds need raw data")
-                console.debug("Done.")
+                if (Config.GDebug) console.debug("Done.")
                 return new SoundWave(rawData.data, "ogg")
             }
         } else {
@@ -49,7 +50,7 @@ export class SoundWave {
             if (!runningPlatformData)
                 throw new ParserException("Streamed sounds need streamed audio chunks")
             const streamedChunks = runningPlatformData.chunks
-            console.debug("Found streamed sound data, exporting...")
+            if (Config.GDebug) console.debug("Found streamed sound data, exporting...")
             const data = Buffer.alloc(sum(streamedChunks.map(it => it.audioDataSize)))
             let dataOff = 0
             let exportFormat = runningPlatformData.audioFormat.text
@@ -59,7 +60,7 @@ export class SoundWave {
                 it.data.data.copy(data, dataOff, 0, it.audioDataSize)
                 dataOff += it.audioDataSize
             })
-            console.debug("Done.")
+            if (Config.GDebug) console.debug("Done.")
             return new SoundWave(data, exportFormat)
         }
     }

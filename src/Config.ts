@@ -1,8 +1,9 @@
 export class Config implements IConfig {
-    public static GExportArchiveCheckDummyName: boolean = false
-    public static GDebugProperties: boolean = false
-    public static GFatalUnknownProperty: boolean = false
-    public static GSuppressMissingSchemaErrors: boolean = false
+    public static GExportArchiveCheckDummyName: boolean
+    public static GDebug: boolean
+    public static GFatalUnknownProperty: boolean
+    public static GSuppressMissingSchemaErrors: boolean
+    public static GUseLocalTypeRegistry: boolean
 }
 
 export interface IConfig {
@@ -14,11 +15,11 @@ export interface IConfig {
     GExportArchiveCheckDummyName?: boolean
 
     /**
-     * Whether to debug properties
+     * Whether to debug
      * @type {boolean}
      * @default false
      */
-    GDebugProperties?: boolean
+    GDebug?: boolean
 
     /**
      * Whether it is fatal if a property couldn't be deserialized
@@ -28,10 +29,18 @@ export interface IConfig {
     GFatalUnknownProperty?: boolean
 
     /**
-     * Whether to supress missing schema errors
+     * Whether to suppress missing schema errors
      * @type {boolean}
      * @default false
      */
     GSuppressMissingSchemaErrors?: boolean
+
+    /**
+     * Whether to use 'process.cwd()' instead of 'process.cwd() + /node_modules/unreal.js' for object type registry
+     * Do not set this to true unless you are not using unreal.js via node_modules
+     * @type {boolean}
+     * @default false
+     */
+    GUseLocalTypeRegistry?: boolean
 }
 

@@ -119,7 +119,7 @@ export class FUnversionedStructSchema {
                         ann?.arrayDim || 1
                     )
                     for (let i = 0; i < propertyInfo.arrayDim; ++i) {
-                        if (GDebugProperties) console.log(`${index} = ${propertyInfo.name}`)
+                        if (GDebug) console.log(`${index} = ${propertyInfo.name}`)
                         this.serializers[index++] = new FUnversionedPropertySerializer(propertyInfo, i)
                     }
                     index += ann?.skipNext || 0
@@ -129,7 +129,7 @@ export class FUnversionedStructSchema {
                     const prop = prop0 as FPropertySerialized // Serialized in packages
                     const propertyInfo = new PropertyInfo(prop.name.text, new PropertyType(prop), prop.arrayDim)
                     for (let i = 0; i < prop.arrayDim; ++i) {
-                        if (Config.GDebugProperties) console.log(`${index} = ${prop.name} [SERIALIZED]`)
+                        if (Config.GDebug) console.log(`${index} = ${prop.name} [SERIALIZED]`)
                         this.serializers[index++] = new FUnversionedPropertySerializer(propertyInfo, i)
                     }
                 }
@@ -138,7 +138,7 @@ export class FUnversionedStructSchema {
                 for (const prop of struct.childProperties2) {
                     index = startIndex + prop.index
                     for (let i = 0; i < prop.arrayDim; ++i) {
-                        if (Config.GDebugProperties) console.log(`${index} = ${prop.name}`)
+                        if (Config.GDebug) console.log(`${index} = ${prop.name}`)
                         this.serializers[index++] = new FUnversionedPropertySerializer(prop, i)
                     }
                 }
@@ -504,7 +504,7 @@ export class FIterator {
  * @export
  */
 export function deserializeUnversionedProperties(properties: FPropertyTag[], struct: UStruct, Ar: FAssetArchive) {
-    if (Config.GDebugProperties) console.info(`Load: ${struct.name}`)
+    if (Config.GDebug) console.info(`Load: ${struct.name}`)
     const header = new FUnversionedHeader()
     header.load(Ar)
     if (header.hasValues()) {
@@ -514,11 +514,11 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
             while (!it.bDone) {
                 const serializer = it.serializer
                 if (serializer) {
-                    if (Config.GDebugProperties) console.log(`Val: ${it.schemaIt} (IsNonZero: ${it.isNonZero()})`)
+                    if (Config.GDebug) console.log(`Val: ${it.schemaIt} (IsNonZero: ${it.isNonZero()})`)
                     if (it.isNonZero()) {
                         const element = serializer.deserialize(Ar, ReadType.NORMAL)
                         properties.push(element)
-                        if (Config.GDebugProperties) console.info(element.toString())
+                        if (Config.GDebug) console.info(element.toString())
                     } else {
                         const start = Ar.pos
                         properties.push(serializer.deserialize(Ar, ReadType.ZERO))

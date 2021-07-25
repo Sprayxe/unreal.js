@@ -1,9 +1,12 @@
 import fs from "fs/promises";
+import { Config } from "../../Config";
 
 export class ObjectTypeRegistry {
+    static p: string
     static registry = {}
 
     static async init() {
+        this.p = process.cwd() + (Config.GUseLocalTypeRegistry ? "" : "/node_modules/unreal.js")
         const s = Date.now()
         await this.registerEngine()
         await this.registerValorant()
@@ -13,11 +16,10 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerEngine() {
-        //const p = process.cwd()
-        const p = process.cwd() + "/node_modules/unreal.js"
-        const dir0 = (await fs.readdir(p + "/dist/ue4/assets/exports/mats")).filter(f => f.endsWith(".js"))
-        const dir1 = (await fs.readdir(p + "/dist/ue4/assets/exports/tex")).filter(f => f.endsWith(".js"))
-        const dir = (await fs.readdir(p + "/dist/ue4/assets/exports")).filter(f => f.endsWith(".js"))
+        console.log(this.p)
+        const dir0 = (await fs.readdir(this.p + "/dist/ue4/assets/exports/mats")).filter(f => f.endsWith(".js"))
+        const dir1 = (await fs.readdir(this.p + "/dist/ue4/assets/exports/tex")).filter(f => f.endsWith(".js"))
+        const dir = (await fs.readdir(this.p + "/dist/ue4/assets/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir) {
             const clazz = (await import(`./exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
@@ -39,10 +41,8 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerFortnite() {
-        //const p = process.cwd()
-        const p = process.cwd() + "/node_modules/unreal.js"
-        const dir0 = (await fs.readdir(p + "/dist/fort/exports/variants")).filter(f => f.endsWith(".js"))
-        const dir = (await fs.readdir(p + "/dist/fort/exports")).filter(f => f.endsWith(".js"))
+        const dir0 = (await fs.readdir(this.p + "/dist/fort/exports/variants")).filter(f => f.endsWith(".js"))
+        const dir = (await fs.readdir(this.p + "/dist/fort/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir) {
             const clazz = (await import(`../../fort/exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)
@@ -59,9 +59,7 @@ export class ObjectTypeRegistry {
     }
 
     private static async registerValorant() {
-        //const p = process.cwd()
-        const p = process.cwd() + "/node_modules/unreal.js"
-        const dir1 = (await fs.readdir(p + "/dist/valorant/exports")).filter(f => f.endsWith(".js"))
+        const dir1 = (await fs.readdir(this.p + "/dist/valorant/exports")).filter(f => f.endsWith(".js"))
         for (const file of dir1) {
             const clazz = (await import(`../../valorant/exports/${file}`))[file.split(".").shift()]
             if (clazz.ObjectRegistryIgnore)

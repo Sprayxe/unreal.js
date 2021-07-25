@@ -16,6 +16,7 @@ import { FAssetArchiveWriter, FByteArchiveWriter } from "./writer/FAssetArchiveW
 import { WritableStreamBuffer } from "stream-buffers";
 import { sum } from "lodash"
 import { Lazy } from "../../util/Lazy";
+import { Config } from "../../Config";
 
 /**
  * UE4 Pak Package
@@ -219,7 +220,7 @@ export class PakPackage extends Package {
                 if (validPos !== uexpAr2.pos) {
                     console.warn(`Did not read ${obj.exportType} correctly, ${validPos - uexpAr.pos} bytes remaining`)
                 } else {
-                    console.debug(`Successfully read ${obj.exportType} at ${uexpAr2.toNormalPos(e.serialOffset)} with size ${e.serialSize}`)
+                    if (Config.GDebug) console.debug(`Successfully read ${obj.exportType} at ${uexpAr2.toNormalPos(e.serialOffset)} with size ${e.serialSize}`)
                 }
                 return obj
             })

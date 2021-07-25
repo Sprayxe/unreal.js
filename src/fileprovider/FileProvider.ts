@@ -152,17 +152,18 @@ export class FileProvider extends EventEmitter {
      */
     constructor(folder: string, game?: Ue4Version, mappingsProvider?: TypeMappingsProvider, config?: IConfig) {
         super()
+        if (config != null) {
+            Config.GDebug = config.GDebug
+            Config.GExportArchiveCheckDummyName = config.GExportArchiveCheckDummyName
+            Config.GFatalUnknownProperty = config.GFatalUnknownProperty
+            Config.GSuppressMissingSchemaErrors = config.GSuppressMissingSchemaErrors
+            Config.GUseLocalTypeRegistry = config.GUseLocalTypeRegistry
+        }
         this.folder = folder
         this.game = game || Ue4Version.GAME_UE4_LATEST
         this.mappingsProvider = mappingsProvider || new ReflectionTypeMappingsProvider()
         if (this.game.game >= Game.GAME_UE4(26))
             Oodle.ensureLib()
-        if (config) {
-            Config.GDebugProperties = config.GDebugProperties
-            Config.GExportArchiveCheckDummyName = config.GExportArchiveCheckDummyName
-            Config.GFatalUnknownProperty = config.GFatalUnknownProperty
-            Config.GSuppressMissingSchemaErrors = config.GSuppressMissingSchemaErrors
-        }
     }
 
     /**

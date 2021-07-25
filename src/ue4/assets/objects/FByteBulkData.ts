@@ -4,6 +4,7 @@ import { EBulkDataFlags, EBulkDataFlags_Check } from "../enums/EBulkDataFlags";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { FAssetArchiveWriter } from "../writer/FAssetArchiveWriter";
+import { Config } from "../../../Config";
 
 /**
  * FByteBulkData
@@ -58,12 +59,12 @@ export class FByteBulkData {
             if (this.header.elementCount === 0) {
                 // Nothing to do here
             } else if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_Unused, bulkDataFlags)) {
-                console.warn("Bulk with no data")
+                if (Config.GDebug) console.warn("Bulk with no data")
             } else if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_ForceInlinePayload, bulkDataFlags)) {
-                console.debug(`bulk data in .uexp file (Force Inline Payload) (flags=${bulkDataFlags}, pos=${this.header.offsetInFile}, size=${this.header.sizeOnDisk})`)
+                if (Config.GDebug) console.debug(`bulk data in .uexp file (Force Inline Payload) (flags=${bulkDataFlags}, pos=${this.header.offsetInFile}, size=${this.header.sizeOnDisk})`)
                 arg1.readToBuffer(this.data)
             } else if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_PayloadInSeperateFile, bulkDataFlags)) {
-                console.debug(`bulk data in .ubulk file (Payload In Seperate File) (flags=${bulkDataFlags}, pos=${this.header.offsetInFile}, size=${this.header.sizeOnDisk})`)
+                if (Config.GDebug) console.debug(`bulk data in .ubulk file (Payload In Seperate File) (flags=${bulkDataFlags}, pos=${this.header.offsetInFile}, size=${this.header.sizeOnDisk})`)
                 let payload: PayloadType
                 if (EBulkDataFlags_Check(EBulkDataFlags.BULKDATA_OptionalPayload, bulkDataFlags))
                     payload = PayloadType.UPTNL

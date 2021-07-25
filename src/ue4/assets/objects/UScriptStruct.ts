@@ -229,7 +229,7 @@ export class UScriptStruct {
                     this.structType = new FVectorMaterialInput(x)
                     break
                 default:
-                    if (Config.GDebugProperties) console.debug(`Using property serialization for struct ${this.structName}`)
+                    if (Config.GDebug) console.debug(`Using property serialization for struct ${this.structName}`)
                     this.structType = new FStructFallback(x, y.structClass, this.structName)
             }
         } else {

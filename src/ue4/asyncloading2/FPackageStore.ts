@@ -20,6 +20,7 @@ import { FByteArchive } from "../reader/FByteArchive";
 import { ParserException } from "../../exceptions/Exceptions";
 import { UnrealMap } from "../../util/UnrealMap";
 import Collection from "@discordjs/collection";
+import { Config } from "../../Config";
 
 /**
  * FPackageStore (I/O)
@@ -147,7 +148,7 @@ export class FPackageStore extends FOnContainerMountedListener {
             }
 
             if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
-                console.debug(`Skipping loading mounted container ID '${containerId}', already loaded with higher order`)
+                if (Config.GDebug) console.debug(`Skipping loading mounted container ID '${containerId}', already loaded with higher order`)
                 continue
             }
 

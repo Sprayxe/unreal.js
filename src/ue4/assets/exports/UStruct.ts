@@ -87,7 +87,7 @@ export class UStruct extends UObject {
             if (!prop)
                 throw new ParserException(`Unsupported serialized property type ${propertyTypeName}`, Ar)
             prop.deserialize(Ar)
-            if (Config.GDebugProperties)
+            if (Config.GDebug)
                 console.info(`${i} = ${propertyTypeName} ${prop.name}`)
             this.childProperties[i] = prop
         }
