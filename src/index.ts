@@ -15,6 +15,7 @@ import { FArchive } from "./ue4/reader/FArchive";
 import { PakFileReader } from "./ue4/pak/PakFileReader";
 import { FAssetArchive } from "./ue4/assets/reader/FAssetArchive";
 import { Oodle } from "./oodle/Oodle";
+import { FName } from "./ue4/objects/uobject/FName";
 // exports for faster and easier imports
 export {
     // file provider
@@ -42,5 +43,7 @@ export {
     FAssetArchive,
     PakFileReader,
     // oodle
-    Oodle
+    Oodle,
+    // other
+    FName
 }
