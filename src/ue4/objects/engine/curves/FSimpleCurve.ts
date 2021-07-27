@@ -279,7 +279,7 @@ export class FSimpleCurve extends FRealCurve {
                 }
             } else {
                 // Otherwise if constant or in a cycle or oscillate, always use the last key value
-                interpVal = this.keys[numKeys - 1].value
+                interpVal = this.keys.pop().value
             }
         }
 

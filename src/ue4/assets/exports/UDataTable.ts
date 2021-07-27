@@ -9,6 +9,8 @@ import { FTableRowBase } from "../../objects/FTableRowBase";
 import { mapToClass } from "../util/StructFallbackReflectionUtil";
 import { Locres } from "../../locres/Locres";
 import { UProperty } from "../../../util/decorators/UProperty";
+import { Lazy } from "../../../util/Lazy";
+import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 
 /**
  * Represents an UE4 Data Table
@@ -17,11 +19,11 @@ import { UProperty } from "../../../util/decorators/UProperty";
 export class UDataTable extends UObject {
     /**
      * Struct of rows
-     * @type {UScriptStruct}
+     * @type {Lazy<UScriptStruct>}
      * @public
      */
     @UProperty()
-    public RowStruct: UScriptStruct = null
+    public RowStruct: Lazy<UScriptStruct> = null
 
     /**
      * Whether strip from client builds
@@ -83,13 +85,16 @@ export class UDataTable extends UObject {
      */
     deserialize(Ar: FAssetArchive, validPos: number) {
         super.deserialize(Ar, validPos)
+        const rowStruct = this.get<FPackageIndex>("RowStruct")
+        this.RowStruct = new Lazy(() => rowStruct.owner.provider.mappingsProvider
+            .getStruct(FName.dummy(rowStruct.name.text)) as UScriptStruct)
         this.rows = new UnrealMap<FName, UObject>()
         const len = Ar.readInt32()
         for (let i = 0; i < len; ++i) {
             const key = Ar.readFName()
             const rowProperties = []
             if (Ar.useUnversionedPropertySerialization) {
-                deserializeUnversionedProperties(rowProperties, this.RowStruct, Ar)
+                deserializeUnversionedProperties(rowProperties, this.RowStruct?.value, Ar)
             } else {
                 deserializeVersionedTaggedProperties(rowProperties, Ar)
             }
@@ -133,7 +138,7 @@ export class UDataTable extends UObject {
     findRowMapped<T extends FTableRowBase>(rowName: FName): T {
         const row = this.findRow(rowName)
         if (!row) return null;
-        return mapToClass(row.properties, this.RowStruct.structClass)
+        return mapToClass(row.properties, this.RowStruct?.value.structClass)
     }
 
     /**
@@ -143,8 +148,10 @@ export class UDataTable extends UObject {
      * @public
      */
     toJson(locres: Locres = null): any {
-        return this.rows.map((v, k) => {
-            return {key: k.text, value: v.toJson(locres)}
-        })
+        const obj = {}
+        for (const [k, v] of this.rows) {
+            obj[k.text] = v.toJson(locres)
+        }
+        return obj
     }
 }

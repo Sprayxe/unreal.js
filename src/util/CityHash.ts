@@ -31,13 +31,13 @@ export class CityHash {
     private static readonly k2 = Long.fromString("11160318154034397263", true)
 
     private static toLongLE(b: Buffer, i: number): long {
-        return Long.fromNumber((b[i + 7]), true).shiftLeft(56)
-            .add(Long.fromNumber((b[i + 6] & 255), true).shiftLeft(48))
-            .add(Long.fromNumber((b[i + 5] & 255), true).shiftLeft(40))
-            .add(Long.fromNumber((b[i + 4] & 255), true).shiftLeft(32))
-            .add(Long.fromNumber((b[i + 3] & 255), true).shiftLeft(24))
-            .add(Long.fromNumber((b[i + 2] & 255), true).shiftLeft(16))
-            .add(Long.fromNumber((b[i + 1] & 255), true).shiftLeft(8))
+        return Long.fromNumber((b[i + 7]), true).shl(56)
+            .add(Long.fromNumber((b[i + 6] & 255), true).shl(48))
+            .add(Long.fromNumber((b[i + 5] & 255), true).shl(40))
+            .add(Long.fromNumber((b[i + 4] & 255), true).shl(32))
+            .add(Long.fromNumber((b[i + 3] & 255), true).shl(24))
+            .add(Long.fromNumber((b[i + 2] & 255), true).shl(16))
+            .add(Long.fromNumber((b[i + 1] & 255), true).shl(8))
             .add(b[i] & 255)
     }
 
@@ -47,20 +47,20 @@ export class CityHash {
 
     private static bswap64(value: long): long {
         const b1 = value.and(0xff)
-        const b2 = (value.shiftRight(8)).and(0xff)
-        const b3 = (value.shiftRight(16)).and(0xff)
-        const b4 = (value.shiftRight(24)).and(0xff)
-        const b5 = (value.shiftRight(32)).and(0xff)
-        const b6 = (value.shiftRight(40)).and(0xff)
-        const b7 = (value.shiftRight(48)).and(0xff)
-        const b8 = (value.shiftRight(56)).and(0xff)
-        return (b1.shiftLeft(56))
-            .or(b2.shiftLeft(48))
-            .or(b3.shiftLeft(40))
-            .or(b4.shiftLeft(32))
-            .or(b5.shiftLeft(24))
-            .or(b6.shiftLeft(16))
-            .or(b7.shiftLeft(8))
+        const b2 = (value.shr(8)).and(0xff)
+        const b3 = (value.shr(16)).and(0xff)
+        const b4 = (value.shr(24)).and(0xff)
+        const b5 = (value.shr(32)).and(0xff)
+        const b6 = (value.shr(40)).and(0xff)
+        const b7 = (value.shr(48)).and(0xff)
+        const b8 = (value.shr(56)).and(0xff)
+        return (b1.shl(56))
+            .or(b2.shl(48))
+            .or(b3.shl(40))
+            .or(b4.shl(32))
+            .or(b5.shl(24))
+            .or(b6.shl(16))
+            .or(b7.shl(8))
             .or(b8)
     }
 
@@ -78,11 +78,11 @@ export class CityHash {
      */
     private static rotate(val: long, shift: number): long {
         // Avoid shifting by 64: doing so yields an undefined result.
-        return shift === 0 ? val : val.shiftRightUnsigned(shift).or((val.shiftLeft(64 - shift)))
+        return shift === 0 ? val : val.shru(shift).or(val.shl(64 - shift))
     }
 
     private static shiftMix(val: long): long {
-        return val.xor(val.shiftRightUnsigned(47))
+        return val.xor(val.shru(47))
     }
 
     private static hashLen16(u: long, v: long): Long.Long {
@@ -92,9 +92,9 @@ export class CityHash {
     private static hashLen16Mul(u: long, v: long, mul: long) {
         // Murmur-inspired hashing.
         let a = u.xor(v).multiply(mul)
-        a = a.xor(a.shiftRightUnsigned(47))
+        a = a.xor(a.shru(47))
         let b = v.xor(a).multiply(mul)
-        b = b.xor(b.shiftRightUnsigned(47))
+        b = b.xor(b.shru(47))
         b = b.multiply(mul)
         return b
     }
@@ -181,11 +181,11 @@ export class CityHash {
         const f = this.fetch64(s, pos + 24).multiply(9)
         const g = this.fetch64(s, pos + len - 8)
         const h = this.fetch64(s, pos + len - 16).multiply(mul)
-        const u = this.rotate(a.add(g).xor(d), 43).add(this.rotate(b, 30).add(c).multiply(9))
+        const u = this.rotate(a.add(g), 43).add(this.rotate(b, 30).add(c).multiply(9))
         const v = a.add(g).xor(d).add(f).add(1)
         const w = this.bswap64(u.add(v).multiply(mul)).add(h)
         const x = this.rotate(e.add(f), 42).add(c)
-        const y = this.bswap64(v.add(w).multiply(mul).add(g)).multiply(mul)
+        const y = this.bswap64(v.add(w).multiply(mul)).add(g).multiply(mul)
         const z = e.add(f).add(c)
         a = this.bswap64(x.add(z).multiply(mul).add(y)).add(b)
         b = this.shiftMix(z.add(a).multiply(mul).add(d).add(h)).multiply(mul)
@@ -260,9 +260,9 @@ export class CityHash {
     public static cityHash128to64(u: long, v: long): long {
         const kMul = Long.fromString("11376068507788127593", true)
         let a = u.xor(v).multiply(kMul)
-        a = a.xor(a.shiftRightUnsigned(47))
+        a = a.xor(a.shru(47))
         let b = v.xor(a).multiply(kMul)
-        b = b.xor(b.shiftRightUnsigned(47))
+        b = b.xor(b.shru(47))
         b = b.multiply(kMul)
         return b
     }

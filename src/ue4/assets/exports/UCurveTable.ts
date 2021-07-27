@@ -106,9 +106,11 @@ export class UCurveTable extends UObject {
      * @public
      */
     toJson(locres: Locres = null): any {
-        return this.rowMap.map((v, k) => {
-            return { key: k.text, value: v.toJson() }
-        })
+        const obj = {}
+        for (const [k, v] of this.rowMap) {
+            obj[k.text] = v.toJson()
+        }
+        return obj
     }
 }
 
