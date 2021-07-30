@@ -347,7 +347,7 @@ export class FileProvider extends EventEmitter {
     /**
      * Loads an ue4 object
      * @param {string} objectPath Path to the object
-     * @param {?string} objectName Name of the object (could be left out)
+     * @param {?string} objectName Name of the object (DEPRECATED)
      * @returns {?UObject} The object that matched your args or null
      * @public
      */
@@ -357,15 +357,18 @@ export class FileProvider extends EventEmitter {
         if (objectPath instanceof FSoftObjectPath) {
             packagePath = objectPath.assetPathName.text
         }
-        if (objectName == null) {
-            const dotIndex = packagePath.indexOf(".")
-            if (dotIndex === -1) {
-                objectName = packagePath.substring(packagePath.lastIndexOf("/") + 1)
-            } else {
-                objectName = packagePath.substring(dotIndex + 1)
-                packagePath = packagePath.substring(0, dotIndex)
-            }
+
+        if (objectName != null)
+            console.warn("[DEPRECATED: loadObject(objectPath, objectName)] Parameter 'objectName' is deprecated since V1.1.4. It will be removed in a future update.")
+
+        const dotIndex = packagePath.indexOf(".")
+        if (dotIndex === -1) {
+            objectName = packagePath.substring(packagePath.lastIndexOf("/") + 1)
+        } else {
+            objectName = packagePath.substring(dotIndex + 1)
+            packagePath = packagePath.substring(0, dotIndex)
         }
+
         const pkg = this.loadGameFile(packagePath) // TODO allow reading umaps via this route, currently fixPath() only appends .uasset. EDIT(2020-12-15): This works with IoStore assets, but not PAK assets.
         return pkg?.findObjectByName(objectName)?.value as T
     }
