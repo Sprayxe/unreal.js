@@ -11,8 +11,7 @@
 ## A pak reader for games like [VALORANT](https://playvalorant.com) & [Fortnite](https://fortnite.com) written in Node.JS
 
 ### Notice
-This library is in VERY early development so it might be unstable. Please also keep in mind that JavaScript is not really made for this kind of stuff so the usage of this library is **experimental**. We still try fixing most issues though so report if you experience any!\
-(We **recommend** a minimum of around 2-4GB RAM for this library.)
+This library is in VERY early development so it might be unstable. **Please also keep in mind that JavaScript is not really made for this kind of stuff so the usage of this library is experimental**. We still try fixing most issues though so report if you experience any!\
 
 ### Features
 - Easy2use file provider for fast interaction with pak/asset files
@@ -188,14 +187,9 @@ Replace:
 - Discord: **MarcelWRLD#0742**
 - Twitter: **Sprayxe_**
 
-## Contributors
-- [Sprayxe](https://twitter.com/@Sprayxe_) (Main Contributor)
-- [AmrSatrio](https://twitter.com/@AmrSatrio)
-- Inspired by [JFortniteParse](https://github.com/FabianFG/JFortniteParse)
-- Inspired by [CUE4Parse](https://github.com/FabianFG/CUE4Parse)
-  
-## Donate
-- [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/aimdiscord)
-- ![Bitcoin](https://img.shields.io/badge/Bitcoin-000000?style=for-the-badge&logo=bitcoin&logoColor=white) `1Ex8TqUZWGKAoXFMq3bYTjsPWjSDYZtemh`
+## Inspiration
+- [JFortniteParse](https://github.com/FabianFG/JFortniteParse)
+- [CUE4Parse](https://github.com/FabianFG/CUE4Parse)
+
 
 ![LOGO_1](https://media.discordapp.net/attachments/833965731279929365/853716847430074368/image1.png)
