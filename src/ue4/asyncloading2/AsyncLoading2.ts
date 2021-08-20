@@ -347,7 +347,7 @@ export class FPackageObjectIndex {
      * @public
      */
     isNull() {
-        return this.typeAndId === INVALID
+        return this.typeAndId.equals(INVALID)
     }
 
     /**

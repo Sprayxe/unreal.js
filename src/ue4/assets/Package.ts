@@ -80,7 +80,7 @@ export abstract class Package extends UObject {
      */
     protected static constructExport(struct: UStruct): UObject {
         let current = struct
-        while (current) {
+        while (current != null) {
             const c = (current as UScriptStruct)?.structClass
             if (c) {
                 const nc = new c.constructor() as UObject

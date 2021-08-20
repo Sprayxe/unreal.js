@@ -142,8 +142,12 @@ export class FVector implements IStructType {
             this.x = arg1.x
             this.y = arg1.y
             this.z = arg2
+        } else if (arg1 == null) {
+            this.x = 0
+            this.y = 0
+            this.z = 0
         } else {
-            this.x = arg1.x
+            this.x = arg1
             this.y = arg2
             this.z = arg3
         }

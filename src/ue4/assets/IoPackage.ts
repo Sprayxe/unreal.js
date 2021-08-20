@@ -217,9 +217,10 @@ export class IoPackage extends Package {
                         const objectName = this.nameMap.getName(exp.objectName)
                         const obj = Package.constructExport(this.resolveObjectIndex(exp.classIndex)?.getObject()?.value as UStruct)
                         obj.name = objectName.text
-                        // TODO remove 'false' param, fix the issue
-                        obj.outer = (this.resolveObjectIndex(exp.outerIndex, false) as ResolvedExportObject)?.exportObject?.value || this
-                        obj.template = (this.resolveObjectIndex(exp.templateIndex, false) as ResolvedExportObject)?.exportObject
+                        const objOuter = this.resolveObjectIndex(exp.outerIndex)
+                        obj.outer = (objOuter instanceof ResolvedExportObject ? objOuter?.exportObject?.value : null) || this
+                        const objTemplate = this.resolveObjectIndex(exp.templateIndex)
+                        obj.template = objTemplate instanceof ResolvedExportObject ? objTemplate?.exportObject : null
                         obj.flags = Math.floor(exp.objectFlags)
 
                         // Serialize
@@ -298,14 +299,14 @@ export class IoPackage extends Package {
      * @returns {?any} Object or null
      * @public
      */
-    findObject<T>(index?: FPackageIndex): T {
-        if (!index || index.isNull()) {
+    findObject<T>(index?: FPackageIndex): Lazy<T> {
+        if (index == null || index.isNull()) {
             return null
         } else if (index.isExport()) {
-            return this.exportsLazy[index.toExport()] as unknown as T
+            return this.exportsLazy[index.toExport()] as any
         } else {
             const imp = this.importMap[index.toImport()]
-            return (imp ? this.resolveObjectIndex(imp, false)?.getObject() : null) as unknown as T
+            return (imp ? this.resolveObjectIndex(imp, false)?.getObject() : null) as any
         }
     }
 
@@ -462,30 +463,20 @@ export class ResolvedScriptObject extends ResolvedObject {
     getObject(): Lazy<UObject> {
         return new Lazy<UObject>(() => {
             const name = this.name
-            if (name.text[0] === "E") {
-                let enumValues = this.pkg.provider?.mappingsProvider?.getEnum(name)
-                if (!enumValues) {
-                    if ((this.pkg.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0) {
-                        throw new MissingSchemaException(`Unknown enum ${name}`)
-                    }
-                    enumValues = []
-                }
-                const enm = new UEnum()
-                enm.name = name.text
-                enm.names = new Array(enumValues.length)
-                for (let i = 0; i < enumValues.length; ++i) {
-                    enm.names[i] = new Pair<FName, number>(FName.dummy(`${name}::${enumValues[i]}`), i)
-                }
-                return enm
-            } else {
-                let struct = this.pkg.provider?.mappingsProvider?.getStruct(name)
-                if (!struct) {
-                    if ((this.pkg.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0) {
-                        throw new MissingSchemaException(`Unknown struct ${name}`)
-                    }
-                    struct = new UScriptStruct(name)
-                }
+            const struct = this.pkg.provider?.mappingsProvider?.getStruct(name)
+            if (struct != null) {
                 return struct
+            } else {
+                const enumValues = this.pkg.provider?.mappingsProvider?.getEnum(name);
+                if (enumValues != null) {
+                    const enm = new UEnum()
+                    enm.name = name.text
+                    enm.names = new Array(enumValues.length)
+                    for (let i = 0; i < enumValues.length; ++i) {
+                        enm.names[i] = new Pair<FName, number>(FName.dummy(`${name}::${enumValues[i]}`), i)
+                    }
+                    return enm
+                } else return null
             }
         })
     }

@@ -1,6 +1,7 @@
 import { UStruct } from "./UStruct";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { EFunctionFlags } from "../enums/EFunctionFlag";
+import { Lazy } from "../../../util/Lazy";
 
 /**
  * UFunction
@@ -19,7 +20,7 @@ export class UFunction extends UStruct {
      * @type {UFunction}
      * @public
      */
-    eventGraphFunction: UFunction = null
+    eventGraphFunction: Lazy<UFunction> = null
 
     /**
      * Event graph call offset

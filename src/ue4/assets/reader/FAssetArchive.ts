@@ -8,6 +8,8 @@ import { FArchive } from "../../reader/FArchive";
 import { PakPackage } from "../PakPackage";
 import { FName, FNameEntry } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
+import { Lazy } from "../../../util/Lazy";
+import { UObject } from "../exports/UObject";
 
 export class FAssetArchive extends FArchiveProxy {
     /**
@@ -209,10 +211,10 @@ export class FAssetArchive extends FArchiveProxy {
      * @returns {?any} Read object or null
      * @public
      */
-    public readObject<T>(): T {
+    public readObject<T extends UObject>(): Lazy<T> {
         const it = new FPackageIndex(this)
-        const out = this.owner.findObject<T>(it)?.value
-        if (!it.isNull() && !out) {
+        const out = this.owner.findObject<T>(it)
+        if (!it.isNull() && out == null) {
             console.warn(`${this.pkgName}: ${it} not found`)
         }
         return out

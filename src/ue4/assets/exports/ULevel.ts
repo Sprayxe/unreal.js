@@ -7,6 +7,7 @@ import { UObject } from "./UObject";
 import { FVector2D } from "../../objects/core/math/FVector2D";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { FBox } from "../../objects/core/math/FBox";
+import { Lazy } from "../../../util/Lazy";
 
 /**
  * FPrecomputedVisibilityCell
@@ -275,39 +276,39 @@ export class ULevel extends ULevel_Properties {
 
     /**
      * actors
-     * @type {Array<UObject>}
+     * @type {Array<Lazy<UObject>>}
      */
-    public actors: UObject[]
+    public actors: Lazy<UObject>[]
 
     /**
      * model
-     * @type {UObject}
+     * @type {Lazy<UObject>}
      */
-    public model: UObject
+    public model: Lazy<UObject>
 
     /**
      * modelComponents
-     * @type {Array<UObject>}
+     * @type {Array<Lazy<UObject>>}
      */
-    public modelComponents: UObject[]
+    public modelComponents: Lazy<UObject>[]
 
     /**
      * levelScriptActor
-     * @type {UObject}
+     * @type {Lazy<UObject>}
      */
-    public levelScriptActor: UObject
+    public levelScriptActor: Lazy<UObject>
 
     /**
      * navListStart
-     * @type {UObject}
+     * @type {Lazy<UObject>}
      */
-    public navListStart: UObject
+    public navListStart: Lazy<UObject>
 
     /**
      * navListEnd
-     * @type {UObject}
+     * @type {Lazy<UObject>}
      */
-    public navListEnd: UObject
+    public navListEnd: Lazy<UObject>
 
     /**
      * precomputedVisibilityHandler

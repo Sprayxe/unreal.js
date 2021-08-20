@@ -4,6 +4,7 @@ import { FName } from "../../objects/uobject/FName";
 import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
+import { Lazy } from "../../../util/Lazy";
 
 /**
  * FImplementedInterface
@@ -104,7 +105,7 @@ export class UClass extends UStruct {
      * @type {FPackageIndex}
      * @public
      */
-    private funcMap: UnrealMap<FName, UFunction> = null
+    private funcMap: UnrealMap<FName, Lazy<UFunction>> = null
 
     /**
      * The list of interfaces which this class implements, along with the pointer property that is located at the offset of the interface's vtable
@@ -125,7 +126,7 @@ export class UClass extends UStruct {
         super.deserialize(Ar, validPos)
 
         // serialize the function map
-        this.funcMap = new UnrealMap<FName, UFunction>()
+        this.funcMap = new UnrealMap<FName, Lazy<UFunction>>()
         const len = Ar.readInt32()
         for (let i = 0; i < len; ++i) {
             this.funcMap.set(Ar.readFName(), Ar.readObject<UFunction>())
