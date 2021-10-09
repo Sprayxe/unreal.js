@@ -124,7 +124,8 @@ export class FUnversionedStructSchema {
                     }
                     index += ann?.skipNext || 0
                 }
-            } else*/ if (struct.childProperties?.length) {
+            } else*/
+            if (struct.childProperties?.length) {
                 for (const prop0 of struct.childProperties) {
                     const prop = prop0 as FPropertySerialized // Serialized in packages
                     const propertyInfo = new PropertyInfo(prop.name.text, new PropertyType(prop), prop.arrayDim)
@@ -251,8 +252,8 @@ export class FUnversionedHeader {
     protected loadZeroMaskData(Ar: FArchive, numBits: number) {
         return new BitSet(Ar.read(Math.floor(
             numBits <= 8 ? 1
-            : numBits <= 16 ? 2
-            : Utils.divideAndRoundUp(numBits, 32) * 4
+                : numBits <= 16 ? 2
+                : Utils.divideAndRoundUp(numBits, 32) * 4
         )))
     }
 }

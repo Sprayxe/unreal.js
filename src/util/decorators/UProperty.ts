@@ -1,9 +1,11 @@
 import "reflect-metadata";
+
 const UPropertyMetadataKey = Symbol("UProperty")
 
 export function UProperty(data: IUProperty = defaultData) {
     return Reflect.metadata(UPropertyMetadataKey, data)
 }
+
 export function getUProperty(target: any, propertyKey: string) {
     return Reflect.getMetadata(UPropertyMetadataKey, target, propertyKey);
 }

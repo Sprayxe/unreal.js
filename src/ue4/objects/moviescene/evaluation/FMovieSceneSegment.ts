@@ -13,11 +13,11 @@ import { IStructType } from "../../../assets/objects/UScriptStruct";
  */
 enum ESectionEvaluationFlags {
     /** No special flags - normal evaluation */
-    None =         0x00,
+    None = 0x00,
     /** Segment resides inside the 'pre-roll' time for the section */
-    PreRoll =      0x01,
+    PreRoll = 0x01,
     /** Segment resides inside the 'post-roll' time for the section */
-    PostRoll =     0x02
+    PostRoll = 0x02
 }
 
 /**
@@ -121,7 +121,7 @@ export class FMovieSceneSegment implements IStructType {
             this.allowEmpty = arg.readBoolean()
             const len = arg.readInt32()
             this.impls = new Array(len)
-            for (let i = 0; i< len; ++i) {
+            for (let i = 0; i < len; ++i) {
                 this.impls[i] = new FStructFallback(arg, FName.dummy("SectionEvaluationData"))
             }
         } else {

@@ -6,12 +6,7 @@ import { ReflectionTypeMappingsProvider } from "../ue4/assets/mappings/Reflectio
 import { Locres } from "../ue4/locres/Locres";
 import { FnLanguage, valueOfLanguageCode } from "../ue4/locres/FnLanguage";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
-import {
-    createIoChunkId,
-    EIoChunkType,
-    FIoChunkId,
-    FIoStoreEnvironment
-} from "../ue4/io/IoDispatcher";
+import { createIoChunkId, EIoChunkType, FIoChunkId, FIoStoreEnvironment } from "../ue4/io/IoDispatcher";
 import { IoPackage } from "../ue4/assets/IoPackage";
 import { UnrealMap } from "../util/UnrealMap";
 import { PakPackage } from "../ue4/assets/PakPackage";
@@ -35,6 +30,7 @@ import { createFPackageId } from "../ue4/objects/uobject/FPackageId";
 import { Oodle } from "../oodle/Oodle";
 import { Config, IConfig } from "../Config";
 import { Utils } from "../util/Utils";
+import { VersionContainer } from "../ue4/versions/VersionContainer";
 
 /**
  * The main hub for interacting with ue4 assets
@@ -49,18 +45,44 @@ export class FileProvider extends EventEmitter {
     folder: string
 
     /**
+     * Version container
+     * @type {VersionContainer}
+     * @public
+     */
+    versions: VersionContainer
+
+    /**
+     * Current used game
+     * @type {number}
+     * @public
+     */
+    public get game(): number {
+        return this.versions.game
+    }
+
+    public set game(v: number) {
+        this.versions.game = v
+    }
+
+    /**
+     * Current used version
+     * @type {number}
+     * @public
+     */
+    public get ver(): number {
+        return this.versions.ver
+    }
+
+    public set ver(v: number) {
+        this.versions.ver = v
+    }
+
+    /**
      * Whether global data is loaded or not
      * @type {boolean}
      * @protected
      */
     protected globalDataLoaded = false
-
-    /**
-     * Game which is being used
-     * @type {Ue4Version}
-     * @public
-     */
-    game: Ue4Version
 
     /**
      * Type mappings to use
@@ -142,6 +164,16 @@ export class FileProvider extends EventEmitter {
      */
     ioStoreTocReadOptions = EIoStoreTocReadOptions.ReadAll
 
+
+    /**
+     * Creates a new instance of the file provider
+     * @param {string} folder Path to pak folder
+     * @param {?VersionContainer} versions Version containers
+     * @param {?Config} config Configurations for the lib
+     * @public
+     */
+    constructor(folder: string, versions?: VersionContainer, config?: IConfig)
+
     /**
      * Creates a new instance of the file provider
      * @param {string} folder Path to pak folder
@@ -150,19 +182,51 @@ export class FileProvider extends EventEmitter {
      * @param {?Config} config Configurations for the lib
      * @public
      */
-    constructor(folder: string, game?: Ue4Version, mappingsProvider?: TypeMappingsProvider, config?: IConfig) {
+    constructor(folder: string, game?: Ue4Version, mappingsProvider?: TypeMappingsProvider, config?: IConfig)
+
+    constructor(...args) {
         super()
-        if (config != null) {
-            Config.GDebug = config.GDebug
-            Config.GExportArchiveCheckDummyName = config.GExportArchiveCheckDummyName
-            Config.GFatalUnknownProperty = config.GFatalUnknownProperty
-            Config.GSuppressMissingSchemaErrors = config.GSuppressMissingSchemaErrors
-            Config.GUseLocalTypeRegistry = config.GUseLocalTypeRegistry
-        }
+
+        const folder = args[0]
+        if (folder == null)
+            throw new SyntaxError("Missing parameter 'folder'.")
         this.folder = folder
-        this.game = game || Ue4Version.GAME_UE4_LATEST
-        this.mappingsProvider = mappingsProvider || new ReflectionTypeMappingsProvider()
-        if (this.game.game >= Game.GAME_UE4(26))
+
+        const ver = args[1]
+        if (ver != null) {
+            if (ver instanceof Ue4Version)
+                this.versions = new VersionContainer(ver.game)
+            else this.versions = ver
+        } else {
+            this.versions = VersionContainer.DEFAULT
+        }
+
+        const mapOrConf = args[2]
+        if (mapOrConf != null) {
+            if (mapOrConf instanceof TypeMappingsProvider)
+                this.mappingsProvider = mapOrConf
+            else {
+                this.mappingsProvider = new ReflectionTypeMappingsProvider()
+                Config.GDebug = mapOrConf.GDebug
+                Config.GExportArchiveCheckDummyName = mapOrConf.GExportArchiveCheckDummyName
+                Config.GFatalUnknownProperty = mapOrConf.GFatalUnknownProperty
+                Config.GSuppressMissingSchemaErrors = mapOrConf.GSuppressMissingSchemaErrors
+                Config.GUseLocalTypeRegistry = mapOrConf.GUseLocalTypeRegistry
+            }
+        } else {
+            this.mappingsProvider = new ReflectionTypeMappingsProvider()
+        }
+
+        const conf_2 = args[3]
+        if (conf_2 != null) {
+            Config.GDebug = conf_2.GDebug
+            Config.GExportArchiveCheckDummyName = conf_2.GExportArchiveCheckDummyName
+            Config.GFatalUnknownProperty = conf_2.GFatalUnknownProperty
+            Config.GSuppressMissingSchemaErrors = conf_2.GSuppressMissingSchemaErrors
+            Config.GUseLocalTypeRegistry = conf_2.GUseLocalTypeRegistry
+        }
+
+        if (this.game >= Game.GAME_UE4(26))
             Oodle.ensureLib()
     }
 
@@ -300,7 +364,7 @@ export class FileProvider extends EventEmitter {
                 const uasset = this.saveGameFile(x)
                 const uexp = this.saveGameFile(x.uexp)
                 const ubulk = x.hasUbulk() ? this.saveGameFile(x.ubulk) : null
-                return new PakPackage(uasset, uexp, ubulk, x.path, this, this.game)
+                return new PakPackage(uasset, uexp, ubulk, x.path, this, this.versions)
             } else if (typeof x === "string") {
                 const path = this.fixPath(x)
                 const gameFile = this.findGameFile(path)
@@ -329,14 +393,15 @@ export class FileProvider extends EventEmitter {
                 if (!uexp)
                     return null
                 const ubulk = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".ubulk")
-                return new PakPackage(uasset, uexp, ubulk, path, this, this.game)
+                return new PakPackage(uasset, uexp, ubulk, path, this, this.versions)
             } else {
                 let ioBuffer: Buffer
                 try {
                     ioBuffer = this.saveChunk(createIoChunkId(x, 0, EIoChunkType.ExportBundleData))
-                } catch { }
+                } catch {
+                }
                 if (!ioBuffer) return null
-                return new IoPackage(ioBuffer, x, this.globalPackageStore.value, this, this.game)
+                return new IoPackage(ioBuffer, x, this.globalPackageStore.value, this, this.versions)
             }
         } catch (e) {
             console.error(`Failed to load package ${x.toString()}`)
@@ -667,7 +732,7 @@ export class FileProvider extends EventEmitter {
         if (!fs.existsSync(this.folder))
             throw new ParserException(`Path '${this.folder}' does not exist!`)
 
-        if (this.game.game >= Game.GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
+        if (this.game >= Game.GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
             const file = this.folder + "global"
             if (fs.existsSync(file + ".utoc")) {
                 this.loadGlobalData(file)
@@ -679,7 +744,7 @@ export class FileProvider extends EventEmitter {
             const path = this.folder + dirEntry
             if (path.endsWith(".pak")) {
                 try {
-                    const reader = new PakFileReader(path, this.game.game)
+                    const reader = new PakFileReader(path, this.versions)
                     if (!reader.isEncrypted()) {
                         this.mount(reader)
                     } else {
@@ -741,16 +806,16 @@ export class FileProvider extends EventEmitter {
         if (path.startsWith("game/")) {
             path =
                 path.startsWith("game/content/") ? path.replace("game/content/", gameName + "game/content/") :
-                path.startsWith("game/config/") ? path.replace("game/config/", gameName + "game/config/") :
-                path.startsWith("game/plugins/") ? path.replace("game/plugins/", gameName + "game/plugins/") :
-                (path.includes("assetregistry") || path.endsWith(".uproject")) ? path.replace("game/", `${gameName}game/`) :
-                path.replace("game/", gameName + "game/content/")
+                    path.startsWith("game/config/") ? path.replace("game/config/", gameName + "game/config/") :
+                        path.startsWith("game/plugins/") ? path.replace("game/plugins/", gameName + "game/plugins/") :
+                            (path.includes("assetregistry") || path.endsWith(".uproject")) ? path.replace("game/", `${gameName}game/`) :
+                                path.replace("game/", gameName + "game/content/")
         } else if (path.startsWith("engine/")) {
             path =
                 path.startsWith("engine/content/") ? path :
-                path.startsWith("engine/config/") ? path :
-                path.startsWith("engine/plugins") ? path :
-                path.replace("engine/", "engine/content/")
+                    path.startsWith("engine/config/") ? path :
+                        path.startsWith("engine/plugins") ? path :
+                            path.replace("engine/", "engine/content/")
         }
         return path.toLowerCase()
     }

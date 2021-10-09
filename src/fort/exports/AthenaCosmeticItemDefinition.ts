@@ -38,7 +38,7 @@ export class AthenaCosmeticItemDefinition extends FortAccountItemDefinition {
     public ItemVariantPreviews: FortCosmeticVariantPreview[] = null
     public DirectAquisitionStyleDisclaimerOverride: FText = null
     //public List<FortCosmeticAdaptiveStatPreview> ItemObservedStatPreviews
-    @UProperty({ skipPrevious: 1 })
+    @UProperty({skipPrevious: 1})
     public UnlockRequirements: FText = null
     public UnlockingItemDef: FSoftObjectPath = null
     public ItemPreviewActorClass: FSoftObjectPath /*SoftClassPath*/ = null

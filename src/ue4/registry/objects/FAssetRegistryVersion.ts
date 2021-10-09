@@ -46,6 +46,7 @@ export class FAssetRegistryVersion {
     }
 
     guid: FGuid
+
     get version() {
         if (this.guid === versionGuid) {
             const values = Object.values(Type)

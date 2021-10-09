@@ -135,6 +135,7 @@ export class Image {
 type PixelFormat = "PF_G8" | "PF_RGB8" | "PF_RGBA8"
     | "PF_R8G8B8A8" | "PF_BGRA8" | "PF_B8G8R8A8" | "PF_DXT1" | "PF_DXT3"
     | "PF_DXT5" | "PF_DXT5N" | "PF_V8U8" | "PF_V8U8_2" | "PF_BC5" | "PF_RGBA4"
+
 export class PixelFormatInfo {
     public blockSizeX: number
     public blockSizeY: number
@@ -162,20 +163,20 @@ export class PixelFormatInfo {
         this.pixelFormat = pixelFormat
     }
 
-    static PF_G8          = new PixelFormatInfo(1, 1, 1, 64, 64, false, "PF_G8")
-    static PF_RGB8        = new PixelFormatInfo(1, 1, 3, 0, 0, false, "PF_RGB8")
-    static PF_RGBA8       = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_RGBA8")
-    static PF_R8G8B8A8    = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_R8G8B8A8")
-    static PF_BGRA8       = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_BGRA8")
-    static PF_B8G8R8A8    = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_B8G8R8A8")
-    static PF_DXT1        = new PixelFormatInfo(4, 4, 8, 128, 128, false, "PF_DXT1")
-    static PF_DXT3        = new PixelFormatInfo(4, 4, 16, 128, 128, false, "PF_DXT3")
-    static PF_DXT5        = new PixelFormatInfo(4, 4, 16, 128, 128, false, "PF_DXT5")
-    static PF_DXT5N       = new PixelFormatInfo(4, 4, 16, 128, 128, false, "PF_DXT5N")
-    static PF_V8U8        = new PixelFormatInfo(1, 1, 2, 64, 32, false, "PF_V8U8")
-    static PF_V8U8_2      = new PixelFormatInfo(1, 1, 2, 64, 32, false, "PF_V8U8_2")
-    static PF_BC5         = new PixelFormatInfo(4, 4, 16, 0, 0, false, "PF_BC5")
-    static PF_RGBA4       = new PixelFormatInfo(1, 1, 2, 0, 0, false, "PF_RGBA4")
+    static PF_G8 = new PixelFormatInfo(1, 1, 1, 64, 64, false, "PF_G8")
+    static PF_RGB8 = new PixelFormatInfo(1, 1, 3, 0, 0, false, "PF_RGB8")
+    static PF_RGBA8 = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_RGBA8")
+    static PF_R8G8B8A8 = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_R8G8B8A8")
+    static PF_BGRA8 = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_BGRA8")
+    static PF_B8G8R8A8 = new PixelFormatInfo(1, 1, 4, 32, 32, false, "PF_B8G8R8A8")
+    static PF_DXT1 = new PixelFormatInfo(4, 4, 8, 128, 128, false, "PF_DXT1")
+    static PF_DXT3 = new PixelFormatInfo(4, 4, 16, 128, 128, false, "PF_DXT3")
+    static PF_DXT5 = new PixelFormatInfo(4, 4, 16, 128, 128, false, "PF_DXT5")
+    static PF_DXT5N = new PixelFormatInfo(4, 4, 16, 128, 128, false, "PF_DXT5N")
+    static PF_V8U8 = new PixelFormatInfo(1, 1, 2, 64, 32, false, "PF_V8U8")
+    static PF_V8U8_2 = new PixelFormatInfo(1, 1, 2, 64, 32, false, "PF_V8U8_2")
+    static PF_BC5 = new PixelFormatInfo(4, 4, 16, 0, 0, false, "PF_BC5")
+    static PF_RGBA4 = new PixelFormatInfo(1, 1, 2, 0, 0, false, "PF_RGBA4")
     // static PF_ASTC_4x4    = new PixelFormatInfo(4, 4, 16, 0, 0, false)
     // static PF_ASTC_6x6    = new PixelFormatInfo(6, 6, 16, 0, 0, false)
     // static PF_ASTC_8x8    = new PixelFormatInfo(8, 8, 16, 0, 0, false)
@@ -205,7 +206,7 @@ function rgbaBufferToImage(rgba: Buffer, width: number, height: number, config?:
     let t = 0
     // TODO might impact performance
     for (let i = 0; i < len; i += 4) {
-        imageData.data[i]     = rgba[t]
+        imageData.data[i] = rgba[t]
         imageData.data[i + 1] = rgba[t + 1]
         imageData.data[i + 2] = rgba[t + 2]
         imageData.data[i + 3] = rgba[t + 3]
@@ -213,7 +214,7 @@ function rgbaBufferToImage(rgba: Buffer, width: number, height: number, config?:
     }
     ctx.putImageData(imageData, 0, 0)
     ctx.translate(.5, .5)
-    return img.toBuffer("image/png", { compressionLevel: 3 })
+    return img.toBuffer("image/png", {compressionLevel: 3})
 }
 
 function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: ImageConfig) {
@@ -226,7 +227,7 @@ function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: I
     let t = 0
     // TODO might impact performance
     for (let i = 0; i < len; i += 4) {
-        imageData.data[i]     = rgb[t]
+        imageData.data[i] = rgb[t]
         imageData.data[i + 1] = rgb[t + 1]
         imageData.data[i + 2] = rgb[t + 2]
         imageData.data[i + 3] = 255
@@ -234,7 +235,7 @@ function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: I
     }
     ctx.putImageData(imageData, 0, 0)
     ctx.translate(.5, 5)
-    return img.toBuffer("image/png", { compressionLevel: 3 })
+    return img.toBuffer("image/png", {compressionLevel: 3})
 }
 
 export interface ImageConfig {

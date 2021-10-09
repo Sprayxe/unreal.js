@@ -23,7 +23,8 @@ export class FFileManifestList {
     constructor(Ar: FArchive) {
         const startPos = Ar.pos
         const dataSize = Ar.readUInt32()
-        /*val dataVersionInt = */Ar.readUInt8()
+        /*val dataVersionInt = */
+        Ar.readUInt8()
         const elementCount = Ar.readInt32()
         this.fileList = []
         for (let i = 0; i < elementCount; ++i)
@@ -55,5 +56,6 @@ export class FFileManifestList {
      * @returns {void}
      * @public
      */
-    serialize(Ar: FArchiveWriter) { }
+    serialize(Ar: FArchiveWriter) {
+    }
 }

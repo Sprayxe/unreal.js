@@ -237,7 +237,7 @@ export class FRichCurve extends FRealCurve {
      * Sorted array of keys
      * @type {Array<FRichCurveKey>}
      */
-    @UProperty({ name: "Keys" })
+    @UProperty({name: "Keys"})
     public keys: FRichCurveKey[] = []
 
     /**
@@ -450,10 +450,14 @@ function bezierToPower(
     const b = c1 - b1
     const c = d1 - c1
     const d = b - a
-    /*a2*/ out[3] = c - b - d
-    /*b2*/ out[2] = 3.0 * d
-    /*c2*/ out[1] = 3.0 * a
-    /*d2*/ out[0] = a1
+    /*a2*/
+    out[3] = c - b - d
+    /*b2*/
+    out[2] = 3.0 * d
+    /*c2*/
+    out[1] = 3.0 * a
+    /*d2*/
+    out[0] = a1
 }
 
 function weightedEvalForTwoKeys(

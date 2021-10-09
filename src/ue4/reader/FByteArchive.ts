@@ -1,4 +1,5 @@
 import { FArchive } from "./FArchive";
+import { VersionContainer } from "../versions/VersionContainer";
 
 /**
  * Byte Reader for UE4
@@ -29,11 +30,12 @@ export class FByteArchive extends FArchive {
     /**
      * Creates an instance
      * @param {Buffer} data Bytes to read
+     * @param {VersionContainer?} versions Container of versions
      * @constructor
      * @public
      */
-    constructor(data: Buffer) {
-        super()
+    constructor(data: Buffer, versions: VersionContainer = VersionContainer.DEFAULT) {
+        super(versions)
         this.data = data
     }
 
@@ -45,6 +47,7 @@ export class FByteArchive extends FArchive {
     public get pos() {
         return this.position
     }
+
     public set pos(pos: number) {
         this.position = pos
     }

@@ -13,6 +13,7 @@ export abstract class FAssetRegistryArchive extends FArchiveProxy {
     constructor(wrappedAr: FArchive) {
         super(wrappedAr)
     }
+
     abstract serializeTagsAndBundles(out: FAssetData)
 }
 
@@ -65,4 +66,4 @@ export class FAssetRegistryReader extends FAssetRegistryArchive {
         })
         return out
     }
- }
+}

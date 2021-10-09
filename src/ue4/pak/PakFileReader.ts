@@ -10,9 +10,9 @@ import { Utils } from "../../util/Utils";
 import { Compression } from "../../compression/Compression";
 import { FArchive } from "../reader/FArchive";
 import { EPakVersion } from "./enums/PakVersion";
-import { Game } from "../versions/Game";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { Config } from "../../Config";
+import { VersionContainer } from "../versions/VersionContainer";
 
 /**
  * UE4 Pak File Reader
@@ -77,16 +77,14 @@ export class PakFileReader {
     /**
      * Creates an instance
      * @param {string} path Path to file
-     * @param {?number} game Game that is used
+     * @param {?VersionContainer} versions Versions
      * @param {?Buffer} source Source buffer if it's not an existing file
      * @constructor
      * @public
      */
-    constructor(path: string, game?: number, source?: Buffer) {
+    constructor(path: string, versions: VersionContainer = VersionContainer.DEFAULT, source?: Buffer) {
         this.path = path
-        this.Ar = source != null ? new FByteArchive(source) : new FFileArchive(path)
-        this.Ar.game = this.game = game || Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
-        this.Ar.ver = Game.GAME_UE4_GET_AR_VER(this.game)
+        this.Ar = source != null ? new FByteArchive(source, versions) : new FFileArchive(path, versions)
         this.pakInfo = FPakInfo.readPakInfo(this.Ar)
     }
 

@@ -1,4 +1,4 @@
-import { FMappedName_EType, FMappedName } from "./AsyncLoading2";
+import { FMappedName, FMappedName_EType } from "./AsyncLoading2";
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { FArchive } from "../reader/FArchive";
 import { loadNameBatch } from "../objects/uobject/NameBatchSerialization";
@@ -31,7 +31,7 @@ export class FNameMap {
      * @returns {void}
      * @public
      */
-    loadGlobal(provider: FileProvider ) {
+    loadGlobal(provider: FileProvider) {
         if (this.nameEntries.length)
             throw new Error("Nameentries must be empty")
 

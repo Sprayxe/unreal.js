@@ -69,12 +69,14 @@ export class AssetRegistry {
 
     private loadDependencies(Ar: FArchive) {
         const self = this
+
         function getNodeFromSerializeIndex(index: number): FDependsNode {
             if (index < 0 || self.preallocatedDependsNodeDataBuffer.length < index) {
                 return null
             }
             return self.preallocatedDependsNodeDataBuffer[index]
         }
+
         for (const dependsNode of this.preallocatedDependsNodeDataBuffer) {
             dependsNode.serializeLoad(Ar, getNodeFromSerializeIndex)
         }

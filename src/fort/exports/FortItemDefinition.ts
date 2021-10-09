@@ -16,7 +16,7 @@ import { UProperty } from "../../util/decorators/UProperty";
 
 export class FortItemDefinition extends McpItemDefinitionBase {
     //public OnItemCountChanged: MulticastInlineDelegateProperty
-    @UProperty({ skipPrevious: 1 })
+    @UProperty({skipPrevious: 1})
     public Rarity: EFortRarity = EFortRarity.Uncommon
     public ItemType: EFortItemType = null
     public PrimaryAssetIdItemTypeOverride: EFortItemType = null

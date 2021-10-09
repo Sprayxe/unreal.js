@@ -8,12 +8,17 @@
 ![LOGO_0](https://media.discordapp.net/attachments/833965731279929365/853716847203844106/image0.png)
 
 # unreal.js
+
 ## A pak reader for games like [VALORANT](https://playvalorant.com) & [Fortnite](https://fortnite.com) written in Node.JS
 
 ### Notice
-This library is in VERY early development so it might be unstable. **Please also keep in mind that JavaScript is not really made for this kind of stuff so the usage of this library is experimental**. We still try fixing most issues though so report if you experience any!\
+
+This library is in VERY early development so it might be unstable. **Please also keep in mind that JavaScript is not
+really made for this kind of stuff so the usage of this library is experimental**. We still try fixing most issues
+though so report if you experience any!\
 
 ### Features
+
 - Easy2use file provider for fast interaction with pak/asset files
 - Supports loading of UE4 pak files
 - Supports loading of UE4 asset files (.uasset, .umap, .uexp, .ubulk)
@@ -22,24 +27,33 @@ This library is in VERY early development so it might be unstable. **Please also
 - Supports exporting of UE4 textures as image
 - Supports exporting of UE4 sounds files
 
-### Prerequisites 
+### Prerequisites
+
 - Node.JS/NPM installed
 - **Experience with JavaScript or TypeScript**
 - Python, Visual C++ Build Tools (node-gyp dependencies)
 
-### Installation 
+### Installation
+
 `npm i unreal.js`\
-This library has optional dependencies like `canvas` and `dxt-js` which are used in ue4 texture conversion. If you don't want to install these dependencies, use: `npm i unreal.js --no-optional`.
+This library has optional dependencies like `canvas` and `dxt-js` which are used in ue4 texture conversion. If you don't
+want to install these dependencies, use: `npm i unreal.js --no-optional`.
 
 ### Documentation
+
 [Here](https://unreal.js.org)
 
 ### Usage
+
 #### Basics: FileProvider
+
 The file provider is basically the heart of the library and from there you control basically all features.
 
-**IMPORTANT**: When using the library with **Fortnite V14.40 and above**, you need `oo2core_8_win64.dll` present in your working directory (you can download it using `Oodle.downloadDLL()`). You will also need a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version.\
+**IMPORTANT**: When using the library with **Fortnite V14.40 and above**, you need `oo2core_8_win64.dll` present in your
+working directory (you can download it using `Oodle.downloadDLL()`). You will also need
+a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version.\
 You will also experience longer mounting times than e.g VALORANT.
+
 - **Usage with Fortnite**
     ```js
     // Create new instance
@@ -55,12 +69,12 @@ You will also experience longer mounting times than e.g VALORANT.
     // submit aes key to decrypt paks
     await provider.submitKey(FGuid.mainGuid, "KEY")
     ```
-    Replace:
+  Replace:
     - `USMAPPATH`: Path to your .usmap file (doesn't need to be in working dir)
     - `VERSION`: Version you want to use (e.g `Ue4Version.GAME_UE4_26`, pass `null` for latest)
     - `GAMEPATH`: Path to fortnite's paks
     - `KEY`: An [aes key](https://benbot.app/api/v1/aes) corresponding to your version
-   
+
 
 - **Usage with VALORANT**
    ```js
@@ -71,18 +85,19 @@ You will also experience longer mounting times than e.g VALORANT.
     // submit aes key to decrypt paks
     await provider.submitKey(FGuid.mainGuid, "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6")
    ```
-   Replace:
-   - `GAMEPATH`: Path to valorant's paks
-   
+  Replace:
+    - `GAMEPATH`: Path to valorant's paks
+
 #### Basics: Loading an asset
+
 - **Loading whole file**
   ```js
    const pkg = provider.loadGameFile("PATH") // loads the file
    console.log(pkg.toJson()) // turns file into json format
   ```
   Replace:
-  - `PATH`: Path to the file you want to load
-   
+    - `PATH`: Path to the file you want to load
+
 
 - **Loading specific object from file**
   ```js
@@ -90,11 +105,12 @@ You will also experience longer mounting times than e.g VALORANT.
   console.log(pkg.toJson()) // turns object into json format
   ```
   Replace:
-  - `PATH`: Path to the file you want to load
-  - `OBJECTNAME`: Name of the object to load\
-   You can leave this parameter out if you provide the object name as file extension
+    - `PATH`: Path to the file you want to load
+    - `OBJECTNAME`: Name of the object to load\
+      You can leave this parameter out if you provide the object name as file extension
 
 #### Basics: Exporting sounds
+
 - **Exporting a sound wave**
   ```js
   // this will find an export which matches the class 'USoundWave'
@@ -115,8 +131,9 @@ You will also experience longer mounting times than e.g VALORANT.
   writeFileSync(`MySoundFile.${wwise.format}`, wwise.data)
   ```
   **IMPORTANT**: `.wem` are not playable by windows, you have to convert it to a `.wav` file first!\
-  Unreal.JS is able to do that with [vgmstream](https://github.com/vgmstream/vgmstream). Download the zip file from [here](https://drive.google.com/file/d/1Fed4ba_FvegUgeIXCgnlcoUzoABC-ZxX/view?usp=sharing),
-  create a folder called 'vgm' in your working directory and extract all files into it. Then do:
+  Unreal.JS is able to do that with [vgmstream](https://github.com/vgmstream/vgmstream). Download the zip file
+  from [here](https://drive.google.com/file/d/1Fed4ba_FvegUgeIXCgnlcoUzoABC-ZxX/view?usp=sharing), create a folder
+  called 'vgm' in your working directory and extract all files into it. Then do:
   ```js
   // this will find an export which matches the class 'UAkMediaAssetData'
   const mediaData = pkg.getExportOfType(UAkMediaAssetData)
@@ -126,6 +143,7 @@ You will also experience longer mounting times than e.g VALORANT.
   ```
 
 #### Basics: Exporting textures
+
 ```js
   // this will find an export which matches the class 'UTexture2D'
   const tex = pkg.getExportOfType(UTexture2D)
@@ -136,13 +154,14 @@ You will also experience longer mounting times than e.g VALORANT.
   ```
 
 #### Basics: Loading locres
-- **Loading by file path**   
+
+- **Loading by file path**
    ```js
    const locres = provider.loadLocres("PATH") // loads the locres file
    console.log(locres.toJson()) // turns locres into json format 
    ```
   Replace:
-  - `PATH`: Path to the .locres file
+    - `PATH`: Path to the .locres file
 
 
 - **Loading by enum**
@@ -150,29 +169,36 @@ You will also experience longer mounting times than e.g VALORANT.
   const locres = provider.loadLocres(FnLanguage.DE) // loads using enum
   console.log(locres.toJson()) // turns locres into json format 
   ```  
-  
+
 #### Advanced: Loading a pak file manually
+
 ```js
 const reader = new PakFileReader("PATH", GAME) // Create a new instance
 reader.aesKey = "KEY" // Set an aes key (can be left out if pak is not encrypted)
 reader.readIndex() // Read the index
 reader.extract(reader.files.first()) // Gets the first file and extracts it as Buffer
 ```
+
 Replace:
+
 - `PATH`: Path to the pak file
 - `GAME`: Game version you are using (e.g `Ue4Version.GAME_UE4_26`)\
   You can leave it out if you want to use the latest version
 - `KEY`: Aes key used for decrypting the pak\
-  **WARNING** Using a wrong aes key will throw an exception! You can use `reader.testAesKey("KEY")` to test if it works (returns a boolean)
+  **WARNING** Using a wrong aes key will throw an exception! You can use `reader.testAesKey("KEY")` to test if it
+  works (returns a boolean)
 
 #### Advanced: Loading a package manually
+
 ```js
 // load a pak package (e.g valorant)
 const pkg = new PakPackage(UASSETBUFFER, UEXPBUFFER, UBULKBUFFER, NAME, PROVIDER, GAME)
 // load an io package (mostly used in fortnite)
 const pkg2 = new IoPackage(UASSETBUFFER, PACKAGEID, STOREENTRY, GLOBALPACKAGESTORE, PROVIDER, GAME)
 ```
+
 Replace:
+
 - `UASSETBUFFER`: Buffer of the .uasset file
 - `UEXPBUFFER`: Buffer of the .uexp file
 - `UBULKBUFFER`: Buffer of the .ubulk file (pass `null` if it doesn't exist)
@@ -184,12 +210,13 @@ Replace:
 - `GLOBALPACKAGESTORE`: The file provider's `FPackageStore` object
 
 ## Support, Feedback, Contact
+
 - Discord: **MarcelWRLD#0742**
 - Twitter: **Sprayxe_**
 
 ## Inspiration
+
 - [JFortniteParse](https://github.com/FabianFG/JFortniteParse)
 - [CUE4Parse](https://github.com/FabianFG/CUE4Parse)
-
 
 ![LOGO_1](https://media.discordapp.net/attachments/833965731279929365/853716847430074368/image1.png)

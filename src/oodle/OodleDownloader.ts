@@ -37,7 +37,7 @@ export class OodleDownloader {
                 oodleUrl = this.CDN_BASE_URL + line.split(",")[0]
         }
         if (!oodleUrl)
-          throw new OodleException(`Cannot find ${this.OODLE_FILE_NAME} in CDN index.`)
+            throw new OodleException(`Cannot find ${this.OODLE_FILE_NAME} in CDN index.`)
         await writeFile(path, await this.lzmaGet(oodleUrl)) // eh
         console.log(`Successfully downloaded ${this.OODLE_FILE_NAME}!`)
     }

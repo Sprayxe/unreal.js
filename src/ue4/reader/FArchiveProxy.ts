@@ -14,6 +14,7 @@ export class FArchiveProxy extends FArchive {
     public get littleEndian() {
         return this.wrappedAr.littleEndian
     }
+
     public set littleEndian(value: boolean) {
         this.wrappedAr.littleEndian = value
     }
@@ -55,6 +56,7 @@ export class FArchiveProxy extends FArchive {
     public get pos(): number {
         return this.wrappedAr.pos
     }
+
     public set pos(pos: number) {
         this.wrappedAr.pos = pos
     }

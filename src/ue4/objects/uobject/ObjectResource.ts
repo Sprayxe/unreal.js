@@ -5,8 +5,11 @@ import { FAssetArchive } from "../../assets/reader/FAssetArchive";
 import { FGuid } from "../core/misc/Guid";
 import { UObject } from "../../assets/exports/UObject";
 import {
-    VER_UE4_64BIT_EXPORTMAP_SERIALSIZES, VER_UE4_COOKED_ASSETS_IN_EDITOR_SUPPORT,
-    VER_UE4_LOAD_FOR_EDITOR_GAME, VER_UE4_NON_OUTER_PACKAGE_IMPORT, VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS,
+    VER_UE4_64BIT_EXPORTMAP_SERIALSIZES,
+    VER_UE4_COOKED_ASSETS_IN_EDITOR_SUPPORT,
+    VER_UE4_LOAD_FOR_EDITOR_GAME,
+    VER_UE4_NON_OUTER_PACKAGE_IMPORT,
+    VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS,
     VER_UE4_TemplateIndex_IN_COOKED_EXPORTS
 } from "../../versions/Versions";
 import { FArchiveWriter } from "../../writer/FArchiveWriter";

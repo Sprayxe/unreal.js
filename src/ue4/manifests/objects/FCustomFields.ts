@@ -22,7 +22,8 @@ export class FCustomFields {
     constructor(Ar: FArchive) {
         const startPos = Ar.pos
         const dataSize = Ar.readUInt32()
-        /*val dataVersionInt = */Ar.readUInt8()
+        /*val dataVersionInt = */
+        Ar.readUInt8()
         const elementCount = Ar.readInt32()
         const arrayFields = []
         for (let i = 0; i < elementCount; ++i)
@@ -30,7 +31,7 @@ export class FCustomFields {
         for (const field of arrayFields) field.first = Ar.readString()
         for (const field of arrayFields) field.second = Ar.readString()
         const fields = new Collection<string, string>()
-        for (const { first, second } of arrayFields)
+        for (const {first, second} of arrayFields)
             fields[first] = second
         this.fields = fields
         Ar.pos = startPos + dataSize
@@ -42,9 +43,10 @@ export class FCustomFields {
      * @returns {void}
      * @public
      */
-    serialize(Ar: FArchiveWriter) { }
+    serialize(Ar: FArchiveWriter) {
+    }
 }
 
 function mutablePair<K, V>(first: K, second: V) {
-    return { first, second }
+    return {first, second}
 }

@@ -1,11 +1,11 @@
 import { FileProvider } from "../../fileprovider/FileProvider";
-import { Ue4Version } from "../versions/Game";
 import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { UObject } from "./exports/UObject";
 import { UStruct } from "./exports/UStruct";
 import { UScriptStruct } from "./exports/UScriptStruct";
 import { Locres } from "../locres/Locres";
 import { Lazy } from "../../util/Lazy";
+import { VersionContainer } from "../versions/VersionContainer";
 
 /**
  * UE4 Package
@@ -29,24 +29,24 @@ export abstract class Package extends UObject {
 
     /**
      * Game which is used
-     * @type {Ue4Version}
+     * @type {VersionContainer}
      * @public
      */
-    game: Ue4Version = this.provider?.game || Ue4Version.GAME_UE4_LATEST
+    versions: VersionContainer = this.provider?.versions || VersionContainer.DEFAULT
 
     /**
      * Creates an instnace
      * @param {string} fileName Name of file
      * @param {FileProvider} provider File provider
-     * @param {Ue4Version} game Game which is used
+     * @param {VersionContainer} versions Game which is used
      * @constructor
      * @protected
      */
-    protected constructor(fileName: string, provider: FileProvider, game: Ue4Version) {
+    protected constructor(fileName: string, provider: FileProvider, versions: VersionContainer) {
         super()
         this.fileName = fileName
         this.provider = provider
-        this.game = game
+        this.versions = versions
     }
 
     /**

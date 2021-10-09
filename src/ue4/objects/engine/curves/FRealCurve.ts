@@ -1,4 +1,4 @@
-import { FloatRef, IntRef, ObjectRef } from "../../../../util/ObjectRef";
+import { FloatRef, IntRef } from "../../../../util/ObjectRef";
 import { FLOAT_MAX_VALUE } from "../../../../util/Const";
 import { UProperty } from "../../../../util/decorators/UProperty";
 import { FStructFallback } from "../../../assets/objects/FStructFallback";
@@ -46,7 +46,7 @@ export class FRealCurve {
      * @type {number}
      * @public
      */
-    @UProperty({ name: "DefaultValue" })
+    @UProperty({name: "DefaultValue"})
     defaultValue = FLOAT_MAX_VALUE
 
     /**
@@ -54,7 +54,7 @@ export class FRealCurve {
      * @type {ERichCurveExtrapolation}
      * @public
      */
-    @UProperty({ name: "PreInfinityExtrap" })
+    @UProperty({name: "PreInfinityExtrap"})
     preInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
 
     /**
@@ -62,7 +62,7 @@ export class FRealCurve {
      * @type {ERichCurveExtrapolation}
      * @public
      */
-    @UProperty({ name: "PostInfinityExtrap" })
+    @UProperty({name: "PostInfinityExtrap"})
     postInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
 
     /**
@@ -72,7 +72,8 @@ export class FRealCurve {
      * @returns {void}
      * @public
      */
-    getTimeRange(minTime: FloatRef, maxTime: FloatRef) { }
+    getTimeRange(minTime: FloatRef, maxTime: FloatRef) {
+    }
 
     /**
      * Get range of output values
@@ -81,14 +82,16 @@ export class FRealCurve {
      * @returns {void}
      * @public
      */
-    getValueRange(minValue: FloatRef, maxValue: FloatRef) { }
+    getValueRange(minValue: FloatRef, maxValue: FloatRef) {
+    }
 
     /**
      * Clear all keys.
      * @returns {void}
      * @public
      */
-    reset() { }
+    reset() {
+    }
 
     /**
      * Remaps inTime based on pre and post infinity extrapolation values
@@ -97,7 +100,8 @@ export class FRealCurve {
      * @returns {void}
      * @public
      */
-    remapTimeValue(inTime: FloatRef, cycleValueOffset: FloatRef) { }
+    remapTimeValue(inTime: FloatRef, cycleValueOffset: FloatRef) {
+    }
 
     /**
      * Evaluates this curve at the specified time

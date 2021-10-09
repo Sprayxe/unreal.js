@@ -19,7 +19,6 @@ import { Utils } from "../../util/Utils"
 import { GameFile } from "../pak/GameFile";
 import { FIoDirectoryIndexReader } from "./IoDirectoryIndex";
 import { Lazy } from "../../util/Lazy";
-import { ParserException } from "../../exceptions/Exceptions";
 
 /**
  * I/O store container format version

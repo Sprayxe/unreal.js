@@ -1,5 +1,4 @@
 import { UProperty } from "../../../util/decorators/UProperty";
-import { UnrealMap } from "../../../util/UnrealMap";
 import { FArchive } from "../../reader/FArchive";
 import { IStructType } from "../../assets/objects/UScriptStruct";
 import Collection from "@discordjs/collection";
@@ -14,7 +13,7 @@ export class FPerQualityLevelInt implements IStructType {
      * @type {number}
      * @public
      */
-    @UProperty({ name: "Default" })
+    @UProperty({name: "Default"})
     public default: number
 
     /**
@@ -22,7 +21,7 @@ export class FPerQualityLevelInt implements IStructType {
      * @type {Collection<number, number>}
      * @public
      */
-    @UProperty({ name: "PerQuality" })
+    @UProperty({name: "PerQuality"})
     public perQuality: Collection<number, number>
 
     /**

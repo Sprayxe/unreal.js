@@ -93,7 +93,7 @@ export class ManagedParticleParamVariant {
 }
 
 export class SoundVariant {
-    public SoundToSwap:  FSoftObjectPath
+    public SoundToSwap: FSoftObjectPath
     public ComponentToOverride: FName
     public OverrideSound: FSoftObjectPath
 }

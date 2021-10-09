@@ -89,7 +89,7 @@ export class FSimpleCurve extends FRealCurve {
      * @type {ERichCurveInterpMode}
      * @public
      */
-    @UProperty({ name: "InterpMode" })
+    @UProperty({name: "InterpMode"})
     public interpMode = ERichCurveInterpMode.RCIM_Linear
 
     /**
@@ -97,7 +97,7 @@ export class FSimpleCurve extends FRealCurve {
      * @type {Array<FSimpleCurveKey>}
      * @public
      */
-    @UProperty({ name: "Keys" })
+    @UProperty({name: "Keys"})
     public keys: FSimpleCurveKey[] = []
 
     /**
@@ -140,7 +140,7 @@ export class FSimpleCurve extends FRealCurve {
      * @returns {void}
      * @public
      */
-   getValueRange(minValue: FloatRef, maxValue: FloatRef) {
+    getValueRange(minValue: FloatRef, maxValue: FloatRef) {
         if (this.keys.length === 0) {
             minValue.element = 0
             maxValue.element = 0
@@ -153,7 +153,7 @@ export class FSimpleCurve extends FRealCurve {
                 maxValue.element = Math.max(maxValue.element, key.value)
             }
         }
-   }
+    }
 
     /**
      * Clear all keys.

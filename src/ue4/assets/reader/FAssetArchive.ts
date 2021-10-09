@@ -114,8 +114,7 @@ export class FAssetArchive extends FArchiveProxy {
      */
     public clone(): FAssetArchive {
         const c = new FAssetArchive(this.data, this.provider, this.pkgName)
-        c.game = this.game
-        c.ver = this.ver
+        c.versions = this.versions
         c.useUnversionedPropertySerialization = this.useUnversionedPropertySerialization
         c.isFilterEditorOnly = this.isFilterEditorOnly
         c.littleEndian = this.littleEndian

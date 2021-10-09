@@ -24,7 +24,7 @@ export class CMaterialParams {
     public specularPowerChannel: ETextureChannel = ETextureChannel.TC_NONE
     public cubemapMaskChannel: ETextureChannel = ETextureChannel.TC_NONE
     // colors
-    public emissiveColor : FLinearColor = new FLinearColor(0.5, 0.5, 1.0, 1)       // light-blue color
+    public emissiveColor: FLinearColor = new FLinearColor(0.5, 0.5, 1.0, 1)       // light-blue color
     // mobile
     public useMobileSpecular: boolean = false
     public mobileSpecularPower: number = 0.0
@@ -48,7 +48,7 @@ export class CMaterialParams {
         specularPowerChannel: ETextureChannel = ETextureChannel.TC_NONE,
         cubemapMaskChannel: ETextureChannel = ETextureChannel.TC_NONE,
         // colors
-        emissiveColor : FLinearColor = new FLinearColor(0.5, 0.5, 1.0, 1) ,      // light-blue color
+        emissiveColor: FLinearColor = new FLinearColor(0.5, 0.5, 1.0, 1),      // light-blue color
         // mobile
         useMobileSpecular: boolean = false,
         mobileSpecularPower: number = 0.0,
@@ -161,6 +161,7 @@ export class Material {
 
         const toExport = []
         let sb = ""
+
         function proc(name: string, arg?: UUnrealMaterial) {
             if (arg != null) {
                 sb += `\n${name}=${arg.getName()}`
@@ -197,7 +198,7 @@ export class Material {
         }
 
         const parentExport = this instanceof UMaterialInstanceConstant
-             ? this.convert(this.Parent?.value)
+            ? this.convert(this.Parent?.value)
             : null
         // TODO TextureCube3 ???
 

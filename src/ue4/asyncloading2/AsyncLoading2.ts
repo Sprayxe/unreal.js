@@ -788,6 +788,7 @@ export class FExportMapEntry {
      * @public
      */
     filterFlags: number
+
     //uint8 Pad[3] = {};
 
     /**

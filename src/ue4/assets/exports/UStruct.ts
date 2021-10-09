@@ -349,7 +349,8 @@ export class FBoolProperty extends FPropertySerialized {
  * FNumericProperty
  * @extends {FPropertySerialized}
  */
-export class FNumericProperty extends FPropertySerialized { }
+export class FNumericProperty extends FPropertySerialized {
+}
 
 /**
  * FObjectProperty
@@ -507,31 +508,36 @@ export class FEnumProperty extends FPropertySerialized {
  * FFloatProperty
  * @extends {FNumericProperty}
  */
-export class FFloatProperty extends FNumericProperty { }
+export class FFloatProperty extends FNumericProperty {
+}
 
 /**
  * FInt16Property
  * @extends {FNumericProperty}
  */
-export class FInt16Property extends FNumericProperty { }
+export class FInt16Property extends FNumericProperty {
+}
 
 /**
  * FInt64Property
  * @extends {FNumericProperty}
  */
-export class FInt64Property extends FNumericProperty { }
+export class FInt64Property extends FNumericProperty {
+}
 
 /**
  * FInt8Property
  * @extends {FNumericProperty}
  */
-export class FInt8Property extends FNumericProperty { }
+export class FInt8Property extends FNumericProperty {
+}
 
 /**
  * FIntProperty
  * @extends {FNumericProperty}
  */
-export class FIntProperty extends FNumericProperty { }
+export class FIntProperty extends FNumericProperty {
+}
 
 /**
  * FInterfaceProperty
@@ -641,7 +647,8 @@ export class FMulticastInlineDelegateProperty extends FPropertySerialized {
  * FNameProperty
  * @extends {FPropertySerialized}
  */
-export class FNameProperty extends FPropertySerialized { }
+export class FNameProperty extends FPropertySerialized {
+}
 
 /**
  * FSoftClassProperty
@@ -671,7 +678,8 @@ export class FSoftClassProperty extends FObjectProperty {
  * FSoftObjectProperty
  * @extends {FObjectProperty}
  */
-export class FSoftObjectProperty extends FObjectProperty { }
+export class FSoftObjectProperty extends FObjectProperty {
+}
 
 /**
  * FSetProperty
@@ -701,7 +709,8 @@ export class FSetProperty extends FPropertySerialized {
  * FStrProperty
  * @extends {FPropertySerialized}
  */
-export class FStrProperty extends FPropertySerialized { }
+export class FStrProperty extends FPropertySerialized {
+}
 
 /**
  * FStructProperty
@@ -731,25 +740,29 @@ export class FStructProperty extends FPropertySerialized {
  * FStructProperty
  * @extends {FPropertySerialized}
  */
-export class FTextProperty extends FPropertySerialized { }
+export class FTextProperty extends FPropertySerialized {
+}
 
 /**
  * FUInt16Property
  * @extends {FNumericProperty}
  */
-export class FUInt16Property extends FNumericProperty { }
+export class FUInt16Property extends FNumericProperty {
+}
 
 /**
  * FUInt32Property
  * @extends {FNumericProperty}
  */
-export class FUInt32Property extends FNumericProperty { }
+export class FUInt32Property extends FNumericProperty {
+}
 
 /**
  * FUInt64Property
  * @extends {FNumericProperty}
  */
-export class FUInt64Property extends FNumericProperty { }
+export class FUInt64Property extends FNumericProperty {
+}
 
 /**
  * Serializes a single field

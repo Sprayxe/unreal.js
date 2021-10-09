@@ -1,25 +1,49 @@
-import { Game } from "../../index";
 import { ParserException } from "../../exceptions/Exceptions";
 import { FName } from "../objects/uobject/FName";
+import { VersionContainer } from "../versions/VersionContainer";
+import { FGuid } from "../objects/core/misc/Guid";
 
 /**
  * Generic UE4 Reader
  * @abstract
  */
 export abstract class FArchive {
+    protected constructor(versions: VersionContainer = VersionContainer.DEFAULT) {
+        this.versions = versions
+    }
+
+    /**
+     * Contains versions
+     * @type {VersionContainer}
+     * @public
+     */
+    public versions: VersionContainer
+
     /**
      * Game that is used with this reader
      * @type {number}
      * @public
      */
-    public game = Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION)
+    public get game(): number {
+        return this.versions.game
+    }
+
+    public set game(v: number) {
+        this.versions.game = v
+    }
 
     /**
      * Version that is used with this reader
      * @type {number}
      * @public
      */
-    public ver = Game.GAME_UE4_GET_AR_VER(this.game)
+    public get ver(): number {
+        return this.versions.ver
+    }
+
+    public set ver(v: number) {
+        this.versions.ver = v
+    }
 
     /**
      * Whether tagged property serialization is replaced by faster unversioned serialization
@@ -101,6 +125,7 @@ export abstract class FArchive {
     public readInt8(): number {
         return this.read(1).readInt8()
     }
+
     /**
      * Reads an unsigned 8-bit integer
      * @returns {number} Result
@@ -121,6 +146,7 @@ export abstract class FArchive {
             ? b.readInt16LE()
             : b.readInt16BE()
     }
+
     /**
      * Reads an unsigned 16-bit integer
      * @returns {number} Result
@@ -144,6 +170,7 @@ export abstract class FArchive {
             ? b.readInt32LE()
             : b.readInt32BE()
     }
+
     /**
      * Reads an unsigned 32-bit integer
      * @returns {number} Result
@@ -167,6 +194,7 @@ export abstract class FArchive {
             ? b.readBigInt64LE()
             : b.readBigInt64BE()
     }
+
     /**
      * Reads an unsigned 64-bit integer
      * @returns {bigint} Result
@@ -294,6 +322,52 @@ export abstract class FArchive {
      */
     public readFName(): FName {
         return FName.NAME_None
+    }
+
+    /**
+     * Gets a custom version from guid
+     * @param {FGuid} guid GUID of version to look for
+     * @returns {number} Custom version
+     */
+    public customVersion(guid: FGuid): number {
+        const ver = this.versions.customVersions
+            ?.find(it => it.key.equals(guid))?.version
+        return ver == null ? -1 : ver // '||' would replace 0 with -1, so check for null
+    }
+
+    /**
+     * Reads a bulk array using the given callback
+     * NOTICE: Lambdas usually decrease performance
+     * @param {any} init Callback method to use for initiating array entries
+     * @returns {any[]} Read array
+     * @public
+     */
+    public readBulkArray<T>(init: (index: number) => T): T[] {
+        const elementSize = this.readInt32()
+        const elementCount = this.readInt32()
+        const savePos = this.pos
+
+        const array = new Array(elementCount)
+        for (let i = 0; i < elementCount; ++i)
+            array[i] = init(i)
+
+        if (this.pos != savePos + array.length * elementSize)
+            throw new ParserException(`RawArray item size mismatch: expected ${elementSize}, serialized ${(this.pos - savePos) / array.length}`)
+
+        return array
+    }
+
+    /**
+     * Reads a bulk array of bytes
+     * NOTICE: Lambdas usually decrease performance
+     * @returns {Buffer} Read Bytes
+     * @see {readBulkArray}
+     * @public
+     */
+    public readBulkByteArray(): Buffer {
+        const elemSize = this.readInt32()
+        const elemCount = this.readInt32()
+        return this.read(elemCount)
     }
 
     /**

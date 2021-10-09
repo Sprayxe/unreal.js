@@ -4,13 +4,13 @@ import {
     FMapHandle,
     FNumberedPair,
     FNumberlessExportPath,
-    FNumberlessPair, FValueId
+    FNumberlessPair,
+    FValueId
 } from "./AssetDataTagMap";
 import { FName } from "../../objects/uobject/FName";
 import { FNameEntryId } from "../../objects/uobject/NameTypes";
 import { FAssetRegistryReader } from "../reader/AssetRegistryArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
-import { Utils } from "../../../util/Utils";
 
 export const OLD_BEGIN_MAGIC = 0x12345678
 export const BEGIN_MAGIC = 0x12345679
@@ -19,6 +19,7 @@ export const END_MAGIC = 0x87654321
 /** Stores a fixed set of values and all the key-values maps used for lookup */
 export class FStore {
     Ar: FAssetRegistryReader
+
     constructor(Ar: FAssetRegistryReader) {
         this.Ar = Ar
         this.nameMap = this.Ar.names
@@ -126,7 +127,7 @@ export class FStore {
     getLoadOrder(initialMagic: number) {
         return initialMagic === OLD_BEGIN_MAGIC ? ELoadOrder.Member :
             initialMagic === BEGIN_MAGIC ? ELoadOrder.TextFirst :
-            null
+                null
     }
 
     getAnsiString(idx: number): string {
@@ -184,11 +185,11 @@ export class FValueHandle {
         const index = this.id.index
         return this.id.type === EValueType.AnsiString ? this.store.getAnsiString(index) :
             this.id.type === EValueType.WideString ? this.store.getWideString(index) :
-            this.id.type === EValueType.NumberlessName ? this.store.nameMap[this.store.numberlessNames[index].value] :
-            this.id.type === EValueType.Name ? this.store.names[index].text :
-            this.id.type === EValueType.NumberlessExportPath ? this.store.numberlessExportPaths[index].toString() :
-            this.id.type === EValueType.ExportPath ? this.store.exportPaths[index].toString() :
-            this.id.type === EValueType.LocalizedText ? this.store.texts[index].toString() :
-            ""
+                this.id.type === EValueType.NumberlessName ? this.store.nameMap[this.store.numberlessNames[index].value] :
+                    this.id.type === EValueType.Name ? this.store.names[index].text :
+                        this.id.type === EValueType.NumberlessExportPath ? this.store.numberlessExportPaths[index].toString() :
+                            this.id.type === EValueType.ExportPath ? this.store.exportPaths[index].toString() :
+                                this.id.type === EValueType.LocalizedText ? this.store.texts[index].toString() :
+                                    ""
     }
 }

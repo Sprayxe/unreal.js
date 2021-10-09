@@ -86,5 +86,6 @@ export class FManifestHeader {
      * @returns {void}
      * @public
      */
-    serialize(Ar: FArchiveWriter) { }
+    serialize(Ar: FArchiveWriter) {
+    }
 }

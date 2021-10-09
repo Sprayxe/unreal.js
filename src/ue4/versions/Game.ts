@@ -48,7 +48,7 @@ export class Game {
      * @public
      * @static
      */
-    static GAME_BORDERLANDS3  = Game.GAME_UE4(20) + 1
+    static GAME_BORDERLANDS3 = Game.GAME_UE4(20) + 1
 
     /**
      * Valorant
@@ -87,6 +87,11 @@ export class Game {
     static GAME_UE4_GET_AR_VER(game: number) {
         return this.ue4Versions[this.GAME_UE4_GET_MINOR(game)]
     }
+
+    // TODO const val GAME_UE5_BASE = 0x2000000
+    // TODO fun GAME_UE5(x: Int) = GAME_UE5_BASE + (x shl 4)
+    // TODO fun GAME_UE5_GET_MINOR(x: Int) = (x - GAME_UE5_BASE) shr 4
+    // TODO const val LATEST_SUPPORTED_UE5_VERSION = 0
 }
 
 /**
@@ -371,6 +376,65 @@ export class Ue4Version {
      * @public
      */
     static GAME_UE4_LATEST = new Ue4Version(Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION))
+
+    static getArVer(game: number): number {
+        if (game < Game.GAME_UE4(1))
+            return _.VER_UE4_0
+        if (game < Game.GAME_UE4(2))
+            return _.VER_UE4_1
+        if (game < Game.GAME_UE4(3))
+            return _.VER_UE4_2
+        if (game < Game.GAME_UE4(4))
+            return _.VER_UE4_3
+        if (game < Game.GAME_UE4(5))
+            return _.VER_UE4_4
+        if (game < Game.GAME_UE4(6))
+            return _.VER_UE4_5
+        if (game < Game.GAME_UE4(7))
+            return _.VER_UE4_6
+        if (game < Game.GAME_UE4(8))
+            return _.VER_UE4_7
+        if (game < Game.GAME_UE4(9))
+            return _.VER_UE4_8
+        if (game < Game.GAME_UE4(10))
+            return _.VER_UE4_9
+        if (game < Game.GAME_UE4(11))
+            return _.VER_UE4_10
+        if (game < Game.GAME_UE4(12))
+            return _.VER_UE4_11
+        if (game < Game.GAME_UE4(13))
+            return _.VER_UE4_12
+        if (game < Game.GAME_UE4(14))
+            return _.VER_UE4_13
+        if (game < Game.GAME_UE4(15))
+            return _.VER_UE4_14
+        if (game < Game.GAME_UE4(16))
+            return _.VER_UE4_15
+        if (game < Game.GAME_UE4(17))
+            return _.VER_UE4_16
+        if (game < Game.GAME_UE4(18))
+            return _.VER_UE4_17
+        if (game < Game.GAME_UE4(19))
+            return _.VER_UE4_18
+        if (game < Game.GAME_UE4(20))
+            return _.VER_UE4_19
+        if (game < Game.GAME_UE4(21))
+            return _.VER_UE4_20
+        if (game < Game.GAME_UE4(22))
+            return _.VER_UE4_21
+        if (game < Game.GAME_UE4(23))
+            return _.VER_UE4_22
+        if (game < Game.GAME_UE4(24))
+            return _.VER_UE4_23
+        if (game < Game.GAME_UE4(25))
+            return _.VER_UE4_24
+        if (game < Game.GAME_UE4(26))
+            return _.VER_UE4_25
+        if (game < Game.GAME_UE4(27))
+            return _.VER_UE4_26
+        // TODO game < GAME_UE5(0) -> VER_UE4_27
+        return _.VER_UE5_0
+    }
 }
 
 

@@ -29,7 +29,9 @@ export class Compression {
                 src.copy(dst, dstOff, srcOff, srcOff + srcLen)
             }
         }
+
         this.handlers.set("None", None)
+
         // Compression: Zlib
         class Zlib implements CompressionHandler {
             static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
@@ -37,7 +39,9 @@ export class Compression {
                 content.copy(dst, dstOff, srcOff, srcOff + srcLen)
             }
         }
+
         this.handlers.set("Zlib", Zlib)
+
         // Compression: Gzip
         class Gzip implements CompressionHandler {
             static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
@@ -45,13 +49,16 @@ export class Compression {
                 content.copy(dst, dstOff, srcOff, srcOff + srcLen)
             }
         }
+
         this.handlers.set("Gzip", Gzip)
+
         // Compression: Oodle
         class Oodle implements CompressionHandler {
             static decompress(dst: Buffer, dstOff: number, dstLen: number, src: Buffer, srcOff: number, srcLen: number) {
                 OodleLib.Oodle.decompress(src, dstLen, dst, dstOff, srcOff, srcLen)
             }
         }
+
         this.handlers.set("Oodle", Oodle)
     }
 

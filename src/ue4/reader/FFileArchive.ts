@@ -1,6 +1,6 @@
 import { FArchive } from "./FArchive";
-import { Stats } from "fs";
-import fs from "fs";
+import fs, { Stats } from "fs";
+import { VersionContainer } from "../versions/VersionContainer";
 
 /**
  * File Reader
@@ -58,6 +58,7 @@ export class FFileArchive extends FArchive {
     public get pos(): number {
         return this.position
     }
+
     public set pos(pos: number) {
         this.position = pos
     }
@@ -78,11 +79,12 @@ export class FFileArchive extends FArchive {
     /**
      * Creates an instance
      * @param {?string} path Path to the file
+     * @param {?VersionContainer} versions Versions
      * @constructor
      * @public
      */
-    constructor(path?: string) {
-        super()
+    constructor(path?: string, versions: VersionContainer = VersionContainer.DEFAULT) {
+        super(versions)
         if (path) {
             this.path = path
             this.handle = fs.openSync(path, "rs")

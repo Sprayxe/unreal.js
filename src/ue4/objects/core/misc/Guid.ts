@@ -1,6 +1,5 @@
 import { FArchive } from "../../../reader/FArchive";
 import { sprintf } from "sprintf-js";
-import { Utils } from "../../../../util/Utils";
 import { IStructType } from "../../../assets/objects/UScriptStruct";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 

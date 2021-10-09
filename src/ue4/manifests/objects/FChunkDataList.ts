@@ -23,7 +23,8 @@ export class FChunkDataList {
     constructor(Ar: FArchive) {
         const startPos = Ar.pos
         const dataSize = Ar.readUInt32()
-        /*const dataVersionInt = */Ar.readUInt8()
+        /*const dataVersionInt = */
+        Ar.readUInt8()
         const elementCount = Ar.readInt32()
         this.chunkList = []
         for (let i = 0; i < elementCount; ++i)
@@ -43,5 +44,6 @@ export class FChunkDataList {
      * @returns {void}
      * @public
      */
-    serialize(Ar: FArchiveWriter) { }
+    serialize(Ar: FArchiveWriter) {
+    }
 }

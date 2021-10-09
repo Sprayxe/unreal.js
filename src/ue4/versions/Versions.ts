@@ -1,3 +1,5 @@
+export const VER_UE4_DETERMINE_BY_GAME = -1
+
 // Pre-release UE4 file versions
 export const VER_UE4_ASSET_REGISTRY_TAGS = 112
 export const VER_UE4_TEXTURE_DERIVED_DATA2 = 124
@@ -90,6 +92,7 @@ export const VER_UE4_26 = 519
 export const VER_UE4_NON_OUTER_PACKAGE_IMPORT = 520
 export const VER_UE4_ASSETREGISTRY_DEPENDENCYFLAGS = 521
 export const VER_UE4_CORRECT_LICENSEE_FLAG = 522
-export const VER_UE4_27 = 523
+export const VER_UE4_27 = 523 // actually 522 but we bumped it
+export const VER_UE5_0 = 523 // TODO this is probably not final
 // look for NEW_ENGINE_VERSION over the code to find places where version constants should be inserted.
 // LATEST_SUPPORTED_UE4_VERSION should be updated too.

@@ -18,7 +18,6 @@ import { FByteArchive } from "../reader/FByteArchive";
 import { FName } from "../objects/uobject/FName";
 import { EPackageFlags } from "../objects/uobject/EPackageFlags";
 import { MissingSchemaException, ParserException } from "../../exceptions/Exceptions";
-import { UScriptStruct } from "./exports/UScriptStruct";
 import { UEnum } from "./exports/UEnum";
 import { Pair } from "../../util/Pair";
 import { sprintf } from "sprintf-js";
@@ -27,8 +26,8 @@ import { FExportArchive } from "./reader/FExportArchive";
 import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { Locres } from "../locres/Locres";
 import { Lazy } from "../../util/Lazy";
-import { Ue4Version } from "../versions/Game";
 import { Config } from "../../Config";
+import { VersionContainer } from "../versions/VersionContainer";
 
 /**
  * UE4 I/O Package
@@ -125,15 +124,15 @@ export class IoPackage extends Package {
      * @param {bigint} packageId ID of package
      * @param {FPackageStore} globalPackageStore Package store
      * @param {FileProvider} provider Instance of file provider
-     * @param {Ue4Version} game Version of package
+     * @param {VersionContainer} versions Version of package
      */
     constructor(uasset: Buffer,
                 packageId: bigint,
                 globalPackageStore: FPackageStore,
                 provider: FileProvider,
-                game: Ue4Version = provider.game
+                versions: VersionContainer = provider.versions
     ) {
-        super("", provider, game)
+        super("", provider, versions)
         this.packageId = packageId
         this.globalPackageStore = globalPackageStore
         const Ar = new FByteArchive(uasset)

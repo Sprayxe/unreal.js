@@ -1,5 +1,6 @@
 import {
-    BaseVariantDef, CosmeticMetaTagContainer,
+    BaseVariantDef,
+    CosmeticMetaTagContainer,
     FoleySoundVariant,
     MaterialParamterDef,
     MaterialVariants,

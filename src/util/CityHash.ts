@@ -15,6 +15,7 @@
  */
 
 import * as Long from "long"
+
 export type long = Long.Long
 
 /**
@@ -225,7 +226,11 @@ export class CityHash {
             z = this.rotate(z.add(w[0]), 33).multiply(this.k1)
             v = this.weakHashLen32WithSeeds1(s, pos, v[1].multiply(this.k1), x.add(w[0]))
             w = this.weakHashLen32WithSeeds1(s, pos + 32, z.add(w[1]), y.add(this.fetch64(s, pos + 16)))
-            { const swap = z; z = x; x = swap }
+            {
+                const swap = z;
+                z = x;
+                x = swap
+            }
             pos += 64
             len -= 64
         } while (len !== 0)

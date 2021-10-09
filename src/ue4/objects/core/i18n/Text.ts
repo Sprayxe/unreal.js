@@ -111,10 +111,10 @@ export class FText {
             this.historyType = x.readInt8()
             this.textHistory = this.historyType === ETextHistoryType.None ? new FTextHistoryNone(x) :
                 this.historyType === ETextHistoryType.Base ? new FTextHistoryBase(x) :
-                this.historyType === ETextHistoryType.OrderedFormat ? new FTextHistoryOrderedFormat(x) :
-                this.historyType === ETextHistoryType.AsCurrency ? new FTextHistoryFormatNumber(x) :
-                this.historyType === ETextHistoryType.StringTableEntry ? new FTextHistoryStringTableEntry(x) :
-                null
+                    this.historyType === ETextHistoryType.OrderedFormat ? new FTextHistoryOrderedFormat(x) :
+                        this.historyType === ETextHistoryType.AsCurrency ? new FTextHistoryFormatNumber(x) :
+                            this.historyType === ETextHistoryType.StringTableEntry ? new FTextHistoryStringTableEntry(x) :
+                                null
             this.text = this.textHistory.text
         } else if (typeof x === "string" && params.length === 1) {
             this.flags = 0
@@ -825,10 +825,10 @@ export class FFormatArgumentValue {
             this.type = EDateTimeStyle[Object.keys(EDateTimeStyle)[x.readInt8()]]
             this.value = this.type === EFormatArgumentType.Int ? Number(x.readInt64()) :
                 this.type === EFormatArgumentType.UInt ? Number(x.readInt64()) :
-                this.type === EFormatArgumentType.Float ? x.readFloat32() :
-                this.type === EFormatArgumentType.Double ? x.readDouble() :
-                this.type === EFormatArgumentType.Text ? new FText(x) :
-                null // this.type === EFormatArgumentType.Gender
+                    this.type === EFormatArgumentType.Float ? x.readFloat32() :
+                        this.type === EFormatArgumentType.Double ? x.readDouble() :
+                            this.type === EFormatArgumentType.Text ? new FText(x) :
+                                null // this.type === EFormatArgumentType.Gender
         } else {
             this.type = x
             this.value = y

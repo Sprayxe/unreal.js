@@ -1,5 +1,4 @@
 import { FileProvider } from "../../fileprovider/FileProvider";
-import { Ue4Version } from "../versions/Game";
 import { FNameEntry } from "../objects/uobject/FName";
 import { IJson, Package } from "./Package";
 import { FPackageFileSummary } from "../objects/uobject/PackageFileSummary";
@@ -17,6 +16,7 @@ import { WritableStreamBuffer } from "stream-buffers";
 import { sum } from "lodash"
 import { Lazy } from "../../util/Lazy";
 import { Config } from "../../Config";
+import { VersionContainer } from "../versions/VersionContainer";
 
 /**
  * UE4 Pak Package
@@ -66,20 +66,6 @@ export class PakPackage extends Package {
     provider?: FileProvider = null
 
     /**
-     * Game that is used
-     * @type {Ue4Version}
-     * @public
-     */
-    game: Ue4Version = Ue4Version.GAME_UE4_LATEST
-
-    /**
-     * Version that is used
-     * @type {number}
-     * @public
-     */
-    version: number
-
-    /**
      * Information about package
      * @type {FPackageFileSummary}
      * @public
@@ -123,35 +109,32 @@ export class PakPackage extends Package {
      * @param {?Buffer} ubulk Ubulk data
      * @param {string} name Name of package file
      * @param {?FileProvider} provider File provider
-     * @param {?Ue4Version} game Game that is used
+     * @param {?VersionContainer} versions Game that is used
      * @constructor
      * @public
      */
-    constructor(uasset: Buffer, uexp: Buffer = null, ubulk: Buffer = null, name: string, provider: FileProvider = null, game: Ue4Version = Ue4Version.GAME_UE4_LATEST) {
-        super(name, provider, game)
+    constructor(uasset: Buffer, uexp: Buffer = null, ubulk: Buffer = null, name: string, provider: FileProvider = null, versions: VersionContainer = VersionContainer.DEFAULT) {
+        super(name, provider, versions)
         this.uasset = uasset
         this.uexp = uexp
         this.ubulk = ubulk
         this.fileName = name
         this.provider = provider
-        this.game = game
-        this.version = this.game.version
         // init
         this.name = provider?.compactFilePath(this.fileName)?.substring(0, this.fileName.lastIndexOf(".")) || this.fileName
         const uassetAr = new FAssetArchive(this.uasset, this.provider, this.fileName)
         const uexpAr = this.uexp ? new FAssetArchive(this.uexp, this.provider, this.fileName) : uassetAr
         const ubulkAr = this.ubulk ? new FAssetArchive(this.ubulk, this.provider, this.fileName) : null
 
-        uassetAr.game = this.game.game
-        uassetAr.ver = this.version
-        uassetAr.owner = this as Package
-        uexpAr.game = this.game.game
-        uexpAr.ver = this.version
-        uexpAr.owner = this as Package
+        uassetAr.versions = versions
+        uassetAr.owner = this
+
+        uexpAr.versions = versions
+        uexpAr.owner = this
+
         if (ubulkAr) {
-            ubulkAr.game = this.game.game
-            ubulkAr.ver = this.version
-            ubulkAr.owner = this as Package
+            ubulkAr.versions = versions
+            ubulkAr.owner = this
         }
 
         this.nameMap = []
@@ -163,7 +146,7 @@ export class PakPackage extends Package {
             throw new ParserException(`Invalid uasset magic, ${this.info.tag} !== ${this.packageMagic}`, uassetAr)
 
         const ver = this.info.fileVersionUE4
-        if (ver > 0) {
+        if (ver > 0) { // TODO
             uassetAr.ver = ver
             uexpAr.ver = ver
             if (ubulkAr)
@@ -236,8 +219,8 @@ export class PakPackage extends Package {
     findObject<T>(index?: FPackageIndex): Lazy<T> {
         return (index === null || index.isNull()) ? null :
             index.isImport() ? this.findImport(this.importMap[index.toImport()]) as any :
-            index.isExport() ? this.exportMap[index.toExport()]?.exportObject as any :
-            null
+                index.isExport() ? this.exportMap[index.toExport()]?.exportObject as any :
+                    null
     }
 
     /**
@@ -363,8 +346,7 @@ export class PakPackage extends Package {
     /* DON'T USE THIS */
     updateHeader() {
         const uassetWriter = new FByteArchiveWriter()
-        uassetWriter.game = this.game.game
-        uassetWriter.ver = this.version
+        uassetWriter.versions = this.versions
         uassetWriter.nameMap = this.nameMap
         uassetWriter.importMap = this.importMap
         uassetWriter.exportMap = this.exportMap
@@ -400,8 +382,7 @@ export class PakPackage extends Package {
         this.updateHeader()
 
         const uexpWriter = this.writer(uexpOutputStream)
-        uexpWriter.game = this.game.game
-        uexpWriter.ver = this.version
+        uexpWriter.versions = this.versions
         uexpWriter.uassetSize = this.info.totalHeaderSize
         this.exports.forEach((it) => {
             const beginPos = uexpWriter.relativePos()
@@ -415,8 +396,7 @@ export class PakPackage extends Package {
 
         uexpWriter.writeUInt32(this.packageMagic)
         const uassetWriter = this.writer(uassetOutputStream)
-        uassetWriter.game = this.game.game
-        uassetWriter.ver = this.version
+        uassetWriter.versions = this.versions
         this.info.serialize(uassetWriter)
 
         const nameMapPadding = this.info.nameOffset - uassetWriter.pos()

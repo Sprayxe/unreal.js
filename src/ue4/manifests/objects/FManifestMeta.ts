@@ -84,8 +84,10 @@ export class FManifestMeta {
     constructor(Ar: FArchive) {
         const startPos = Ar.pos
         const dataSize = Ar.readUInt32()
-        /*val dataVersionInt = */Ar.readUInt8()
-        /*val featureLevelInt = */Ar.readInt32()
+        /*val dataVersionInt = */
+        Ar.readUInt8()
+        /*val featureLevelInt = */
+        Ar.readInt32()
         this.isFileDataInt = Ar.readFlag()
         this.appId = Ar.readUInt32()
         this.appName = Ar.readString()
@@ -109,5 +111,6 @@ export class FManifestMeta {
      * @returns {void}
      * @public
      */
-    serialize(Ar: FArchiveWriter) { }
+    serialize(Ar: FArchiveWriter) {
+    }
 }

@@ -2,7 +2,6 @@ import { FGuid } from "../misc/Guid";
 import { FArchive } from "../../../reader/FArchive";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
-import { UnrealMap } from "../../../../util/UnrealMap";
 import Collection from "@discordjs/collection";
 
 /**

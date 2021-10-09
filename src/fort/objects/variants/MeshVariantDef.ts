@@ -1,8 +1,15 @@
 import {
-    BaseVariantDef, CosmeticMetaTagContainer, FoleySoundVariant,
+    BaseVariantDef,
+    CosmeticMetaTagContainer,
+    FoleySoundVariant,
     MaterialParamterDef,
     MaterialVariants,
-    MeshVariant, ParticleParamterVariant, ParticleVariant, ScriptedActionVariant, SocketTransformVariant, SoundVariant,
+    MeshVariant,
+    ParticleParamterVariant,
+    ParticleVariant,
+    ScriptedActionVariant,
+    SocketTransformVariant,
+    SoundVariant,
     VariantParticleSystemInitializerData
 } from "./BaseVariantDef";
 
