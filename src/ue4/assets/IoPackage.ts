@@ -270,7 +270,7 @@ export class IoPackage extends Package {
             for (const pkg of this.importedPackages.value) {
                 for (const exportIndex in pkg?.exportMap) {
                     const exportMapEntry = pkg?.exportMap[exportIndex]
-                    if (exportMapEntry.globalImportIndex.equals(index)) {
+                    if (exportMapEntry.globalImportIndex?.equals(index)) {
                         return new ResolvedExportObject(parseInt(exportIndex), pkg)
                     }
                 }
