@@ -49,7 +49,7 @@ want to install these dependencies, use: `npm i unreal.js --no-optional`.
 
 The file provider is basically the heart of the library and from there you control basically all features.
 
-**IMPORTANT**: When using the library with **Fortnite V14.40 and above**, you need `oo2core_8_win64.dll` present in your
+**IMPORTANT**: When using the library with **Fortnite V14.40 and above**, you need `oo9core_8_win64.dll` present in your
 working directory (you can download it using `Oodle.downloadDLL()`). You will also need
 a [.usmap mappings](https://benbot.app/api/v1/mappings) file corresponding to your fortnite version.\
 You will also experience longer mounting times than e.g VALORANT.

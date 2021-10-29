@@ -2,6 +2,7 @@
 tsconfig.json
 src/test.ts
 oo2core_8_win64.dll
+oo2core_9_win64.dll
 vgm/
 docs.json
 

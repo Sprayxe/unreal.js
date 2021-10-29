@@ -4,12 +4,12 @@ import { writeFile } from "fs/promises";
 import { OodleException } from "./Exceptions";
 
 /**
- * Handles oo2core_8_win64.dll downloading
+ * Handles oodle dll downloading
  */
 export class OodleDownloader {
     private static readonly CDN_BASE_URL: string = "https://origin.warframe.com"
     private static readonly CDN_INDEX_URL: string = `${OodleDownloader.CDN_BASE_URL}/origin/E926E926/index.txt.lzma`
-    public static readonly OODLE_FILE_NAME: string = "oo2core_8_win64.dll"
+    public static readonly OODLE_FILE_NAME: string = "oo2core_9_win64.dll"
 
     /**
      * Decompress the response body of the provided url using lzma

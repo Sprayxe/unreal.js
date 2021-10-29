@@ -152,7 +152,7 @@ export class Oodle {
     }
 
     /**
-     * Downloads oo2core_8_win64.dll if it doesn't exist
+     * Downloads oodle dll if it doesn't exist
      * @returns {Promise<void>}
      * @public
      * @static
@@ -177,7 +177,7 @@ export class Oodle {
             if (!this.oodleLib) {
                 const path = Oodle.getDLLPath()
                 if (!existsSync(path))
-                    throw new OodleException("Missing oodle library 'oo2core_8_win64.dll'!")
+                    throw new OodleException(`Missing oodle library '${OodleDownloader.OODLE_FILE_NAME}'!`)
                 this.oodleLib = ffi.Library(path, {
                     OodleLZ_Decompress: ["int", ["uint8*", "int", "uint8*", "size_t", "int", "int", "int", "uint8*", "size_t", "void*", "void*", "void*", "size_t", "int"]],
                     OodleLZ_Compress: ["int", ["int", "uint8*", "size_t", "uint8*", "int", "void*", "size_t", "size_t", "void*", "size_t"]]
