@@ -2,10 +2,10 @@ import { FPackageIndex } from "../../objects/uobject/ObjectResource";
 import { FName } from "../../objects/uobject/FName";
 import { FAssetArchive } from "../reader/FAssetArchive";
 import { ParserException } from "../../../exceptions/Exceptions";
-import { UObject } from "./UObject";
 import { PropertyInfo } from "../objects/PropertyInfo";
 import { Lazy } from "../../../util/Lazy";
 import { Config } from "../../../Config";
+import { UObject } from "./UObject";
 
 /**
  * Represent an UE4 Struct

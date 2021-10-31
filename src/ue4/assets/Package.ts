@@ -1,8 +1,8 @@
-import { FileProvider } from "../../fileprovider/FileProvider";
-import { FPackageIndex } from "../objects/uobject/ObjectResource";
+import { UScriptStruct } from "./exports/UScriptStruct";
 import { UObject } from "./exports/UObject";
 import { UStruct } from "./exports/UStruct";
-import { UScriptStruct } from "./exports/UScriptStruct";
+import { FileProvider } from "../../fileprovider/FileProvider";
+import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { Locres } from "../locres/Locres";
 import { Lazy } from "../../util/Lazy";
 import { VersionContainer } from "../versions/VersionContainer";

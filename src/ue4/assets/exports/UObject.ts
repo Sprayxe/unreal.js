@@ -291,7 +291,7 @@ export class UObject implements IPropertyHolder {
                 const objOuter = this.outer
                 if (objOuter && objOuter !== x) {
                     objOuter.getPathName(x, y)
-                    if (objOuter.outer instanceof Package) {
+                    if (Object.getPrototypeOf(objOuter.outer)?.constructor?.name === "Package") {
                         y.append(":")
                     } else {
                         y.append(".")

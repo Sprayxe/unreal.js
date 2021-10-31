@@ -1,6 +1,5 @@
 import { UStruct } from "./UStruct";
 import { FName } from "../../objects/uobject/FName";
-import { UObject } from "./UObject";
 import { Lazy } from "../../../util/Lazy";
 import { ObjectTypeRegistry } from "../ObjectTypeRegistry";
 
