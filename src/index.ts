@@ -1,6 +1,7 @@
 import { UScriptStruct } from "./ue4/assets/exports/UScriptStruct";
 import { UStruct } from "./ue4/assets/exports/UStruct";
 import { Package } from "./ue4/assets/Package";
+import { UTexture2D } from "./ue4/assets/exports/tex/UTexture2D";
 import { FileProvider } from "./fileprovider/FileProvider";
 import { ReflectionTypeMappingsProvider } from "./ue4/assets/mappings/ReflectionTypeMappingsProvider";
 import { UsmapTypeMappingsProvider } from "./ue4/assets/mappings/UsmapTypeMappingsProvider";
@@ -25,6 +26,7 @@ export {
     Package,
     UStruct,
     UScriptStruct,
+    UTexture2D,
     // file provider
     FileProvider,
     FGuid,
