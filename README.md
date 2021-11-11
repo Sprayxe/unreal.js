@@ -211,7 +211,7 @@ Replace:
 
 ## Support, Feedback, Contact
 
-- Discord: **MarcelWRLD#0742**
+- Discord: **MarcelWRLD#4682**
 - Twitter: **Sprayxe_**
 
 ## Inspiration
