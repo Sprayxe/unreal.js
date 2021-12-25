@@ -9,6 +9,7 @@ import { FAssetArchive } from "../../reader/FAssetArchive";
 import { FAssetArchiveWriter } from "../../writer/FAssetArchiveWriter";
 import { ParserException } from "../../../../exceptions/Exceptions";
 import { Game } from "../../../versions/Game";
+import { VER_UE4_TEXTURE_DERIVED_DATA2, VER_UE4_TEXTURE_SOURCE_ART_REFACTOR } from "../../../versions/Versions";
 
 /**
  * ETextureAddress
@@ -101,6 +102,8 @@ export class FTexturePlatformData {
     constructor(...args) {
         const arg = args[0]
         if (arg instanceof FAssetArchive) {
+            if (arg.game >= Game.GAME_UE5_BASE)
+                arg.pos += 16
             this.sizeX = arg.readInt32()
             this.sizeY = arg.readInt32()
             this.numSlices = arg.readInt32()
@@ -207,11 +210,11 @@ export class FTexture2DMipMap {
     public sizeZ: number
 
     /**
-     * U
+     * Derived Data Key
      * @type {?string}
      * @public
      */
-    public u?: string = null
+    public derivedDataKey?: string = null
 
     /**
      * Creates an instance using an UE4 Asset Reader
@@ -238,13 +241,15 @@ export class FTexture2DMipMap {
     constructor(...args) {
         const arg = args[0]
         if (arg instanceof FAssetArchive) {
-            this.cooked = arg.readBoolean()
+            this.cooked = arg.ver >= VER_UE4_TEXTURE_SOURCE_ART_REFACTOR && arg.game < Game.GAME_UE5_BASE
+                ? arg.readBoolean()
+                : arg.isFilterEditorOnly
             this.data = new FByteBulkData(arg)
             this.sizeX = arg.readInt32()
             this.sizeY = arg.readInt32()
             this.sizeZ = arg.readInt32()
-            if (!this.cooked)
-                this.u = arg.readString()
+            if (arg.ver >= VER_UE4_TEXTURE_DERIVED_DATA2 && !this.cooked)
+                this.derivedDataKey = arg.readString()
         } else {
             this.cooked = arg
             this.data = args[1]
@@ -361,7 +366,12 @@ export class UTexture2D extends UTexture {
             while (true) {
                 const pixelFormat = Ar.readFName()
                 if (pixelFormat.isNone()) break
-                const skipOffset = Number(Ar.readInt64())
+                let skipOffset: number
+                if (Ar.game >= Game.GAME_UE5_BASE)
+                    skipOffset = Ar.relativePos() + Number(Ar.readInt64())
+                else if (Ar.game >= Game.GAME_UE4(20))
+                    skipOffset = Number(Ar.readInt64())
+                else skipOffset = Ar.readInt32()
                 this.textures.set(new FTexturePlatformData(Ar), pixelFormat)
                 if (Ar.relativePos() !== skipOffset) {
                     console.warn(`Texture read incorrectly. Current relative pos ${Ar.relativePos()}, skip offset ${skipOffset}`)

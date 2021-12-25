@@ -253,7 +253,7 @@ export class FUnversionedHeader {
         return new BitSet(Ar.read(Math.floor(
             numBits <= 8 ? 1
                 : numBits <= 16 ? 2
-                : Utils.divideAndRoundUp(numBits, 32) * 4
+                    : Utils.divideAndRoundUp(numBits, 32) * 4
         )))
     }
 }

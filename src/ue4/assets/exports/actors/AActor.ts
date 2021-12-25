@@ -92,11 +92,11 @@ export class AActor extends UObject {
     public EActorUpdateOverlapsMethod DefaultUpdateOverlapsMethodDuringLevelStreaming = null
     public ENetRole RemoteRole = null
     public FRepMovement ReplicatedMovement = null*/
-    @UProperty({skipPrevious: 4})
+    @UProperty({ skipPrevious: 4 })
     public InitialLifeSpan: number = null
     public CustomTimeDilation: number = null
     //public FRepAttachment AttachmentReplication = null
-    @UProperty({skipPrevious: 1})
+    @UProperty({ skipPrevious: 1 })
     public Owner: Lazy<AActor> = null
     public NetDriverName: FName = null
     public Role: ENetRole = null

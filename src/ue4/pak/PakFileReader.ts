@@ -13,66 +13,40 @@ import { EPakVersion } from "./enums/PakVersion";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
 import { Config } from "../../Config";
 import { VersionContainer } from "../versions/VersionContainer";
+import { AbstractAesVfsReader } from "../vfs/AbstractAesVfsReader";
 
 /**
  * UE4 Pak File Reader
  */
-export class PakFileReader {
-    /**
-     * Path to file
-     * @type {string}
-     * @public
-     */
-    path: string
+export class PakFileReader extends AbstractAesVfsReader {
+    public get hasDirectoryIndex(): boolean {
+        return true
+    }
+
+    public get encryptionKeyGuid() {
+        return this.pakInfo.encryptionKeyGuid
+    }
 
     /**
      * UE4 Reader
      * @type {FArchive}
      * @public
      */
-    Ar: FArchive
-
-    /**
-     * Game that is used
-     * @type {number}
-     * @public
-     */
-    game: number
+    public Ar: FArchive
 
     /**
      * Info about pak
      * @type {FPakInfo}
      * @public
      */
-    pakInfo: FPakInfo
+    public pakInfo: FPakInfo
 
     /**
      * Aes key for pak
      * @type {?Buffer}
      * @public
      */
-    aesKey: Buffer = null
-
-    /**
-     * Mount point for pak
-     * @type {string}
-     * @public
-     */
-    mountPoint: string
-
-    /**
-     * Amount of encrypted files
-     * @type {number}
-     * @public
-     */
-    encryptedFileCount = 0
-
-    /**
-     * Files in this pak
-     * @type {Array<GameFile>}
-     * @public
-     */
-    files: GameFile[]
+    public aesKey: Buffer = null
 
     /**
      * Creates an instance
@@ -83,18 +57,10 @@ export class PakFileReader {
      * @public
      */
     constructor(path: string, versions: VersionContainer = VersionContainer.DEFAULT, source?: Buffer) {
+        super(path, versions)
         this.path = path
         this.Ar = source != null ? new FByteArchive(source, versions) : new FFileArchive(path, versions)
         this.pakInfo = FPakInfo.readPakInfo(this.Ar)
-    }
-
-    /**
-     * Turns this into a string
-     * @returns {string}
-     * @public
-     */
-    toString() {
-        return this.path
     }
 
     /**
@@ -102,7 +68,7 @@ export class PakFileReader {
      * @returns {boolean}
      * @public
      */
-    isEncrypted() {
+    public get isEncrypted() {
         return this.pakInfo.encryptedIndex
     }
 
@@ -181,7 +147,7 @@ export class PakFileReader {
 
         // this.readAndDecrypt()
         let buf = this.Ar.read(this.pakInfo.indexSize)
-        if (this.isEncrypted()) {
+        if (this.isEncrypted) {
             const key = this.aesKey
             if (!key)
                 throw new ParserException("Reading this pak requires an encryption key")
@@ -197,7 +163,7 @@ export class PakFileReader {
                 `Given encryption key '0x${this.aesKey.toString("hex")}' is not working with '${this.path}'`)
         }
 
-        this.mountPoint = this.fixMountPoint(mountPoint)
+        this.mountPoint = PakFileReader.fixMountPoint(mountPoint)
         const files = this.pakInfo.version >= EPakVersion.PakVersion_PathHashIndex ? this.readIndexUpdated(indexAr) : this.readIndexLegacy(indexAr)
 
         // Print statistics
@@ -277,7 +243,7 @@ export class PakFileReader {
 
         // this.readAndDecrypt()
         let buf = this.Ar.read(directoryIndexSize)
-        if (this.isEncrypted()) {
+        if (this.isEncrypted) {
             const key = this.aesKey
             if (!key)
                 throw new ParserException("Reading this pak requires an encryption key")
@@ -467,7 +433,7 @@ export class PakFileReader {
      * @private
      * @deprecated
      */
-    private readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted()): Buffer {
+    private readAndDecrypt(num: number, isEncrypted: boolean = this.isEncrypted): Buffer {
         let data = this.Ar.read(num)
         if (isEncrypted) {
             const key = this.aesKey
@@ -484,7 +450,7 @@ export class PakFileReader {
      * @returns {string}
      * @private
      */
-    private fixMountPoint(mountPoint: string) {
+    private static fixMountPoint(mountPoint: string) {
         let badMountPoint = false
         if (!mountPoint.startsWith("../../.."))
             badMountPoint = true
@@ -509,72 +475,5 @@ export class PakFileReader {
     indexCheckBytes(): Buffer {
         this.Ar.pos = this.pakInfo.indexOffset
         return this.Ar.read(128)
-    }
-
-    /**
-     * Tests if an aes key works
-     * @param {string} key Aes key to test
-     * @returns {boolean}
-     * @public
-     */
-    testAesKey(key: string)
-
-    /**
-     * Tests if an aes key works
-     * @param {Buffer} key Aes key to test
-     * @returns {boolean}
-     * @public
-     */
-    testAesKey(key: Buffer)
-
-    /**
-     * Tests if an aes key works with specified bytes
-     * @param {Buffer} bytes Bytes to test
-     * @param {Buffer} key Key to test
-     * @returns {boolean}
-     * @public
-     */
-    testAesKey(bytes: Buffer, key: Buffer)
-
-    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
-    testAesKey(x?: any, y?: any) {
-        if (!y) {
-            if (Buffer.isBuffer(x)) {
-                if (!this.isEncrypted())
-                    return true
-                return this.testAesKey(this.indexCheckBytes(), x)
-            } else {
-                return this.testAesKey(Buffer.from(x.startsWith("0x") ? x.substring(2) : x, "hex"))
-            }
-        } else {
-            x = Aes.decrypt(x, y)
-            return this.isValidIndex(x)
-        }
-    }
-
-    /**
-     * Whether if pak has valid index
-     * @param {Buffer} bytes Bytes to read from
-     * @returns {boolean} Result
-     * @public
-     */
-    isValidIndex(bytes: Buffer): boolean {
-        const testAr = new FByteArchive(bytes)
-        const stringLength = testAr.readUInt32()
-        if (stringLength > 128 || stringLength < -128)
-            return false
-        // Calculate the pos of the null terminator for this string
-        // Then read the null terminator byte and check whether it is actually 0
-        if (stringLength === 0) {
-            return testAr.readInt8() === 0
-        } else if (stringLength < 0) {
-            // UTF16
-            testAr.pos = 4 - (stringLength - 1) * 2
-            return testAr.readInt16() === 0
-        } else {
-            // UTF8
-            testAr.pos = 4 + stringLength - 1
-            return testAr.readInt8() === 0
-        }
     }
 }

@@ -307,7 +307,7 @@ export class FTextHistoryNone extends FTextHistory {
      * @public
      */
     toJson() {
-        return {cultureInvariantString: this.cultureInvariantString}
+        return { cultureInvariantString: this.cultureInvariantString }
     }
 }
 

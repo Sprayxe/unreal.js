@@ -89,7 +89,7 @@ export class FSimpleCurve extends FRealCurve {
      * @type {ERichCurveInterpMode}
      * @public
      */
-    @UProperty({name: "InterpMode"})
+    @UProperty({ name: "InterpMode" })
     public interpMode = ERichCurveInterpMode.RCIM_Linear
 
     /**
@@ -97,7 +97,7 @@ export class FSimpleCurve extends FRealCurve {
      * @type {Array<FSimpleCurveKey>}
      * @public
      */
-    @UProperty({name: "Keys"})
+    @UProperty({ name: "Keys" })
     public keys: FSimpleCurveKey[] = []
 
     /**

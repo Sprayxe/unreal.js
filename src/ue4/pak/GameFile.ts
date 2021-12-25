@@ -1,5 +1,7 @@
 import { FPakEntry } from "./objects/FPakEntry";
 import { FPakCompressedBlock } from "./objects/FPakCompressedBlock";
+import { FIoChunkId } from "../io/IoDispatcher";
+import { FByteArchive } from "../reader/FByteArchive";
 
 export class GameFile {
     /**
@@ -73,6 +75,13 @@ export class GameFile {
     ioPackageId?: bigint = null
 
     /**
+     * I/O Chunk ID
+     * @type {FIoChunkId}
+     * @public
+     */
+    ioChunkId?: FIoChunkId = null
+
+    /**
      * Creates an instance
      * @param {?FPakEntry} pakEntry Pak entry of file
      * @param {?string} mountPrefix Mount prefix of file
@@ -91,7 +100,6 @@ export class GameFile {
             this.compressionBlockSize = pakEntry.compressionBlockSize
             this.isEncrypted = pakEntry.isEncrypted
             this.pakFileName = pakFileName
-            this.ioPackageId = null
         }
     }
 
@@ -99,15 +107,16 @@ export class GameFile {
      * Creates an instance from io store file
      * @param {string} path Path to file
      * @param {string} pakFileName Pak file name of file
-     * @param {bigint} ioPackageId I/O Package ID of file
+     * @param {FIoChunkId} chunkId I/O Chunk ID
      * @public
      * @static
      */
-    static createFromIoStoreFile(path: string, pakFileName: string, ioPackageId: bigint) {
+    static createFromIoStoreFile(path: string, pakFileName: string, chunkId: FIoChunkId) {
         const file = new GameFile()
         file.path = path
         file.pakFileName = pakFileName
-        file.ioPackageId = ioPackageId
+        file.ioPackageId = new FByteArchive(chunkId.id).readUInt64()
+        file.ioChunkId = chunkId
         return file
     }
 

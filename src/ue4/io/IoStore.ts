@@ -4,6 +4,7 @@ import { createFIoContainerId } from "./IoContainerId"
 import * as fs from "fs"
 import {
     EIoChunkType,
+    EIoChunkType5,
     EIoContainerFlags,
     FIoChunkHash,
     FIoChunkId,
@@ -19,6 +20,9 @@ import { Utils } from "../../util/Utils"
 import { GameFile } from "../pak/GameFile";
 import { FIoDirectoryIndexReader } from "./IoDirectoryIndex";
 import { Lazy } from "../../util/Lazy";
+import { AbstractAesVfsReader } from "../vfs/AbstractAesVfsReader";
+import { Game } from "../versions/Game";
+import { VersionContainer } from "../versions/VersionContainer";
 
 /**
  * I/O store container format version
@@ -29,6 +33,8 @@ export enum EIoStoreTocVersion {
     Initial,
     DirectoryIndex,
     PartitionSize,
+    PerfectHash,
+    PerfectHashWithOverflow,
     LatestPlusOne,
     Latest = LatestPlusOne - 1
 }
@@ -172,11 +178,11 @@ export class FIoStoreTocHeader {
     reserved4: uint16
 
     /**
-     * Reserved5
+     * Toc chunk perfect hash seeds count
      * @type {number}
      * @public
      */
-    reserved5: uint32
+    tocChunkPerfectHashSeedsCount: uint32
 
     /**
      * Partition size
@@ -186,11 +192,25 @@ export class FIoStoreTocHeader {
     partitionSize: uint64
 
     /**
-     * Reserved6
+     * Toc chunk without perfect hash count
+     * @type {number}
+     * @public
+     */
+    tocChunksWithoutPerfectHashCount: uint32
+
+    /**
+     * Reserved7
+     * @type {number}
+     * @public
+     */
+    reserved7: uint32
+
+    /**
+     * Reserved8
      * @type {Array<bigint>}
      * @public
      */
-    reserved6 = new Array<bigint>(6)
+    reserved8 = new Array<bigint>(5)
 
     /**
      * Creates an instance using an UE4 Reader
@@ -203,6 +223,11 @@ export class FIoStoreTocHeader {
         if (!this.checkMagic())
             throw new Error("TOC header magic mismatch")
         this.version = Ar.readUInt8()
+        if (!Object.values(EIoStoreTocVersion).includes(this.version)) {
+            const latest = EIoStoreTocVersion.Latest
+            console.warn(`Unsupported TOC version ${this.version}, falling back to latest (${latest})`)
+            this.version = latest
+        }
         this.reserved0 = Ar.readUInt8()
         this.reserved1 = Ar.readUInt16()
         this.tocHeaderSize = Ar.readUInt32()
@@ -219,10 +244,13 @@ export class FIoStoreTocHeader {
         this.containerFlags = Ar.readUInt8()
         this.reserved3 = Ar.readUInt8()
         this.reserved4 = Ar.readUInt16()
-        this.reserved5 = Ar.readUInt32()
+        this.tocChunkPerfectHashSeedsCount = Ar.readUInt32()
         this.partitionSize = Ar.readUInt64()
-        for (let i = 0; i < this.reserved6.length; i++) {
-            this.reserved6[i] = Ar.readUInt64()
+        this.tocChunksWithoutPerfectHashCount = Ar.readUInt32()
+        this.reserved7 = Ar.readUInt32()
+        const len = this.reserved8.length
+        for (let i = 0; i < len; i++) {
+            this.reserved8[i] = Ar.readUInt64()
         }
     }
 
@@ -483,6 +511,20 @@ export class FIoStoreTocResource {
     chunkOffsetLengths: FIoOffsetAndLength[]
 
     /**
+     * Chunk perfect hash seeds
+     * @type {Array<number> | null}
+     * @public
+     */
+    chunkPerfectHashSeeds?: number[] = null
+
+    /**
+     * Chunk indices without perfect hash
+     * @type {Array<number> | null}
+     * @public
+     */
+    chunkIndicesWithoutPerfectHash?: number[] = null
+
+    /**
      * compressionBlocks
      * @type {Array<FIoStoreTocCompressedBlockEntry>}
      * @public
@@ -555,16 +597,48 @@ export class FIoStoreTocResource {
         // Chunk IDs
         const _len1 = this.header.tocEntryCount
         this.chunkIds = new Array(_len1)
-        for (let i = 0; i < _len1; i++) {
-            const id = new FIoChunkId(tocBuffer)
-            this.chunkIds[i] = id
-            this.chunkIdToIndex[id.id.toString("base64")] = i
+        if (this.header.version >= EIoStoreTocVersion.PerfectHash) {
+            this.chunkIdToIndex = {}
+            for (let i = 0; i < _len1; ++i) {
+                this.chunkIds[i] = new FIoChunkId(tocBuffer)
+            }
+        } else {
+            for (let i = 0; i < _len1; i++) {
+                const id = new FIoChunkId(tocBuffer)
+                this.chunkIds[i] = id
+                this.chunkIdToIndex[id.id.toString("base64")] = i
+            }
         }
 
         // Chunk offsets
         this.chunkOffsetLengths = new Array(_len1)
         for (let i = 0; i < _len1; i++) {
             this.chunkOffsetLengths[i] = new FIoOffsetAndLength(tocBuffer)
+        }
+
+        // Chunk perfect hash map
+        let perfectHashSeedsCount = 0
+        let chunksWithoutPerfectHashCount = 0
+        if (this.header.version >= EIoStoreTocVersion.PerfectHashWithOverflow) {
+            perfectHashSeedsCount = this.header.tocChunkPerfectHashSeedsCount
+            chunksWithoutPerfectHashCount = this.header.tocChunksWithoutPerfectHashCount
+        } else if (this.header.version >= EIoStoreTocVersion.PerfectHash) {
+            perfectHashSeedsCount = this.header.tocChunkPerfectHashSeedsCount
+        }
+        if (perfectHashSeedsCount > 0) {
+            this.chunkPerfectHashSeeds = new Array(perfectHashSeedsCount)
+            for (let i = 0; i < perfectHashSeedsCount; ++i) {
+                this.chunkPerfectHashSeeds[i] = tocBuffer.readInt32()
+            }
+        }
+        if (chunksWithoutPerfectHashCount > 0) {
+            this.chunkIndicesWithoutPerfectHash = new Array(chunksWithoutPerfectHashCount)
+            for (let i = 0; i < chunksWithoutPerfectHashCount; ++i) {
+                this.chunkIndicesWithoutPerfectHash[i] = tocBuffer.readInt32()
+            }
+            for (let chunkIndexWithoutPerfectHash of this.chunkIndicesWithoutPerfectHash) {
+                this.chunkIdToIndex[this.chunkIds[chunkIndexWithoutPerfectHash].id.toString("base64")] = chunkIndexWithoutPerfectHash
+            }
         }
 
         // Compression blocks
@@ -629,6 +703,32 @@ export class FIoStoreTocResource {
      * @public
      */
     getTocEntryIndex(chunkId: FIoChunkId) {
+        const chunkPerfectHashSeeds = this.chunkPerfectHashSeeds
+        if (chunkPerfectHashSeeds != null) {
+            const chunkCount = this.header.tocEntryCount
+            if (chunkCount === 0)
+                return -1
+            const seedCount = chunkPerfectHashSeeds.length
+            const seedIndex = chunkId.hashWithSeed(0) % BigInt(seedCount)
+            const seed = chunkPerfectHashSeeds[Number(seedIndex)]
+            if (seed === 0)
+                return -1
+            let slot: number
+            if (seed < 0) {
+                const seedAsIndex = -seed - 1
+                if (seedAsIndex < chunkCount) {
+                    slot = seedAsIndex
+                } else {
+                    // Entry without perfect hash
+                    return this.chunkIdToIndex[chunkId.id.toString("base64")] || -1
+                }
+            } else {
+                slot = Number(chunkId.hashWithSeed(seed) % BigInt(chunkCount))
+            }
+            if (this.chunkIds[slot]?.equals(chunkId))
+                return slot
+            return -1
+        }
         return this.chunkIdToIndex[chunkId.id.toString("base64")] || -1
     }
 
@@ -639,15 +739,19 @@ export class FIoStoreTocResource {
      * @public
      */
     getOffsetAndLength(chunkId: FIoChunkId): FIoOffsetAndLength {
-        const index = this.chunkIdToIndex[chunkId.id.toString("base64")]
-        return index != null ? this.chunkOffsetLengths[index] : null
+        const tocEntryIndex = this.getTocEntryIndex(chunkId)
+        return tocEntryIndex !== -1 ? this.chunkOffsetLengths[tocEntryIndex] : null
     }
 }
 
 /**
  * FIoStoreReader
  */
-export class FIoStoreReader {
+export class FIoStoreReader extends AbstractAesVfsReader {
+    constructor(path: string, versions: VersionContainer) {
+        super(path, versions)
+    }
+
     /**
      * Toc
      * @type {FIoStoreTocResource}
@@ -682,6 +786,12 @@ export class FIoStoreReader {
         }
         return null
     })
+
+
+    public get hasDirectoryIndex(): boolean {
+        return this.directoryIndexReader != null || this.toc.directoryIndexBuffer != null
+    }
+
     /*private threadBuffers = object : ThreadLocal<FThreadBuffers>() {
         override fun initialValue() = FThreadBuffers()
     }*/
@@ -719,7 +829,7 @@ export class FIoStoreReader {
             }
         }
 
-        if (this.toc.header.containerFlags & EIoContainerFlags.Encrypted) {
+        if (this.isEncrypted) {
             const findKey = decryptionKeys.get(this.toc.header.encryptionKeyGuid)
             if (!findKey) {
                 throw new Error(`Missing decryption key for IoStore container file '${environment.path}'`)
@@ -732,6 +842,46 @@ export class FIoStoreReader {
             this.toc.header.tocEntryCount,
             this.decryptionKey ? "encrypted chunks" : "chunks",
             this.toc.header.version)
+    }
+
+    public extract(gameFile: GameFile): Buffer {
+        if (gameFile.ioChunkId == null && gameFile.pakFileName != this.name)
+            throw new TypeError(`Wrong I/O store reader, required ${gameFile.pakFileName}, this is ${this.name}`)
+        return this.read(gameFile.ioChunkId)
+    }
+
+    public readIndex(): GameFile[] {
+        const start = Date.now()
+        const files = []
+        const directoryIndex = this.directoryIndexReader.value
+        if (directoryIndex != null) {
+            const exportBundleDataChunkType = this.game >= Game.GAME_UE5_BASE ? EIoChunkType5.ExportBundleData : EIoChunkType.ExportBundleData
+            directoryIndex.iterateDirectoryIndex(FIoDirectoryIndexHandle.rootDirectory(), "", (fileName, tocEntryIndex) => {
+                const chunkId = this.toc.chunkIds[tocEntryIndex]
+                if (chunkId.chunkType === exportBundleDataChunkType)
+                    files.push(GameFile.createFromIoStoreFile(fileName, this.name, chunkId))
+                return true
+            })
+            this.mountPoint = directoryIndex.mountPoint
+        }
+
+        // Print statistics
+        const chunks = this.toc.header.tocEntryCount
+        const encrypted = this.isEncrypted ? "encrypted chunks" : "chunks"
+        const v = this.toc.header.version
+        const time = Date.now() - start
+        console.log(`IoStore \"${this.path}\": ${chunks} ${encrypted}, version ${v} in ${time}ms`)
+
+        this.files = files
+        return files
+    }
+
+    public indexCheckBytes(): Buffer {
+        return this.toc.directoryIndexBuffer || Buffer.alloc(AbstractAesVfsReader.MAX_MOUNTPOINT_TEST_LENGTH)
+    }
+
+    get isEncrypted() {
+        return (this.toc.header.containerFlags & EIoContainerFlags.Encrypted) != 0
     }
 
     /**
@@ -839,7 +989,7 @@ export class FIoStoreReader {
                     files.push(GameFile.createFromIoStoreFile(
                         filename,
                         this.environment.path,
-                        new FByteArchive(chunkId.id).readUInt64())
+                        chunkId),
                     )
                 }
                 return true
@@ -847,6 +997,9 @@ export class FIoStoreReader {
         )
         return files
     }
+
+    // TODO getChunkInfo(chunkId: FIoChunkId): FIoStoreTocChunkInfo
+    // TODO getChunkInfo(tocEntryIndex: number): FIoStoreTocChunkInfo
 }
 
 /**

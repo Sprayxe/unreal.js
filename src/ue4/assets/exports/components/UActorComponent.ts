@@ -53,7 +53,7 @@ export class UActorComponent extends UObject {
      * @type {Array<FName>}
      * @public
      */
-    @UProperty({skipPrevious: 1})
+    @UProperty({ skipPrevious: 1 })
     public ComponentTags: FName[]
 
     /**

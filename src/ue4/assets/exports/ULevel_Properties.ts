@@ -169,7 +169,7 @@ export class ULevel_Properties extends UObject {
      * @type {Array<FPackageIndex>}
      * @public
      */
-    @UProperty({skipNext: 1})
+    @UProperty({ skipNext: 1 })
     public AssetUserData: FPackageIndex[] = null
     //public DestroyedReplicatedStaticActors: FReplicatedStaticActorDestructionInfo[]
 }

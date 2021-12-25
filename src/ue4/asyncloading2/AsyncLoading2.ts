@@ -1,13 +1,10 @@
 import { FArchive } from "../reader/FArchive";
 import { FMinimalName } from "../objects/uobject/NameTypes";
-import { createFIoContainerId } from "../io/IoContainerId";
-import { Pair } from "../../util/Pair";
 import { CityHash } from "../../util/CityHash";
 import Long from "long";
-import Collection from "@discordjs/collection";
-
-export type FSourceToLocalizedPackageIdMap = Pair<bigint, bigint>[]
-export type FCulturePackageMap = Collection<string, FSourceToLocalizedPackageIdMap>
+import { Game } from "../versions/Game";
+import { FPackageFileVersion } from "../versions/ObjectVersion";
+import { FCustomVersion } from "../objects/core/serialization/CustomVersion";
 
 export const INVALID_INDEX = ~0
 export const INDEX_BITS = 30
@@ -149,93 +146,6 @@ export enum FMappedName_EType {
     Package,
     Container,
     Global
-}
-
-/**
- * FPackageStoreEntry
- */
-export class FPackageStoreEntry {
-    /**
-     * exportBundlesSize
-     * @type {number}
-     * @public
-     */
-    exportBundlesSize = 0
-
-    /**
-     * exportCount
-     * @type {number}
-     * @public
-     */
-    exportCount = 0
-
-    /**
-     * exportBundleCount
-     * @type {number}
-     * @public
-     */
-    exportBundleCount = 0
-
-    /**
-     * loadOrder
-     * @type {number}
-     * @public
-     */
-    loadOrder = 0
-
-    /**
-     * pad
-     * @type {number}
-     * @public
-     */
-    pad = 0
-
-    /**
-     * importedPackages
-     * @type {Array<string>}
-     * @public
-     */
-    importedPackages: string[]
-
-    /**
-     * Creates an instance using an UE4 Reader
-     * @param {FArchive} Ar UE4 Reader to use
-     * @constructor
-     * @public
-     */
-    constructor(Ar: FArchive) {
-        this.exportBundlesSize = Number(Ar.readUInt64())
-        this.exportCount = Ar.readInt32()
-        this.exportBundleCount = Ar.readInt32()
-        this.loadOrder = Ar.readUInt32()
-        this.pad = Ar.readUInt32()
-        this.importedPackages = this.readCArrayView(Ar, (x) => x.readUInt64().toString())
-    }
-
-    /**
-     * Reads array view
-     * @param {FArchive} Ar UE4 Reader to use
-     * @param {any} init Method for initializing array entries
-     * @returns {Array<any>}
-     * @example <FPackageStoreEntry>.readCArrayView(Ar, (_Ar) => _Ar.readUInt64().toString())
-     * @private
-     */
-    private readCArrayView<T>(Ar: FArchive, init: (Ar: FArchive) => T): T[] {
-        const initialPos = Ar.pos
-        const arrayNum = Ar.readInt32()
-        const offsetToDataFromThis = Ar.readInt32()
-        if (arrayNum <= 0) {
-            return []
-        }
-        const continuePos = Ar.pos
-        Ar.pos = initialPos + offsetToDataFromThis
-        const result = []
-        for (let i = 0; i < arrayNum; ++i) {
-            result.push(init(Ar))
-        }
-        Ar.pos = continuePos
-        return result
-    }
 }
 
 export const _INDEX_BITS = 62
@@ -429,6 +339,56 @@ export class FPackageObjectIndex {
     }
 }
 
+
+/**
+ * FZenPackageVersioningInfo
+ */
+export class FZenPackageVersioningInfo {
+    public version: number
+    public packageVersion: FPackageFileVersion
+    public licenseeVersion: number
+    public customVersions: FCustomVersion[]
+
+    constructor(Ar: FArchive) {
+        this.version = Ar.readInt32()
+        this.packageVersion = new FPackageFileVersion(Ar)
+        this.licenseeVersion = Ar.readInt32()
+        const customVersionsLen = Ar.readInt32()
+        this.customVersions = new Array(customVersionsLen)
+        for (let i = 0; i < customVersionsLen; ++i)
+            this.customVersions[i] = new FCustomVersion(Ar)
+    }
+}
+
+/**
+ * FZenPackageSummary
+ */
+export class FZenPackageSummary {
+    public bHasVersioningInfo: boolean
+    public headerSize: number
+    public name: FMappedName
+    public packageFlags: number
+    public cookedHeaderSize: number
+    public importedPublicExportHashesOffset: number
+    public importMapOffset: number
+    public exportMapOffset: number
+    public exportBundleEntriesOffset: number
+    public graphDataOffset: number
+
+    constructor(Ar: FArchive) {
+        this.bHasVersioningInfo = Ar.readBoolean()
+        this.headerSize = Ar.readUInt32()
+        this.name = new FMappedName(Ar)
+        this.packageFlags = Ar.readUInt32()
+        this.cookedHeaderSize = Ar.readUInt32()
+        this.importedPublicExportHashesOffset = Ar.readInt32()
+        this.importMapOffset = Ar.readInt32()
+        this.exportMapOffset = Ar.readInt32()
+        this.exportBundleEntriesOffset = Ar.readInt32()
+        this.graphDataOffset = Ar.readInt32()
+    }
+}
+
 /**
  * FPackageObjectIndex_EType
  * @enum
@@ -438,155 +398,6 @@ export enum FPackageObjectIndex_EType {
     ScriptImport,
     PackageImport,
     Null
-}
-
-/**
- * FScriptObjectEntry
- */
-export class FScriptObjectEntry {
-    /**
-     * objectName
-     * @type {FMinimalName}
-     * @public
-     */
-    objectName: FMinimalName
-
-    /**
-     * globalIndex
-     * @type {FPackageObjectIndex}
-     * @public
-     */
-    globalIndex: FPackageObjectIndex
-
-    /**
-     * outerIndex
-     * @type {FPackageObjectIndex}
-     * @public
-     */
-    outerIndex: FPackageObjectIndex
-
-    /**
-     * cdoClassIndex
-     * @type {FPackageObjectIndex}
-     * @public
-     */
-    cdoClassIndex: FPackageObjectIndex
-
-    /**
-     * Creates an instance using an UE4 Reader
-     * @param {FArchive} Ar UE4 Reader to use
-     * @param {Array<string>} nameMap Name map
-     * @constructor
-     * @public
-     */
-    constructor(Ar: FArchive, nameMap: string[]) {
-        this.objectName = new FMinimalName(Ar, nameMap)
-        this.globalIndex = new FPackageObjectIndex(Ar)
-        this.outerIndex = new FPackageObjectIndex(Ar)
-        this.cdoClassIndex = new FPackageObjectIndex(Ar)
-    }
-}
-
-/**
- * FContainerHeader
- */
-export class FContainerHeader {
-    /**
-     * ID
-     * @type {bigint}
-     * @public
-     */
-    containerId: bigint
-
-    /**
-     * packageCount
-     * @type {number}
-     * @public
-     */
-    packageCount = 0
-
-    /**
-     * names
-     * @type {Buffer}
-     * @public
-     */
-    names: Buffer
-
-    /**
-     * nameHashes
-     * @type {Buffer}
-     * @public
-     */
-    nameHashes: Buffer
-
-    /**
-     * packageIds
-     * @type {Array<bigint>}
-     * @public
-     */
-    packageIds: bigint[]
-
-    /**
-     * storeEntries
-     * @type {Array<FPackageStoreEntry>}
-     * @public
-     */
-    storeEntries: FPackageStoreEntry[]
-
-    /**
-     * culturePackageMap
-     * @type {FCulturePackageMap}
-     * @public
-     */
-    culturePackageMap: FCulturePackageMap
-
-    /**
-     * packageRedirects
-     * @type {Array<Pair<bigint, bigint>>}
-     * @public
-     */
-    packageRedirects: Pair<bigint, bigint>[]
-
-    /**
-     * Creates an instance using an UE4 Reader
-     * @param {FArchive} Ar UE4 Reader to use
-     * @constructor
-     * @public
-     */
-    constructor(Ar: FArchive) {
-        this.containerId = createFIoContainerId(Ar)
-        this.packageCount = Ar.readUInt32()
-        this.names = Ar.read(Ar.readInt32())
-        this.nameHashes = Ar.read(Ar.readInt32())
-        const packageIdsNum = Ar.readInt32()
-        this.packageIds = new Array(packageIdsNum)
-        for (let i = 0; i < packageIdsNum; ++i) {
-            this.packageIds[i] = Ar.readUInt64()
-        }
-        const storeEntriesNum = Ar.readInt32()
-        const storeEntriesEnd = Ar.pos + storeEntriesNum
-        this.storeEntries = new Array(this.packageCount)
-        for (let i = 0; i < this.packageCount; ++i) {
-            this.storeEntries[i] = new FPackageStoreEntry(Ar)
-        }
-        Ar.pos = storeEntriesEnd
-        const len = Ar.readInt32()
-        this.culturePackageMap = new Collection<string, FSourceToLocalizedPackageIdMap>()
-        for (let i = 0; i < len; ++i) {
-            const k = Ar.readString()
-            const vLen = Ar.readInt32()
-            const v = new Array(vLen)
-            for (let i = 0; i < vLen; ++i) {
-                v[i] = new Pair(Ar.readUInt64(), Ar.readUInt64())
-            }
-            this.culturePackageMap.set(k, v)
-        }
-        const pkgRecLen = Ar.readInt32()
-        this.packageRedirects = new Array(pkgRecLen)
-        for (let i = 0; i < pkgRecLen; ++i) {
-            this.packageRedirects[i] = new Pair(Ar.readUInt64(), Ar.readUInt64())
-        }
-    }
 }
 
 /**
@@ -719,6 +530,8 @@ export class FPackageSummary {
  * FExportMapEntry
  */
 export class FExportMapEntry {
+    public static readonly SIZE = 72
+
     /**
      * cookedSerialOffset
      * @type {number}
@@ -776,6 +589,13 @@ export class FExportMapEntry {
     globalImportIndex: FPackageObjectIndex
 
     /**
+     * publicExportHash
+     * @type {bigint}
+     * @public
+     */
+    publicExportHash: bigint
+
+    /**
      * objectFlags
      * @type {number}
      * @public
@@ -789,8 +609,6 @@ export class FExportMapEntry {
      */
     filterFlags: number
 
-    //uint8 Pad[3] = {};
-
     /**
      * Creates an instance using an UE4 Reader
      * @param {FArchive} Ar UE4 Reader to use
@@ -798,6 +616,7 @@ export class FExportMapEntry {
      * @public
      */
     constructor(Ar: FArchive) {
+        const start = Ar.pos
         this.cookedSerialOffset = Number(Ar.readUInt64())
         this.cookedSerialSize = Number(Ar.readUInt64())
         this.objectName = new FMappedName(Ar)
@@ -805,10 +624,16 @@ export class FExportMapEntry {
         this.classIndex = new FPackageObjectIndex(Ar)
         this.superIndex = new FPackageObjectIndex(Ar)
         this.templateIndex = new FPackageObjectIndex(Ar)
-        this.globalImportIndex = new FPackageObjectIndex(Ar)
+        if (Ar.game >= Game.GAME_UE5_BASE) {
+            this.globalImportIndex = new FPackageObjectIndex()
+            this.publicExportHash = Ar.readInt64()
+        } else {
+            this.globalImportIndex = new FPackageObjectIndex(Ar)
+            this.publicExportHash = 0n
+        }
         this.objectFlags = Ar.readUInt32()
         this.filterFlags = Ar.readUInt8()
-        Ar.pos += 3
+        Ar.pos = start + FExportMapEntry.SIZE
     }
 }
 
@@ -816,6 +641,13 @@ export class FExportMapEntry {
  * FExportBundleHeader
  */
 export class FExportBundleHeader {
+    /**
+     * serialOffset
+     * @type {number}
+     * @public
+     */
+    serialOffset: bigint
+
     /**
      * firstEntryIndex
      * @type {number}
@@ -837,6 +669,7 @@ export class FExportBundleHeader {
      * @public
      */
     constructor(Ar: FArchive) {
+        this.serialOffset = Ar.game >= Game.GAME_UE5_BASE ? Ar.readUInt64() : 0xFFFFFFFFFFFFFFFFn
         this.firstEntryIndex = Ar.readUInt32()
         this.entryCount = Ar.readUInt32()
     }

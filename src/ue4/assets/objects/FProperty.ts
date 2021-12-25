@@ -947,7 +947,7 @@ export class MapProperty extends FProperty {
         return {
             numKeysToRemove: this.map.numKeysToRemove,
             mapData: this.map.mapData.map((v, k) => {
-                return {key: k.toJsonValue(), value: v.toJsonValue()}
+                return { key: k.toJsonValue(), value: v.toJsonValue() }
             })
         }
     }
@@ -978,7 +978,7 @@ export class MulticastDelegateProperty extends FProperty {
     toJsonValue(): { functionName: string, object: any }[] {
         return this.delegate.invocationList
             .map(d => {
-                return {functionName: d.functionName.text, object: d.object.load() || null}
+                return { functionName: d.functionName.text, object: d.object.load() || null }
             })
     }
 }

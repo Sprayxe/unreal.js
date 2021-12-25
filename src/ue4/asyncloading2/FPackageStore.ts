@@ -1,26 +1,65 @@
-import {
-    createIoChunkId,
-    EIoChunkType,
-    FIoDispatcherMountedContainer,
-    FOnContainerMountedListener
-} from "../io/IoDispatcher";
+import { createIoChunkId, EIoChunkType, EIoChunkType5, FOnContainerMountedListener } from "../io/IoDispatcher";
 import { FileProvider } from "../../fileprovider/FileProvider";
 import { FNameMap } from "./FNameMap";
-import {
-    FContainerHeader,
-    FMappedName,
-    FMappedName_EType,
-    FPackageObjectIndex,
-    FPackageStoreEntry,
-    FScriptObjectEntry,
-    FSourceToLocalizedPackageIdMap
-} from "./AsyncLoading2";
-import osLocale from "os-locale";
+import { FMappedName, FMappedName_EType, FPackageObjectIndex } from "./AsyncLoading2";
 import { FByteArchive } from "../reader/FByteArchive";
-import { ParserException } from "../../exceptions/Exceptions";
 import { UnrealMap } from "../../util/UnrealMap";
 import Collection from "@discordjs/collection";
-import { Config } from "../../Config";
+import { FFilePackageStoreEntry, FIoContainerHeader } from "../io/IoContainerHeader";
+import { FName } from "../objects/uobject/FName";
+import { Pair } from "../../util/Pair";
+import { FMinimalName } from "../objects/uobject/NameTypes";
+import { FArchive } from "../reader/FArchive";
+import { Game } from "../versions/Game";
+import { FIoStoreReader } from "../io/IoStore";
+
+
+/**
+ * FScriptObjectEntry
+ */
+export class FScriptObjectEntry {
+    /**
+     * objectName
+     * @type {FMinimalName}
+     * @public
+     */
+    objectName: FMinimalName
+
+    /**
+     * globalIndex
+     * @type {FPackageObjectIndex}
+     * @public
+     */
+    globalIndex: FPackageObjectIndex
+
+    /**
+     * outerIndex
+     * @type {FPackageObjectIndex}
+     * @public
+     */
+    outerIndex: FPackageObjectIndex
+
+    /**
+     * cdoClassIndex
+     * @type {FPackageObjectIndex}
+     * @public
+     */
+    cdoClassIndex: FPackageObjectIndex
+
+    /**
+     * Creates an instance using an UE4 Reader
+     * @param {FArchive} Ar UE4 Reader to use
+     * @param {Array<string>} nameMap Name map
+     * @constructor
+     * @public
+     */
+    constructor(Ar: FArchive, nameMap: string[]) {
+        this.objectName = new FMinimalName(Ar, nameMap)
+        this.globalIndex = new FPackageObjectIndex(Ar)
+        this.outerIndex = new FPackageObjectIndex(Ar)
+        this.cdoClassIndex = new FPackageObjectIndex(Ar)
+    }
+}
 
 /**
  * FPackageStore (I/O)
@@ -32,24 +71,41 @@ export class FPackageStore extends FOnContainerMountedListener {
      * @type {FileProvider}
      * @public
      */
-    provider: FileProvider
-
-    /**
-     * Global name map
-     * @type {FNameMap}
-     * @public
-     */
-    globalNameMap: FNameMap
+    public provider: FileProvider
 
     /**
      * Creates instance using values
      * @param {FileProvider} provider File provider to use
-     * @param {FNameMap} globalNameMap Global name map to use
      */
-    constructor(provider: FileProvider, globalNameMap: FNameMap) {
+    public constructor(provider: FileProvider) {
         super()
         this.provider = provider
-        this.globalNameMap = globalNameMap
+        let initialLoadArchive: FArchive
+        const globalNameMap = new FNameMap()
+        if (this.provider.game >= Game.GAME_UE5_BASE) {
+            initialLoadArchive = new FByteArchive(this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType5.ScriptObjects)))
+            globalNameMap.load(initialLoadArchive, FMappedName_EType.Global)
+        } else {
+            const nameBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNames))
+            const hashBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNameHashes))
+            globalNameMap.load(nameBuffer, hashBuffer, FMappedName_EType.Global)
+
+            initialLoadArchive = new FByteArchive(this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderInitialLoadMeta)))
+        }
+
+        const numScriptObjects = initialLoadArchive.readInt32()
+        for (let i = 0; i < numScriptObjects; ++i) {
+            const entry = new FScriptObjectEntry(initialLoadArchive, globalNameMap.nameEntries)
+            const mappedName = FMappedName.fromMinimalName(entry.objectName)
+            if (!mappedName.isGlobal())
+                throw new Error("FMappedName must be global.")
+
+            entry.objectName = globalNameMap.getMinimalName(mappedName)
+            this.scriptObjectEntries.set(entry.globalIndex, entry)
+        }
+
+        // currentCultureNames.add(Locale.getDefault().toString().replace('_', '-'))
+        this.loadContainers(this.provider.mountedPaks.filter(p => p instanceof FIoStoreReader) as FIoStoreReader[])
     }
 
     /**
@@ -57,58 +113,61 @@ export class FPackageStore extends FOnContainerMountedListener {
      * @type {Collection<bigint, FLoadedContainer>}
      * @public
      */
-    loadedContainers = new Collection<bigint, FLoadedContainer>()
+    public loadedContainers = new Collection<bigint, FLoadedContainer>()
+
+    /**
+     * Package Name Maps Critical
+     * @type {{}}
+     * @public
+     */
+    public packageNameMapsCritical = {}
 
     /**
      * Current culture names
      * @type {Array<string>}
      * @public
-     */
-    currentCultureNames: string[] = []
+     currentCultureNames: string[] = []*/
 
     /**
      * Store entries
-     * @type {Collection<bigint, FPackageStoreEntry>}
+     * @type {Collection<bigint, FFilePackageStoreEntry>}
      * @public
      */
-    storeEntries = new Collection<bigint, FPackageStoreEntry>()
+    storeEntries = new Collection<bigint, FFilePackageStoreEntry>()
 
     /**
      * Redirected packages
-     * @type {Collection<bigint, FPackageStoreEntry>}
+     * @type {Collection<bigint, Pair<FName, bigint>>}
      * @public
      */
-    redirectedPackages = new Collection<bigint, bigint>()
+    redirectedPackages = new Collection<bigint, Pair<FName, bigint>>()
 
     /**
      * Script object entries
      * @type {Array<FScriptObjectEntry>}
      * @public
-     */
-    scriptObjectEntries: FScriptObjectEntry[]
+     scriptObjectEntries: FScriptObjectEntry[]*/
 
     /**
      * Script object entries map
      * @type {UnrealMap<FPackageObjectIndex, FScriptObjectEntry>}
      * @public
      */
-    scriptObjectEntriesMap = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
+    scriptObjectEntries = new UnrealMap<FPackageObjectIndex, FScriptObjectEntry>()
 
     /**
      * Sets up culture
      * @returns {void}
      * @public
-     */
-    setupCulture() {
+     setupCulture() {
         this.currentCultureNames = [osLocale.sync().toString().replace("_", "-")]
-    }
+    }*/
 
     /**
      * Sets up initial load data
      * @returns {void}
      * @public
-     */
-    setupInitialLoadData() {
+     setupInitialLoadData() {
         const initialLoadIoBuffer = this.provider.saveChunk(createIoChunkId(0n, 0, EIoChunkType.LoaderInitialLoadMeta))
         const initialLoadArchive = new FByteArchive(initialLoadIoBuffer)
         const numScriptObjects = initialLoadArchive.readInt32()
@@ -122,15 +181,15 @@ export class FPackageStore extends FOnContainerMountedListener {
             this.scriptObjectEntriesMap.set(obj.globalIndex, obj)
             this.scriptObjectEntries[i] = obj
         }
-    }
+    }*/
 
     /**
      * Loads containers
-     * @param {Array<FIoDispatcherMountedContainer>} containers Containers to load
+     * @param {Array<FIoStoreReader>} containers Containers to load
      * @returns {void}
      * @public
      */
-    loadContainers(containers: FIoDispatcherMountedContainer[]) {
+    loadContainers(containers: FIoStoreReader[]) {
         const invalidId = 0xFFFFFFFFFFFFFFFFn
         const containersToLoad = containers.filter(it => it.containerId !== invalidId)
         if (!containersToLoad.length)
@@ -147,24 +206,13 @@ export class FPackageStore extends FOnContainerMountedListener {
                 loadedContainer = cont
             }
 
-            if (loadedContainer.bValid && loadedContainer.order >= container.environment.order) {
-                if (Config.GDebug) console.debug(`Skipping loading mounted container ID '${containerId}', already loaded with higher order`)
-                continue
-            }
+            const headerChunkId = createIoChunkId(containerId, 0, this.provider.game >= Game.GAME_UE5_BASE
+                ? EIoChunkType5.ContainerHeader
+                : EIoChunkType.ContainerHeader)
+            const ioBuffer = container.read(headerChunkId)
 
-            loadedContainer.bValid = true
-            loadedContainer.order = container.environment.order
-
-            const headerChunkId = createIoChunkId(containerId, 0, EIoChunkType.ContainerHeader)
-            const ioBuffer = this.provider.saveChunk(headerChunkId)
-
-            const containerHeader = new FContainerHeader(new FByteArchive(ioBuffer))
-
-            const bHasContainerLocalNameMap = !!containerHeader.names
-            if (bHasContainerLocalNameMap) {
-                loadedContainer.containerNameMap.load(containerHeader.names, containerHeader.nameHashes, FMappedName_EType.Container)
-            }
-
+            const containerHeader = new FIoContainerHeader(new FByteArchive(ioBuffer, this.provider.versions))
+            loadedContainer.containerNameMap = containerHeader.redirectsNameMap
             loadedContainer.packageCount = containerHeader.packageCount
             loadedContainer.storeEntries = containerHeader.storeEntries
 
@@ -175,7 +223,7 @@ export class FPackageStore extends FOnContainerMountedListener {
                 )
             }
 
-            let localizedPackages: FSourceToLocalizedPackageIdMap = null
+            /*let localizedPackages: FSourceToLocalizedPackageIdMap = null
             for (const cultureName of this.currentCultureNames) {
                 localizedPackages = containerHeader.culturePackageMap.get(cultureName)
                 if (localizedPackages)
@@ -186,24 +234,27 @@ export class FPackageStore extends FOnContainerMountedListener {
                 for (const pair of localizedPackages) {
                     this.redirectedPackages.set(pair.key, pair.value)
                 }
-            }
+            }*/
 
             for (const redirect of containerHeader.packageRedirects) {
-                this.redirectedPackages.set(redirect.key, redirect.value)
+                const sourcePackageName = redirect.sourcePackageName != null
+                    ? containerHeader.redirectsNameMap.getName(redirect.sourcePackageName) ?? FName.NAME_None
+                    : FName.NAME_None
+                this.redirectedPackages.set(redirect.sourcePackageId, new Pair(sourcePackageName, redirect.targetPackageId))
             }
         }
 
-        this.applyRedirects(this.redirectedPackages)
+        //this.applyRedirects(this.redirectedPackages)
         console.log(`Loaded mounted containers in ${Date.now() - start}ms!`)
     }
 
     /**
      * On container mounted 'event'
-     * @param {FIoDispatcherMountedContainer} container Container to call
+     * @param {FIoStoreReader} container Container to call
      * @returns {void}
      * @public
      */
-    onContainerMounted(container: FIoDispatcherMountedContainer) {
+    onContainerMounted(container: FIoStoreReader) {
         this.loadContainers([container])
     }
 
@@ -225,7 +276,7 @@ export class FPackageStore extends FOnContainerMountedListener {
 
         for (const storeEntry of this.storeEntries.values()) {
             storeEntry.importedPackages.forEach((importedPackageId, index) => {
-                storeEntry.importedPackages[index] = redirects[importedPackageId]
+                storeEntry.importedPackages[index] = redirects.get(importedPackageId)
             })
         }
     }
@@ -233,10 +284,10 @@ export class FPackageStore extends FOnContainerMountedListener {
     /**
      * Gets an store entry
      * @param {bigint} packageId ID of store entry to get
-     * @returns {FPackageStoreEntry}
+     * @returns {FFilePackageStoreEntry}
      * @public
      */
-    findStoreEntry(packageId: bigint) {
+    findStoreEntry(packageId: bigint): FFilePackageStoreEntry {
         return this.storeEntries.get(packageId)
     }
 
@@ -264,10 +315,10 @@ export class FLoadedContainer {
 
     /**
      * Store entries
-     * @type {Array<FPackageStoreEntry>}
+     * @type {Array<FFilePackageStoreEntry>}
      * @public
      */
-    storeEntries: FPackageStoreEntry[] = []
+    storeEntries: FFilePackageStoreEntry[] = []
 
     /**
      * Package count

@@ -46,7 +46,7 @@ export class FRealCurve {
      * @type {number}
      * @public
      */
-    @UProperty({name: "DefaultValue"})
+    @UProperty({ name: "DefaultValue" })
     defaultValue = FLOAT_MAX_VALUE
 
     /**
@@ -54,7 +54,7 @@ export class FRealCurve {
      * @type {ERichCurveExtrapolation}
      * @public
      */
-    @UProperty({name: "PreInfinityExtrap"})
+    @UProperty({ name: "PreInfinityExtrap" })
     preInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
 
     /**
@@ -62,7 +62,7 @@ export class FRealCurve {
      * @type {ERichCurveExtrapolation}
      * @public
      */
-    @UProperty({name: "PostInfinityExtrap"})
+    @UProperty({ name: "PostInfinityExtrap" })
     postInfinityExtrap = ERichCurveExtrapolation.RCCE_Constant
 
     /**

@@ -17,7 +17,7 @@ export class AthenaCharacterItemDefinition extends AthenaCosmeticItemDefinition 
     public DefaultBackpack: AthenaBackpackItemDefinition = null
     public RequiredCosmeticItems: AthenaCosmeticItemDefinition[] = null
     public Gender: EFortCustomGender = null
-    @UProperty({skipNext: 1})
+    @UProperty({ skipNext: 1 })
     public FeedbackBank: FSoftObjectPath = null
     //public Map<GameplayTag, AthenaCharacterTaggedPartsList> TaggedPartsOverride;
 }

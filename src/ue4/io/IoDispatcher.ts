@@ -1,5 +1,6 @@
 import { FArchive } from "../reader/FArchive";
 import { int32, uint16 } from "../../Types";
+import { FIoStoreReader } from "./IoStore";
 
 /**
  * Helper used to manage creation of I/O store file handles etc
@@ -84,6 +85,16 @@ export class FIoChunkId {
         if (Ar) Ar.readToBuffer(this.id)
     }
 
+    hashWithSeed(seed: number): bigint {
+        let hash = seed != 0 ? BigInt(seed) : 0xcbf29ce484222325n
+        const len = this.id.length
+        for (let i = 0; i < len; ++i) {
+            const it = BigInt(this.id[i])
+            hash = ((hash * 0x00000100000001B3n) & 0xFFFFFFFFFFFFFFFFn) ^ (it & 0xFFFFFFFFFFFFFFFFn) // yea... ignore that pls
+        }
+        return hash
+    }
+
     /**
      * Whether this equals other object
      * @param {FIoChunkId} other Other chunk id
@@ -114,14 +125,33 @@ export enum EIoChunkType {
 }
 
 /**
+ * Addressable chunk types.
+ *
+ * @warning Only use this when UE ver is >= 5.0
+ */
+export enum EIoChunkType5 {
+    Invalid,
+    ExportBundleData,
+    BulkData,
+    OptionalBulkData,
+    MemoryMappedBulkData,
+    ScriptObjects,
+    ContainerHeader,
+    ExternalFile,
+    ShaderCodeLibrary,
+    ShaderCode,
+    PackageStoreEntry
+}
+
+/**
  * Creates a chunk identifier
  * @param {bigint} chunkId ID of chunk
  * @param {number} chunkIndex Index of chunk
- * @param {EIoChunkType} ioChunkType Type of chunk
+ * @param {EIoChunkType | EIoChunkType5} ioChunkType Type of chunk
  * @returns {Buffer} Chunk ID
  * @public
  */
-export function createIoChunkId(chunkId: bigint, chunkIndex: uint16, ioChunkType: EIoChunkType) {
+export function createIoChunkId(chunkId: bigint, chunkIndex: uint16, ioChunkType: EIoChunkType | EIoChunkType5) {
     const ioChunkId = new FIoChunkId()
     ioChunkId.id.writeBigUInt64LE(chunkId, 0)
     ioChunkId.id.writeUInt16LE(chunkIndex, 8)
@@ -144,48 +174,17 @@ export enum EIoContainerFlags {
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * FIoDispatcherMountedContainer
- */
-export class FIoDispatcherMountedContainer {
-    /**
-     * Environment
-     * @type {FIoStoreEnvironment}
-     * @public
-     */
-    environment: FIoStoreEnvironment
-
-    /**
-     * Container ID
-     * @type {FIoStoreEnvironment}
-     * @public
-     */
-    containerId: bigint
-
-    /**
-     * Creates instance using values
-     * @param {FIoStoreEnvironment} environment Environment
-     * @param {bigint} containerId Container ID
-     * @constructor
-     * @public
-     */
-    constructor(environment: FIoStoreEnvironment, containerId: bigint) {
-        this.environment = environment
-        this.containerId = containerId
-    }
-}
-
-/**
  * FOnContainerMountedListener
  * @abstract
  */
 export abstract class FOnContainerMountedListener {
     /**
      * Method to call on mounted container
-     * @param {FIoDispatcherMountedContainer} container Container that got mounted
+     * @param {FIoStoreReader} container Container that got mounted
      * @returns {void}
      * @public
      */
-    abstract onContainerMounted(container: FIoDispatcherMountedContainer)
+    abstract onContainerMounted(container: FIoStoreReader)
 }
 
 /**

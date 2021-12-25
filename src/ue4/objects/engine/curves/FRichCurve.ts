@@ -237,7 +237,7 @@ export class FRichCurve extends FRealCurve {
      * Sorted array of keys
      * @type {Array<FRichCurveKey>}
      */
-    @UProperty({name: "Keys"})
+    @UProperty({ name: "Keys" })
     public keys: FRichCurveKey[] = []
 
     /**
@@ -549,7 +549,7 @@ function weightedEvalForTwoKeys(
 
 function isItNotWeighted(key1: FRichCurveKey, key2: FRichCurveKey) {
     return ((key1.tangentWeightMode === ERichCurveTangentWeightMode.RCTWM_WeightedNone
-        || key1.tangentWeightMode === ERichCurveTangentWeightMode.RCTWM_WeightedArrive)
+            || key1.tangentWeightMode === ERichCurveTangentWeightMode.RCTWM_WeightedArrive)
         && (key2.tangentWeightMode === ERichCurveTangentWeightMode.RCTWM_WeightedNone
             || key2.tangentWeightMode === ERichCurveTangentWeightMode.RCTWM_WeightedLeave))
 }

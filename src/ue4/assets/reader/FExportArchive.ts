@@ -3,8 +3,9 @@ import { UObject } from "../exports/UObject";
 import { IoPackage } from "../IoPackage";
 import { PayloadType } from "../util/PayloadType";
 import { ParserException } from "../../../exceptions/Exceptions";
-import { createIoChunkId, EIoChunkType } from "../../io/IoDispatcher";
+import { createIoChunkId, EIoChunkType, EIoChunkType5 } from "../../io/IoDispatcher";
 import { Config } from "../../../Config";
+import { Game } from "../../versions/Game";
 
 /**
  * UE4 Export Reader
@@ -58,10 +59,16 @@ export class FExportArchive extends FAssetArchive {
     public getPayload(type: PayloadType): FAssetArchive {
         if (this.provider == null)
             throw new ParserException(`Lazy loading a ${Object.keys(PayloadType)[type]} requires a file provider`)
-        let ioChunkType: EIoChunkType
-        if (type === PayloadType.UBULK) ioChunkType = EIoChunkType.BulkData
-        else if (type === PayloadType.M_UBULK) ioChunkType = EIoChunkType.MemoryMappedBulkData
-        else if (type === PayloadType.UPTNL) ioChunkType = EIoChunkType.OptionalBulkData
+        let ioChunkType: EIoChunkType | EIoChunkType5
+        if (this.game >= Game.GAME_UE5_BASE) {
+            if (type === PayloadType.UBULK) ioChunkType = EIoChunkType5.BulkData
+            else if (type === PayloadType.M_UBULK) ioChunkType = EIoChunkType5.MemoryMappedBulkData
+            else if (type === PayloadType.UPTNL) ioChunkType = EIoChunkType5.OptionalBulkData
+        } else {
+            if (type === PayloadType.UBULK) ioChunkType = EIoChunkType.BulkData
+            else if (type === PayloadType.M_UBULK) ioChunkType = EIoChunkType.MemoryMappedBulkData
+            else if (type === PayloadType.UPTNL) ioChunkType = EIoChunkType.OptionalBulkData
+        }
         const payloadChunkId = createIoChunkId(this.pkg.packageId, 0, ioChunkType)
         let ioBuffer: Buffer
         try {

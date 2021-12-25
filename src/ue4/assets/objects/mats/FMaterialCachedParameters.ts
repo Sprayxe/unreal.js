@@ -13,7 +13,7 @@ export class FMaterialCachedParameters {
      * @type {Array<FMaterialCachedParameterEntry>}
      * @public
      */
-    @UProperty({arrayDim: 5})
+    @UProperty({ arrayDim: 5 })
     public Entries: FMaterialCachedParameterEntry[]
 
     /**

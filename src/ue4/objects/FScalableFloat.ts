@@ -11,7 +11,7 @@ export class FScalableFloat {
      * @type {number}
      * @public
      */
-    @UProperty({name: "Value"})
+    @UProperty({ name: "Value" })
     public value: number = 0
 
     /**
@@ -19,7 +19,7 @@ export class FScalableFloat {
      * @type {?FCurveTableRowHandle}
      * @public
      */
-    @UProperty({name: "Curve"})
+    @UProperty({ name: "Curve" })
     public curve?: FCurveTableRowHandle = null
 
     /**

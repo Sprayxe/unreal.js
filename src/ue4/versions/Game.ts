@@ -88,10 +88,17 @@ export class Game {
         return this.ue4Versions[this.GAME_UE4_GET_MINOR(game)]
     }
 
-    // TODO const val GAME_UE5_BASE = 0x2000000
-    // TODO fun GAME_UE5(x: Int) = GAME_UE5_BASE + (x shl 4)
-    // TODO fun GAME_UE5_GET_MINOR(x: Int) = (x - GAME_UE5_BASE) shr 4
-    // TODO const val LATEST_SUPPORTED_UE5_VERSION = 0
+    static GAME_UE5_BASE = 0x2000000
+
+    static GAME_UE5(x: number) {
+        return this.GAME_UE5_BASE + (x << 4)
+    }
+
+    static GAME_UE5_GET_MINOR(x: number) {
+        return (x - this.GAME_UE5_BASE) >> 4
+    }
+
+    static LATEST_SUPPORTED_UE5_VERSION = 0
 }
 
 /**
@@ -346,6 +353,14 @@ export class Ue4Version {
      */
     static GAME_UE4_27 = new Ue4Version(Game.GAME_UE4(27))
 
+    /**
+     * GAME_UE5_0
+     * @type {Ue4Version}
+     * @public
+     * @static
+     */
+    static GAME_UE5_0 = new Ue4Version(Game.GAME_UE5(0))
+
     // bytes: 01.00.0N.NX : 01=UE4, 00=masked by GAME_ENGINE, NN=UE4 subversion, X=game (4 bits, 0=base engine)
     // const val GAME_Borderlands3 = GAME_UE4(20) + 2
 
@@ -371,11 +386,18 @@ export class Ue4Version {
     static GAME_VALORANT = new Ue4Version(Game.GAME_VALORANT)
 
     /**
-     * Latest version
+     * Latest UE4 version
      * @type {Ue4Version}
      * @public
      */
     static GAME_UE4_LATEST = new Ue4Version(Game.GAME_UE4(Game.LATEST_SUPPORTED_UE4_VERSION))
+
+    /**
+     * Latest UE5 version
+     * @type {Ue4Version}
+     * @public
+     */
+    static GAME_UE5_LATEST = new Ue4Version(Game.GAME_UE5(Game.LATEST_SUPPORTED_UE5_VERSION))
 
     static getArVer(game: number): number {
         if (game < Game.GAME_UE4(1))
@@ -432,7 +454,8 @@ export class Ue4Version {
             return _.VER_UE4_25
         if (game < Game.GAME_UE4(27))
             return _.VER_UE4_26
-        // TODO game < GAME_UE5(0) -> VER_UE4_27
+        if (game < Game.GAME_UE5(0))
+            return _.VER_UE4_27
         return _.VER_UE5_0
     }
 }

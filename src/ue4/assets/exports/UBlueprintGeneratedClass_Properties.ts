@@ -58,7 +58,7 @@ export class UBlueprintGeneratedClass_Properties extends UClass {
      * @type {FPackageIndex}
      * @public
      */
-    @UProperty({skipPrevious: 1})
+    @UProperty({ skipPrevious: 1 })
     public SimpleConstructionScript: FPackageIndex = null
 
     /**
@@ -80,7 +80,7 @@ export class UBlueprintGeneratedClass_Properties extends UClass {
      * @type {UFunction}
      * @public
      */
-    @UProperty({skipNext: 1})
+    @UProperty({ skipNext: 1 })
     public UberGraphFunction: UFunction = null
     //public Map<FName, FBlueprintCookedComponentInstancingData> CookedComponentInstancingData;
 }

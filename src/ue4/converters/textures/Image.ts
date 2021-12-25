@@ -214,7 +214,7 @@ function rgbaBufferToImage(rgba: Buffer, width: number, height: number, config?:
     }
     ctx.putImageData(imageData, 0, 0)
     ctx.translate(.5, .5)
-    return img.toBuffer("image/png", {compressionLevel: 3})
+    return img.toBuffer("image/png", { compressionLevel: 3 })
 }
 
 function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: ImageConfig) {
@@ -235,7 +235,7 @@ function rgbBufferToImage(rgb: Buffer, width: number, height: number, config?: I
     }
     ctx.putImageData(imageData, 0, 0)
     ctx.translate(.5, 5)
-    return img.toBuffer("image/png", {compressionLevel: 3})
+    return img.toBuffer("image/png", { compressionLevel: 3 })
 }
 
 export interface ImageConfig {

@@ -7,13 +7,13 @@ import { FMeshUVChannelInfo } from "./FMeshUVChannelInfo";
 import { EFRenderingObjectVersion, FRenderingObjectVersion } from "../../../versions/FRenderingObjectVersion";
 
 export class FStaticMaterial {
-    @UProperty({name: "MaterialInterface"})
+    @UProperty({ name: "MaterialInterface" })
     public materialInterface: Lazy<UMaterialInterface> = null
-    @UProperty({name: "MaterialSlotName"})
+    @UProperty({ name: "MaterialSlotName" })
     public materialSlotName: FName = FName.NAME_None
-    @UProperty({name: "ImportedMaterialSlotName"})
+    @UProperty({ name: "ImportedMaterialSlotName" })
     public importedMaterialSlotName: FName = FName.NAME_None
-    @UProperty({name: "UVChannelData"})
+    @UProperty({ name: "UVChannelData" })
     public uvChannelData: FMeshUVChannelInfo = null
 
     constructor(Ar?: FAssetArchive) {

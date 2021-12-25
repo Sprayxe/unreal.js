@@ -4,13 +4,13 @@ import { FArchive } from "../../../reader/FArchive";
 import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 
 export class FBoxSphereBounds {
-    @UProperty({name: "Origin"})
+    @UProperty({ name: "Origin" })
     public origin: FVector = null
 
-    @UProperty({name: "BoxExtent"})
+    @UProperty({ name: "BoxExtent" })
     public boxExtent: FVector = null
 
-    @UProperty({name: "SphereRadius"})
+    @UProperty({ name: "SphereRadius" })
     public sphereRadius: number = null
 
     public constructor(origin: FVector, boxExtent: FVector, sphereRadius: number)

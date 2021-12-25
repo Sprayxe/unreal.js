@@ -13,7 +13,7 @@ export class FPerQualityLevelInt implements IStructType {
      * @type {number}
      * @public
      */
-    @UProperty({name: "Default"})
+    @UProperty({ name: "Default" })
     public default: number
 
     /**
@@ -21,7 +21,7 @@ export class FPerQualityLevelInt implements IStructType {
      * @type {Collection<number, number>}
      * @public
      */
-    @UProperty({name: "PerQuality"})
+    @UProperty({ name: "PerQuality" })
     public perQuality: Collection<number, number>
 
     /**

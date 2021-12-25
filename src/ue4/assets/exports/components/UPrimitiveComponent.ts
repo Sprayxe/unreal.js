@@ -51,7 +51,7 @@ export class UPrimitiveComponent extends USceneComponent {
     public DepthPriorityGroup: ESceneDepthPriorityGroup = null
     /*public ESceneDepthPriorityGroup ViewOwnerDepthPriorityGroup = null
     public EIndirectLightingCacheQuality IndirectLightingCacheQuality = null*/
-    @UProperty({skipPrevious: 2})
+    @UProperty({ skipPrevious: 2 })
     public LightmapType: ELightmapType = null
     public bUseMaxLODAsImposter: boolean = null
     public bBatchImpostersAsInstances: boolean = null
@@ -111,7 +111,7 @@ export class UPrimitiveComponent extends USceneComponent {
     public CustomDepthStencilValue: number = null
     /*public FCustomPrimitiveData CustomPrimitiveData = null
     public FCustomPrimitiveData CustomPrimitiveDataInternal = null*/
-    @UProperty({skipPrevious: 2})
+    @UProperty({ skipPrevious: 2 })
     public TranslucencySortPriority: number = null
     public VisibilityId: number = null
     public RuntimeVirtualTextures: FPackageIndex[] /*RuntimeVirtualTexture[]*/ = null
@@ -119,7 +119,7 @@ export class UPrimitiveComponent extends USceneComponent {
     public VirtualTextureCullMips: number = null
     public VirtualTextureMinCoverage: number = null
     //public ERuntimeVirtualTextureMainPassType VirtualTextureRenderPassType = null
-    @UProperty({skipPrevious: 1})
+    @UProperty({ skipPrevious: 1 })
     public LpvBiasMultiplier: number = null
     public BoundsScale: number = null
     public MoveIgnoreActors: Lazy<AActor>[] = null

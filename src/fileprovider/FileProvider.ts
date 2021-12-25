@@ -6,7 +6,7 @@ import { ReflectionTypeMappingsProvider } from "../ue4/assets/mappings/Reflectio
 import { Locres } from "../ue4/locres/Locres";
 import { FnLanguage, valueOfLanguageCode } from "../ue4/locres/FnLanguage";
 import { AssetRegistry } from "../ue4/registry/AssetRegistry";
-import { createIoChunkId, EIoChunkType, FIoChunkId, FIoStoreEnvironment } from "../ue4/io/IoDispatcher";
+import { createIoChunkId, EIoChunkType, EIoChunkType5, FIoChunkId, FIoStoreEnvironment } from "../ue4/io/IoDispatcher";
 import { IoPackage } from "../ue4/assets/IoPackage";
 import { UnrealMap } from "../util/UnrealMap";
 import { PakPackage } from "../ue4/assets/PakPackage";
@@ -14,11 +14,9 @@ import { FName } from "../ue4/objects/uobject/FName";
 import { PakFileReader } from "../ue4/pak/PakFileReader";
 import { EIoStoreTocReadOptions, FIoStoreReader } from "../ue4/io/IoStore";
 import { FGuid } from "../ue4/objects/core/misc/Guid";
-import { FNameMap } from "../ue4/asyncloading2/FNameMap";
 import { FPackageStore } from "../ue4/asyncloading2/FPackageStore";
 import fs from "fs";
 import { InvalidAesKeyException, ParserException } from "../exceptions/Exceptions";
-import { FFileArchive } from "../ue4/reader/FFileArchive";
 import { Aes } from "../encryption/aes/Aes";
 import { Lazy } from "../util/Lazy";
 import Collection from "@discordjs/collection";
@@ -31,6 +29,7 @@ import { Oodle } from "../oodle/Oodle";
 import { Config, IConfig } from "../Config";
 import { Utils } from "../util/Utils";
 import { VersionContainer } from "../ue4/versions/VersionContainer";
+import { AbstractAesVfsReader, CustomEncryption } from "../ue4/vfs/AbstractAesVfsReader";
 
 /**
  * The main hub for interacting with ue4 assets
@@ -103,21 +102,14 @@ export class FileProvider extends EventEmitter {
      * @type {Array<PakFileReader>}
      * @public
      */
-    unloadedPaks = new Array<PakFileReader>()
+    unloadedPaks = new Array<AbstractAesVfsReader>()
 
     /**
      * Mounted paks
      * @type {Array<PakFileReader>}
      * @public
      */
-    mountedPaks = new Array<PakFileReader>()
-
-    /**
-     * Mounted I/O store readers
-     * @type {Array<FIoStoreReader>}
-     * @public
-     */
-    mountedIoStoreReaders = new Array<FIoStoreReader>()
+    mountedPaks = new Array<AbstractAesVfsReader>()
 
     /**
      * AES keys required for readers
@@ -126,6 +118,13 @@ export class FileProvider extends EventEmitter {
      * @public
      */
     requiredKeys = new Array<FGuid>()
+
+    /**
+     * Custom Encryption
+     * @type {?CustomEncryption}
+     * @public
+     */
+    customEncryption?: CustomEncryption = null
 
     /**
      * Stored AES keys
@@ -139,15 +138,7 @@ export class FileProvider extends EventEmitter {
      * @type {Lazy<FPackageStore>}
      * @public
      */
-    globalPackageStore = new Lazy(() => {
-        const globalNameMap = new FNameMap()
-        const globalPackageStore = new FPackageStore(this, globalNameMap)
-        globalNameMap.loadGlobal(this)
-        globalPackageStore.setupInitialLoadData()
-        //globalPackageStore.setupCulture()
-        //globalPackageStore.loadContainers(this.mountedIoStoreReaders.map(m => new FIoDispatcherMountedContainer(m.environment, m.containerId)))
-        return globalPackageStore
-    })
+    globalPackageStore = new Lazy(() => new FPackageStore(this))
 
     /**
      * Local files
@@ -275,11 +266,11 @@ export class FileProvider extends EventEmitter {
     /**
      * Filters unloaded paks that match the provided guid
      * @param {FGuid} guid Guid to look for
-     * @returns {Array<PakFileReader>} Readers that matched the guid
+     * @returns {Array<AbstractAesVfsReader>} Readers that matched the guid
      * @public
      */
     unloadedPaksByGuid(guid: FGuid) {
-        return this.unloadedPaks.filter(it => it.pakInfo.encryptionKeyGuid.equals(guid))
+        return this.unloadedPaks.filter(it => it.encryptionKeyGuid.equals(guid))
     }
 
     /**
@@ -395,13 +386,12 @@ export class FileProvider extends EventEmitter {
                 const ubulk = this.saveGameFile(path.substring(0, path.lastIndexOf(".")) + ".ubulk")
                 return new PakPackage(uasset, uexp, ubulk, path, this, this.versions)
             } else {
-                let ioBuffer: Buffer
-                try {
-                    ioBuffer = this.saveChunk(createIoChunkId(x, 0, EIoChunkType.ExportBundleData))
-                } catch {
-                }
-                if (!ioBuffer) return null
-                return new IoPackage(ioBuffer, x, this.globalPackageStore.value, this, this.versions)
+                const storeEntry = this.globalPackageStore.value.findStoreEntry(x)
+                if (storeEntry == null)
+                    return null
+                const chunkType = this.game >= Game.GAME_UE5_BASE ? EIoChunkType5.ExportBundleData : EIoChunkType.ExportBundleData
+                const ioBuffer = this.saveChunk(createIoChunkId(x, 0, chunkType))
+                return new IoPackage(ioBuffer, x, storeEntry, this.globalPackageStore.value, this, this.versions)
             }
         } catch (e) {
             console.error(`Failed to load package ${x.toString()}`)
@@ -412,20 +402,17 @@ export class FileProvider extends EventEmitter {
     /**
      * Loads an ue4 object
      * @param {string} objectPath Path to the object
-     * @param {?string} objectName Name of the object (DEPRECATED)
      * @returns {?UObject} The object that matched your args or null
      * @public
      */
-    loadObject<T extends UObject>(objectPath: string | FSoftObjectPath, objectName?: string): T {
+    loadObject<T extends UObject>(objectPath: string | FSoftObjectPath): T {
         if (objectPath == null || objectPath === "None") return null;
         let packagePath: string = objectPath as any
         if (objectPath instanceof FSoftObjectPath) {
             packagePath = objectPath.assetPathName.text
         }
 
-        if (objectName != null)
-            console.warn("[DEPRECATED: loadObject(objectPath, objectName)] Parameter 'objectName' is deprecated since V1.1.4. It will be removed in a future update.")
-
+        let objectName: string
         const dotIndex = packagePath.indexOf(".")
         if (dotIndex === -1) {
             objectName = packagePath.substring(packagePath.lastIndexOf("/") + 1)
@@ -674,7 +661,9 @@ export class FileProvider extends EventEmitter {
      * @throws {Error}
      */
     saveChunk(chunkId: FIoChunkId): Buffer {
-        for (const reader of this.mountedIoStoreReaders) {
+        for (const reader of this.mountedPaks) {
+            if (!(reader instanceof FIoStoreReader))
+                continue
             try {
                 return reader.read(chunkId)
             } catch (e) {
@@ -688,34 +677,24 @@ export class FileProvider extends EventEmitter {
 
     /**
      * Mounts a pak file reader
-     * @param {PakFileReader} reader Reader to mount
+     * @param {AbstractAesVfsReader} reader Reader to mount
      * @returns {Promise<void>}
-     * @protected
+     * @public
      */
-    protected mount(reader: PakFileReader) {
+    public mount(reader: AbstractAesVfsReader) {
         const index = reader.readIndex()
         for (const it of index) {
             this.files.set(it.path.toLowerCase(), it)
         }
-        this.mountedPaks.push(reader)
 
-        if (this.globalDataLoaded && reader.Ar instanceof FFileArchive) {
-            const absolutePath = reader.path.substring(0, reader.path.lastIndexOf("."))
-            const ioStoreEnvironment = new FIoStoreEnvironment(absolutePath)
-            try {
-                const ioStoreReader = new FIoStoreReader()
-                ioStoreReader.initialize(ioStoreEnvironment, this.keys, this.ioStoreTocReadOptions)
-                const files = ioStoreReader.getFiles()
-                for (const it of files) {
-                    this.files.set(it.path.toLowerCase(), it)
-                }
-                this.mountedIoStoreReaders.push(ioStoreReader)
-                /*if (this.globalPackageStore.isInitialized) {
-                    this.globalPackageStore.value.onContainerMounted(new FIoDispatcherMountedContainer(ioStoreEnvironment, ioStoreReader.containerId))
-                }*/
-            } catch (e) {
-                console.warn("Failed to mount IoStore environment \"%s\"", absolutePath, e)
+        this.mountedPaks.push(reader)
+        if (reader instanceof FIoStoreReader) {
+            if (reader.name === "global") {
+                this.globalDataLoaded = true
+                console.log("Initialized I/O store")
             }
+            /*if (this.globalPackageStore.isInitialized)
+                this.globalPackageStore.value.onContainerMounted(reader)*/
         }
 
         this.emit("mounted:reader", reader)
@@ -732,25 +711,32 @@ export class FileProvider extends EventEmitter {
         if (!fs.existsSync(this.folder))
             throw new ParserException(`Path '${this.folder}' does not exist!`)
 
-        if (this.game >= Game.GAME_UE4(26) && !this.globalDataLoaded && this.folder.endsWith("Paks/")) {
-            const file = this.folder + "global"
-            if (fs.existsSync(file + ".utoc")) {
-                this.loadGlobalData(file)
-            }
-        }
-
         const dir = await fs.readdirSync(this.folder)
         for (const dirEntry of dir) {
             const path = this.folder + dirEntry
             if (path.endsWith(".pak")) {
                 try {
                     const reader = new PakFileReader(path, this.versions)
-                    if (!reader.isEncrypted()) {
-                        this.mount(reader)
-                    } else {
-                        this.unloadedPaks.push(reader)
-                        this.requiredKeys.push(reader.pakInfo.encryptionKeyGuid)
+                    reader.customEncryption = this.customEncryption
+                    if (reader.isEncrypted) {
+                        if (!this.requiredKeys.find(r => r.equals(reader.encryptionKeyGuid)))
+                            this.requiredKeys.push(reader.encryptionKeyGuid)
                     }
+                    this.unloadedPaks.push(reader)
+                } catch (e) {
+                    console.error(e)
+                }
+            } else if (path.endsWith(".utoc")) {
+                const _path = path.substring(0, path.lastIndexOf("."))
+                try {
+                    const reader = new FIoStoreReader(_path, this.versions)
+                    reader.customEncryption = this.customEncryption
+                    reader.initialize(new FIoStoreEnvironment(_path), this.keys, this.ioStoreTocReadOptions)
+                    if (reader.isEncrypted) {
+                        if (!this.requiredKeys.find(r => r.equals(reader.encryptionKeyGuid)))
+                            this.requiredKeys.push(reader.encryptionKeyGuid)
+                    }
+                    this.unloadedPaks.push(reader)
                 } catch (e) {
                     console.error(e)
                 }
@@ -765,25 +751,6 @@ export class FileProvider extends EventEmitter {
         }
 
         this.emit("ready")
-    }
-
-    /**
-     * Loads the global data
-     * @param {string} path Path to the global data file
-     * @returns {void}
-     * @protected
-     */
-    protected loadGlobalData(path: string) {
-        this.globalDataLoaded = true
-        try {
-            const ioStoreReader = new FIoStoreReader()
-            ioStoreReader.initialize(new FIoStoreEnvironment(path), this.keys, this.ioStoreTocReadOptions)
-            this.mountedIoStoreReaders.push(ioStoreReader)
-            console.log("Initialized I/O store")
-            this.emit("mounted:iostore", ioStoreReader)
-        } catch (e) {
-            console.error("Failed to mount I/O store global environment: '%s'", e.message || e)
-        }
     }
 
     /**

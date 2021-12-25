@@ -33,7 +33,7 @@ export class FNameMap {
      */
     loadGlobal(provider: FileProvider) {
         if (this.nameEntries.length)
-            throw new Error("Nameentries must be empty")
+            throw new Error("Name entries must be empty")
 
         const namesId = createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNames)
         const hashesId = createIoChunkId(0n, 0, EIoChunkType.LoaderGlobalNameHashes)
@@ -52,6 +52,15 @@ export class FNameMap {
     get length() {
         return this.nameEntries.length
     }
+
+    /**
+     * Loads name etnries
+     * @param {FArchive} Ar UE4 Reader
+     * @param {FMappedName_EType} nameMapType Map type
+     * @returns {void}
+     * @public
+     */
+    load(Ar: FArchive, nameMapType: FMappedName_EType)
 
     /**
      * Loads name entries
@@ -74,10 +83,15 @@ export class FNameMap {
     load(nameBuffer: FArchive, hashBuffer: FArchive, nameMapType: FMappedName_EType)
 
     /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
-    load(nameBuffer: any, hashBuffer: any, nameMapType: FMappedName_EType) {
+    load(nameBuffer: any, hashBuffer: any, nameMapType?: FMappedName_EType) {
         if (nameBuffer instanceof FArchive) {
-            this.nameEntries = loadNameBatch(nameBuffer, hashBuffer)
-            this.nameMapType = nameMapType
+            if (!(hashBuffer instanceof FArchive)) {
+                this.nameEntries = loadNameBatch(nameBuffer)
+                this.nameMapType = hashBuffer as any
+            } else {
+                this.nameEntries = loadNameBatch(nameBuffer, hashBuffer)
+                this.nameMapType = nameMapType
+            }
         } else {
             this.nameEntries = loadNameBatch(new FByteArchive(nameBuffer), new FByteArchive(hashBuffer))
             this.nameMapType = nameMapType

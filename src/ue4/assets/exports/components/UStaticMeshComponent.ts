@@ -65,7 +65,7 @@ export class UStaticMeshComponent extends UMeshComponent {
     public DistanceFieldSelfShadowBias: number = null
     public StreamingDistanceMultiplier: number = null
     //public List<FStaticMeshComponentLODInfo> LODData = null
-    @UProperty({skipPrevious: 1})
+    @UProperty({ skipPrevious: 1 })
     public StreamingTextureData: FStreamingTextureBuildInfo[] = null
     public LightmassSettings: FLightmassPrimitiveSettings = null
 }

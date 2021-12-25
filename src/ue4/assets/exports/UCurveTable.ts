@@ -123,7 +123,7 @@ export class FCurveTableRowHandle {
      * @type {UCurveTable}
      * @public
      */
-    @UProperty({name: "CurveTable"})
+    @UProperty({ name: "CurveTable" })
     public curveTable: UCurveTable = null
 
     /**
@@ -131,7 +131,7 @@ export class FCurveTableRowHandle {
      * @type {FName}
      * @public
      */
-    @UProperty({name: "RowName"})
+    @UProperty({ name: "RowName" })
     public rowName: FName = FName.NAME_None
 
     /**

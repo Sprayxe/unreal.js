@@ -319,7 +319,7 @@ export class FStaticMaterialLayersParameter extends FStaticParameterBase {
  */
 export class UMaterialInstance extends UMaterialInterface {
     public PhysMaterial: FPackageIndex /*PhysicalMaterial*/ = null
-    @UProperty({arrayDim: 8})
+    @UProperty({ arrayDim: 8 })
     public PhysicalMaterialMap: FPackageIndex[] /*PhysicalMaterial[]*/ = null
     public Parent: Lazy<UMaterialInterface> = null
     public bHasStaticPermutationResource: boolean = null

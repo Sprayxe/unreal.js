@@ -1,6 +1,21 @@
 import { StringBuilder } from "./StringBuilder";
 
 export class Utils {
+    static replaceAll(str: string, value1: string, value2: string) {
+        while (str.includes(value1))
+            str = str.replace(value1, value2)
+        return str
+    }
+
+    static bufferIsNotEmpty(buffer: Buffer): boolean {
+        const len = buffer.length
+        for (let i = 0; i < len; ++i) {
+            const byte = buffer[i]
+            if (byte !== 0) return false
+        }
+        return true
+    }
+
     static clamp(self: number, min: number, max: number) {
         return Math.min(Math.max(self, min), max)
     }

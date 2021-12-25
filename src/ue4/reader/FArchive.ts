@@ -58,7 +58,7 @@ export abstract class FArchive {
      * @type {boolean}
      * @public
      */
-    public isFilterEditorOnly = false
+    public isFilterEditorOnly = true
 
     /**
      * Whether to use little endian order

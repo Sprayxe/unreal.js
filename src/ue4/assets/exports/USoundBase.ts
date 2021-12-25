@@ -275,7 +275,7 @@ export class USoundBase extends UObject {
      * @type {FPackageIndex}
      * @public
      */
-    @UProperty({skipPrevious: 1, skipNext: 2})
+    @UProperty({ skipPrevious: 1, skipNext: 2 })
     public SourceEffectChain: FPackageIndex /*USoundEffectSourcePresetChain*/ = null
     //public List<FSoundSourceBusSendInfo> BusSends;
     //public List<FSoundSourceBusSendInfo> PreEffectBusSends;

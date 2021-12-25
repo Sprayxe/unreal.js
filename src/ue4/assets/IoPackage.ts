@@ -1,5 +1,5 @@
 import { IJson, Package } from "./Package";
-import { FPackageStore } from "../asyncloading2/FPackageStore";
+import { FPackageStore, FScriptObjectEntry } from "../asyncloading2/FPackageStore";
 import {
     EExportCommandType,
     FExportBundleEntry,
@@ -8,7 +8,8 @@ import {
     FMappedName_EType,
     FPackageObjectIndex,
     FPackageSummary,
-    FScriptObjectEntry
+    FZenPackageSummary,
+    FZenPackageVersioningInfo
 } from "../asyncloading2/AsyncLoading2";
 import { FNameMap } from "../asyncloading2/FNameMap";
 import { UObject } from "./exports/UObject";
@@ -28,6 +29,8 @@ import { Locres } from "../locres/Locres";
 import { Lazy } from "../../util/Lazy";
 import { Config } from "../../Config";
 import { VersionContainer } from "../versions/VersionContainer";
+import { FFilePackageStoreEntry } from "../io/IoContainerHeader";
+import { Game } from "../versions/Game";
 
 /**
  * UE4 I/O Package
@@ -49,18 +52,18 @@ export class IoPackage extends Package {
     globalPackageStore: FPackageStore
 
     /**
-     * Package Summary
-     * @type {FPackageSummary}
-     * @public
-     */
-    summary: FPackageSummary
-
-    /**
      * Name Map
      * @type {FNameMap}
      * @public
      */
     nameMap: FNameMap
+
+    /**
+     * Imported Export Hashes
+     * @type {Array<bigint>}
+     * @public
+     */
+    importedPublicExportHashes?: bigint[] = null
 
     /**
      * Import Map
@@ -91,13 +94,6 @@ export class IoPackage extends Package {
     exportBundleEntries: FExportBundleEntry[]
 
     /**
-     * Graph Data
-     * @type {Array<FImportedPackage>}
-     * @public
-     */
-    graphData: FImportedPackage[]
-
-    /**
      * Imported Packages
      * @type {Lazy<Array<IoPackage>>}
      * @public
@@ -122,12 +118,14 @@ export class IoPackage extends Package {
      * Creates an instance
      * @param {Buffer} uasset Uasset data of package
      * @param {bigint} packageId ID of package
+     * @param {FFilePackageStoreEntry} storeEntry Store entry
      * @param {FPackageStore} globalPackageStore Package store
      * @param {FileProvider} provider Instance of file provider
      * @param {VersionContainer} versions Version of package
      */
     constructor(uasset: Buffer,
                 packageId: bigint,
+                storeEntry: FFilePackageStoreEntry,
                 globalPackageStore: FPackageStore,
                 provider: FileProvider,
                 versions: VersionContainer = provider.versions
@@ -135,74 +133,119 @@ export class IoPackage extends Package {
         super("", provider, versions)
         this.packageId = packageId
         this.globalPackageStore = globalPackageStore
-        const Ar = new FByteArchive(uasset)
-        this.summary = new FPackageSummary(Ar)
+        const Ar = new FByteArchive(uasset, versions)
 
-        // Name map
-        this.nameMap = new FNameMap()
-        if (this.summary.nameMapNamesSize > 0) {
-            const nameMapNamesData = new FByteArchive(uasset.subarray(0, this.summary.nameMapNamesOffset + this.summary.nameMapNamesSize))
-            nameMapNamesData.pos = this.summary.nameMapNamesOffset
-            const nameMapHashesData = new FByteArchive(uasset.subarray(0, this.summary.nameMapHashesOffset + this.summary.nameMapHashesSize))
-            nameMapHashesData.pos = this.summary.nameMapHashesOffset
-            this.nameMap.load(nameMapNamesData, nameMapHashesData, FMappedName_EType.Package)
-        }
+        let allExportDataOffset: number
 
-        const diskPackageName = this.nameMap.getName(this.summary.name)
-        this.fileName = diskPackageName.text
-        this.packageFlags = this.summary.packageFlags
-        this.name = this.fileName
+        if (versions.game >= Game.GAME_UE5_BASE) {
+            const summary = new FZenPackageSummary(Ar)
+            if (summary.bHasVersioningInfo) {
+                const versioningInfo = new FZenPackageVersioningInfo(Ar)
+                if (!versions.explicitVer) {
+                    versions.ver = versioningInfo.packageVersion.value
+                    versions.customVersions = versioningInfo.customVersions
+                }
+            }
 
-        // Import map
-        Ar.pos = this.summary.importMapOffset
-        const importCount = (this.summary.exportMapOffset - this.summary.importMapOffset) / 8
-        this.importMap = new Array(importCount)
-        for (let i = 0; i < importCount; ++i) {
-            this.importMap[i] = new FPackageObjectIndex(Ar)
-        }
+            // Name map
+            this.nameMap = new FNameMap()
+            this.nameMap.load(Ar, FMappedName_EType.Package)
 
-        // Export map
-        const exportCount = (this.summary.exportBundlesOffset - this.summary.exportMapOffset) / 72
-        this.exportMap = new Array(exportCount)
-        for (let i = 0; i < exportCount; ++i) {
-            this.exportMap[i] = new FExportMapEntry(Ar)
-        }
-        this.exportsLazy = new Array<Lazy<UObject>>(exportCount)
+            const diskPackageName = this.nameMap.getName(summary.name)
+            this.fileName = diskPackageName.text
+            this.packageFlags = summary.packageFlags
+            this.name = this.fileName
 
-        // Export bundles
-        Ar.pos = this.summary.exportBundlesOffset
-        let remainingBundleEntryCount = (this.summary.graphDataOffset - this.summary.exportBundlesOffset) / 8
-        let foundBundlesCount = 0
-        const foundBundleHeaders = []
-        while (foundBundlesCount < remainingBundleEntryCount) {
-            // This location is occupied by header, so it is not a bundle entry
-            remainingBundleEntryCount--
-            const bundleHeader = new FExportBundleHeader(Ar)
-            foundBundlesCount += Math.floor(bundleHeader.entryCount)
-            foundBundleHeaders.push(bundleHeader)
-        }
-        if (foundBundlesCount !== remainingBundleEntryCount)
-            throw new Error(`foundBundlesCount (${foundBundlesCount}) !== remainingBundleEntryCount ${remainingBundleEntryCount}`)
+            // Imported public export hashes
+            Ar.pos = summary.importedPublicExportHashesOffset
+            const importedPublicExportHashesLen = (summary.importMapOffset - summary.importedPublicExportHashesOffset) / 8
+            this.importedPublicExportHashes = new Array(importedPublicExportHashesLen)
+            for (let i = 0; i < importedPublicExportHashesLen; ++i)
+                this.importedPublicExportHashes[i] = Ar.readInt64()
 
-        // Load export bundles into arrays
-        this.exportBundleHeaders = foundBundleHeaders
-        this.exportBundleEntries = new Array(foundBundlesCount)
-        for (let i = 0; i < foundBundlesCount; ++i)
-            this.exportBundleEntries[i] = new FExportBundleEntry(Ar)
+            // Import map
+            Ar.pos = summary.importMapOffset
+            const importCount = (summary.exportMapOffset - summary.importMapOffset) / 8
+            this.importMap = new Array(importCount)
+            for (let i = 0; i < importCount; ++i)
+                this.importMap[i] = new FPackageObjectIndex(Ar)
 
-        // Graph data
-        Ar.pos = this.summary.graphDataOffset
-        const graphDataLen = Ar.readInt32()
-        this.graphData = new Array(graphDataLen)
-        for (let i = 0; i < graphDataLen; ++i) {
-            this.graphData[i] = new FImportedPackage(Ar)
+            // Export map
+            Ar.pos = summary.exportMapOffset
+            const exportCount = storeEntry.exportCount //(summary.exportBundleEntriesOffset - summary.exportMapOffset) / FExportMapEntry.SIZE
+            this.exportMap = new Array(exportCount)
+            for (let i = 0; i < exportCount; ++i)
+                this.exportMap[i] = new FExportMapEntry(Ar)
+            this.exportsLazy = new Array(exportCount)
+
+            // Export bundle entries
+            Ar.pos = summary.exportBundleEntriesOffset
+            const exportBundleEntriesLen = exportCount * 2
+            this.exportBundleEntries = new Array(exportBundleEntriesLen)
+            for (let i = 0; i < exportBundleEntriesLen; ++i)
+                this.exportBundleEntries[i] = new FExportBundleEntry(Ar)
+
+            // Export bundle headers
+            Ar.pos = summary.graphDataOffset
+            const exportBundleHeadersLen = storeEntry.exportBundleCount
+            this.exportBundleHeaders = new Array(exportBundleHeadersLen)
+            for (let i = 0; i < exportBundleHeadersLen; ++i)
+                this.exportBundleHeaders[i] = new FExportBundleHeader(Ar)
+
+            allExportDataOffset = summary.headerSize
+        } else {
+            const summary = new FPackageSummary(Ar)
+
+            // Name map
+            this.nameMap = new FNameMap()
+            if (summary.nameMapNamesSize > 0) {
+                const nameMapNamesData = new FByteArchive(uasset.subarray(0, summary.nameMapNamesOffset + summary.nameMapNamesSize))
+                nameMapNamesData.pos = summary.nameMapNamesOffset
+                const nameMapHashesData = new FByteArchive(uasset.subarray(0, summary.nameMapHashesOffset + summary.nameMapHashesSize))
+                nameMapHashesData.pos = summary.nameMapHashesOffset
+                this.nameMap.load(nameMapNamesData, nameMapHashesData, FMappedName_EType.Package)
+            }
+
+            const diskPackageName = this.nameMap.getName(summary.name)
+            this.fileName = diskPackageName.text
+            this.packageFlags = summary.packageFlags
+            this.name = this.fileName
+
+            // Import map
+            Ar.pos = summary.importMapOffset
+            const importCount = (summary.exportMapOffset - summary.importMapOffset) / 8
+            this.importMap = new Array(importCount)
+            for (let i = 0; i < importCount; ++i)
+                this.importMap[i] = new FPackageObjectIndex(Ar)
+
+            // Export map
+            Ar.pos = summary.exportMapOffset
+            const exportCount = storeEntry.exportCount //(summary.exportBundlesOffset - summary.exportMapOffset) / FExportMapEntry.SIZE
+            this.exportMap = new Array(exportCount)
+            for (let i = 0; i < exportCount; ++i)
+                this.exportMap[i] = new FExportMapEntry(Ar)
+            this.exportsLazy = new Array(exportCount)
+
+            // Export bundles
+            Ar.pos = summary.exportBundlesOffset
+            const exportBundleHeadersLen = storeEntry.exportBundleCount
+            this.exportBundleHeaders = new Array(exportBundleHeadersLen)
+            for (let i = 0; i < exportBundleHeadersLen; ++i)
+                this.exportBundleHeaders[i] = new FExportBundleHeader(Ar)
+
+            const exportBundleEntriesLen = exportCount * 2
+            this.exportBundleEntries = new Array(exportBundleEntriesLen)
+            for (let i = 0; i < exportBundleEntriesLen; ++i)
+                this.exportBundleEntries[i] = new FExportBundleEntry(Ar)
+
+            allExportDataOffset = summary.graphDataOffset + summary.graphDataSize
         }
 
         // Preload dependencies
-        this.importedPackages = new Lazy<IoPackage[]>(() => this.graphData.map(it => provider.loadGameFile(it.importedPackageId)))
+        const importedPackageIds = storeEntry.importedPackages
+        this.importedPackages = new Lazy<IoPackage[]>(() => importedPackageIds.map(it => provider.loadGameFile(it)))
 
         // Populate lazy exports
-        const allExportDataOffset = this.summary.graphDataOffset + this.summary.graphDataSize
         let currentExportDataOffset = allExportDataOffset
         for (const exportBundle of this.exportBundleHeaders) {
             for (let i = 0; i < exportBundle.entryCount; ++i) {
@@ -264,7 +307,7 @@ export class IoPackage extends Package {
         if (index.isExport()) {
             return new ResolvedExportObject(index.toExport().toInt(), this)
         } else if (index.isScriptImport()) {
-            const ent = this.globalPackageStore.scriptObjectEntriesMap.get(index)
+            const ent = this.globalPackageStore.scriptObjectEntries.get(index)
             return ent ? new ResolvedScriptObject(ent, this) : null
         } else if (index.isPackageImport()) {
             for (const pkg of this.importedPackages.value) {

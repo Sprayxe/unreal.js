@@ -19,7 +19,7 @@ export class OodleDownloader {
      * @static
      */
     private static async lzmaGet(url: string): Promise<Buffer> {
-        return lzma.decompress((await axios.get(url, {responseType: "arraybuffer"})).data)
+        return lzma.decompress((await axios.get(url, { responseType: "arraybuffer" })).data)
     }
 
     /**

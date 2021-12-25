@@ -5,11 +5,11 @@ import { FArchiveWriter } from "../../../writer/FArchiveWriter";
 export class FMeshUVChannelInfo {
     private static readonly TEXSTREAM_MAX_NUM_UVCHANNELS = 4
 
-    @UProperty({name: "bInitialized"})
+    @UProperty({ name: "bInitialized" })
     public initialized: boolean = false
-    @UProperty({name: "bOverrideDensities"})
+    @UProperty({ name: "bOverrideDensities" })
     public overrideDensities: boolean = false
-    @UProperty({name: "LocalUVDensities", arrayDim: FMeshUVChannelInfo.TEXSTREAM_MAX_NUM_UVCHANNELS})
+    @UProperty({ name: "LocalUVDensities", arrayDim: FMeshUVChannelInfo.TEXSTREAM_MAX_NUM_UVCHANNELS })
     public localUVDensities: number[] = []
 
     constructor(Ar?: FArchive) {

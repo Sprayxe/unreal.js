@@ -138,7 +138,7 @@ export class WwiseReader {
             }),
             hierarchy: this.hierarchy.map(h => h.toJson()),
             idToString: this.idToString.map((v, k) => {
-                return {key: k, value: v}
+                return { key: k, value: v }
             }),
             platform: this.platform
         }
