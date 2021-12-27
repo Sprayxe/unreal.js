@@ -1,4 +1,4 @@
-import { IJson, Package } from "./Package";
+import { IJson, Package, ResolvedLoadedObject, ResolvedObject } from "./Package";
 import { FPackageStore, FScriptObjectEntry } from "../asyncloading2/FPackageStore";
 import {
     EExportCommandType,
@@ -275,7 +275,7 @@ export class IoPackage extends Package {
                         try {
                             obj.deserialize(Ar, validPos)
                             if (validPos !== Ar.pos) {
-                                console.warn(`Did not read ${obj.exportType} correctly, ${validPos - Ar.pos} bytes remaining (${obj.getPathName()})`)
+                                console.warn(`Did not read ${obj.exportType} correctly, ${validPos - Ar.pos} bytes remaining (${obj.getPathName0()})`)
                             }
                         } catch (e) {
                             if (e instanceof MissingSchemaException && !Config.GSuppressMissingSchemaErrors) {
@@ -310,11 +310,29 @@ export class IoPackage extends Package {
             const ent = this.globalPackageStore.scriptObjectEntries.get(index)
             return ent ? new ResolvedScriptObject(ent, this) : null
         } else if (index.isPackageImport()) {
-            for (const pkg of this.importedPackages.value) {
-                for (const exportIndex in pkg?.exportMap) {
-                    const exportMapEntry = pkg?.exportMap[exportIndex]
-                    if (exportMapEntry.globalImportIndex?.equals(index)) {
-                        return new ResolvedExportObject(parseInt(exportIndex), pkg)
+            const localProvider = this.provider
+            if (localProvider != null) {
+                const localImportedPublicExportHashes = this.importedPublicExportHashes
+                if (localImportedPublicExportHashes != null) {
+                    const packageImportRef = index.toPackageImportRef()
+                    const pkg = this.importedPackages.value[packageImportRef.importedPackageIndex]
+                    if (pkg != null) {
+                        const pkgExpLen = pkg.exportMap.length
+                        for (let exportIndex = 0; exportIndex < pkgExpLen; ++exportIndex) {
+                            const exportMapEntry = pkg.exportMap[exportIndex]
+                            if (exportMapEntry.publicExportHash === localImportedPublicExportHashes[packageImportRef.importedPublicExportHashIndex]) {
+                                return new ResolvedExportObject(exportIndex, pkg)
+                            }
+                        }
+                    }
+                } else {
+                    for (const pkg of this.importedPackages.value) {
+                        for (const exportIndex in pkg?.exportMap) {
+                            const exportMapEntry = pkg?.exportMap[exportIndex]
+                            if (exportMapEntry.globalImportIndex?.equals(index)) {
+                                return new ResolvedExportObject(parseInt(exportIndex), pkg)
+                            }
+                        }
                     }
                 }
             }
@@ -435,29 +453,7 @@ export class FArc {
     }
 }
 
-export abstract class ResolvedObject {
-    pkg: IoPackage
-
-    constructor(pkg: IoPackage) {
-        this.pkg = pkg
-    }
-
-    abstract get name(): FName
-
-    getOuter(): ResolvedObject {
-        return null
-    }
-
-    getSuper(): ResolvedObject {
-        return null
-    }
-
-    getObject(): Lazy<UObject> {
-        return null
-    }
-}
-
-export class ResolvedExportObject extends ResolvedObject {
+class ResolvedExportObject extends ResolvedObject {
     exportIndex: number
     exportMapEntry: FExportMapEntry
     exportObject: Lazy<UObject>
@@ -470,15 +466,19 @@ export class ResolvedExportObject extends ResolvedObject {
     }
 
     get name() {
-        return this.pkg.nameMap.getName(this.exportMapEntry.objectName)
+        return (this.pkg as IoPackage).nameMap.getName(this.exportMapEntry.objectName)
     }
 
     getOuter() {
-        return this.pkg.resolveObjectIndex(this.exportMapEntry.outerIndex)
+        return (this.pkg as IoPackage).resolveObjectIndex(this.exportMapEntry.outerIndex) || new ResolvedLoadedObject(this.pkg)
+    }
+
+    getClazz() {
+        return (this.pkg as IoPackage).resolveObjectIndex(this.exportMapEntry.classIndex)
     }
 
     getSuper() {
-        return this.pkg.resolveObjectIndex(this.exportMapEntry.superIndex)
+        return (this.pkg as IoPackage).resolveObjectIndex(this.exportMapEntry.superIndex)
     }
 
     getObject() {
@@ -486,7 +486,7 @@ export class ResolvedExportObject extends ResolvedObject {
     }
 }
 
-export class ResolvedScriptObject extends ResolvedObject {
+class ResolvedScriptObject extends ResolvedObject {
     scriptImport: FScriptObjectEntry
 
     constructor(scriptImport: FScriptObjectEntry, pkg: IoPackage) {
@@ -499,7 +499,7 @@ export class ResolvedScriptObject extends ResolvedObject {
     }
 
     getOuter() {
-        return this.pkg.resolveObjectIndex(this.scriptImport.outerIndex)
+        return (this.pkg as IoPackage).resolveObjectIndex(this.scriptImport.outerIndex)
     }
 
     getObject(): Lazy<UObject> {

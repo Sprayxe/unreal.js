@@ -6,6 +6,16 @@ import { Game } from "../versions/Game";
 import { FPackageFileVersion } from "../versions/ObjectVersion";
 import { FCustomVersion } from "../objects/core/serialization/CustomVersion";
 
+export class FPackageImportReference {
+    public importedPackageIndex: number
+    public importedPublicExportHashIndex: number
+
+    public constructor(importedPackageIndex: number, importedPublicExportHashIndex: number) {
+        this.importedPackageIndex = importedPackageIndex
+        this.importedPublicExportHashIndex = importedPublicExportHashIndex
+    }
+}
+
 export const INVALID_INDEX = ~0
 export const INDEX_BITS = 30
 export const INDEX_MASK = (1 << INDEX_BITS) - 1
@@ -305,6 +315,17 @@ export class FPackageObjectIndex {
         if (!this.isExport())
             throw new Error("Cannot cast an import to export.")
         return this.typeAndId
+    }
+
+    /**
+     * Turns object into package import reference
+     * @returns {FPackageImportReference} Object
+     * @public
+     */
+    toPackageImportRef(): FPackageImportReference {
+        const importedPackageIndex = this.typeAndId.and(INDEX_MASK).shiftRight(32).toUnsigned().toInt()
+        const exportHash = this.typeAndId.toUnsigned().toInt()
+        return new FPackageImportReference(importedPackageIndex, exportHash)
     }
 
     /**

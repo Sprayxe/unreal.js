@@ -18,6 +18,7 @@ import { ParserException } from "../../../exceptions/Exceptions";
 import { FExportArchive } from "../reader/FExportArchive";
 import { UnrealMap } from "../../../util/UnrealMap";
 import { Locres } from "../../locres/Locres";
+import { ResolvedObject } from "../Package";
 
 /**
  * Represents a property
@@ -1029,11 +1030,27 @@ export class ObjectProperty extends FProperty {
 
     /**
      * Turns this to a json value
-     * @returns {string}
+     * @returns {any}
      * @public
      */
-    toJsonValue(): string {
-        return this.index.name?.text
+    toJsonValue(): object {
+        const value = this.index.resolvedObject
+        if (value == null) return null
+        let top = value
+        let outerMost: ResolvedObject
+        while (true) {
+            let outer = top?.getOuter()
+            if (outer == null) {
+                outerMost = top
+                break
+            }
+            top = outer
+        }
+        const outerMostName = outerMost.name?.text;
+        return {
+            objectName: value.getFullName0(false) || null,
+            objectPath: value.exportIndex !== -1 ? `${outerMostName}.${value.exportIndex}` : outerMostName
+        }
     }
 }
 

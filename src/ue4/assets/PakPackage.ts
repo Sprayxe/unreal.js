@@ -1,6 +1,6 @@
 import { FileProvider } from "../../fileprovider/FileProvider";
-import { FNameEntry } from "../objects/uobject/FName";
-import { IJson, Package } from "./Package";
+import { FName, FNameEntry } from "../objects/uobject/FName";
+import { IJson, Package, ResolvedLoadedObject, ResolvedObject } from "./Package";
 import { FPackageFileSummary } from "../objects/uobject/PackageFileSummary";
 import { FObjectExport, FObjectImport, FPackageIndex } from "../objects/uobject/ObjectResource";
 import { FAssetArchive } from "./reader/FAssetArchive";
@@ -17,6 +17,8 @@ import { sum } from "lodash"
 import { Lazy } from "../../util/Lazy";
 import { Config } from "../../Config";
 import { VersionContainer } from "../versions/VersionContainer";
+import { UEnum } from "./exports/UEnum";
+import { Pair } from "../../util/Pair";
 
 /**
  * UE4 Pak Package
@@ -279,6 +281,61 @@ export class PakPackage extends Package {
         return exp?.exportObject
     }
 
+    public findObjectMinimal(index?: FPackageIndex): ResolvedObject | null {
+        if (index == null || index.isNull() == null)
+            return null
+        if (index.isImport())
+            return this.resolveImport(index)
+        return new ResolvedExportObject(index.toExport(), this)
+    }
+
+    public resolveImport(importIndex: FPackageIndex): ResolvedObject {
+        const imp = this.importMap[importIndex.toImport()]
+        let outerMostIndex = importIndex
+        let outerMostImport: FObjectImport
+        while (true) {
+            outerMostImport = this.importMap[outerMostIndex.toImport()]
+            if (outerMostImport.outerIndex.isNull())
+                break
+            outerMostIndex = outerMostImport.outerIndex
+        }
+
+        outerMostImport = this.importMap[outerMostIndex.toImport()]
+        // We don't support loading script packages, so just return a fallback
+        if (outerMostImport.objectName.text.startsWith("/Script/")) {
+            return new ResolvedImportObject(imp, this)
+        }
+
+        const importPackage = this.provider?.loadGameFile(outerMostImport.objectName.text) as PakPackage
+        if (importPackage == null) {
+            console.warn("Missing native package (%s) for import of %s in %s.", outerMostImport.objectName, imp.objectName, this.name)
+            return new ResolvedImportObject(imp, this)
+        }
+
+        let outer: string = null
+        if (outerMostIndex != imp.outerIndex && imp.outerIndex.isImport()) {
+            //var outerImport = importMap[import.outerIndex.toImport()]
+            outer = this.resolveImport(imp.outerIndex).getPathName0()
+            /*if (outer == null) {
+                console.warn("Missing outer for import of ({}): {} in {} was not found, but the package exists.", name, outerImport.objectName, importPackage.getFullName())
+                return ResolvedImportObject(import, this)
+            }*/
+        }
+
+        const impPkgLen = importPackage.exportMap.length
+        for (let i = 0; i < impPkgLen; ++i) {
+            const exp = importPackage.exportMap[i]
+            if (exp.objectName != exp.objectName)
+            continue
+            const thisOuter = importPackage.findObjectMinimal(exp.outerIndex)
+            if (thisOuter?.getPathName0() == outer)
+                return new ResolvedExportObject(i, importPackage)
+        }
+
+        console.warn("Missing import of (%s): %s in %s was not found, but the package exists.", this.name, imp.objectName, importPackage.getFullName0())
+        return new ResolvedImportObject(imp, this)
+    }
+
     /**
      * Gets an import object
      * @param {FPackageIndex} imp Import to find
@@ -433,5 +490,77 @@ export class PakPackage extends Package {
         obj.importMap = this.importMap
         obj.exportMap = this.exportMap
         return obj
+    }
+}
+
+class ResolvedExportObject extends ResolvedObject {
+    public export: FObjectExport
+
+    public constructor(exportIndex: number, pkg: PakPackage) {
+        super(pkg, exportIndex)
+        this.export = pkg.exportMap[exportIndex]
+    }
+
+    public get name(): FName {
+        return this.export.objectName
+    }
+
+    public getOuter(): ResolvedObject {
+        return this.pkg.findObjectMinimal(this.export.outerIndex) || new ResolvedLoadedObject(this.pkg)
+    }
+
+    public getClazz(): ResolvedObject {
+        return this.pkg.findObjectMinimal(this.export.classIndex)
+    }
+
+    public getSuper(): ResolvedObject {
+        return this.pkg.findObjectMinimal(this.export.superIndex)
+    }
+
+    public getObject(): Lazy<UObject> {
+        return this.export.exportObject
+    }
+}
+
+/** Fallback if we cannot resolve the export in another package */
+class ResolvedImportObject extends ResolvedObject {
+    public _import: FObjectImport
+
+    public constructor(_import: FObjectImport, pkg: PakPackage) {
+        super(pkg)
+        this._import = _import
+    }
+
+    public get name(): FName {
+        return this._import.objectName
+    }
+
+    public getOuter(): ResolvedObject {
+        return this.pkg.findObjectMinimal(this._import.outerIndex)
+    }
+
+    public getClazz(): ResolvedObject {
+        return new ResolvedLoadedObject(new UScriptStruct(this._import.className))
+    }
+
+    public getObject(): Lazy<UObject> {
+        return new Lazy<UObject>(() => {
+            const n = this._import.className.text
+            const _n = this._import.objectName
+            if (n === "Class" || n === "ScripStruct")
+                return this.pkg.provider?.mappingsProvider?.getStruct(_n)
+            if (n === "Enum") {
+                const enumValues = this.pkg.provider?.mappingsProvider?.getEnum(_n)
+                if (enumValues != null) {
+                    const enm = new UEnum()
+                    enm.name = _n.text
+                    enm.names = new Array(enumValues.length)
+                    for (let i = 0; i < enumValues.length; ++i) {
+                        enm.names[i] = new Pair<FName, number>(FName.dummy(`${_n}::${enumValues[i]}`), i)
+                    }
+                    return enm
+                } else return null
+            }
+        })
     }
 }

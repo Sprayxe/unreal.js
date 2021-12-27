@@ -9,7 +9,6 @@ import { FName } from "../../objects/uobject/FName";
 import { ParserException } from "../../../exceptions/Exceptions";
 import { deserializeUnversionedProperties } from "../../objects/uobject/serialization/UnversionedPropertySerialization";
 import { Locres } from "../../locres/Locres";
-import { StringBuilder } from "../../../util/StringBuilder";
 import { camelCase } from "lodash"
 import { Lazy } from "../../../util/Lazy";
 import { EObjectFlags } from "../../objects/uobject/EObjectFlags";
@@ -227,81 +226,41 @@ export class UObject implements IPropertyHolder {
         return (this.flags & flagsToCheck) !== 0
     }
 
-    /**
-     * Gets full name
-     * @param {UObject} stopOuter Outer object
-     * @param {boolean} includeClassPackage Whether to include class
-     * @returns {string} Full name
-     * @public
-     */
-    getFullName(stopOuter: UObject, includeClassPackage: boolean)
-
-    /**
-     * Gets full name with an existing string builder
-     * @param {UObject} stopOuter Outer object
-     * @param {StringBuilder} resultString String builder to use
-     * @param {boolean} includeClassPackage Whether to include class
-     * @returns {string} Full name
-     * @public
-     */
-    getFullName(stopOuter: UObject, resultString: StringBuilder, includeClassPackage: boolean)
-
-    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
-    getFullName(x?: any, y?: any, z?: any) {
-        if (typeof y === "boolean") {
-            const result = new StringBuilder(128)
-            this.getFullName(x, result, y)
-            return result.toString()
-        } else {
-            if (z) {
-                y.append(this.clazz?.getPathName())
-            } else {
-                y.append(this.clazz?.name)
-            }
-            y.append(" ")
-            return this.getPathName(x, y)
-        }
+    public getFullName0(stopOuter: UObject = null, includeClassPackage: boolean = false): string {
+        return this.getFullName1("", stopOuter, includeClassPackage)
     }
 
-    /**
-     * Gets path name
-     * @param {UObject} stopouter Outer object
-     * @returns {string} Path name
-     * @public
-     */
-    getPathName(stopouter?: UObject)
-
-    /**
-     * Gets path name with existing string builder instance
-     * @param {UObject} stopouter Outer object
-     * @param {StringBuilder} resultString String builder to use
-     * @returns {string} Path name
-     * @public
-     */
-    getPathName(stopouter: UObject, resultString: StringBuilder)
-
-    /** DO NOT USE THIS METHOD, THIS IS FOR THE LIBRARY */
-    getPathName(x?: any, y?: any) {
-        if (!y) {
-            const result = new StringBuilder()
-            this.getPathName(x, result)
-            return result.toString()
+    public getFullName1(resultString: string, stopOuter: UObject = null, includeClassPackage: boolean = false): string {
+        if (includeClassPackage) {
+            resultString += this.clazz?.getPathName() || "???"
         } else {
-            if (this !== x) {
-                const objOuter = this.outer
-                if (objOuter && objOuter !== x) {
-                    objOuter.getPathName(x, y)
-                    if (Object.getPrototypeOf(objOuter.outer)?.constructor?.name === "Package") {
-                        y.append(":")
-                    } else {
-                        y.append(".")
-                    }
-                }
-                y.append(this.name)
-            } else {
-                y.append("None")
-            }
+            resultString += this.clazz?.name || "???"
         }
+        resultString += " "
+        return this.getPathName1(resultString, stopOuter)
+    }
+
+    public getPathName0(stopOuter: UObject = null): string {
+        return this.getPathName1("", stopOuter)
+    }
+
+    public getPathName1(resultString: string, stopOuter: UObject = null): string {
+        if (this != stopOuter) {
+            const objOuter = this.outer
+            if (objOuter != null && objOuter != stopOuter) {
+                objOuter.getPathName1(resultString, stopOuter)
+                // SUBOBJECT_DELIMITER_CHAR is used to indicate that this object's outer is not a UPackage
+                if (objOuter.outer instanceof Package) {
+                    resultString += ":"
+                } else {
+                    resultString += "."
+                }
+            }
+            resultString += this.name
+        } else {
+            resultString += "None"
+        }
+        return resultString
     }
 
     /**

@@ -86,13 +86,13 @@ export class UCurveTable extends UObject {
      */
     findCurve(rowName: FName, warnIfNotFound: boolean = true): FRealCurve {
         if (rowName.equals(FName.NAME_None)) {
-            if (warnIfNotFound) console.warn(`UCurveTable::FindCurve : NAME_None is invalid row name for CurveTable '${this.getPathName()}'.`)
+            if (warnIfNotFound) console.warn(`UCurveTable::FindCurve : NAME_None is invalid row name for CurveTable '${this.getPathName0()}'.`)
             return null
         }
 
         const foundCurve = this.rowMap.get(rowName)
         if (foundCurve == null) {
-            if (warnIfNotFound) console.warn(`UCurveTable::FindCurve : Row '${rowName.text}' not found in CurveTable '${this.getPathName()}'.`)
+            if (warnIfNotFound) console.warn(`UCurveTable::FindCurve : Row '${rowName.text}' not found in CurveTable '${this.getPathName0()}'.`)
             return null
         }
 

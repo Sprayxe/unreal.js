@@ -1,4 +1,4 @@
-import { Package } from "../../assets/Package";
+import { Package, ResolvedObject } from "../../assets/Package";
 import { FName } from "./FName";
 import { PakPackage } from "../../assets/PakPackage";
 import { FAssetArchive } from "../../assets/reader/FAssetArchive";
@@ -49,6 +49,10 @@ export class FPackageIndex {
             name = n?.name
         }
         return name || FName.NAME_None
+    }
+
+    public get resolvedObject(): ResolvedObject {
+        return this.owner?.findObjectMinimal(this)
     }
 
     /**

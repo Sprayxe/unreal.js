@@ -6,6 +6,7 @@ import { FPackageIndex } from "../objects/uobject/ObjectResource";
 import { Locres } from "../locres/Locres";
 import { Lazy } from "../../util/Lazy";
 import { VersionContainer } from "../versions/VersionContainer";
+import { FName } from "../objects/uobject/FName";
 
 /**
  * UE4 Package
@@ -160,6 +161,8 @@ export abstract class Package extends UObject {
      */
     abstract findObjectByName(objectName: string, className?: string): Lazy<UObject>
 
+    abstract findObjectMinimal(index?: FPackageIndex): ResolvedObject | null
+
     /**
      * Turns this package to json
      * @param {?Locres} locres Locres to use
@@ -177,4 +180,92 @@ export interface IJson {
     type: string,
     name: string,
     properties: any
+}
+
+
+/**
+ * Resolved Object
+ */
+export abstract class ResolvedObject {
+    public pkg: Package
+    public exportIndex: number
+
+    protected constructor(pkg: Package, exportIndex: number = -1) {
+        this.pkg = pkg
+        this.exportIndex = exportIndex
+    }
+
+    public abstract get name(): FName
+
+    public getOuter(): ResolvedObject {
+        return null
+    }
+
+    public getClazz(): ResolvedObject {
+        return null
+    }
+
+    public getSuper(): ResolvedObject {
+        return null
+    }
+
+    public getObject(): Lazy<UObject> {
+        return null
+    }
+
+    public getFullName0(includePackageName: boolean = true, includeClassPackage: boolean = false): string {
+        return this.getFullName1(includePackageName, "", includeClassPackage)
+    }
+
+    public getFullName1(includePackageName: boolean, resultString: string, includeClassPackage: boolean): string {
+        if (includeClassPackage)
+            resultString += this.getClazz()?.getPathName0()
+        else resultString += this.getClazz()?.name
+        resultString += " "
+        return this.getPathName1(includePackageName, resultString)
+    }
+
+    public getPathName0(includePackageName: boolean = true): string {
+        return this.getPathName1(includePackageName, "")
+    }
+
+    public getPathName1(includePackageName: boolean, resultString: string): string {
+        const objOuter = this.getOuter()
+        if (objOuter != null) {
+            const objOuterOuter = objOuter.getOuter()
+            if (objOuterOuter != null || includePackageName) {
+                resultString = objOuter.getPathName1(includePackageName, resultString)
+                // SUBOBJECT_DELIMITER_CHAR is used to indicate that this object's outer is not a UPackage
+                resultString += objOuterOuter != null && objOuterOuter.getOuter() == null ? ":" : "."
+            }
+        }
+        return resultString + this.name
+    }
+}
+
+export class ResolvedLoadedObject extends ResolvedObject {
+    public obj: UObject
+
+    public constructor(obj: UObject) {
+        super(obj instanceof Package ? obj : obj.owner)
+        this.obj = obj
+    }
+
+    public get name(): FName {
+        return FName.dummy(this.obj.name)
+    }
+
+    public getOuter(): ResolvedObject {
+        const it = this.obj.outer
+        return it != null ? new ResolvedLoadedObject(it) : null
+    }
+
+    public getClazz(): ResolvedObject {
+        const it = this.obj.clazz
+        return it != null ? new ResolvedLoadedObject(it) : null
+    }
+
+    public getObject(): Lazy<UObject> {
+        return new Lazy<UObject>(() => this.obj)
+    }
 }
