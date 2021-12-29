@@ -16,16 +16,16 @@ export class FPackageImportReference {
     }
 }
 
-export const INVALID_INDEX = ~0
-export const INDEX_BITS = 30
-export const INDEX_MASK = (1 << INDEX_BITS) - 1
-export const TYPE_MASK = ~INDEX_MASK
-export const TYPE_SHIFT = INDEX_BITS
-
 /**
  * FMappedName
  */
 export class FMappedName {
+    public static readonly INVALID_INDEX = ~0
+    public static readonly INDEX_BITS = 30
+    public static readonly INDEX_MASK = (1 << FMappedName.INDEX_BITS) - 1
+    public static readonly TYPE_MASK = ~FMappedName.INDEX_MASK
+    public static readonly TYPE_SHIFT = FMappedName.INDEX_BITS
+
     /**
      * Creates an instance
      * @param {number} index Index to use
@@ -39,7 +39,7 @@ export class FMappedName {
         if (index > 2147483647)
             throw new Error("Bad name index")
         const mappedName = new FMappedName()
-        mappedName.index = (type << TYPE_SHIFT) | index
+        mappedName.index = (type << FMappedName.TYPE_SHIFT) | index
         mappedName.num = num
         return mappedName
     }
@@ -73,14 +73,14 @@ export class FMappedName {
      * @type {number}
      * @public
      */
-    index: number = INVALID_INDEX
+    index: number = FMappedName.INVALID_INDEX
 
     /**
      * Num
      * @type {number}
      * @public
      */
-    num: number = INVALID_INDEX
+    num: number = FMappedName.INVALID_INDEX
 
     /**
      * Creates an instance using an UE4 Reader
@@ -101,7 +101,7 @@ export class FMappedName {
      * @public
      */
     isValid() {
-        return this.index !== INVALID_INDEX && this.num !== INVALID_INDEX
+        return this.index !== FMappedName.INVALID_INDEX && this.num !== FMappedName.INVALID_INDEX
     }
 
     /**
@@ -110,7 +110,7 @@ export class FMappedName {
      * @public
      */
     getType() {
-        return (this.index & TYPE_MASK) >>> TYPE_SHIFT
+        return (this.index & FMappedName.TYPE_MASK) >>> FMappedName.TYPE_SHIFT
     }
 
     /**
@@ -119,7 +119,7 @@ export class FMappedName {
      * @public
      */
     isGlobal() {
-        return ((this.index & TYPE_MASK) >> TYPE_SHIFT) !== 0
+        return ((this.index & FMappedName.TYPE_MASK) >> FMappedName.TYPE_SHIFT) !== 0
     }
 
     /**
@@ -128,7 +128,7 @@ export class FMappedName {
      * @public
      */
     getIndex() {
-        return this.index & INDEX_MASK
+        return this.index & FMappedName.INDEX_MASK
     }
 
     /**
@@ -158,21 +158,21 @@ export enum FMappedName_EType {
     Global
 }
 
-export const _INDEX_BITS = 62
-export const _INDEX_MASK = (1 << _INDEX_BITS) - 1
-export const _TYPE_SHIFT = _INDEX_BITS
-export const INVALID = Long.fromNumber(~0)
-
 /**
  * FPackageObjectIndex
  */
 export class FPackageObjectIndex {
+    public static readonly INDEX_BITS: Long = Long.fromNumber(62, true)
+    public static readonly INDEX_MASK: Long = Long.UONE.shl(FPackageObjectIndex.INDEX_BITS).sub(Long.UONE)
+    public static readonly TYPE_SHIFT: Long = FPackageObjectIndex.INDEX_BITS
+    public static readonly INVALID: Long = Long.UZERO.not()
+
     /**
      * typeAndId
-     * @type {number}
+     * @type {Long}
      * @private
      */
-    private readonly typeAndId = INVALID
+    private readonly typeAndId: Long = FPackageObjectIndex.INVALID
 
     /**
      * Creates an empty instance
@@ -188,7 +188,7 @@ export class FPackageObjectIndex {
      * @constructor
      * @public
      */
-    constructor(type: FPackageObjectIndex_EType, id: Long.Long)
+    constructor(type: FPackageObjectIndex_EType, id: Long)
 
     /**
      * Creates an instance using an UE4 Reader
@@ -202,9 +202,9 @@ export class FPackageObjectIndex {
     constructor(x?: any, y?: any) {
         if (x) {
             if (x instanceof FArchive) {
-                this.typeAndId = Long.fromString(x.readUInt64().toString())
+                this.typeAndId = Long.fromString(x.readUInt64().toString(), true)
             } else {
-                this.typeAndId = Long.fromNumber(x << TYPE_SHIFT).or(y)
+                this.typeAndId = Long.fromNumber(x, true).shl(FPackageObjectIndex.TYPE_SHIFT).or(y)
             }
         }
     }
@@ -216,7 +216,7 @@ export class FPackageObjectIndex {
      * @public
      * @static
      */
-    static generateImportHashFromObjectPath(objectPath: string): Long.Long {
+    static generateImportHashFromObjectPath(objectPath: string): Long {
         const fullImportPath = objectPath.split("")
         fullImportPath.forEach((c, i) => {
             if (c === "." || c === ":") {
@@ -227,7 +227,7 @@ export class FPackageObjectIndex {
         })
         const data = Buffer.from(fullImportPath.join(""), "utf16le")
         let hash = CityHash.cityHash64(data, 0, data.length).toUnsigned()
-        hash = hash.and(Long.fromNumber(3).shiftLeft(62))
+        hash = hash.and(Long.fromNumber(3).shl(62).not())
         return hash
     }
 
@@ -238,7 +238,7 @@ export class FPackageObjectIndex {
      * @public
      */
     static fromExportIndex(index: number) {
-        return new FPackageObjectIndex(FPackageObjectIndex_EType.Export, Long.fromNumber(index))
+        return new FPackageObjectIndex(FPackageObjectIndex_EType.Export, Long.fromNumber(index, true))
     }
 
     /**
@@ -267,7 +267,7 @@ export class FPackageObjectIndex {
      * @public
      */
     isNull() {
-        return this.typeAndId.equals(INVALID)
+        return this.typeAndId.equals(FPackageObjectIndex.INVALID)
     }
 
     /**
@@ -276,7 +276,9 @@ export class FPackageObjectIndex {
      * @public
      */
     isExport() {
-        return this.typeAndId.shru(_TYPE_SHIFT).toInt() === FPackageObjectIndex_EType.Export
+        return this.typeAndId
+            .shru(FPackageObjectIndex.TYPE_SHIFT)
+            .toInt() === FPackageObjectIndex_EType.Export
     }
 
     /**
@@ -294,7 +296,9 @@ export class FPackageObjectIndex {
      * @public
      */
     isScriptImport() {
-        return this.typeAndId.shru(_TYPE_SHIFT).toInt() === FPackageObjectIndex_EType.ScriptImport
+        return this.typeAndId
+            .shru(FPackageObjectIndex.TYPE_SHIFT)
+            .toInt()  === FPackageObjectIndex_EType.ScriptImport
     }
 
     /**
@@ -303,7 +307,9 @@ export class FPackageObjectIndex {
      * @public
      */
     isPackageImport() {
-        return this.typeAndId.shru(_TYPE_SHIFT).toInt() === FPackageObjectIndex_EType.PackageImport
+        return this.typeAndId
+            .shru(FPackageObjectIndex.TYPE_SHIFT)
+            .toInt() === FPackageObjectIndex_EType.PackageImport
     }
 
     /**
@@ -314,7 +320,7 @@ export class FPackageObjectIndex {
     toExport() {
         if (!this.isExport())
             throw new Error("Cannot cast an import to export.")
-        return this.typeAndId
+        return this.typeAndId.toUnsigned()
     }
 
     /**
@@ -323,7 +329,10 @@ export class FPackageObjectIndex {
      * @public
      */
     toPackageImportRef(): FPackageImportReference {
-        const importedPackageIndex = this.typeAndId.and(INDEX_MASK).shiftRight(32).toUnsigned().toInt()
+        const importedPackageIndex = this.typeAndId
+            .and(FPackageObjectIndex.INDEX_MASK)
+            .shr(32)
+            .toUnsigned().toInt()
         const exportHash = this.typeAndId.toUnsigned().toInt()
         return new FPackageImportReference(importedPackageIndex, exportHash)
     }
@@ -334,7 +343,7 @@ export class FPackageObjectIndex {
      * @public
      */
     type() {
-        return this.typeAndId.shiftRight(TYPE_SHIFT).toNumber() // custom
+        return this.typeAndId.shr(FPackageObjectIndex.TYPE_SHIFT).toInt() // custom
     }
 
     /**
@@ -343,7 +352,7 @@ export class FPackageObjectIndex {
      * @public
      */
     value() {
-        return this.typeAndId.and(_INDEX_MASK)
+        return this.typeAndId.and(FPackageObjectIndex.INDEX_MASK).toNumber()
     }
 
     /**

@@ -301,7 +301,7 @@ export class IoPackage extends Package {
      * @public
      */
     resolveObjectIndex(index: FPackageObjectIndex, throwIfNotFound: boolean = true) {
-        if (index == null)
+        if (index == null || index.isNull())
             return null
 
         if (index.isExport()) {
@@ -336,8 +336,6 @@ export class IoPackage extends Package {
                     }
                 }
             }
-        } else if (index.isNull()) {
-            return null
         }
 
         if (throwIfNotFound) {
