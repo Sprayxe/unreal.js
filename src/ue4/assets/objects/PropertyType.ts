@@ -139,7 +139,7 @@ export class PropertyType {
                 this.enumName = x.enum.name
             } else if (x instanceof FMapProperty) {
                 this.innerType = x.keyProp ? new PropertyType(x.keyProp) : null
-                this.valueType = x.valueProp ? new PropertyType(x.keyProp) : null
+                this.valueType = x.valueProp ? new PropertyType(x.valueProp) : null
             } else if (x instanceof FSetProperty) {
                 this.innerType = x.elementProp ? new PropertyType(x.elementProp) : null
             } else if (x instanceof FStructProperty) {

@@ -285,7 +285,7 @@ export class FProperty {
             return new MapProperty(
                 this.valueOr(
                     () => new UScriptMap(Ar, typeData),
-                    () => new UScriptMap(0, new UnrealMap()),
+                    () => new UScriptMap([], new UnrealMap()),
                     type
                 )
             )

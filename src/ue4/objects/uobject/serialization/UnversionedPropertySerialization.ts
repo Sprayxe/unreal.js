@@ -515,8 +515,9 @@ export function deserializeUnversionedProperties(properties: FPropertyTag[], str
             while (!it.bDone) {
                 const serializer = it.serializer
                 if (serializer) {
-                    if (Config.GDebug) console.log(`Val: ${it.schemaIt} (IsNonZero: ${it.isNonZero()})`)
-                    if (it.isNonZero()) {
+                    const isNonZero = it.isNonZero()
+                    if (Config.GDebug) console.log(`Val: ${it.schemaIt} (IsNonZero: ${isNonZero})`)
+                    if (isNonZero) {
                         const element = serializer.deserialize(Ar, ReadType.NORMAL)
                         properties.push(element)
                         if (Config.GDebug) console.info(element.toString())

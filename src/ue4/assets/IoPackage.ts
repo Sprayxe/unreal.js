@@ -268,10 +268,10 @@ export class IoPackage extends Package {
                         // Serialize
                         const Ar = new FExportArchive(uasset, obj, this)
                         Ar.useUnversionedPropertySerialization = (this.packageFlags & EPackageFlags.PKG_UnversionedProperties) !== 0
-                        Ar.uassetSize = Math.floor(exp.cookedSerialOffset) - localExportDataOffset
+                        Ar.uassetSize = exp.cookedSerialOffset - localExportDataOffset
                         Ar.bulkDataStartOffset = this.bulkDataStartOffset
                         Ar.pos = localExportDataOffset
-                        const validPos = Ar.pos + Math.floor(exp.cookedSerialSize)
+                        const validPos = Ar.pos + exp.cookedSerialSize
                         try {
                             obj.deserialize(Ar, validPos)
                             if (validPos !== Ar.pos) {
@@ -286,7 +286,7 @@ export class IoPackage extends Package {
                         }
                         return obj
                     })
-                    currentExportDataOffset += Math.floor(exp.cookedSerialSize)
+                    currentExportDataOffset += exp.cookedSerialSize
                 }
             }
         }

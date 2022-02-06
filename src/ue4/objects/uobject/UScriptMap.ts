@@ -6,25 +6,21 @@ import { FAssetArchiveWriter } from "../../assets/writer/FAssetArchiveWriter";
 import { UnrealMap } from "../../../util/UnrealMap";
 
 export class UScriptMap {
-    numKeysToRemove: number
+    numKeysToRemove: FProperty[]
     mapData: UnrealMap<FProperty, FProperty>
 
     constructor(Ar: FAssetArchive, typeData: PropertyType)
-    constructor(numKeyToRemove: number, mapData: UnrealMap<FProperty, FProperty>)
+    constructor(numKeyToRemove: FProperty[], mapData: UnrealMap<FProperty, FProperty>)
     constructor(x?: any, y?: any) {
         if (x instanceof FAssetArchive) {
-            this.numKeysToRemove = x.readInt32()
-            if (this.numKeysToRemove !== 0) {
-                let _i = 0
-                while (_i < this.numKeysToRemove) {
-                    FProperty.readPropertyValue(x, y.innerType, ReadType.MAP)
-                    ++_i
-                }
+            const numKeysToRemove = x.readInt32()
+            this.numKeysToRemove = new Array(numKeysToRemove);
+            for (let i = 0; i < numKeysToRemove; ++i) {
+                this.numKeysToRemove[i] = FProperty.readPropertyValue(x, y.innerType, ReadType.MAP);
             }
             const length = x.readInt32()
             this.mapData = new UnrealMap<FProperty, FProperty>()
-            let i = 0
-            while (i < length) {
+            for (let i = 0; i < length; ++i) {
                 let isReadingValue = false
                 try {
                     const key = FProperty.readPropertyValue(x, y.innerType, ReadType.MAP)
@@ -34,7 +30,6 @@ export class UScriptMap {
                 } catch (e) {
                     throw new ParserException(`Failed to read ${isReadingValue ? "value" : "key"} for index ${i} in map`, x)
                 }
-                ++i
             }
         } else {
             this.numKeysToRemove = x
@@ -43,7 +38,10 @@ export class UScriptMap {
     }
 
     serialize(Ar: FAssetArchiveWriter) {
-        Ar.writeInt32(this.numKeysToRemove)
+        Ar.writeInt32(this.numKeysToRemove.length)
+        this.numKeysToRemove.forEach((k) => {
+            FProperty.writePropertyValue(Ar, k, ReadType.MAP)
+        })
         Ar.writeInt32(this.mapData.size)
         this.mapData.forEach((v, k) => {
             FProperty.writePropertyValue(Ar, k, ReadType.MAP)

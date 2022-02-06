@@ -51,7 +51,7 @@ export class VersionContainer {
     private initOptions(): void {
         this.options.clear()
         this.options.set("RawIndexBuffer.HasShouldExpandTo32Bit", this.game >= Game.GAME_UE4(25))
-        // TODO GAME_UE5 this.options.set("ShaderMap.UseNewCookedFormat", this.game >= Game.GAME_UE4(25))
+        this.options.set("ShaderMap.UseNewCookedFormat", this.game >= Game.GAME_UE5(0))
         this.options.set("SkeletalMesh.KeepMobileMinLODSettingOnDesktop", this.game >= Game.GAME_UE4(27))
         this.options.set("SkeletalMesh.UseNewCookedFormat", this.game >= Game.GAME_UE4(24))
         this.options.set("StaticMesh.HasLODsShareStaticLighting", this.game < Game.GAME_UE4(15) || this.game >= Game.GAME_UE4(16))
