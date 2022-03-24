@@ -305,10 +305,10 @@ export abstract class FArchive {
                 dat.push(this.readUInt16())
             if (this.readUInt16() !== 0)
                 throw new ParserException("Serialized FString is not null-terminated", this)
-            return Buffer.from(dat).toString("utf16le")
+            return Buffer.from(dat).toString("binary")
         } else {
             if (length === 0) return ""
-            const str = this.read(length - 1).toString("utf-8")
+            const str = this.read(length - 1).toString("binary")
             if (this.readUInt8() !== 0)
                 throw new ParserException("Serialized FString is not null-terminated", this)
             return str
