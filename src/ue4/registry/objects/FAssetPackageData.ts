@@ -9,10 +9,13 @@ export class FAssetPackageData {
     packageGuid: FGuid
     cookedHash?: FMD5Hash
 
-    constructor(Ar: FArchive, serializeHash: boolean) {
+    constructor(Ar: FArchive, serializeHash: boolean, chunkHashes: boolean) {
         this.packageName = Ar.readFName()
         this.diskSize = Number(Ar.readInt64())
         this.packageGuid = new FGuid(Ar)
         this.cookedHash = serializeHash ? new FMD5Hash(Ar) : null
+        if (chunkHashes) {
+            Ar.pos += Ar.readInt32() * (12 + 20)
+        }
     }
 }

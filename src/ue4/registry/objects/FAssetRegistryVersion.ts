@@ -34,7 +34,17 @@ export enum Type {
      * * Removed global tag storage, a tag map reference-counts one store per asset registry
      * * All configs can mix fixed and loose tag maps
      */
-    FixedTags = "FixedTags"
+    FixedTags = "FixedTags",
+    /** Added Version information to AssetPackageData */
+    WorkspaceDomain = "WorkspaceDomain",
+    /** Added ImportedClasses to AssetPackageData */
+    PackageImportedClasses = "PackageImportedClasses",
+    /** A new version number of UE5 was added to FPackageFileSummary */
+    PackageFileSummaryVersionChange = "PackageFileSummaryVersionChange",
+    /** Change to linker export/import resource serialization */
+    ObjectResourceOptionalVersionChange = "ObjectResourceOptionalVersionChange",
+    /** Added FIoHash for each FIoChunkId in the package to the AssetPackageData. */
+    AddedChunkHashes = "AddedChunkHashes",
 }
 
 export class FAssetRegistryVersion {

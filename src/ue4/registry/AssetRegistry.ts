@@ -59,11 +59,12 @@ export class AssetRegistry {
         }
 
         const serializeHash = version.version < Type.AddedCookedMD5Hash
+        const chunkHashes = version.version < Type.AddedChunkHashes
 
         const _len2 = Ar.readInt32()
         this.preallocatedPackageDataBuffer = new Array(_len2)
         for (let i = 0; i < _len2; ++i) {
-            this.preallocatedPackageDataBuffer[i] = new FAssetPackageData(Ar, serializeHash)
+            this.preallocatedPackageDataBuffer[i] = new FAssetPackageData(Ar, serializeHash, chunkHashes)
         }
     }
 

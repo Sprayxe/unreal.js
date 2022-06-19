@@ -140,7 +140,9 @@ export enum EIoChunkType5 {
     ExternalFile,
     ShaderCodeLibrary,
     ShaderCode,
-    PackageStoreEntry
+    PackageStoreEntry,
+    DerivedData,
+    EditorDerivedData
 }
 
 /**

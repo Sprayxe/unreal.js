@@ -213,7 +213,7 @@ export class FPackageStore extends FOnContainerMountedListener {
 
             const containerHeader = new FIoContainerHeader(new FByteArchive(ioBuffer, this.provider.versions))
             loadedContainer.containerNameMap = containerHeader.redirectsNameMap
-            loadedContainer.packageCount = containerHeader.packageCount
+            loadedContainer.packageCount = containerHeader.packageIds.length
             loadedContainer.storeEntries = containerHeader.storeEntries
 
             for (const index in loadedContainer.storeEntries) {
