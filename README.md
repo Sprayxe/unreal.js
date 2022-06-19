@@ -15,7 +15,7 @@
 
 This library is in VERY early development so it might be unstable. **Please also keep in mind that JavaScript is not
 really made for this kind of stuff so the usage of this library is experimental**. We still try fixing most issues
-though so report if you experience any!\
+though so report if you experience any!
 
 ### Features
 
@@ -35,7 +35,7 @@ though so report if you experience any!\
 
 ### Installation
 
-`npm i unreal.js`\
+`npm i unreal.js`
 This library has optional dependencies like `canvas` and `dxt-js` which are used in ue4 texture conversion. If you don't
 want to install these dependencies, use: `npm i unreal.js --no-optional`.
 
