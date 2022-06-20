@@ -67,6 +67,7 @@ export enum EIoContainerHeaderVersion {
     BeforeVersionWasAdded = -1, // Custom constant to indicate pre-UE5 data
     Initial,
     LocalizedPackages,
+    OptionalSegmentPackages,
 
     Latest = LocalizedPackages
 }
@@ -75,9 +76,10 @@ export class FIoContainerHeader {
     public static readonly SIGNATURE: number = 0x496f436e
 
     public containerId: bigint
-    public packageCount = 0
     public packageIds: bigint[]
     public storeEntries: FFilePackageStoreEntry[]
+    public optionalSegmentPackageIds: bigint[] = null
+    public optionalSegmentStoreEntries: FFilePackageStoreEntry[] = null
     public redirectsNameMap = new FNameMap()
     public localizedPackages?: FIoContainerHeaderLocalizedPackage[] = null
     public culturePackageMap?: FCulturePackageMap = null
@@ -92,8 +94,8 @@ export class FIoContainerHeader {
             version = Ar.readInt32()
         }
         this.containerId = Ar.readUInt64()
-        this.packageCount = Ar.readUInt32()
         if (version == EIoContainerHeaderVersion.BeforeVersionWasAdded) {
+            const packageCount = Ar.readUInt32()
             const names = Ar.read(Ar.readInt32())
             const nameHashes = Ar.read(Ar.readInt32())
             if (Utils.bufferIsNotEmpty(names)) {
@@ -105,12 +107,23 @@ export class FIoContainerHeader {
         for (let i = 0; i < pkgLen; ++i) this.packageIds[i] = Ar.readUInt64()
         const storeEntriesNum = Ar.readInt32()
         const storeEntriesEnd = Ar.pos + storeEntriesNum
-        const strsLen = this.packageCount
+        const strsLen = this.packageIds.length
         this.storeEntries = new Array(strsLen)
         for (let i = 0; i < strsLen; ++i) {
             this.storeEntries[i] = new FFilePackageStoreEntry(Ar)
         }
         Ar.pos = storeEntriesEnd
+        if (version >= EIoContainerHeaderVersion.OptionalSegmentPackages) {
+            this.optionalSegmentPackageIds = new Array(Ar.readInt32())
+            for (let i = 0; i < this.optionalSegmentPackageIds.length; ++i)
+                this.optionalSegmentPackageIds[i] = Ar.readUInt64()
+            const optionalSegmentStoreEntriesNum = Ar.readInt32()
+            const optionalSegmentStoreEntriesEnd = Ar.pos + optionalSegmentStoreEntriesNum
+            this.optionalSegmentStoreEntries = new Array(this.optionalSegmentPackageIds.length)
+            for (let i = 0; i < this.optionalSegmentStoreEntries.length; ++i)
+                this.optionalSegmentStoreEntries[i] = new FFilePackageStoreEntry(Ar)
+            Ar.pos = optionalSegmentStoreEntriesEnd
+        }
         if (version >= EIoContainerHeaderVersion.Initial)
             this.redirectsNameMap.load(Ar, FMappedName_EType.Container)
         if (version >= EIoContainerHeaderVersion.LocalizedPackages) {
