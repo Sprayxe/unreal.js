@@ -1,3 +1,7 @@
+UPDATE: I (Sprayxe) am no longer maintaining this project. I simply lost motivation to work on it due to several reasons. If **you** want to keep maintaining the project send me a DM via discord! **Thanks to all the people who helped me in this project and thanks to all the people who used or are still using this library. Cya!**
+
+
+
 [![LICENCE](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
 [![TYPESCRIPT](https://img.shields.io/badge/typescript-%23007ACC.svg?&style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![JAVASCRIPT](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
