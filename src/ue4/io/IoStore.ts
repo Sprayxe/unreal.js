@@ -606,7 +606,7 @@ export class FIoStoreTocResource {
             for (let i = 0; i < _len1; i++) {
                 const id = new FIoChunkId(tocBuffer)
                 this.chunkIds[i] = id
-                this.chunkIdToIndex[id.id.toString("base64")] = i
+                this.chunkIdToIndex[id.id.toString("latin1")] = i
             }
         }
 
@@ -637,7 +637,7 @@ export class FIoStoreTocResource {
                 this.chunkIndicesWithoutPerfectHash[i] = tocBuffer.readInt32()
             }
             for (let chunkIndexWithoutPerfectHash of this.chunkIndicesWithoutPerfectHash) {
-                this.chunkIdToIndex[this.chunkIds[chunkIndexWithoutPerfectHash].id.toString("base64")] = chunkIndexWithoutPerfectHash
+                this.chunkIdToIndex[this.chunkIds[chunkIndexWithoutPerfectHash].id.toString("latin1")] = chunkIndexWithoutPerfectHash
             }
         }
 
@@ -720,7 +720,7 @@ export class FIoStoreTocResource {
                     slot = seedAsIndex
                 } else {
                     // Entry without perfect hash
-                    return this.chunkIdToIndex[chunkId.id.toString("base64")] || -1
+                    return this.chunkIdToIndex[chunkId.id.toString("latin1")] || -1
                 }
             } else {
                 slot = Number(chunkId.hashWithSeed(seed) % BigInt(chunkCount))
@@ -729,7 +729,7 @@ export class FIoStoreTocResource {
                 return slot
             return -1
         }
-        return this.chunkIdToIndex[chunkId.id.toString("base64")] || -1
+        return this.chunkIdToIndex[chunkId.id.toString("latin1")] || -1
     }
 
     /**
